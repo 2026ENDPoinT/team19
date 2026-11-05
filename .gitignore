@@ -1,0 +1,15 @@
+# 비밀 정보 (절대 올리지 않기)
+.env
+.env.*
+!.env.example
+
+# 개인 파일
+me.local.md
+CLAUDE.local.md
+
+# 운영체제, 개발 도구가 만드는 파일
+.DS_Store
+Thumbs.db
+node_modules/
+__pycache__/
+.venv/
