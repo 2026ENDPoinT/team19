@@ -23,6 +23,7 @@ flowchart LR
 | 파일 | 무엇을 | 누가 쓰나 |
 |---|---|---|
 | `coordination/questions.md` | 다른 역할에게 묻고 싶은 것, 부탁 | 누구나 (맨 아래에 추가) |
+| `coordination/questions-archive.md` | 끝난 질문. `questions.md`를 짧게 유지하려고 옮겨 둔다 | 팀장 (종료 루틴에서) |
 | `coordination/proposals/` | 공용 문서나 계약을 바꾸자는 제안 | 누구나 (제안서 1개 = 파일 1개) |
 | `coordination/decisions.md` | 확정된 결정 | 팀장만 |
 | `coordination/roles/역할.md` | 내 책임과 현황 (한 일, 다음 할 일, 막힌 것, 요청) | 그 역할만 |

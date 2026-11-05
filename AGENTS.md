@@ -39,7 +39,7 @@
 사용자가 "시작 루틴", "동기화", "뭐 할지 알려줘"라고 하거나, 새 세션에서 처음 작업을 시작할 때 아래 순서를 따른다.
 
 1. `git pull`로 최신 내용을 받는다. 충돌이 나면 멈추고 사용자에게 알린다.
-2. `me.local.md`로 내 역할을 확인한다.
+2. `me.local.md`로 내 역할을 확인한다. **이 파일이 없으면 첫 세션이다.** `coordination/first-session.md`를 읽고 그 순서를 따른다.
 3. 다음을 읽는다.
    - `coordination/decisions.md`의 최근 항목
    - `coordination/questions.md`에서 상태가 `열림`이고, 받는 사람에 내 역할이나 `전원`이 들어 있는 질문
@@ -54,6 +54,7 @@
 
 1. 내 역할 파일(`coordination/roles/내역할.md`)의 "현황" 섹션을 갱신한다. 한 일, 다음 할 일, 막힌 것, 다른 역할에게 요청할 것을 적는다.
 2. 이번 세션에서 생긴 질문은 `coordination/questions.md` 맨 아래에 추가한다. 내가 답한 질문은 답과 상태를 적는다.
+   - 팀장(AI 역할) 세션에서만: 상태가 `답변됨`, `결정됨`, `철회`인 질문을 `coordination/questions-archive.md` 맨 아래로 옮긴다. 시작 루틴이 매번 읽는 `questions.md`를 짧게 유지하기 위해서다.
 3. 바뀐 파일 목록과 요약을 사용자에게 보여주고, 확인을 받은 뒤 커밋하고 push한다.
 
 ## 6. 다른 역할과 소통하는 법
@@ -70,6 +71,7 @@
 - `questions.md`: 새 항목은 맨 아래에 추가만 한다. 기존 항목은 `상태`와 `답` 줄만 고친다.
 - `decisions.md`: 팀장(AI 역할)만 쓴다. 다른 역할은 제안서로 요청한다.
 - 오타나 깨진 링크 같은 사소한 수정은 누구나 바로 해도 된다.
+- 문서는 짧게 쓴다. 다른 문서에 이미 있는 내용은 반복하지 않고 링크한다. 에이전트가 매 세션 읽는 파일이라 길어지면 토큰을 많이 쓴다. 이 파일(AGENTS.md)은 항상 불러오므로 특히 짧게 유지한다.
 - 문서를 고쳐도 맨 위 상태줄은 유지하고 갱신한다.
   `> 상태: 초안|논의중|방향 합의|확정 · 담당: 역할 · 최종 수정: 날짜 · 역할/도구`
 - push 전에 다시 `git pull`한다. `questions.md` 같은 공용 파일에서 충돌이 나면 양쪽 내용을 모두 살리는 쪽으로 해결한다. 애매하면 사용자에게 묻는다.
@@ -106,6 +108,8 @@
 | `contracts/` | 파트 사이 약속: 데이터 모양, API |
 | `coordination/decisions.md` | 결정 기록 |
 | `coordination/questions.md` | 열린 질문 |
+| `coordination/questions-archive.md` | 끝난 질문 (처음 옮길 때 만든다) |
+| `coordination/first-session.md` | 첫 세션 안내 순서 |
 | `coordination/proposals/` | 변경 제안서 |
 | `coordination/roles/` | 역할별 책임과 현황 |
 | `coordination/meetings/` | 회의 안건과 회의록 |
