@@ -1,6 +1,6 @@
 # 06. 비용과 예산
 
-> 상태: 추정 (첫날 실측 필요) · 담당: AI (팀장) · 최종 수정: 2026-11-06 · AI/Claude
+> 상태: 추정 (첫날 실측 필요) · 담당: AI (팀장) · 최종 수정: 2026-11-07 · AI/Claude
 
 ## 확인한 가격 (2026년 11월 기준)
 
@@ -12,6 +12,30 @@
 | 토크나이저 | 최신 모델은 같은 글을 이전보다 약 30% 많은 토큰으로 센다 | Claude 가격 문서 |
 | PDF 페이지 | 페이지당 글자 1,500~3,000 토큰, 페이지 그림 비용 별도 | Claude PDF 문서 |
 | TTS (OpenAI gpt-4o-mini-tts) | 1분에 약 1.5센트 | OpenAI 발표 기사 |
+
+## 다른 회사 가격 (2026-11-07 공식 페이지 확인, 100만 토큰당 입력 / 출력)
+
+| 등급 | Anthropic | OpenAI | Google | 강의 1개 (아래 추정 기준) |
+|---|---|---|---|---|
+| 상위 | Sonnet 5.5 $2 / $10 | GPT-6.1 Sol $2 / $10 | Gemini 4 Argon $2 / $10 (12/1부터 2배) | 약 $1.5 |
+| 중간 | (없음) | GPT-6.1 Terra $1 / $5 | Gemini 3.8 Flash $0.75 / $3.75 | 약 $0.55~0.75 |
+| 저가 | Haiku 5.5 $0.10 / $0.50 | GPT-6 Luna $0.10 / $0.50 | Gemini 3.1 Flash-Lite $0.25 / $1.50 | 약 $0.07~0.2 |
+
+- 페이지 그림: 1280×720 한 장에 약 1,200토큰. 40쪽 전체를 그림으로 보내도 상위 등급 약 $0.1이다.
+- GPT-6 Luna는 27.2만 토큰까지 같은 가격이다(Haiku 5.5는 10만 토큰).
+- Gemini Flash 계열은 무료 구간이 있지만 데이터가 학습에 쓰일 수 있다. 공개 자료로만 실험한다.
+- TTS는 대부분 1분에 1~2센트다(OpenAI gpt-4o-mini-tts 음성 출력 100만 토큰당 $12, Gemini 3.8 Flash TTS 약 1.4센트/분). 한국어 음질로 고른다(Q-AI-10).
+- 성능은 같은 등급끼리도 우리 작업에서 직접 비교해야 한다(Q-AI-07 실험).
+
+## 실험 예산 (Q-AI-07)
+
+| 실험 | 내용 | 예상 비용 |
+|---|---|---|
+| 페이지 해설 비교 | 어려운 페이지 10장 × 등급 3개 | $1 미만 |
+| 분할 계획 비교 | 자료 3개 × (글자만 / 글자+해설) × 모델 2~3개 | $2~3 |
+| 설계도 맛보기 | 클립 2~3개 | $1~2 |
+
+OpenAI와 Anthropic에 회사당 $5~10을 충전하면 충분하다(Q-AI-13). 팀에 구독 크레딧을 받을 수 있는 요금제(ChatGPT Pro, Claude Max 등)는 없다.
 
 ## 추정: 40쪽 강의, 클립 15개, Sonnet 5.5 기준
 
@@ -59,3 +83,4 @@
 - [Claude PDF 지원](https://platform.claude.com/docs/en/build-with-claude/pdf-support)
 - [OpenAI 오디오 모델 가격 (Neowin)](https://www.neowin.net/news/openai-announces-next-generation-audio-models-to-power-voice-agents/)
 - [Remotion 가격](https://www.remotion.dev/docs/pricing)
+- [OpenAI API 가격](https://developers.openai.com/api/docs/pricing), [Gemini API 가격](https://aistudio.google.com/docs/pricing)
