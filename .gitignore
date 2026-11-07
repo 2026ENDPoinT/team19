@@ -13,3 +13,6 @@ Thumbs.db
 node_modules/
 __pycache__/
 .venv/
+
+# 강의자료 원본 (저작권, 저장소에 올리지 않기)
+materials/
