@@ -52,3 +52,4 @@
 |---|---|---|
 | [P-AI-01](P-AI-01-tech-stack.md) | 기술 스택 | 결정됨(D-17) |
 | [P-BE-01](P-BE-01-storage-and-demo.md) | 저장 정책과 시연 방식 | 의견 수집중 |
+| [P-AI-02](P-AI-02-blueprint-v0.md) | 영상 설계도 형식 v0 | 의견 수집중 |
