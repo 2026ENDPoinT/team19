@@ -1,0 +1,1975 @@
+{
+    "notice":  "BE/Codex 개발용 수작업 샘플. 실제 AI 결과 아님. 최종 계약 전이며 서버 응답 보장 아님.",
+    "cases":  [
+                  {
+                      "name":  "upload.accepted",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures"
+                                  },
+                      "response":  {
+                                       "status":  202,
+                                       "body":  {
+                                                    "lectureId":  "lec_01",
+                                                    "jobId":  "job_01",
+                                                    "status":  "pending"
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "prepare.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_01"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_01",
+                                                    "type":  "prepare_lecture",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "prepare.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_01"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_01",
+                                                    "type":  "prepare_lecture",
+                                                    "status":  "running",
+                                                    "stage":  "extracting",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "lecture.processing",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "lec_01",
+                                                    "title":  "알고리즘 (개발용 샘플)",
+                                                    "status":  "processing",
+                                                    "pageCount":  null,
+                                                    "preparationJobId":  "job_01",
+                                                    "pages":  [
+
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "prepare.completed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_01"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_01",
+                                                    "type":  "prepare_lecture",
+                                                    "status":  "completed",
+                                                    "stage":  "done",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "lecture.ready",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "lec_01",
+                                                    "title":  "알고리즘 (개발용 샘플)",
+                                                    "status":  "ready",
+                                                    "pageCount":  57,
+                                                    "preparationJobId":  "job_01",
+                                                    "pages":  [
+                                                                  {
+                                                                      "number":  31,
+                                                                      "imageUrl":  "/assets/img_31"
+                                                                  },
+                                                                  {
+                                                                      "number":  32,
+                                                                      "imageUrl":  "/assets/img_32"
+                                                                  },
+                                                                  {
+                                                                      "number":  33,
+                                                                      "imageUrl":  "/assets/img_33"
+                                                                  },
+                                                                  {
+                                                                      "number":  52,
+                                                                      "imageUrl":  "/assets/img_52"
+                                                                  }
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "upload.bad.accepted",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures"
+                                  },
+                      "response":  {
+                                       "status":  202,
+                                       "body":  {
+                                                    "lectureId":  "lec_bad",
+                                                    "jobId":  "job_bad",
+                                                    "status":  "pending"
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "prepare.bad.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_bad"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_bad",
+                                                    "type":  "prepare_lecture",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "prepare.bad.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_bad"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_bad",
+                                                    "type":  "prepare_lecture",
+                                                    "status":  "running",
+                                                    "stage":  "extracting",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "prepare.failed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_bad"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_bad",
+                                                    "type":  "prepare_lecture",
+                                                    "status":  "failed",
+                                                    "stage":  "extracting",
+                                                    "progress":  null,
+                                                    "error":  {
+                                                                  "code":  "INVALID_PDF",
+                                                                  "message":  "분석 중 PDF 내용을 읽지 못한 상황을 재현합니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.accepted",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures/lec_01/outlines",
+                                      "body":  {
+                                                   "mode":  "review"
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  202,
+                                       "body":  {
+                                                    "outlineId":  "out_01",
+                                                    "jobId":  "job_02",
+                                                    "status":  "pending",
+                                                    "reused":  false
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_02"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_02",
+                                                    "type":  "build_outline",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_02"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_02",
+                                                    "type":  "build_outline",
+                                                    "status":  "running",
+                                                    "stage":  "planning",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.planning",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/review"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "out_01",
+                                                    "mode":  "review",
+                                                    "status":  "planning",
+                                                    "jobId":  "job_02",
+                                                    "clips":  [
+
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.completed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_02"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_02",
+                                                    "type":  "build_outline",
+                                                    "status":  "completed",
+                                                    "stage":  "done",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.intro.accepted",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures/lec_01/outlines",
+                                      "body":  {
+                                                   "mode":  "intro"
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  202,
+                                       "body":  {
+                                                    "outlineId":  "out_intro",
+                                                    "jobId":  "job_intro",
+                                                    "status":  "pending",
+                                                    "reused":  false
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.intro.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_intro"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_intro",
+                                                    "type":  "build_outline",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.intro.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_intro"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_intro",
+                                                    "type":  "build_outline",
+                                                    "status":  "running",
+                                                    "stage":  "planning",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.intro.planning",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/intro"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "out_intro",
+                                                    "mode":  "intro",
+                                                    "status":  "planning",
+                                                    "jobId":  "job_intro",
+                                                    "clips":  [
+
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.intro.completed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_intro"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_intro",
+                                                    "type":  "build_outline",
+                                                    "status":  "completed",
+                                                    "stage":  "done",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.intro.ready",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/intro"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "out_intro",
+                                                    "mode":  "intro",
+                                                    "status":  "ready",
+                                                    "jobId":  "job_intro",
+                                                    "clips":  [
+                                                                  {
+                                                                      "id":  "clip_intro",
+                                                                      "planId":  "plan_intro",
+                                                                      "order":  0,
+                                                                      "title":  "퀵 정렬은 정복 후 분할",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  null,
+                                                                      "error":  null
+                                                                  }
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.exam.accepted",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures/lec_01/outlines",
+                                      "body":  {
+                                                   "mode":  "exam"
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  202,
+                                       "body":  {
+                                                    "outlineId":  "out_exam",
+                                                    "jobId":  "job_exam",
+                                                    "status":  "pending",
+                                                    "reused":  false
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.exam.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_exam"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_exam",
+                                                    "type":  "build_outline",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.exam.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_exam"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_exam",
+                                                    "type":  "build_outline",
+                                                    "status":  "running",
+                                                    "stage":  "planning",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.exam.planning",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/exam"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "out_exam",
+                                                    "mode":  "exam",
+                                                    "status":  "planning",
+                                                    "jobId":  "job_exam",
+                                                    "clips":  [
+
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.exam.completed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_exam"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_exam",
+                                                    "type":  "build_outline",
+                                                    "status":  "completed",
+                                                    "stage":  "done",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.exam.ready",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/exam"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "out_exam",
+                                                    "mode":  "exam",
+                                                    "status":  "ready",
+                                                    "jobId":  "job_exam",
+                                                    "clips":  [
+                                                                  {
+                                                                      "id":  "clip_exam",
+                                                                      "planId":  "plan_exam",
+                                                                      "order":  0,
+                                                                      "title":  "퀵 정렬은 정복 후 분할",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  null,
+                                                                      "error":  null
+                                                                  }
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.reused.running",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures/lec_01/outlines",
+                                      "body":  {
+                                                   "mode":  "review"
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  202,
+                                       "body":  {
+                                                    "outlineId":  "out_01",
+                                                    "jobId":  "job_02",
+                                                    "status":  "running",
+                                                    "reused":  true
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.reused.ready",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures/lec_01/outlines",
+                                      "body":  {
+                                                   "mode":  "review"
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "outlineId":  "out_01",
+                                                    "jobId":  "job_02",
+                                                    "status":  "completed",
+                                                    "reused":  true
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.A.registered",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/review"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "out_01",
+                                                    "mode":  "review",
+                                                    "status":  "ready",
+                                                    "jobId":  "job_02",
+                                                    "clips":  [
+                                                                  {
+                                                                      "id":  "clip_01",
+                                                                      "planId":  "plan_01",
+                                                                      "order":  0,
+                                                                      "title":  "퀵 정렬은 정복 후 분할",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  "job_03",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_02",
+                                                                      "planId":  "plan_02",
+                                                                      "order":  1,
+                                                                      "title":  "테스트 클립 2",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  "job_04",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_03",
+                                                                      "planId":  "plan_03",
+                                                                      "order":  2,
+                                                                      "title":  "테스트 클립 3",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  "job_05",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_04",
+                                                                      "planId":  "plan_04",
+                                                                      "order":  3,
+                                                                      "title":  "테스트 클립 4",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  "job_06",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_05",
+                                                                      "planId":  "plan_05",
+                                                                      "order":  4,
+                                                                      "title":  "테스트 클립 5",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  "job_07",
+                                                                      "error":  null
+                                                                  }
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.B.registered",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/review"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "out_01",
+                                                    "mode":  "review",
+                                                    "status":  "ready",
+                                                    "jobId":  "job_02",
+                                                    "clips":  [
+                                                                  {
+                                                                      "id":  "clip_01",
+                                                                      "planId":  "plan_01",
+                                                                      "order":  0,
+                                                                      "title":  "퀵 정렬은 정복 후 분할",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  "job_03",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_02",
+                                                                      "planId":  "plan_02",
+                                                                      "order":  1,
+                                                                      "title":  "테스트 클립 2",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  null,
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_03",
+                                                                      "planId":  "plan_03",
+                                                                      "order":  2,
+                                                                      "title":  "테스트 클립 3",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  null,
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_04",
+                                                                      "planId":  "plan_04",
+                                                                      "order":  3,
+                                                                      "title":  "테스트 클립 4",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  null,
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_05",
+                                                                      "planId":  "plan_05",
+                                                                      "order":  4,
+                                                                      "title":  "테스트 클립 5",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  null,
+                                                                      "error":  null
+                                                                  }
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.mixed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/review"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "out_01",
+                                                    "mode":  "review",
+                                                    "status":  "ready",
+                                                    "jobId":  "job_02",
+                                                    "clips":  [
+                                                                  {
+                                                                      "id":  "clip_01",
+                                                                      "planId":  "plan_01",
+                                                                      "order":  0,
+                                                                      "title":  "퀵 정렬은 정복 후 분할",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "completed",
+                                                                      "jobId":  "job_03",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_02",
+                                                                      "planId":  "plan_02",
+                                                                      "order":  1,
+                                                                      "title":  "테스트 클립 2",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "running",
+                                                                      "jobId":  "job_04",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_03",
+                                                                      "planId":  "plan_03",
+                                                                      "order":  2,
+                                                                      "title":  "테스트 클립 3",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  "job_05",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_04",
+                                                                      "planId":  "plan_04",
+                                                                      "order":  3,
+                                                                      "title":  "테스트 클립 4",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "failed",
+                                                                      "jobId":  "job_06",
+                                                                      "error":  {
+                                                                                    "code":  "TTS_FAILED",
+                                                                                    "message":  "테스트용 음성 생성 실패입니다. 다시 시도할 수 있습니다.",
+                                                                                    "retryable":  true
+                                                                                }
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_05",
+                                                                      "planId":  "plan_05",
+                                                                      "order":  4,
+                                                                      "title":  "테스트 클립 5",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  null,
+                                                                      "error":  null
+                                                                  }
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip01.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_03"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_03",
+                                                    "type":  "generate_clip",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip01.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_03"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_03",
+                                                    "type":  "generate_clip",
+                                                    "status":  "running",
+                                                    "stage":  "blueprint",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip01.completed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_03"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_03",
+                                                    "type":  "generate_clip",
+                                                    "status":  "completed",
+                                                    "stage":  "done",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip02.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_04"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_04",
+                                                    "type":  "generate_clip",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip02.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_04"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_04",
+                                                    "type":  "generate_clip",
+                                                    "status":  "running",
+                                                    "stage":  "audio",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip03.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_05"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_05",
+                                                    "type":  "generate_clip",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip04.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_06"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_06",
+                                                    "type":  "generate_clip",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip04.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_06"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_06",
+                                                    "type":  "generate_clip",
+                                                    "status":  "running",
+                                                    "stage":  "audio",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip04.failed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_06"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_06",
+                                                    "type":  "generate_clip",
+                                                    "status":  "failed",
+                                                    "stage":  "audio",
+                                                    "progress":  null,
+                                                    "error":  {
+                                                                  "code":  "TTS_FAILED",
+                                                                  "message":  "테스트용 음성 생성 실패입니다. 다시 시도할 수 있습니다.",
+                                                                  "retryable":  true
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip05.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_07"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_07",
+                                                    "type":  "generate_clip",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/clips/clip_03"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "clip_03",
+                                                    "planId":  "plan_03",
+                                                    "status":  "pending",
+                                                    "error":  null,
+                                                    "result":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip.unregistered",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/clips/clip_05"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "clip_05",
+                                                    "planId":  "plan_05",
+                                                    "status":  "pending",
+                                                    "error":  null,
+                                                    "result":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/clips/clip_02"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "clip_02",
+                                                    "planId":  "plan_02",
+                                                    "status":  "running",
+                                                    "error":  null,
+                                                    "result":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip.failed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/clips/clip_04"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "clip_04",
+                                                    "planId":  "plan_04",
+                                                    "status":  "failed",
+                                                    "error":  {
+                                                                  "code":  "TTS_FAILED",
+                                                                  "message":  "테스트용 음성 생성 실패입니다. 다시 시도할 수 있습니다.",
+                                                                  "retryable":  true
+                                                              },
+                                                    "result":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip.completed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/clips/clip_01"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "clip_01",
+                                                    "planId":  "plan_01",
+                                                    "status":  "completed",
+                                                    "error":  null,
+                                                    "result":  {
+                                                                   "resultId":  "res_01",
+                                                                   "durationSec":  32.25,
+                                                                   "audioUrl":  "/assets/audio_01",
+                                                                   "blueprint":  {
+                                                                                     "version":  0,
+                                                                                     "title":  "퀵 정렬은 정복 후 분할",
+                                                                                     "theme":  "dark",
+                                                                                     "scenes":  [
+                                                                                                    {
+                                                                                                        "id":  "s1",
+                                                                                                        "clear":  true,
+                                                                                                        "lines":  [
+                                                                                                                      "합병 정렬과 퀵 정렬, 둘 다 분할 정복이에요.",
+                                                                                                                      "그런데 일하는 순서가 정반대예요.",
+                                                                                                                      "합병 정렬은 먼저 반으로 나누고, 나중에 합치면서 정렬해요.",
+                                                                                                                      "퀵 정렬은 먼저 피봇을 기준으로 자리를 정리하고, 그다음에 나눠요."
+                                                                                                                  ],
+                                                                                                        "texts":  [
+                                                                                                                      {
+                                                                                                                          "id":  "t_title",
+                                                                                                                          "slot":  "top",
+                                                                                                                          "style":  "title",
+                                                                                                                          "content":  "퀵 정렬: 정복 후 분할",
+                                                                                                                          "hidden":  false
+                                                                                                                      }
+                                                                                                                  ],
+                                                                                                        "slides":  [
+
+                                                                                                                   ],
+                                                                                                        "diagrams":  [
+                                                                                                                         {
+                                                                                                                             "id":  "d_merge",
+                                                                                                                             "slot":  "middle",
+                                                                                                                             "layout":  "row",
+                                                                                                                             "hidden":  true,
+                                                                                                                             "nodes":  [
+                                                                                                                                           {
+                                                                                                                                               "id":  "m1",
+                                                                                                                                               "label":  "반으로 나누기",
+                                                                                                                                               "shape":  "box"
+                                                                                                                                           },
+                                                                                                                                           {
+                                                                                                                                               "id":  "m2",
+                                                                                                                                               "label":  "양쪽 정렬",
+                                                                                                                                               "shape":  "box"
+                                                                                                                                           },
+                                                                                                                                           {
+                                                                                                                                               "id":  "m3",
+                                                                                                                                               "label":  "합치기",
+                                                                                                                                               "shape":  "box"
+                                                                                                                                           }
+                                                                                                                                       ],
+                                                                                                                             "edges":  [
+                                                                                                                                           {
+                                                                                                                                               "id":  "me1",
+                                                                                                                                               "from":  "m1",
+                                                                                                                                               "to":  "m2",
+                                                                                                                                               "label":  ""
+                                                                                                                                           },
+                                                                                                                                           {
+                                                                                                                                               "id":  "me2",
+                                                                                                                                               "from":  "m2",
+                                                                                                                                               "to":  "m3",
+                                                                                                                                               "label":  ""
+                                                                                                                                           }
+                                                                                                                                       ]
+                                                                                                                         },
+                                                                                                                         {
+                                                                                                                             "id":  "d_quick",
+                                                                                                                             "slot":  "bottom",
+                                                                                                                             "layout":  "row",
+                                                                                                                             "hidden":  true,
+                                                                                                                             "nodes":  [
+                                                                                                                                           {
+                                                                                                                                               "id":  "q1",
+                                                                                                                                               "label":  "피봇 기준 정리",
+                                                                                                                                               "shape":  "box"
+                                                                                                                                           },
+                                                                                                                                           {
+                                                                                                                                               "id":  "q2",
+                                                                                                                                               "label":  "나누기",
+                                                                                                                                               "shape":  "box"
+                                                                                                                                           },
+                                                                                                                                           {
+                                                                                                                                               "id":  "q3",
+                                                                                                                                               "label":  "양쪽 정렬",
+                                                                                                                                               "shape":  "box"
+                                                                                                                                           }
+                                                                                                                                       ],
+                                                                                                                             "edges":  [
+                                                                                                                                           {
+                                                                                                                                               "id":  "qe1",
+                                                                                                                                               "from":  "q1",
+                                                                                                                                               "to":  "q2",
+                                                                                                                                               "label":  ""
+                                                                                                                                           },
+                                                                                                                                           {
+                                                                                                                                               "id":  "qe2",
+                                                                                                                                               "from":  "q2",
+                                                                                                                                               "to":  "q3",
+                                                                                                                                               "label":  ""
+                                                                                                                                           }
+                                                                                                                                       ]
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                        "grids":  [
+
+                                                                                                                  ],
+                                                                                                        "codes":  [
+
+                                                                                                                  ],
+                                                                                                        "actions":  [
+                                                                                                                        {
+                                                                                                                            "line":  1,
+                                                                                                                            "do":  "show",
+                                                                                                                            "target":  "d_merge",
+                                                                                                                            "args":  [
+
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  1,
+                                                                                                                            "do":  "show",
+                                                                                                                            "target":  "d_quick",
+                                                                                                                            "args":  [
+
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  2,
+                                                                                                                            "do":  "highlight",
+                                                                                                                            "target":  "m3",
+                                                                                                                            "args":  [
+
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  3,
+                                                                                                                            "do":  "unhighlight",
+                                                                                                                            "target":  "m3",
+                                                                                                                            "args":  [
+
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  3,
+                                                                                                                            "do":  "highlight",
+                                                                                                                            "target":  "q1",
+                                                                                                                            "args":  [
+
+                                                                                                                                     ]
+                                                                                                                        }
+                                                                                                                    ],
+                                                                                                        "sourcePages":  [
+                                                                                                                            31
+                                                                                                                        ]
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "id":  "s2",
+                                                                                                        "clear":  true,
+                                                                                                        "lines":  [
+                                                                                                                      "피봇보다 작은 수는 왼쪽으로, 큰 수는 오른쪽으로 보내요.",
+                                                                                                                      "이 순간 피봇은 최종 자리에 놓여요. 다시는 움직이지 않아요.",
+                                                                                                                      "그래서 양쪽만 각각 정렬하면 끝이에요. 합치는 단계가 필요 없어요."
+                                                                                                                  ],
+                                                                                                        "texts":  [
+                                                                                                                      {
+                                                                                                                          "id":  "t_key",
+                                                                                                                          "slot":  "bottom",
+                                                                                                                          "style":  "keyword",
+                                                                                                                          "content":  "합치기 단계 없음",
+                                                                                                                          "hidden":  true
+                                                                                                                      }
+                                                                                                                  ],
+                                                                                                        "slides":  [
+                                                                                                                       {
+                                                                                                                           "id":  "sl_33",
+                                                                                                                           "slot":  "top",
+                                                                                                                           "page":  33,
+                                                                                                                           "box":  [
+                                                                                                                                       0.05,
+                                                                                                                                       0.3,
+                                                                                                                                       0.9,
+                                                                                                                                       0.35
+                                                                                                                                   ],
+                                                                                                                           "hidden":  false
+                                                                                                                       }
+                                                                                                                   ],
+                                                                                                        "diagrams":  [
+
+                                                                                                                     ],
+                                                                                                        "grids":  [
+                                                                                                                      {
+                                                                                                                          "id":  "g_groups",
+                                                                                                                          "slot":  "middle",
+                                                                                                                          "cells":  [
+                                                                                                                                        [
+                                                                                                                                            "작은 수들",
+                                                                                                                                            "피봇",
+                                                                                                                                            "큰 수들"
+                                                                                                                                        ]
+                                                                                                                                    ],
+                                                                                                                          "indexLabels":  false,
+                                                                                                                          "pointers":  [
+
+                                                                                                                                       ],
+                                                                                                                          "hidden":  false
+                                                                                                                      }
+                                                                                                                  ],
+                                                                                                        "codes":  [
+
+                                                                                                                  ],
+                                                                                                        "actions":  [
+                                                                                                                        {
+                                                                                                                            "line":  0,
+                                                                                                                            "do":  "highlight",
+                                                                                                                            "target":  "g_groups",
+                                                                                                                            "args":  [
+                                                                                                                                         "0"
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  0,
+                                                                                                                            "do":  "highlight",
+                                                                                                                            "target":  "g_groups",
+                                                                                                                            "args":  [
+                                                                                                                                         "2"
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  1,
+                                                                                                                            "do":  "highlight",
+                                                                                                                            "target":  "g_groups",
+                                                                                                                            "args":  [
+                                                                                                                                         "1"
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  1,
+                                                                                                                            "do":  "focus",
+                                                                                                                            "target":  "sl_33",
+                                                                                                                            "args":  [
+                                                                                                                                         "0.45,0.3,0.15,0.35"
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  2,
+                                                                                                                            "do":  "show",
+                                                                                                                            "target":  "t_key",
+                                                                                                                            "args":  [
+
+                                                                                                                                     ]
+                                                                                                                        }
+                                                                                                                    ],
+                                                                                                        "sourcePages":  [
+                                                                                                                            32,
+                                                                                                                            33
+                                                                                                                        ]
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "id":  "s3",
+                                                                                                        "clear":  true,
+                                                                                                        "lines":  [
+                                                                                                                      "그래서 두 정렬은 비용이 드는 자리가 달라요.",
+                                                                                                                      "합병 정렬은 나누기는 공짜에 가깝고, 합치기에 O(n)이 들어요.",
+                                                                                                                      "퀵 정렬은 반대로 나누기에 O(n)이 들고, 합치기는 없어요."
+                                                                                                                  ],
+                                                                                                        "texts":  [
+
+                                                                                                                  ],
+                                                                                                        "slides":  [
+
+                                                                                                                   ],
+                                                                                                        "diagrams":  [
+
+                                                                                                                     ],
+                                                                                                        "grids":  [
+                                                                                                                      {
+                                                                                                                          "id":  "g_cost",
+                                                                                                                          "slot":  "middle",
+                                                                                                                          "indexLabels":  false,
+                                                                                                                          "pointers":  [
+
+                                                                                                                                       ],
+                                                                                                                          "hidden":  false,
+                                                                                                                          "cells":  [
+                                                                                                                                        [
+                                                                                                                                            "",
+                                                                                                                                            "합병 정렬",
+                                                                                                                                            "퀵 정렬"
+                                                                                                                                        ],
+                                                                                                                                        [
+                                                                                                                                            "나누기",
+                                                                                                                                            "$O(1)$",
+                                                                                                                                            "$O(n)$"
+                                                                                                                                        ],
+                                                                                                                                        [
+                                                                                                                                            "합치기",
+                                                                                                                                            "$O(n)$",
+                                                                                                                                            "없음"
+                                                                                                                                        ]
+                                                                                                                                    ]
+                                                                                                                      }
+                                                                                                                  ],
+                                                                                                        "codes":  [
+
+                                                                                                                  ],
+                                                                                                        "actions":  [
+                                                                                                                        {
+                                                                                                                            "line":  1,
+                                                                                                                            "do":  "highlight",
+                                                                                                                            "target":  "g_cost",
+                                                                                                                            "args":  [
+                                                                                                                                         "2,1"
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  2,
+                                                                                                                            "do":  "unhighlight",
+                                                                                                                            "target":  "g_cost",
+                                                                                                                            "args":  [
+                                                                                                                                         "2,1"
+                                                                                                                                     ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "line":  2,
+                                                                                                                            "do":  "highlight",
+                                                                                                                            "target":  "g_cost",
+                                                                                                                            "args":  [
+                                                                                                                                         "1,2"
+                                                                                                                                     ]
+                                                                                                                        }
+                                                                                                                    ],
+                                                                                                        "sourcePages":  [
+                                                                                                                            31,
+                                                                                                                            52
+                                                                                                                        ]
+                                                                                                    }
+                                                                                                ]
+                                                                                 },
+                                                                   "captions":  [
+                                                                                    {
+                                                                                        "sceneId":  "s1",
+                                                                                        "lineIndex":  0,
+                                                                                        "text":  "합병 정렬과 퀵 정렬, 둘 다 분할 정복이에요.",
+                                                                                        "startSec":  0,
+                                                                                        "endSec":  3
+                                                                                    },
+                                                                                    {
+                                                                                        "sceneId":  "s1",
+                                                                                        "lineIndex":  1,
+                                                                                        "text":  "그런데 일하는 순서가 정반대예요.",
+                                                                                        "startSec":  3.25,
+                                                                                        "endSec":  6.25
+                                                                                    },
+                                                                                    {
+                                                                                        "sceneId":  "s1",
+                                                                                        "lineIndex":  2,
+                                                                                        "text":  "합병 정렬은 먼저 반으로 나누고, 나중에 합치면서 정렬해요.",
+                                                                                        "startSec":  6.5,
+                                                                                        "endSec":  9.5
+                                                                                    },
+                                                                                    {
+                                                                                        "sceneId":  "s1",
+                                                                                        "lineIndex":  3,
+                                                                                        "text":  "퀵 정렬은 먼저 피봇을 기준으로 자리를 정리하고, 그다음에 나눠요.",
+                                                                                        "startSec":  9.75,
+                                                                                        "endSec":  12.75
+                                                                                    },
+                                                                                    {
+                                                                                        "sceneId":  "s2",
+                                                                                        "lineIndex":  0,
+                                                                                        "text":  "피봇보다 작은 수는 왼쪽으로, 큰 수는 오른쪽으로 보내요.",
+                                                                                        "startSec":  13,
+                                                                                        "endSec":  16
+                                                                                    },
+                                                                                    {
+                                                                                        "sceneId":  "s2",
+                                                                                        "lineIndex":  1,
+                                                                                        "text":  "이 순간 피봇은 최종 자리에 놓여요. 다시는 움직이지 않아요.",
+                                                                                        "startSec":  16.25,
+                                                                                        "endSec":  19.25
+                                                                                    },
+                                                                                    {
+                                                                                        "sceneId":  "s2",
+                                                                                        "lineIndex":  2,
+                                                                                        "text":  "그래서 양쪽만 각각 정렬하면 끝이에요. 합치는 단계가 필요 없어요.",
+                                                                                        "startSec":  19.5,
+                                                                                        "endSec":  22.5
+                                                                                    },
+                                                                                    {
+                                                                                        "sceneId":  "s3",
+                                                                                        "lineIndex":  0,
+                                                                                        "text":  "그래서 두 정렬은 비용이 드는 자리가 달라요.",
+                                                                                        "startSec":  22.75,
+                                                                                        "endSec":  25.75
+                                                                                    },
+                                                                                    {
+                                                                                        "sceneId":  "s3",
+                                                                                        "lineIndex":  1,
+                                                                                        "text":  "합병 정렬은 나누기는 공짜에 가깝고, 합치기에 O(n)이 들어요.",
+                                                                                        "startSec":  26,
+                                                                                        "endSec":  29
+                                                                                    },
+                                                                                    {
+                                                                                        "sceneId":  "s3",
+                                                                                        "lineIndex":  2,
+                                                                                        "text":  "퀵 정렬은 반대로 나누기에 O(n)이 들고, 합치기는 없어요.",
+                                                                                        "startSec":  29.25,
+                                                                                        "endSec":  32.25
+                                                                                    }
+                                                                                ]
+                                                               }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "retry.accepted",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/jobs/job_06/retry",
+                                      "body":  {
+
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  202,
+                                       "body":  {
+                                                    "jobId":  "job_08",
+                                                    "retryOf":  "job_06",
+                                                    "status":  "pending"
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "retry.pending",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_08"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_08",
+                                                    "type":  "generate_clip",
+                                                    "status":  "pending",
+                                                    "stage":  "queued",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "retry.running",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_08"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_08",
+                                                    "type":  "generate_clip",
+                                                    "status":  "running",
+                                                    "stage":  "audio",
+                                                    "progress":  null,
+                                                    "error":  null
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "retry.failed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_08"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_08",
+                                                    "type":  "generate_clip",
+                                                    "status":  "failed",
+                                                    "stage":  "audio",
+                                                    "progress":  null,
+                                                    "error":  {
+                                                                  "code":  "TTS_FAILED",
+                                                                  "message":  "테스트용 음성 생성 실패입니다. 다시 시도할 수 있습니다.",
+                                                                  "retryable":  true
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.review.retrying",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/review"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "out_01",
+                                                    "mode":  "review",
+                                                    "status":  "ready",
+                                                    "jobId":  "job_02",
+                                                    "clips":  [
+                                                                  {
+                                                                      "id":  "clip_01",
+                                                                      "planId":  "plan_01",
+                                                                      "order":  0,
+                                                                      "title":  "퀵 정렬은 정복 후 분할",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "completed",
+                                                                      "jobId":  "job_03",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_02",
+                                                                      "planId":  "plan_02",
+                                                                      "order":  1,
+                                                                      "title":  "테스트 클립 2",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "running",
+                                                                      "jobId":  "job_04",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_03",
+                                                                      "planId":  "plan_03",
+                                                                      "order":  2,
+                                                                      "title":  "테스트 클립 3",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  "job_05",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_04",
+                                                                      "planId":  "plan_04",
+                                                                      "order":  3,
+                                                                      "title":  "테스트 클립 4",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "running",
+                                                                      "jobId":  "job_08",
+                                                                      "error":  null
+                                                                  },
+                                                                  {
+                                                                      "id":  "clip_05",
+                                                                      "planId":  "plan_05",
+                                                                      "order":  4,
+                                                                      "title":  "테스트 클립 5",
+                                                                      "sourcePages":  [
+                                                                                          31,
+                                                                                          32,
+                                                                                          33,
+                                                                                          52
+                                                                                      ],
+                                                                      "status":  "pending",
+                                                                      "jobId":  null,
+                                                                      "error":  null
+                                                                  }
+                                                              ]
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "restart.failed",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/job_04"
+                                  },
+                      "response":  {
+                                       "status":  200,
+                                       "body":  {
+                                                    "id":  "job_04",
+                                                    "type":  "generate_clip",
+                                                    "status":  "failed",
+                                                    "stage":  "audio",
+                                                    "progress":  null,
+                                                    "error":  {
+                                                                  "code":  "SERVER_RESTARTED",
+                                                                  "message":  "서버 재시작으로 중단된 테스트 작업입니다.",
+                                                                  "retryable":  true
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "upload.too-large",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures"
+                                  },
+                      "response":  {
+                                       "status":  413,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "FILE_TOO_LARGE",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "upload.unsupported",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures"
+                                  },
+                      "response":  {
+                                       "status":  415,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "UNSUPPORTED_FILE_TYPE",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "upload.invalid",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures"
+                                  },
+                      "response":  {
+                                       "status":  422,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "INVALID_PDF",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "upload.storage",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures"
+                                  },
+                      "response":  {
+                                       "status":  503,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "STORAGE_UNAVAILABLE",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  true
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.not-ready",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures/lec_01/outlines",
+                                      "body":  {
+                                                   "mode":  "review"
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  409,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "LECTURE_NOT_READY",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.invalid-mode",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/lectures/lec_01/outlines",
+                                      "body":  {
+                                                   "mode":  "unknown"
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  422,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "INVALID_MODE",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "lecture.not-found",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/missing"
+                                  },
+                      "response":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "LECTURE_NOT_FOUND",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "outline.not-found",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/lectures/lec_01/outlines/review"
+                                  },
+                      "response":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "OUTLINE_NOT_FOUND",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "clip.not-found",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/clips/missing"
+                                  },
+                      "response":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "CLIP_NOT_FOUND",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "job.not-found",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/jobs/missing"
+                                  },
+                      "response":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "JOB_NOT_FOUND",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "asset.not-found",
+                      "request":  {
+                                      "method":  "GET",
+                                      "path":  "/assets/missing"
+                                  },
+                      "response":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "ASSET_NOT_FOUND",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "retry.not-found",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/jobs/missing/retry",
+                                      "body":  {
+
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  404,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "JOB_NOT_FOUND",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  },
+                  {
+                      "name":  "retry.conflict",
+                      "request":  {
+                                      "method":  "POST",
+                                      "path":  "/jobs/job_06/retry",
+                                      "body":  {
+
+                                               }
+                                  },
+                      "response":  {
+                                       "status":  409,
+                                       "body":  {
+                                                    "error":  {
+                                                                  "code":  "RETRY_NOT_ALLOWED",
+                                                                  "message":  "개발용 요청 오류 샘플입니다.",
+                                                                  "retryable":  false
+                                                              }
+                                                }
+                                   }
+                  }
+              ]
+}
