@@ -273,3 +273,18 @@ button, input { font: inherit; }
 .mode-option input { flex-shrink: 0; accent-color: #60a5fa; width: 18px; height: 18px; }
 .mode-option__description { display: block; margin-top: 8px; color: var(--color-muted); line-height: 1.6; }
 .mode-notice { font-size: 13px; color: var(--color-muted); }
+
+/* 개발용 샘플 */
+.sample-flow { max-width: 680px; margin: 0 auto; }
+.sample-notice, .sample-controls { padding: 16px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); color: var(--color-muted); font-size: 14px; line-height: 1.7; }
+.sample-notice { color: var(--color-accent); }
+.sample-controls label { display: flex; gap: 10px; align-items: center; }
+.clip-list { display: grid; gap: 16px; padding: 0; list-style: none; }
+.clip-card { padding: 20px; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); text-align: left; }
+.clip-card h2 { font-size: 18px; overflow-wrap: anywhere; }
+.clip-card p { color: var(--color-muted); line-height: 1.6; }
+.clip-status { display: inline-block; padding: 4px 10px; border-radius: 8px; background: #334155; color: #f1f5f9; font-size: 13px; }
+.clip-status--completed { background: #064e3b; color: #a7f3d0; }
+.clip-status--running { background: #172554; color: #bfdbfe; }
+.clip-status--failed { background: #450a0a; color: #fecaca; }
+.clip-card .clip-error { color: #fecaca; }

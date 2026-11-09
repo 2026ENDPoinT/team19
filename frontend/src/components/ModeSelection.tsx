@@ -6,9 +6,10 @@ type ModeSelectionProps = {
   selectedMode: LearningMode | null
   onSelect: (mode: LearningMode) => void
   onBack: () => void
+  onStart: () => void
 }
 
-export default function ModeSelection({ file, selectedMode, onSelect, onBack }: ModeSelectionProps) {
+export default function ModeSelection({ file, selectedMode, onSelect, onBack, onStart }: ModeSelectionProps) {
   return (
     <section className="mode-selection" aria-labelledby="mode-title">
       <button className="secondary-button" type="button" onClick={onBack}>
@@ -43,7 +44,8 @@ export default function ModeSelection({ file, selectedMode, onSelect, onBack }: 
           ? `${learningModes.find((mode) => mode.id === selectedMode)?.name} 모드를 선택했어요.`
           : '학습 모드를 하나 선택해 주세요.'}
       </p>
-      <p className="mode-notice">모드 이름과 설명은 초안이며, 클립 생성 기능은 다음 단계에서 연결할 예정이에요.</p>
+      <p className="mode-notice">모드 이름과 설명은 초안이에요. 다음 화면은 실제 PDF 분석이 아닌 개발용 샘플입니다.</p>
+      <button className="primary-button" type="button" disabled={!selectedMode} onClick={onStart}>학습 클립 구성하기 (샘플)</button>
     </section>
   )
 }

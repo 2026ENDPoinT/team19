@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import SampleClipFlow from './components/SampleClipFlow'
 import Header from './components/Header'
 import UploadIntro from './components/UploadIntro'
 import PdfUpload from './components/PdfUpload'
@@ -8,7 +9,7 @@ import './App.css'
 
 export default function App() {
   const [file, setFile] = useState<File | null>(null)
-  const [screen, setScreen] = useState<'upload' | 'mode'>('upload')
+  const [screen, setScreen] = useState<'upload' | 'mode' | 'samples'>('upload')
   const [selectedMode, setSelectedMode] = useState<LearningMode | null>(null)
 
   function handleFileChange(nextFile: File | null) {
@@ -34,8 +35,10 @@ export default function App() {
               </button>
             </div>
           </>
+        ) : screen === 'samples' && selectedMode ? (
+          <SampleClipFlow mode={selectedMode} onBack={() => setScreen('mode')} />
         ) : file ? (
-          <ModeSelection file={file} selectedMode={selectedMode} onSelect={setSelectedMode} onBack={() => setScreen('upload')} />
+          <ModeSelection file={file} selectedMode={selectedMode} onSelect={setSelectedMode} onBack={() => setScreen('upload')} onStart={() => { if (selectedMode) setScreen('samples') }} />
         ) : null}
       </main>
     </>
