@@ -57,6 +57,17 @@ class StoredSample:
         except (OSError, EOFError, ValueError, RuntimeError, wave.Error, subprocess.SubprocessError) as exc:
             raise PipelineError("SAMPLE_INVALID", "샘플 음성 파일을 읽을 수 없습니다.") from exc
 
+    def validated_audio_path(self, expected_duration: float | None = None) -> Path | None:
+        path = self.audio_path()
+        if path is None:
+            return None
+        duration = self._audio_duration(path)
+        # MP3 adds encoder delay (~0.05s); captions describe the original PCM.
+        tolerance = 0.1 if self.media_type == "audio/mpeg" else 0.05
+        if duration <= 0 or (expected_duration is not None and abs(duration - expected_duration) > tolerance):
+            raise PipelineError("SAMPLE_INVALID", "샘플 음성과 결과의 길이가 다릅니다.")
+        return path
+
     def load_clip(self) -> dict:
         try:
             result = json.loads((self.directory / "result.json").read_text(encoding="utf-8"))
@@ -64,20 +75,16 @@ class StoredSample:
             raise PipelineError("SAMPLE_UNAVAILABLE", "저장된 샘플 결과를 읽을 수 없습니다.") from exc
         if (not isinstance(result, dict)
                 or set(result) != {"resultId", "durationSec", "audioUrl", "blueprint", "captions"}
-                or result.get("resultId") != self.clip_id
+                or not isinstance(result.get("resultId"), str) or not result["resultId"].strip()
                 or result.get("audioUrl") != self.audio_name):
             raise PipelineError("SAMPLE_INVALID", "저장된 샘플 결과 형식이 올바르지 않습니다.")
         try:
             validate_result(result["blueprint"], result, self.page_count)
         except (TypeError, ValueError, KeyError, IndexError, AttributeError, RecursionError) as exc:
             raise PipelineError("SAMPLE_INVALID", "저장된 샘플 결과 형식이 올바르지 않습니다.") from exc
-        path = self.audio_path()
+        path = self.validated_audio_path(result["durationSec"])
         if path is None:
             raise PipelineError("SAMPLE_UNAVAILABLE", "샘플 음성 파일을 찾을 수 없습니다.")
-        # MP3 adds an encoder delay (~0.05s); captions describe the original PCM.
-        tolerance = 0.1 if self.media_type == "audio/mpeg" else 0.05
-        if abs(self._audio_duration(path) - result["durationSec"]) > tolerance:
-            raise PipelineError("SAMPLE_INVALID", "샘플 음성과 결과의 길이가 다릅니다.")
         result["audioUrl"] = f"/assets/{self.audio_id}"
         return {"id": self.clip_id, "planId": f"plan_{self.clip_id}", "status": "completed",
                 "error": None, "result": result}
@@ -87,4 +94,5 @@ _ROOT = Path(__file__).resolve().parents[1] / "samples"
 SAMPLES = {
     "parts-test": StoredSample("parts-test", _ROOT / "parts-test", "audio.wav", "audio/wav"),
     "clip-01": StoredSample("clip-01", _ROOT / "clip-01", "audio.mp3", "audio/mpeg"),
+    "clip-01-b": StoredSample("clip-01-b", _ROOT / "clip-01" / "alt-terra", "audio.mp3", "audio/mpeg"),
 }

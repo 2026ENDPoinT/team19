@@ -40,23 +40,23 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
-- 사용자 요청으로 `origin/main`(`a2aab26`)을 `feature/be-first-clip`에 일반 Merge했다(`7318ae0`, 충돌 없음). 아래 새 BE 수정은 미커밋·미푸시다. BE를 main에 병합하지 않았다.
-- `GET /clips/clip-01`, `GET /assets/clip-01-audio`로 실제 설계도·TTS MP3(144.5초, 25문장)를 제공한다. 두 샘플 제공 코드를 공통화했다. [FE 연동 안내](../../backend/INTEGRATION-NOTES.md)에 주소·제한을 정리했다.
-- 공식 검사기·자막 대응/순서/시간·실제 음성 길이를 검사한다. JSON/음성 누락·손상과 디코더 실패를 격리한다. PDF/pypdf·SQLite·Job·샘플 MP4·parts-test는 유지했고 AI/FE 코드는 수정하지 않았다.
-- 노트북 70개 통과(BE 46 + 검사기 22 + PyMuPDF 추출 2). 실제 Uvicorn 8000 포트에서도 두 샘플의 200·206·416·HEAD·If-Range·CORS를 확인했다. 검증 서버는 종료했다. 유료 AI 호출은 없다.
+- 기존 7개 파일을 70개 테스트 재통과 후 `7053f40`으로 Commit·Push했다. 사용자 승인으로 최신 `origin/main`(`0fd4c9e`)을 로컬 Merge했다(`4d28639`). questions.md 충돌은 양쪽 모든 질문·답변을 보존했으며 중복·충돌 표시가 없다. Merge는 미푸시이며 BE→main 병합은 하지 않았다.
+- A=`/clips/clip-01`, B=`/clips/clip-01-b`, 음성은 각각 `/assets/clip-01-audio`, `/assets/clip-01-b-audio`다. 현재 A 138.8초/25문장, B 114.25초/23문장이며 resultId·길이는 파일에서 읽는다. [FE 연동 안내](../../backend/INTEGRATION-NOTES.md)에 차이와 사용법을 정리했다. 이번 종료 루틴에서 사용자 승인으로 A/B 수정 7개 파일을 로컬 커밋하며, Push는 별도 승인 대기다.
+- 각 고정 ID는 자기 폴더의 JSON·MP3만 사용한다. 공식 검사기·자막 대응/순서/시간·실제 음성 길이를 검사하며 직접 음성 요청도 검증한다. PDF/pypdf·SQLite·Job·샘플 MP4·parts-test는 유지했고 AI/FE 코드는 수정하지 않았다.
+- 노트북 117개 통과(BE 93 + 검사기 22 + PyMuPDF 추출 2). 실제 Uvicorn 8000 포트에서도 A/B/parts-test의 원본 JSON·음성 일치, 200·206·416·HEAD·If-Range·CORS를 확인했다. 검증 서버는 종료했다. 유료 AI 호출은 없다.
 
 ### 다음 할 일
 
-- 사용자 검토 후 새 BE 수정의 Commit·Push 여부를 확인한다. FE는 공유 후 `clip-01`과 `parts-test`로 재생·일시정지·탐색·반복·자막/동작 복원을 확인한다(Q-BE-02, Q-BE-03).
-- AI 생성 함수가 준비된 후 공식 파이프라인 연결, 오류 클래스, 음성만 재시도·단계 시간 제한·사용량 저장을 구현한다. 현재 `AI_MODE=real` 연결은 미완료다.
+- 원격 변경 확인 후 사용자에게 Push 승인을 받는다. FE는 공유 후 A/B와 parts-test로 재생·일시정지·탐색·반복·전환·자막/동작 복원을 확인한다(Q-BE-02, Q-BE-03). A의 s4~s6, B의 s3~s4가 화면을 이어 쓴다. BE→main 병합은 별도 승인 전까지 하지 않는다.
+- 11/11 피드백에서 A/B 품질과 길이 의견(Q-AI-24)을 받는다. PDF 업로드→AI 자동 생성 연결은 이번 목표 밖이다.
 
 ### 막힌 것
 
 - 데스크톱에서는 PyMuPDF DLL이 차단됐고 노트북은 정상 동작한다. 호환성을 위해 업로드의 pypdf 경로를 유지하며 PNG는 대체 그림이다(Q-BE-01).
-- `clip-01`은 slides를 쓰지 않아 PNG 없이 재생 가능하다. parts-test 근거 페이지 이미지 API와 FE의 실제 브라우저 동기화 확인은 남아 있다.
+- A/B는 slides를 쓰지 않아 PNG 없이 재생 가능하다. parts-test 근거 페이지 이미지 API와 FE의 실제 브라우저 동기화 확인은 남아 있다. A-marin은 선택 사항이라 이번 API에서 제외했다.
 
 ### 다른 역할에게 요청
 
 - [to:AI] Q-BE-01에서 Windows 추출 제약과 원본 페이지 PNG 제공 방법 확인.
 - [to:FE] Q-BE-02에서 [연동 안내](../../backend/INTEGRATION-NOTES.md)에 따른 실제 브라우저 재생·탐색 확인.
-- [to:FE] Q-BE-03에서 실제 clip-01 재생·탐색·반복 확인(새 BE 수정 공유 후).
+- [to:FE] Q-BE-03에서 A/B 재생·탐색·반복·전환 확인(새 A/B 수정 공유 후). 같은 응답의 resultId·설계도·자막·음성을 묶어서 사용한다.

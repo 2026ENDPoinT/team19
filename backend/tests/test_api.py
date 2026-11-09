@@ -126,7 +126,7 @@ def test_pdf_no_text_fails_outline(client):
     assert j['error']['code'] == 'PDF_NO_TEXT'
 
 
-@pytest.fixture(params=['parts-test', 'clip-01'])
+@pytest.fixture(params=['parts-test', 'clip-01', 'clip-01-b'])
 def sample(request):
     from backend import stored_sample
     return stored_sample.SAMPLES[request.param]
@@ -167,8 +167,7 @@ def test_stored_sample_contract_and_validator(client, monkeypatch, sample):
     with module.conn() as db:
         assert db.execute('SELECT COUNT(*) FROM jobs').fetchone()[0] == 0
         assert db.execute('SELECT COUNT(*) FROM lectures').fetchone()[0] == 0
-    if sample.clip_id == 'clip-01':
-        assert source['durationSec'] == 144.5 and len(source['captions']) == 25
+    if sample.clip_id != 'parts-test':
         assert source['blueprint'] == json.loads((sample.directory / 'blueprint.json').read_text(encoding='utf-8'))
 
 
@@ -298,6 +297,10 @@ def test_corrupt_audio_is_not_published(client, editable_sample, sample, fault):
     assert response.status_code == 500
     assert response.json()['error']['code'] == 'SAMPLE_INVALID'
     assert str(editable_sample) not in response.text
+    audio = client.get(f'/assets/{sample.audio_id}')
+    assert audio.status_code == 500
+    assert audio.json()['error']['code'] == 'SAMPLE_INVALID'
+    assert str(editable_sample) not in audio.text
     other = 'parts-test' if sample.clip_id == 'clip-01' else 'clip-01'
     assert client.get(f'/clips/{other}').status_code == 200
     assert client.get('/health').status_code == 200
@@ -319,6 +322,51 @@ def test_mp3_decoder_failure_is_contained(client, monkeypatch, fault):
     assert 'private' not in response.text
     assert client.get('/clips/parts-test').status_code == 200
     assert client.get('/health').status_code == 200
+
+
+def test_sample_result_id_and_duration_come_from_file(client, editable_sample, sample):
+    path = editable_sample / 'result.json'
+    source = json.loads(path.read_text(encoding='utf-8'))
+    source['resultId'] = 'new-result-revision'
+    source['durationSec'] += 0.02  # Within encoding/rounding tolerance.
+    path.write_text(json.dumps(source, ensure_ascii=False), encoding='utf-8')
+    response = client.get(f'/clips/{sample.clip_id}')
+    assert response.status_code == 200, response.text
+    assert response.json()['id'] == sample.clip_id
+    assert response.json()['result'] == {**source, 'audioUrl': f'/assets/{sample.audio_id}'}
+
+
+@pytest.mark.parametrize('result_id', ['', '   ', None, 123, []])
+def test_invalid_result_id(client, editable_sample, sample, result_id):
+    path = editable_sample / 'result.json'
+    source = json.loads(path.read_text(encoding='utf-8'))
+    source['resultId'] = result_id
+    path.write_text(json.dumps(source, ensure_ascii=False), encoding='utf-8')
+    response = client.get(f'/clips/{sample.clip_id}')
+    assert response.status_code == 500
+    assert response.json()['error']['code'] == 'SAMPLE_INVALID'
+
+
+def test_audio_from_other_sample_is_rejected(client, editable_sample, sample):
+    from backend import stored_sample
+    other_id = 'clip-01-b' if sample.clip_id == 'clip-01' else 'clip-01'
+    other = stored_sample.SAMPLES[other_id]
+    shutil.copyfile(other.directory / other.audio_name, editable_sample / sample.audio_name)
+    response = client.get(f'/clips/{sample.clip_id}')
+    assert response.status_code == 500
+    assert response.json()['error']['code'] == 'SAMPLE_INVALID'
+    assert client.get(f'/clips/{other_id}').status_code == 200
+
+
+@pytest.mark.parametrize('route', [
+    '/clips/clip-01-b-extra', '/assets/clip-01-b-audio-extra',
+    '/clips/alt-terra', '/assets/audio.mp3',
+    '/clips/clip-01%5C..%5Calt-terra', '/assets/..%5C..%5Cprivate.mp3',
+])
+def test_unregistered_sample_paths_are_not_public(client, route):
+    response = client.get(route)
+    assert response.status_code == 404
+    assert response.json()['error']['code'] in ('CLIP_NOT_FOUND', 'ASSET_NOT_FOUND')
 
 
 def test_not_found_contract(client):

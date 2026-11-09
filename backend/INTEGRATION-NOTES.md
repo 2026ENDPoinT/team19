@@ -4,23 +4,31 @@
 
 서버 실행은 [README](README.md), 공식 반환 형식은 [API v0](../contracts/api.md)와 [ClipResult](../contracts/data-model.md#클립-결과-clipresult)를 따른다. FE 파일은 수정하지 않았다.
 
-## 실제 AI 클립 `clip-01`
+## 실제 AI 클립 A/B
 
-| 항목 | 값 |
-|---|---|
-| API 기준 주소 | `http://127.0.0.1:8000` |
-| 클립 조회 | `GET /clips/clip-01` |
-| MP3 음성 | `GET /assets/clip-01-audio`, `audio/mpeg` |
-| 결과 | `id: "clip-01"`, `planId: "plan_clip-01"`, `status: "completed"`, `error: null` |
-| ClipResult | `resultId: "clip-01"`, `durationSec: 144.5`, `audioUrl: "/assets/clip-01-audio"`, `blueprint`, `captions` |
+API 기준 주소는 `http://127.0.0.1:8000`이다. 아래 길이·문장 수·resultId는 현재 파일 기준이며, FE는 항상 응답의 값을 사용한다.
 
-[실제 결과](../samples/clip-01/README.md)는 합병 과정(근거 18~20쪽), 장면 7개·자막 25개다. AI가 만든 설계도와 실제 TTS MP3이며, 아래 `parts-test` 신호음과 구분한다. 서버는 저장된 파일을 읽기만 하며 AI 호출이나 새 Job 생성은 없다. 원본 JSON은 유지하고 응답의 `audioUrl`만 바꾼다.
+| 비교 | A (기본) | B |
+|---|---|---|
+| 공개 클립 ID | `clip-01` | `clip-01-b` |
+| 조회 | `GET /clips/clip-01` | `GET /clips/clip-01-b` |
+| MP3 | `/assets/clip-01-audio` | `/assets/clip-01-b-audio` |
+| 원본 폴더 | `samples/clip-01/` | `samples/clip-01/alt-terra/` |
+| resultId | `clip-01-A-sonnet-cedar` | `clip-01-B-terra-cedar` |
+| 설계도·목소리 | Sonnet · Cedar | Terra · Cedar |
+| 길이·장면·자막 | 138.8초 · 7장면 · 25문장 | 114.25초 · 6장면 · 23문장 |
 
-Python 공식 검사기, 문장별 자막 대응·순서·겹침·길이와 실제 음성 길이를 확인한다. MP3의 약 0.05초 인코더 지연은 허용하며 captions 시간은 변경하지 않는다. `GET`/`HEAD`, Range `206`, 범위 초과 `416`, `If-Range`, CORS는 두 음성 모두 지원한다.
+응답은 공식 `{id, planId, status, error, result}` 구조다. 공개 클립 ID는 고정이지만 `result.resultId`는 파일에서 읽는 결과 버전 ID이므로 서로 같다고 가정하지 않는다. `status: "completed"`, `error: null`이고, `result`에는 원본의 `resultId`, `durationSec`, `blueprint`, `captions`와 API용 `audioUrl`이 있다. `planId`는 각각 `plan_clip-01`, `plan_clip-01-b`다.
 
-FE는 아래 예제의 클립 ID만 `clip-01`로 바꾸고, 음성 URL을 **BE 주소 기준**으로 해석한다. s4~s6은 s3 화면을 이어 쓰므로 재생·일시정지·탐색·반복 시 상태 복원을 확인한다. 이 클립은 slides를 사용하지 않아 원본 페이지 PNG 없이 재생할 수 있다. 브라우저에서 실제 재생·탐색·동작 동기화 확인은 FE와 함께 남아 있다.
+[실제 결과](../samples/clip-01/README.md)는 같은 합병 과정 계획(근거 18~20쪽)을 서로 다른 모델로 만든 비교 세트다. 목소리는 둘 다 Cedar다. A는 row 다이어그램을 쓰고 B는 texts·grids·codes를 쓴다. 두 클립은 원본 페이지 그림 없이 재생 가능하다. 선택 사항인 A-marin은 이번 API에 등록하지 않았다.
 
-JSON/음성 누락 시 클립은 `503 SAMPLE_UNAVAILABLE`, 잘못된 결과·음성은 `500 SAMPLE_INVALID`(설계도/자막 오류는 아래 코드)로 반환하며 다른 클립과 서버는 계속 동작한다. 음성 파일 자체가 없으면 asset은 `404 ASSET_NOT_FOUND`다. 내부 파일 경로나 디코더 오류 내용은 응답하지 않는다.
+각 고정 ID는 자기 폴더의 JSON·MP3만 읽는다. 원본은 수정하지 않고 응답의 `audioUrl`만 바꾼다. 임의 폴더·파일 이름은 API로 받지 않는다. AI 호출이나 Job 생성은 없다. 아래 `parts-test`는 신호음 샘플이며 실제 TTS와 구분한다.
+
+Python 공식 검사기, 문장별 자막 대응·순서·겹침·길이와 실제 음성 길이를 확인한다. MP3의 약 0.05초 인코더 지연은 허용하며 captions 시간은 변경하지 않는다. `GET`/`HEAD`, Range `206`, 범위 초과 `416`, `If-Range`, CORS는 세 샘플 모두 지원한다. 음성 직접 조회도 해당 JSON과 길이를 검사하므로 일부만 남은 MP3를 정상 파일로 제공하지 않는다.
+
+FE는 아래 예제에서 `clipId`를 `clip-01` 또는 `clip-01-b`로 고른다. 전환할 때 이전 음성을 멈추고 새 응답의 설계도·자막·음성을 함께 적용한다. A의 s4~s6과 B의 s3~s4는 앞 장면을 이어 쓰므로 탐색·반복 상태 복원을 확인한다. 실제 브라우저의 재생·탐색·동작 동기화 확인은 남아 있다(Q-BE-03).
+
+JSON/음성 누락 시 클립은 `503 SAMPLE_UNAVAILABLE`, 잘못된 결과·음성은 `500 SAMPLE_INVALID`(설계도/자막 오류는 아래 코드)로 반환하며 다른 클립과 서버는 계속 동작한다. asset 파일 자체가 없으면 `404 ASSET_NOT_FOUND`다. 음성이 존재해도 연결된 JSON이 없거나 잘못됐다면 asset 역시 `503`/`500`을 반환한다. 내부 파일 경로나 디코더 오류 내용은 응답하지 않는다.
 
 ## 바로 사용할 주소
 
@@ -61,7 +69,8 @@ PDF 업로드나 Job 생성 없이 샘플을 바로 읽을 수 있다. `samples/
 
 ```typescript
 const apiBase = 'http://127.0.0.1:8000';
-const response = await fetch(`${apiBase}/clips/parts-test`);
+const clipId = 'clip-01'; // B: 'clip-01-b', 부품 확인: 'parts-test'
+const response = await fetch(`${apiBase}/clips/${clipId}`);
 if (!response.ok) throw new Error('샘플을 불러오지 못했습니다.');
 const clip = await response.json();
 const result = clip.result;
@@ -85,9 +94,9 @@ const audioUrl = new URL(result.audioUrl, apiBase).href;
 | PDF 업로드·SQLite·Job·클립 조회·미디어 | 기존 구현 유지, 회귀 테스트 통과 |
 | pypdf 추출 | 유지. PNG는 원본 페이지가 아닌 대체 그림 |
 | 업로드 PDF의 샘플 클립·무음 MP4 | 유지, 생성·파일 제공 테스트 통과 |
-| 저장된 clip-01 MP3·parts-test WAV·HTTP Range | 구현, TestClient와 실제 Uvicorn HTTP 확인 |
+| 저장된 A/B MP3·parts-test WAV·HTTP Range | 구현, TestClient와 실제 Uvicorn HTTP 확인 |
 | AI Python 검사기 | 연결. 유료 호출 없이 샘플 조회 시, 생성 음성 처리 전, 결과 저장 전에 검사 |
-| 실제 AI 결과 제공 | clip-01 설계도·TTS MP3 제공. 업로드에서 AI 생성 함수를 부르는 공식 연결은 미완료 |
+| 실제 AI 결과 제공 | A/B 설계도·TTS MP3 제공. 업로드에서 AI 자동 생성까지 연결하는 작업은 이번 범위 밖 |
 | 음성만 재시도·단계 전체 시간 제한·사용량 저장 | 미구현. 기존 재시도는 Job 전체 단위 |
 | parts-test 근거 페이지 이미지 API 연결 | 미구현. 페이지 번호 31~33은 샘플 문서의 합성 PNG를 FE에 별도 매핑해야 함 |
 | FE 브라우저의 재생·일시정지·탐색·반복·동작 동기화 | FE와 함께 확인 필요. 이번 HTTP 테스트만으로 화면 재생 완료로 보지 않음 |

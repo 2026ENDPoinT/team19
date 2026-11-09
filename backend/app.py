@@ -398,6 +398,12 @@ def asset(asset_id: str):
         path = sample.audio_path()
         if path is None:
             fail("ASSET_NOT_FOUND", "파일을 찾을 수 없습니다.", 404)
+        try:
+            # A truncated MP3 can still decode; compare it with this result's
+            # duration/captions before serving it, including direct Range calls.
+            sample.load_clip()
+        except PipelineError as exc:
+            fail(exc.code, exc.message, 503 if exc.code == "SAMPLE_UNAVAILABLE" else 500)
         return FileResponse(path, media_type=sample.media_type, filename=path.name, content_disposition_type="inline")
     with conn() as db:
         a = row(db, "assets", asset_id)
