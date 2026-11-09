@@ -36,15 +36,17 @@ CLAUDE_CACHE_READ = {"claude-sonnet-5-5": 0.20, "claude-haiku-5-5": 0.01}
 MAX_TOKENS = 32000
 
 
-def make_blueprint(clip_plan: dict, pages: list[dict], page_count: int, model: str = "claude-sonnet-5-5") -> dict:
+def make_blueprint(clip_plan: dict, pages: list[dict], page_count: int, model: str = "claude-sonnet-5-5",
+                   prompt_lang: str = "ko") -> dict:
     """클립 계획 하나로 설계도를 만든다. 검사에 실패하면 오류를 붙여 한 번 다시 만든다.
 
     pages: [{"number", "text", "description"(있으면)}] 이 클립에 필요한 페이지만.
+    prompt_lang: 시스템 프롬프트 언어 "ko" 또는 "en" (내레이션은 둘 다 한국어).
     돌려주는 값: {"blueprint": dict, "usage": [호출별 사용량], "attempts": 시도 수}
     """
     if model not in PRICES:
         raise ValueError(f"모르는 모델: {model}")
-    system = build_system_prompt()
+    system = build_system_prompt(prompt_lang)
     user = build_user_prompt(clip_plan, pages, page_count)
     usage: list[dict] = []
     last_errors: list[str] = []
@@ -64,7 +66,17 @@ def make_blueprint(clip_plan: dict, pages: list[dict], page_count: int, model: s
 
 # ---------- 프롬프트 ----------
 
-def build_system_prompt() -> str:
+def build_system_prompt(lang: str = "ko") -> str:
+    if lang == "en":
+        return _fill(PROMPT_FILE.with_name("blueprint_system_en.md"), "\n".join([
+            f"- texts: title {LIMITS['text']['title']} chars, body {LIMITS['text']['body']} chars, keyword {LIMITS['text']['keyword']} chars, formula one line",
+            f"- diagrams: {LIMITS['diagram_nodes']} nodes ({LIMITS['tree_nodes']} for tree, depth {LIMITS['tree_levels']} levels), {LIMITS['diagram_edges']} edges, node label {LIMITS['node_label']} chars",
+            f"- grids: one-row array {LIMITS['grid_row_cells']} cells; multi-row {LIMITS['grid_2d'][0]} rows × {LIMITS['grid_2d'][1]} columns; "
+            f"if any cell is longer than {LIMITS['table_cell_trigger']} chars it counts as a table: {LIMITS['table'][0]} rows × {LIMITS['table'][1]} columns; cell content {LIMITS['cell_chars']} chars",
+            f"- codes: {LIMITS['code_lines']} lines, {LIMITS['code_line_chars']} chars per line",
+            f"- slides: mark label {LIMITS['mark_label']} chars, at most {LIMITS['marks_visible']} marks visible at once",
+            f"- scene: {LIMITS['scene_lines']} sentences, {LIMITS['actions_per_line']} actions per sentence",
+        ]))
     limits = "\n".join([
         f"- texts: title {LIMITS['text']['title']}자, body {LIMITS['text']['body']}자, keyword {LIMITS['text']['keyword']}자, formula 한 줄",
         f"- diagrams: 노드 {LIMITS['diagram_nodes']}개(tree는 {LIMITS['tree_nodes']}개, 깊이 {LIMITS['tree_levels']}단), 선 {LIMITS['diagram_edges']}개, 노드 라벨 {LIMITS['node_label']}자",
@@ -74,8 +86,12 @@ def build_system_prompt() -> str:
         f"- slides: mark 라벨 {LIMITS['mark_label']}자, 동시에 보이는 mark {LIMITS['marks_visible']}개",
         f"- 장면: 문장 {LIMITS['scene_lines']}개, 문장 하나에 동작 {LIMITS['actions_per_line']}개",
     ])
+    return _fill(PROMPT_FILE, limits)
+
+
+def _fill(prompt_file: Path, limits: str) -> str:
     example = json.dumps(json.loads(EXAMPLE_FILE.read_text(encoding="utf-8")), ensure_ascii=False, separators=(",", ":"))
-    return (PROMPT_FILE.read_text(encoding="utf-8")
+    return (prompt_file.read_text(encoding="utf-8")
             .replace("<<LAYOUTS>>", ", ".join(SUPPORTED_LAYOUTS))
             .replace("<<SLOTS>>", ", ".join(SUPPORTED_SLOTS))
             .replace("<<LIMITS>>", limits)
@@ -194,6 +210,7 @@ def main(argv=None) -> int:
     ap.add_argument("--pages-json", type=Path, required=True, help="extract_pdf 결과 pages.json")
     ap.add_argument("--plan", type=Path, required=True, help="클립 계획 JSON")
     ap.add_argument("--model", default="claude-sonnet-5-5", choices=sorted(PRICES))
+    ap.add_argument("--prompt-lang", default="ko", choices=["ko", "en"], help="시스템 프롬프트 언어")
     ap.add_argument("--out", type=Path, required=True)
     args = ap.parse_args(argv)
 
@@ -204,7 +221,7 @@ def main(argv=None) -> int:
     plan = json.loads(args.plan.read_text(encoding="utf-8"))
     pages = [p for p in extracted["pages"] if p["number"] in plan["sourcePages"]]
     try:
-        r = make_blueprint(plan, pages, extracted["pageCount"], args.model)
+        r = make_blueprint(plan, pages, extracted["pageCount"], args.model, args.prompt_lang)
     except PipelineError as e:
         print(f"실패: {e}")
         return 1

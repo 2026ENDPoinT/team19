@@ -1,6 +1,6 @@
 {
-  "resultId": "clip-01",
-  "durationSec": 144.5,
+  "resultId": "clip-01-A-sonnet-cedar",
+  "durationSec": 138.8,
   "audioUrl": "audio.mp3",
   "blueprint": {
     "version": 0,
@@ -838,175 +838,175 @@
       "lineIndex": 0,
       "text": "합병 정렬에서 나누는 일은 중간 인덱스만 구하면 끝이라 빅오 1이에요.",
       "startSec": 0.0,
-      "endSec": 6.75
+      "endSec": 6.55
     },
     {
       "sceneId": "s1",
       "lineIndex": 1,
       "text": "진짜 비용은 정렬된 두 배열을 합치는 데 있어요.",
-      "startSec": 7.05,
-      "endSec": 12.2
+      "startSec": 6.85,
+      "endSec": 11.05
     },
     {
       "sceneId": "s2",
       "lineIndex": 0,
       "text": "합치기는 팀 간 개인전과 비슷해요.",
-      "startSec": 12.8,
-      "endSec": 16.75
+      "startSec": 11.65,
+      "endSec": 15.2
     },
     {
       "sceneId": "s2",
       "lineIndex": 1,
       "text": "맨 앞 선수끼리 겨루고, 이긴 선수가 저장돼요.",
-      "startSec": 17.05,
-      "endSec": 21.45
+      "startSec": 15.5,
+      "endSec": 19.8
     },
     {
       "sceneId": "s2",
       "lineIndex": 2,
       "text": "그다음에는 이긴 팀의 다음 선수가 나서요.",
-      "startSec": 21.75,
-      "endSec": 25.95
+      "startSec": 20.1,
+      "endSec": 24.0
     },
     {
       "sceneId": "s3",
       "lineIndex": 0,
       "text": "A는 6, 14, 18, 20, 29예요.",
-      "startSec": 26.55,
-      "endSec": 31.65
+      "startSec": 24.6,
+      "endSec": 29.3
     },
     {
       "sceneId": "s3",
       "lineIndex": 1,
       "text": "B는 1, 2, 15, 25, 30, 45예요. 둘 다 정렬돼 있어요.",
-      "startSec": 31.95,
-      "endSec": 40.35
+      "startSec": 29.6,
+      "endSec": 35.8
     },
     {
       "sceneId": "s3",
       "lineIndex": 2,
       "text": "결과는 C에 저장하고, i와 j가 각 배열의 맨 앞을 가리켜요.",
-      "startSec": 40.65,
-      "endSec": 46.95
+      "startSec": 36.1,
+      "endSec": 41.95
     },
     {
       "sceneId": "s4",
       "lineIndex": 0,
       "text": "1단계, 6 대 1이에요. 1이 이겨요.",
-      "startSec": 47.55,
-      "endSec": 51.55
+      "startSec": 42.55,
+      "endSec": 46.5
     },
     {
       "sceneId": "s4",
       "lineIndex": 1,
       "text": "1은 C에 저장되고, B의 다음 선수 2가 나서요.",
-      "startSec": 51.85,
-      "endSec": 56.7
+      "startSec": 46.8,
+      "endSec": 51.9
     },
     {
       "sceneId": "s4",
       "lineIndex": 2,
       "text": "2단계, 6 대 2예요. 또 B의 2가 이겨요.",
-      "startSec": 57.0,
-      "endSec": 62.4
+      "startSec": 52.2,
+      "endSec": 56.75
     },
     {
       "sceneId": "s4",
       "lineIndex": 3,
       "text": "3단계, 6 대 15예요. 이번엔 A의 6이 이겨요.",
-      "startSec": 62.7,
-      "endSec": 68.35
+      "startSec": 57.05,
+      "endSec": 62.75
     },
     {
       "sceneId": "s4",
       "lineIndex": 4,
       "text": "4단계, 14 대 15예요. 14가 이겨서 저장돼요.",
-      "startSec": 68.65,
-      "endSec": 74.2
+      "startSec": 63.05,
+      "endSec": 68.25
     },
     {
       "sceneId": "s5",
       "lineIndex": 0,
       "text": "5단계는 18 대 15예요. 15가 이겨요.",
-      "startSec": 74.8,
-      "endSec": 79.4
+      "startSec": 68.85,
+      "endSec": 73.25
     },
     {
       "sceneId": "s5",
       "lineIndex": 1,
       "text": "6단계는 18 대 25, 7단계는 20 대 25예요. 둘 다 A가 이겨요.",
-      "startSec": 79.7,
-      "endSec": 85.3
+      "startSec": 73.55,
+      "endSec": 81.05
     },
     {
       "sceneId": "s5",
       "lineIndex": 2,
       "text": "8단계는 29 대 25예요. 이번엔 B의 25가 이겨요.",
-      "startSec": 85.6,
-      "endSec": 91.0
+      "startSec": 81.35,
+      "endSec": 86.95
     },
     {
       "sceneId": "s5",
       "lineIndex": 3,
       "text": "9단계는 29 대 30이에요. 29가 이기면 A가 비어요.",
-      "startSec": 91.3,
-      "endSec": 98.3
+      "startSec": 87.25,
+      "endSec": 93.35
     },
     {
       "sceneId": "s6",
       "lineIndex": 0,
       "text": "A가 비었으니 남은 30과 45는 비교 없이 복사돼요.",
-      "startSec": 98.9,
-      "endSec": 104.75
+      "startSec": 93.95,
+      "endSec": 99.45
     },
     {
       "sceneId": "s6",
       "lineIndex": 1,
       "text": "자료의 표에는 10단계로 적혀 있지만 세어 보면 9단계예요.",
-      "startSec": 105.05,
-      "endSec": 111.0
+      "startSec": 99.75,
+      "endSec": 105.2
     },
     {
       "sceneId": "s6",
       "lineIndex": 2,
       "text": "그래서 이 예에서 비교는 9번이에요.",
-      "startSec": 111.3,
-      "endSec": 115.05
+      "startSec": 105.5,
+      "endSec": 109.3
     },
     {
       "sceneId": "s6",
       "lineIndex": 3,
       "text": "최대 한도는 5 더하기 6 빼기 1, 곧 10번이에요.",
-      "startSec": 115.35,
-      "endSec": 120.65
+      "startSec": 109.6,
+      "endSec": 115.2
     },
     {
       "sceneId": "s7",
       "lineIndex": 0,
       "text": "이제 의사코드에서 비용이 드는 줄을 찾아봐요.",
-      "startSec": 121.25,
-      "endSec": 125.45
+      "startSec": 115.8,
+      "endSec": 120.15
     },
     {
       "sceneId": "s7",
       "lineIndex": 1,
       "text": "1번 줄은 원소가 하나 이하면 바로 끝내는 종료 조건이에요.",
-      "startSec": 125.75,
-      "endSec": 131.45
+      "startSec": 120.45,
+      "endSec": 125.9
     },
     {
       "sceneId": "s7",
       "lineIndex": 2,
       "text": "2번에서 4번 줄은 반으로 나누고 재귀 호출하는데, 비용은 빅오 1이에요.",
-      "startSec": 131.75,
-      "endSec": 138.9
+      "startSec": 126.2,
+      "endSec": 133.2
     },
     {
       "sceneId": "s7",
       "lineIndex": 3,
       "text": "실제 비용은 5번 줄, 합병에서만 들고 빅오 n이에요.",
-      "startSec": 139.2,
-      "endSec": 144.5
+      "startSec": 133.5,
+      "endSec": 138.8
     }
   ]
 }

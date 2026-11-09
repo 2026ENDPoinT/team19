@@ -26,8 +26,15 @@ ROOT = Path(__file__).resolve().parents[1]
 RATE = 24000                 # OpenAI TTS pcm 출력: 24kHz, 16비트, 모노
 LINE_GAP, SCENE_GAP = 0.3, 0.6
 DEFAULT_MODEL = "gpt-4o-mini-tts"
-DEFAULT_VOICE = "coral"
-VOICE_STYLE = "한국어 대학 강의를 친절하게 설명하는 강사. 또박또박, 너무 빠르지 않게, 밝고 차분한 톤."
+DEFAULT_VOICE = "cedar"      # 팀장이 직접 비교해 고름 (2026-11-09). 다음 후보: marin
+# 영어 지시가 한국어 지시보다 잘 맞았다(팀장 비교). 숫자 읽기 예시만 한국어로 둔다.
+VOICE_STYLE = """Accent: Native standard Korean (Seoul dialect). No foreign accent; sound like a Korean university lecturer.
+Tone: A friendly lecturer explaining one-on-one. Warm, bright, and calm. Not exaggerated or salesy.
+Pacing: Slightly slower than normal conversation. Pause briefly at commas and at the end of each sentence.
+Intonation: Let polite endings like "~예요" and "~해요" fall naturally. Do not raise the pitch at the end unless it is a question.
+Numbers: Read Arabic numerals the way a Korean speaker naturally would. Examples: "6 대 1" → "육 대 일", "10단계" → "십 단계", "9번" → "아홉 번".
+English terms: Pronounce English words such as "merge" and "sort" the way a Korean lecturer would say them in class.
+Emphasis: Put slight stress on key numbers and on the conclusion of each explanation."""
 USD_PER_MINUTE = 0.015       # docs/06 추정 (gpt-4o-mini-tts)
 
 
@@ -140,6 +147,7 @@ def main(argv=None) -> int:
     ap.add_argument("blueprint", type=Path)
     ap.add_argument("out_dir", type=Path)
     ap.add_argument("--voice", default=DEFAULT_VOICE)
+    ap.add_argument("--result-id", help="result.json의 resultId (없으면 폴더 이름)")
     args = ap.parse_args(argv)
 
     from dotenv import load_dotenv
@@ -154,7 +162,7 @@ def main(argv=None) -> int:
     print(f"{r['durationSec']}초, 문장 {len(r['captions'])}개, {r['usage']} → {r['audioPath']}")
     if r["usage"][0]["newAudioSec"] > 0:   # 재사용만 했으면 처음 비용 기록을 덮어쓰지 않는다
         (args.out_dir / "audio.usage.json").write_text(json.dumps(r["usage"], ensure_ascii=False, indent=1), encoding="utf-8")
-    result = {"resultId": args.out_dir.name, "durationSec": r["durationSec"], "audioUrl": Path(r["audioPath"]).name,
+    result = {"resultId": args.result_id or args.out_dir.name, "durationSec": r["durationSec"], "audioUrl": Path(r["audioPath"]).name,
               "blueprint": bp, "captions": r["captions"]}
     (args.out_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return 0
