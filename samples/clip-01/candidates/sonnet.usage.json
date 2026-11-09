@@ -1,0 +1,12 @@
+[
+ {
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "inputTokens": 8247,
+  "cacheReadTokens": 0,
+  "outputTokens": 9527,
+  "costUsd": 0.115,
+  "stopReason": "end_turn",
+  "seconds": 69.1
+ }
+]
