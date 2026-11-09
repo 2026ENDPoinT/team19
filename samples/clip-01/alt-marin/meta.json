@@ -1,0 +1,11 @@
+{
+ "label": "A-marin",
+ "name": "A의 목소리만 Marin으로 바꾼 것",
+ "resultId": "clip-01-A-sonnet-marin",
+ "blueprintModel": "claude-sonnet-5-5",
+ "promptLang": "ko",
+ "voice": "marin",
+ "use": "목소리 비교용 (설계도는 A와 같음)",
+ "durationSec": 138.45,
+ "sentences": 25
+}

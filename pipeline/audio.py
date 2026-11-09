@@ -147,6 +147,7 @@ def main(argv=None) -> int:
     ap.add_argument("blueprint", type=Path)
     ap.add_argument("out_dir", type=Path)
     ap.add_argument("--voice", default=DEFAULT_VOICE)
+    ap.add_argument("--result-id", help="result.json의 resultId (없으면 폴더 이름)")
     args = ap.parse_args(argv)
 
     from dotenv import load_dotenv
@@ -161,7 +162,7 @@ def main(argv=None) -> int:
     print(f"{r['durationSec']}초, 문장 {len(r['captions'])}개, {r['usage']} → {r['audioPath']}")
     if r["usage"][0]["newAudioSec"] > 0:   # 재사용만 했으면 처음 비용 기록을 덮어쓰지 않는다
         (args.out_dir / "audio.usage.json").write_text(json.dumps(r["usage"], ensure_ascii=False, indent=1), encoding="utf-8")
-    result = {"resultId": args.out_dir.name, "durationSec": r["durationSec"], "audioUrl": Path(r["audioPath"]).name,
+    result = {"resultId": args.result_id or args.out_dir.name, "durationSec": r["durationSec"], "audioUrl": Path(r["audioPath"]).name,
               "blueprint": bp, "captions": r["captions"]}
     (args.out_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return 0
