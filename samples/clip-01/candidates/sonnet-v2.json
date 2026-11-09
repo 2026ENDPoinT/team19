@@ -1,0 +1,830 @@
+{
+  "version": 0,
+  "title": "합병 과정: 팀 간 개인전",
+  "theme": "dark",
+  "scenes": [
+    {
+      "id": "s1",
+      "clear": true,
+      "lines": [
+        "합병 정렬에서 나누는 일은 중간 인덱스만 구하면 끝이라 빅오 1이에요.",
+        "진짜 비용은 정렬된 두 배열을 합치는 데 있어요."
+      ],
+      "texts": [
+        {
+          "id": "t_title1",
+          "slot": "top",
+          "style": "title",
+          "content": "나누기는 쉽다",
+          "hidden": false
+        },
+        {
+          "id": "t_formula1",
+          "slot": "middle",
+          "style": "formula",
+          "content": "$k = \\lfloor (p+q)/2 \\rfloor$",
+          "hidden": true
+        },
+        {
+          "id": "t_key1",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "비용은 합치기",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "t_formula1",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "t_key1",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "t_key1",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        18
+      ]
+    },
+    {
+      "id": "s2",
+      "clear": true,
+      "lines": [
+        "합치기는 팀 간 개인전과 비슷해요.",
+        "맨 앞 선수끼리 겨루고, 이긴 선수가 저장돼요.",
+        "그다음에는 이긴 팀의 다음 선수가 나서요."
+      ],
+      "texts": [
+        {
+          "id": "t_title2",
+          "slot": "top",
+          "style": "title",
+          "content": "팀 간 개인전",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_flow",
+          "slot": "middle",
+          "layout": "row",
+          "hidden": true,
+          "nodes": [
+            {
+              "id": "n_fight",
+              "label": "맨 앞끼리 대결",
+              "shape": "box"
+            },
+            {
+              "id": "n_save",
+              "label": "승자 저장",
+              "shape": "box"
+            },
+            {
+              "id": "n_next",
+              "label": "다음 선수 등판",
+              "shape": "box"
+            }
+          ],
+          "edges": [
+            {
+              "id": "e_f1",
+              "from": "n_fight",
+              "to": "n_save"
+            },
+            {
+              "id": "e_f2",
+              "from": "n_save",
+              "to": "n_next"
+            },
+            {
+              "id": "e_f3",
+              "from": "n_next",
+              "to": "n_fight",
+              "label": "반복"
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "d_flow",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_fight",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_save",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "e_f1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n_fight",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n_save",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "e_f1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n_next",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "e_f3",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        18
+      ]
+    },
+    {
+      "id": "s3",
+      "clear": true,
+      "lines": [
+        "A는 6, 14, 18, 20, 29예요.",
+        "B는 1, 2, 15, 25, 30, 45예요. 둘 다 정렬돼 있어요.",
+        "결과는 C에 저장하고, i와 j가 각 배열의 맨 앞을 가리켜요."
+      ],
+      "texts": [
+        {
+          "id": "t_title3",
+          "slot": "top",
+          "style": "title",
+          "content": "합병 예시 따라가기",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g_ab",
+          "slot": "middle",
+          "indexLabels": false,
+          "hidden": true,
+          "cells": [
+            [
+              "6",
+              "14",
+              "18",
+              "20",
+              "29"
+            ],
+            [
+              "1",
+              "2",
+              "15",
+              "25",
+              "30",
+              "45"
+            ]
+          ],
+          "pointers": [
+            {
+              "id": "p_i",
+              "label": "i",
+              "row": 0,
+              "col": 0,
+              "hidden": true
+            },
+            {
+              "id": "p_j",
+              "label": "j",
+              "row": 1,
+              "col": 0,
+              "hidden": true
+            }
+          ]
+        },
+        {
+          "id": "g_c",
+          "slot": "bottom",
+          "indexLabels": true,
+          "hidden": true,
+          "cells": [
+            [
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "pointers": []
+        }
+      ],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "g_ab",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "0,0-4"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "0,0-4"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "1,0-5"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "1,0-5"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "g_c",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "p_i",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "p_j",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        19
+      ]
+    },
+    {
+      "id": "s4",
+      "clear": false,
+      "lines": [
+        "1단계, 6 대 1이에요. 1이 이겨요.",
+        "1은 C에 저장되고, B의 다음 선수 2가 나서요.",
+        "2단계, 6 대 2예요. 또 B의 2가 이겨요.",
+        "3단계, 6 대 15예요. 이번엔 A의 6이 이겨요.",
+        "4단계, 14 대 15예요. 14가 이겨서 저장돼요."
+      ],
+      "texts": [],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "0,0",
+            "1,0"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "0",
+            "1"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "1,0"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "move",
+          "target": "p_j",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "1",
+            "2"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "move",
+          "target": "p_j",
+          "args": [
+            "1,2"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "1,2"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "2",
+            "6"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "0,0"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "move",
+          "target": "p_i",
+          "args": [
+            "0,1"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "0,1"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "3",
+            "14"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "0,1"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "move",
+          "target": "p_i",
+          "args": [
+            "0,2"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "0,2"
+          ]
+        }
+      ],
+      "sourcePages": [
+        19
+      ]
+    },
+    {
+      "id": "s5",
+      "clear": false,
+      "lines": [
+        "5단계는 18 대 15예요. 15가 이겨요.",
+        "6단계는 18 대 25, 7단계는 20 대 25예요. 둘 다 A가 이겨요.",
+        "8단계는 29 대 25예요. 이번엔 B의 25가 이겨요.",
+        "9단계는 29 대 30이에요. 29가 이기면 A가 비어요."
+      ],
+      "texts": [],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "4",
+            "15"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "1,2"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "move",
+          "target": "p_j",
+          "args": [
+            "1,3"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "1,3"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "5",
+            "18"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "6",
+            "20"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "0,2"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "move",
+          "target": "p_i",
+          "args": [
+            "0,4"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "0,4"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "7",
+            "25"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "1,3"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "move",
+          "target": "p_j",
+          "args": [
+            "1,4"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "g_ab",
+          "args": [
+            "1,4"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "8",
+            "29"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "0,4"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "hide",
+          "target": "p_i",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        19
+      ]
+    },
+    {
+      "id": "s6",
+      "clear": false,
+      "lines": [
+        "A가 비었으니 남은 30과 45는 비교 없이 복사돼요.",
+        "자료의 표에는 10단계로 적혀 있지만 세어 보면 9단계예요.",
+        "그래서 이 예에서 비교는 9번이에요.",
+        "최대 한도는 5 더하기 6 빼기 1, 곧 10번이에요."
+      ],
+      "texts": [],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "9",
+            "30"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "setValue",
+          "target": "g_c",
+          "args": [
+            "10",
+            "45"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "unhighlight",
+          "target": "g_ab",
+          "args": [
+            "1,4"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "hide",
+          "target": "p_j",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "g_c",
+          "args": [
+            "9-10"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "g_c",
+          "args": [
+            "9-10"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g_c",
+          "args": [
+            "0-8"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "setText",
+          "target": "t_title3",
+          "args": [
+            "비교는 9번"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setText",
+          "target": "t_title3",
+          "args": [
+            "최대 10번까지 가능"
+          ]
+        }
+      ],
+      "sourcePages": [
+        19
+      ]
+    },
+    {
+      "id": "s7",
+      "clear": true,
+      "lines": [
+        "이제 의사코드에서 비용이 드는 줄을 찾아봐요.",
+        "1번 줄은 원소가 하나 이하면 바로 끝내는 종료 조건이에요.",
+        "2번에서 4번 줄은 반으로 나누고 재귀 호출하는데, 비용은 빅오 1이에요.",
+        "실제 비용은 5번 줄, 합병에서만 들고 빅오 n이에요."
+      ],
+      "texts": [
+        {
+          "id": "t_title7",
+          "slot": "top",
+          "style": "title",
+          "content": "합병 정렬 의사코드",
+          "hidden": false
+        },
+        {
+          "id": "t_key7",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "5번 줄 합병: O(n)",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [
+        {
+          "id": "c_ms",
+          "slot": "middle",
+          "language": "pseudo",
+          "hidden": true,
+          "lines": [
+            "if (p < q) {",
+            "  k = ⌊(p+q)/2⌋",
+            "  MergeSort(A, p, k)",
+            "  MergeSort(A, k+1, q)",
+            "  A[p~k]와 A[k+1~q] 합병",
+            "}"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "c_ms",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "markLine",
+          "target": "c_ms",
+          "args": [
+            "1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "markLine",
+          "target": "c_ms",
+          "args": [
+            "2"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "markLine",
+          "target": "c_ms",
+          "args": [
+            "5"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "t_key7",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "t_key7",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        20
+      ]
+    }
+  ]
+}
