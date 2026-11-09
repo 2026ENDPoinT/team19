@@ -6,7 +6,8 @@ BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정
 
 ## 위치와 호출 방식
 
-- 코드 위치: `pipeline/` (AI 담당). BE는 `import`해서 쓴다.
+- 코드 위치: `pipeline/` (AI 담당). BE는 `import`해서 쓴다. 필요한 라이브러리는 `pipeline/requirements.txt`.
+- 오류 클래스: `pipeline/errors.py`의 `PipelineError`.
 - 보통 Python 함수다. 끝날 때까지 기다리는 함수라 BE 실행기가 별도 스레드에서 부른다.
 - DB 연결이나 웹 요청 객체는 받지 않는다. 입력 데이터와 파일 경로를 받고 결과(dict)를 돌려준다.
 - 출력 폴더는 BE가 시도마다 정해서 넘긴다. AI는 그 안에만 쓴다.
@@ -24,7 +25,7 @@ BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정
 
 - 함수 이름과 인자 세부는 구현하며 이 표에 맞춰 고친다.
 - `usage`는 호출마다 `{provider, model, inputTokens, outputTokens, costUsd}`의 목록이다. BE가 Job에 저장한다.
-- `extract_pdf`는 PyMuPDF를 쓴다(한글 추출 확인됨).
+- `extract_pdf`는 PyMuPDF를 쓴다. 글자 위치로 한국어 띄어쓰기를 복원한다(PPT에서 내보낸 PDF는 띄어쓰기 문자가 없는 경우가 많다). `empty`는 글자와 그림이 거의 없는 페이지이고, 표지·목차는 분할 단계에서 AI가 거른다. 분할정복 자료 57쪽 기준 약 3초.
 - `make_audio`는 문장마다 음성을 만들고 길이를 재서 파일 하나로 잇는다. 쉼은 [docs/04 시간 규칙](../docs/04-video-blueprint.md#시간-규칙)을 따른다.
 
 ## 샘플 모드
@@ -45,6 +46,7 @@ AI 모듈은 `PipelineError` 하나를 던진다. `code`, `retryable`, 사용자
 
 | code | retryable | 뜻 |
 |---|---|---|
+| `PDF_INVALID` | false | 열 수 없거나 암호가 걸렸거나 페이지가 없는 PDF |
 | `PDF_NO_TEXT` | false | 글자도 페이지 해설도 얻지 못함 |
 | `PROVIDER_RATE_LIMIT` | true | 요청 한도 초과 |
 | `PROVIDER_TIMEOUT` | true | 외부 API 시간 초과 |
