@@ -32,32 +32,33 @@ PDF 하나를 넣으면 분할 계획과 클립 1개 이상의 설계도와 음�
 
 ## 현황 (세션마다 갱신)
 
-> 최종 갱신: 2026-11-07 · AI/Claude
+> 최종 갱신: 2026-11-09 · AI/Claude
 
-### 최근 한 일
-- 설계 초안을 GitHub에 올렸다. 첫 세션 안내, 문서 간결 규칙을 추가했다
-- P-AI-01, P-BE-01에 AI 의견을 썼다. BE가 단 질문 답을 검토했다
-- D-12(추출 한 번, 모드별 분할), D-13(음성은 AI 파이프라인)을 확정했다
-- 일정 반영(D-14~16: 11/11 현직자 피드백, 킥오프 취소와 11/9 회의, 스택 11/7 확정). 열린 질문에 AI 의견을 달았다
-- 비용 목표(강의 하나 $1 미만, 실험 한 번 $0.1 미만)와 절약 규칙을 docs/06에 정리했다
-- 영상 설계도 개념을 정리하고, 알고리즘 3장 자료(57쪽)를 읽고 관찰했다. 한 자료에 맞춰지지 않게 하는 원칙을 docs/05에 적었다
-- 팀장 강의자료 11개(약 630쪽)로 부품 조사를 했다. 1단계 부품 5개 제안과 파이프라인 시사점: [sandbox/ai/2026-11-07-material-survey.md](../../sandbox/ai/2026-11-07-material-survey.md). 손글씨 필기본 질문(Q-AI-23)을 남겼다
-- 기술 스택을 B안으로 확정했다(D-17). FE 세부 도구는 FE가 정한다
-- 영상 설계도 형식 v0을 [P-AI-02](../proposals/P-AI-02-blueprint-v0.md)로 제안했다. 샘플 3개와 형식 검사기는 sandbox/ai/blueprint_v0/
+### 최근 한 일 (11/9)
+- 11/9 회의를 준비하고 진행했다. 결정 D-18~D-35를 기록했고, 끝난 질문 14개를 archive로 옮겼다. 제안서 P-AI-02, P-BE-01, P-BE-02는 결정됨이다.
+- 계약 v0을 반영했다: [docs/04](../../docs/04-video-blueprint.md)(설계도 형식), [contracts/](../../contracts/README.md)(api, data-model, 새 pipeline.md). AGENTS.md와 docs/08에 개발 단계 규칙(코드 폴더, 브랜치, PR 없이 merge)을 넣었다.
+- 11/11 목표와 역할별 필수 작업: [plan-first-clip.md](../plan-first-clip.md) (D-34, 분할정복용 부품만 필수).
+- **AI 11/11 필수 작업을 모두 끝냈다** (`pipeline/`):
+  - `validate.py`: Python 검사기 (D-27), 테스트 포함
+  - `extract.py`: PDF 추출, 한국어 띄어쓰기 복원 (57쪽 3초)
+  - `blueprint.py`: 설계도 생성. Claude Sonnet 5.5와 GPT-6.1 Terra, 한국어·영어 프롬프트
+  - `audio.py`: 문장별 TTS, mp3. 목소리 cedar + 영어 말투 지시 (팀장 청취 비교)
+- 샘플: [samples/parts-test/](../../samples/parts-test/README.md)(분할정복 부품 전부, 가짜 음성), [samples/clip-01/](../../samples/clip-01/README.md)(실제 클립 A=Sonnet, B=Terra, A-marin).
+- 모델 비교: 프롬프트를 고친 뒤 품질은 비슷하고, Terra가 약 1/7 가격이다([비교 기록](../../sandbox/ai/2026-11-09-blueprint-compare.md)). 강의 19쪽 표의 오류(10단계 → 9단계)를 AI가 바로잡게 했다.
+- 오늘 API 비용: 약 $0.43.
 
-### 다음 할 일
-- 11/9 19시 공식 회의 진행 ([안건](../meetings/2026-11-09-meeting.md))
-- 모드 초안을 구체화한다 (Q-AI-03)
-- P-AI-02 의견을 모아 11/9 회의에서 설계도 형식 v0을 확정하고 docs/04, contracts/data-model.md에 반영한다
-- 해커톤 심사 기준과 일정 규정을 확인한다 (Q-AI-14, Q-AI-17)
-- API 키 마련: OpenAI, Anthropic 각각 최소 금액 충전 (Q-AI-13, 회의에서 확정)
-- 실험: 페이지 해설과 모델 비교 (Q-AI-07, [docs/06](../../docs/06-cost-and-budget.md) 실험 예산). 자료 유형 3개를 먼저 모은다. 쪽수, 중복 페이지 비율, 클립당 생성 시간도 잰다
+### 다음 할 일 (11/10)
+- 영어 설계도 프롬프트 실험: Sonnet, Terra 한 번씩, 예상 약 $0.15~0.17 (`--prompt-lang en`).
+- 장면 단위 TTS + 소리 크기 맞추기 실험: 클립 A로, 약 $0.03. 문장마다 톤이 달라지는 문제(Q-AI-10).
+- FE 플레이어가 나오면 클립 A/B를 보고 설계도 모델을 제안한다(Q-AI-07).
+- 11/10 저녁 점검: FE·BE 진행을 보고 D-34 범위 조정이 필요한지 정한다.
+- docs/06 비용 추정을 실측으로 고친다(설계도 Sonnet $0.15, Terra $0.02, 음성 $0.03 / 클립).
+- 11/11 피드백 준비: 보여줄 것, 물어볼 것(클립 길이 Q-AI-24 포함).
 
 ### 막힌 것
-- API 키가 아직 없다 (Q-AI-13)
+- 없음. 참고: `gpt-4o-mini-tts`가 2027-01-06 종료 예정이다(해커톤에는 영향 없음).
 
 ### 다른 역할에게 요청
-- [to:FE] P-AI-02(설계도 형식) 의견을 11/9 회의 전에 써 주세요. 플레이어를 만들 기준이에요.
-- [to:FE] 기술 스택은 B안으로 확정됐어요(D-17). FE 세부 도구(Vite, Next.js 등)를 정해서 P-AI-01에 남겨 주세요. P-BE-01에도 FE 의견을 써 주세요. 특히 Q-AI-05(생성 흐름), Q-AI-19(폴링), Q-AI-22(플레이어 분담)는 FE 의견을 듣고 정합니다. Figma 화면 캡처도 올려 주세요(Q-AI-16).
-- [to:BE] PDF 글자 추출은 PyMuPDF처럼 한국어 폰트를 읽는 도구로 해 주세요. pdftotext(poppler 기본)는 한글이 전부 빠졌어요. 자세한 건 [자료 조사](../../sandbox/ai/2026-11-07-material-survey.md)의 시사점 1, 3, 5를 봐 주세요(내용 없는 페이지, 한 PDF에 강의 여러 개).
-- [to:BE] 의견 고마워요. 다음부터 부탁해요: (1) 받는 사람이 아닌 질문에는 꼭 필요할 때만 짧게 (questions.md는 매 세션 모두가 읽어요) (2) 작업 끝날 때 종료 루틴으로 be.md 담당 이름과 현황 갱신 (3) "11/11 현직자 피드백" 일정의 출처를 알려 주세요.
+- [to:FE] 부품 확인은 [samples/parts-test/](../../samples/parts-test/README.md), 실제 재생은 [samples/clip-01/](../../samples/clip-01/README.md)를 써 주세요. **클립 A와 B를 둘 다 재생할 수 있게** 해 주세요(README 맨 위 표, `meta.json`으로 구분). 팀장이 두 클립 품질을 비교합니다. 11/10 저녁에 진행 상황을 fe.md에 적어 주세요.
+- [to:BE] 검사기는 `pipeline/validate.py`, 필요한 라이브러리는 `pipeline/requirements.txt`입니다. 사용법은 [contracts/pipeline.md](../../contracts/pipeline.md). `GET /clips/{id}`는 `samples/clip-01/result.json` 모양 그대로 주면 됩니다. Python 환경(.venv)은 각자 만들어 주세요.
+- [to:전원] 클립 길이 기준 Q-AI-24에 의견 부탁해요.
