@@ -1,6 +1,6 @@
 # P-BE-02: FE·BE API와 AI 파이프라인 연결 계약 v0
 
-> 상태: 의견 수집중 · 제안: BE/Codex · 2026-11-08 · 의견 마감: 팀 협의 시 결정
+> 상태: 결정됨(D-28) · 제안: BE/Codex · 2026-11-08 · 의견 마감: 팀 협의 시 결정
 
 ## 무엇을 정하려는가
 
@@ -122,6 +122,46 @@ AI에는 DB 연결·웹 요청 객체 대신 ID와 입력 데이터·파일 참�
 
 ### AI
 
+> 의견: B안(DB에 작업 저장, BE 실행기가 처리)과 6개 API에 동의. AI 모듈 경계를 아래처럼 제안 · AI/Claude · 2026-11-09 · 팀 최종 결정 전
+
+**1. 추출 담당:** AI가 함수를 만들고 BE가 업로드 직후 첫 작업으로 부른다. PyMuPDF로 페이지 글자와 페이지 그림(PNG)을 만든다. 한글 추출 확인과 내용 없는 페이지 표시는 AI가 맡는다. 유료 호출은 없다. 한 PDF에 강의가 여러 개인 경우는 1단계에서 PDF를 나누지 않고 분할 계획 단계에서 다룬다.
+
+**2. 모듈 모양:** 보통 Python 함수 5개. DB 연결이나 웹 요청 객체는 받지 않고, 입력 데이터와 파일 경로를 받아 결과(dict)를 돌려준다. 끝날 때까지 기다리는 함수라 BE 실행기가 별도 스레드에서 부른다.
+
+| 함수 (후보) | 입력 | 출력 | 유료 |
+|---|---|---|---|
+| `extract_pdf` | PDF 경로, 출력 폴더 | pageCount, pages[{number, text, imagePath, empty}] | 아니오 |
+| `describe_pages` | pages | pages[{number, description}], usage | 예 (Q-AI-07 실험 결과에 따라 빠질 수 있음) |
+| `plan_outline` | mode, pages, descriptions | sections, clipPlans, usage | 예 |
+| `make_blueprint` | clipPlan, 관련 pages·descriptions, pageCount | blueprint, usage | 예 |
+| `make_audio` | 검증된 blueprint, 출력 폴더 | audioPath, durationSec, captions, usage | 예 |
+
+- 출력 폴더는 BE가 시도마다 정해서 넘긴다. AI는 그 안에만 쓴다.
+- `usage`는 호출마다 {provider, model, inputTokens, outputTokens, costUsd} 목록이다. BE가 Job에 저장한다([docs/06](../../docs/06-cost-and-budget.md)).
+- **샘플 모드:** 환경변수 `AI_MODE=sample`이면 API를 부르지 않고 저장된 샘플을 같은 형식으로 돌려준다. BE는 키와 비용 없이 개발한다.
+- clipPlans 필드는 [data-model.md](../../contracts/data-model.md)의 ClipPlan을 따른다. mode, kind 값은 Q-AI-03에서 정한다.
+
+**3. 오류와 시간 제한:**
+- AI 모듈은 `PipelineError` 하나에 `code`, `retryable`, 사용자용 `message`를 담아 던진다. BE가 Job error 형식으로 바꾼다. code 후보: `PDF_NO_TEXT`(재시도 불가), `PROVIDER_RATE_LIMIT`·`PROVIDER_TIMEOUT`·`PROVIDER_ERROR`·`BLUEPRINT_INVALID`·`TTS_FAILED`(재시도 가능).
+- 외부 API 한 번 호출의 시간 제한과 순간 오류(요청 한도 초과 등)의 짧은 재시도(최대 2번)는 AI 모듈 안에서 한다. 단계 전체 시간 제한은 BE가 건다. 초기값 후보(추정, 실험 후 조정): 추출 1분, 페이지 해설 3분, 분할 2분, 설계도 2분, 음성 2분.
+
+**4. 검사와 재생성:**
+- `make_blueprint` 안에서 검사하고, 실패하면 오류 내용을 붙여 한 번 다시 만든다. 또 실패하면 `BLUEPRINT_INVALID`를 던진다. BE는 자동으로 다시 부르지 않는다(사용자가 재시도할 때만).
+- `make_audio`도 넘기기 전에 captions를 검사한다(문장 수가 설계도와 같은지, 시간 순서, 마지막 endSec이 durationSec 이하인지).
+- BE가 제안한 페이지 범위, box·focus 범위, ID 참조, scene ID 중복 검사를 넣는다.
+- **검사기를 어디에 둘지는 11/9 회의에서 정한다.** 후보: (가) Python 검사기 하나를 AI가 관리하고 BE가 가져다 씀. 서버가 Python이라 따로 실행할 것이 없고 기준이 하나다. (나) BE가 Node.js를 설치하고 지금의 `validate.js`를 함께 씀. 이미 있는 것을 쓰지만 Python 서버에서 Node를 따로 불러야 한다.
+- 형식 검사는 내용의 정확성까지 보장하지 않는다(FE 의견과 같음). 내용 품질은 AI가 평가 체크리스트로 따로 본다.
+
+**5. 음성만 재시도: 가능하다.** 설계도와 음성을 다른 함수로 나눈 이유다. 검증된 설계도가 저장돼 있으면 `make_audio`만 다시 부른다.
+- 음성은 문장마다 따로 만들고 길이를 재서 클립당 파일 하나로 잇는다(Q-AI-10 의견). 형식은 mp3 후보.
+- captions 시간은 클립 음성 시작 기준 초 단위다(BE·FE 제안과 같음). 쉼 후보는 문장 사이 0.3초, 장면 사이 0.6초이고, 규칙은 P-AI-02에서 정한다.
+
+**6. 실제 결과 샘플:** API 키가 마련되면(Q-AI-13) 알고리즘 자료로 강의 하나 추출, 모드 하나 분할, 클립 1~2개의 설계도와 음성을 만들어 `samples/`에 올린다. 날짜는 11/9 회의에서 키와 함께 정한다. 그 전까지는 BE의 fe-fixtures와 P-AI-02 샘플 설계도를 쓴다.
+
+**7. 그 밖:**
+- 재시작 시 `running`을 `SERVER_RESTARTED` 실패로 두고 유료 호출을 자동으로 다시 하지 않는 것에 동의한다.
+- 동시 실행 수는 개발 중 1개에 동의한다. 시연은 Q-AI-05 A안 기준 3~4개를 목표로 하되, API 요청 한도와 실측 시간을 보고 정한다. AI 함수는 공유 상태를 두지 않아 동시에 불러도 안전하게 만든다.
+
 ### FE
 
 > 의견: 기존 6개 API와 비동기 작업 B안에 동의, 아래 연결 조건 협의 제안 · FE/Codex · 2026-11-08 · 팀 최종 결정 전
@@ -137,3 +177,5 @@ AI에는 DB 연결·웹 요청 객체 대신 ID와 입력 데이터·파일 참�
 ### BE
 
 ## 결정 (팀장)
+
+본문과 AI 의견대로 v0을 확정한다(D-28, 2026-11-09, 강현). 생성 흐름은 전체 자동 생성(D-19), 폴링 약 3초(D-21), 모드 값 `intro`/`review`/`exam`(D-29), 검사기는 Python 하나(D-27). 동시 실행 수는 개발 중 1개, 시연 수는 실측 후 정한다. 확정 내용은 [contracts/api.md](../../contracts/api.md), [contracts/data-model.md](../../contracts/data-model.md), [contracts/pipeline.md](../../contracts/pipeline.md)에 있다.

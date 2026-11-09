@@ -94,7 +94,7 @@
       "codes": [],
       "actions": [
         { "line": 1, "do": "show", "target": "sl_14", "args": [] },
-        { "line": 1, "do": "focus", "target": "sl_14", "args": ["0.3,0.15,0.4,0.3"] }
+        { "line": 1, "do": "focus", "target": "sl_14", "args": ["0.3,0.25,0.4,0.3"] }
       ],
       "sourcePages": [13, 14]
     }

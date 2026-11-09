@@ -1,32 +1,58 @@
-# API 목록 (메모 초안)
+# API v0 (FE ↔ BE)
 
-> 상태: 초안 · 담당: BE (검토 FE) · 최종 수정: 2026-11-06 · AI/Claude
+> 상태: 확정 v0 (D-28) · 담당: BE (검토 FE) · 최종 수정: 2026-11-09 · AI/Claude
 
-FE와 BE 사이의 요청 창구 후보다. 주소와 이름은 전부 바뀔 수 있다. 각자 에이전트와 논의한 뒤 제안서로 v0을 확정한다.
+결정 과정과 응답 예시 전체는 [P-BE-02](../coordination/proposals/P-BE-02-api-and-pipeline-v0.md), FE용 샘플 응답은 [sandbox/be/fe-fixtures/](../sandbox/be/fe-fixtures/README.md)에 있다. 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 
-## 1단계
+## 공통
 
-| 창구 (후보) | 하는 일 | 보내는 것 | 받는 것 |
+- 필드는 `camelCase`, ID는 문자열이다. 번호 기준은 [docs/04](../docs/04-video-blueprint.md#번호-기준)와 같다(페이지 1부터, 문장과 클립 순서 0부터).
+- 오래 걸리는 처리는 작업(Job)으로 접수하고 `202`와 `jobId`를 바로 돌려준다. BE는 작업을 DB에 저장하고 내부 실행기가 처리한다(P-BE-02 B안).
+- FE는 약 3초마다 상태를 확인하고, 완료·실패·화면 이탈 시 멈춘다(D-21). 통신 실패만으로 새 생성 요청을 보내지 않는다.
+- 모드 값: `intro`(처음 보기), `review`(복습), `exam`(시험 대비) (D-29).
+- 모드를 고르면 분할 후 클립 전체를 자동으로 생성 등록한다(D-19).
+
+## 1단계 API
+
+| API | 요청 | 성공 응답 | 주요 오류 |
 |---|---|---|---|
-| `POST /lectures` | PDF 올리기 | PDF 파일 | 강의 번호 |
-| `GET /lectures/{id}` | 강의 정보, 페이지 목록 | | 강의, 페이지 그림 주소 |
-| `POST /lectures/{id}/outlines` | 모드를 골라 분할 시작 | 모드 | 작업 번호 |
-| `GET /jobs/{id}` | 작업 진행 상태 | | 상태, 진행률, 오류 |
-| `GET /lectures/{id}/outlines/{mode}` | 클립 목록 | | 분할 계획, 클립별 상태 |
-| `GET /clips/{id}` | 클립 하나 | | 설계도, 음성 주소, 문장별 시간 |
+| `POST /lectures` | `multipart/form-data`, `file` | `202 {lectureId, jobId, status}` | `413 FILE_TOO_LARGE`, `415 UNSUPPORTED_FILE_TYPE`, `422 INVALID_PDF`, `503 STORAGE_UNAVAILABLE` |
+| `GET /lectures/{id}` | | `200 {id, title, status, pageCount, preparationJobId, pages: [{number, imageUrl}]}` | `404 LECTURE_NOT_FOUND` |
+| `POST /lectures/{id}/outlines` | `{mode}` | `202 {outlineId, jobId, status, reused}` | `404 LECTURE_NOT_FOUND`, `422 INVALID_MODE`, `409 LECTURE_NOT_READY` |
+| `GET /jobs/{id}` | | `200 {id, type, status, stage, progress, error}` | `404 JOB_NOT_FOUND` |
+| `GET /lectures/{id}/outlines/{mode}` | | `200 {id, mode, status, jobId, clips: [{id, planId, order, title, sourcePages, status, jobId, error}]}` | `404 LECTURE_NOT_FOUND`, `404 OUTLINE_NOT_FOUND`, `422 INVALID_MODE` |
+| `GET /clips/{id}` | | `200 {id, planId, status, error, result}` | `404 CLIP_NOT_FOUND` |
+| `POST /jobs/{id}/retry` | `{}` | `202 {jobId, retryOf, status}` | `404 JOB_NOT_FOUND`, `409 RETRY_NOT_ALLOWED` |
+| `GET /assets/{id}` | | `200` 파일 (이미지, 음성) | `404 ASSET_NOT_FOUND` |
+
+- 처리 중인 강의는 `pageCount: null`, `pages: []`이다. 분할 중인 Outline은 `status: "planning"`, `clips: []`이다.
+- 클립이 아직 완료되지 않았으면 `result: null`이다. 존재하는 작업의 대기·실행·실패는 HTTP 200 안의 상태로 돌려준다.
+- 같은 강의·모드 요청이 진행 중이면 기존 작업을, 완료됐으면 기존 Outline을 돌려주고 `reused: true`로 표시한다.
+- `result` 모양은 [data-model.md](data-model.md#클립-결과-clipresult)를 따른다.
+- 서버 내부 파일 경로는 주지 않는다. 이미지와 음성은 `/assets/{id}` 주소로만 준다. 음성은 브라우저에서 탐색할 수 있게 제공한다(Range 요청 확인).
+- 개발 환경에서 FE와 BE의 포트가 다르므로 BE가 CORS를 허용한다.
+
+## 오류 모양
+
+```json
+{"error": {"code": "CLIP_NOT_FOUND", "message": "클립을 찾을 수 없습니다.", "retryable": false}}
+```
+
+Job의 `error`도 같은 모양이다. 내부 예외를 그대로 보여 주지 않는다.
+
+## 상태 값
+
+| 대상 | 값 |
+|---|---|
+| Job | `pending` → `running` → `completed` / `failed` |
+| Clip | `pending`(생성 전) / `running` / `completed` / `failed` |
+
+`stage`, Job `type`의 세부 이름은 BE가 정하고 이 표에 추가한다.
 
 ## 2단계
 
-| 창구 (후보) | 하는 일 | 보내는 것 | 받는 것 |
-|---|---|---|---|
-| `GET /lectures` | 내 강의함 (지난 업로드 목록) | | 강의 목록 |
-| `POST /clips/{id}/save` | 클립 저장 표시 | | |
-| `POST /clips/{id}/regenerate` | 요청을 적어서 다시 만들기 | 요청 문장 | 작업 번호 |
-
-## 정해야 할 것
-
-- 생성 흐름: 모드를 고르면 클립 생성까지 자동으로 이어갈지, 따로 요청할지 (Q-AI-05)
-- 진행 상태를 몇 초마다 물어볼지(폴링), 서버가 알려줄지 (Q-AI-19)
-- 오류 응답 모양 (사용자에게 보여줄 문장 포함)
-- 파일(PDF, 페이지 그림, 음성) 주소를 어떻게 줄지
-- 시간 초과와 재시도 규칙. 팀 노트: 생성 중에는 로딩 화면, 시간이 초과되면 재시도할 수 있게, 네트워크가 불안정하면 표시
+| API | 하는 일 |
+|---|---|
+| `GET /lectures` | 내 강의함 |
+| `POST /clips/{id}/save` | 클립 저장 표시 |
+| `POST /clips/{id}/regenerate` | 요청을 적어서 다시 만들기 (Q-AI-21) |

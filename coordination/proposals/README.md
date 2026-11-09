@@ -51,5 +51,6 @@
 | 번호 | 제목 | 상태 |
 |---|---|---|
 | [P-AI-01](P-AI-01-tech-stack.md) | 기술 스택 | 결정됨(D-17) |
-| [P-BE-01](P-BE-01-storage-and-demo.md) | 저장 정책과 시연 방식 | 의견 수집중 |
-| [P-AI-02](P-AI-02-blueprint-v0.md) | 영상 설계도 형식 v0 | 의견 수집중 |
+| [P-BE-01](P-BE-01-storage-and-demo.md) | 저장 정책과 시연 방식 | 결정됨(D-25) |
+| [P-AI-02](P-AI-02-blueprint-v0.md) | 영상 설계도 형식 v0 | 결정됨(D-26, D-27) |
+| [P-BE-02](P-BE-02-api-and-pipeline-v0.md) | API와 AI 파이프라인 연결 계약 v0 | 결정됨(D-28) |
