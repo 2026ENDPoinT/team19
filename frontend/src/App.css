@@ -288,3 +288,12 @@ button, input { font: inherit; }
 .clip-status--running { background: #172554; color: #bfdbfe; }
 .clip-status--failed { background: #450a0a; color: #fecaca; }
 .clip-card .clip-error { color: #fecaca; }
+
+/* 업로드 상태 강조 */
+.upload-area--dragging {
+  border-color: var(--color-accent);
+  background: var(--color-accent-background);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+.remove-file { margin-top: 12px; }
