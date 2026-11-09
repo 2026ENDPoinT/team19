@@ -7,13 +7,13 @@
 
 - 팀원 3명이 각자 자기 에이전트와 함께 일한다. 에이전트끼리는 직접 대화할 수 없다.
 - 그래서 **이 저장소의 파일이 에이전트 사이의 대화 채널이다.** 다른 역할에게 할 말은 반드시 파일에 남긴다.
-- 지금은 **설계 단계**다(2026-11-06 기준). 거의 모든 내용이 초안이고, 팀 논의에 따라 계속 바뀐다.
+- 지금은 **개발 단계**다(2026-11-09부터). 계약 v0(`contracts/`, `docs/04`)은 확정됐고, 만들어 보며 고친다. 지금 목표는 `coordination/plan-first-clip.md`(D-34)다.
 
 ## 2. 사실로 믿어도 되는 것
 
 - `coordination/decisions.md`에 `확정`으로 적힌 것만 확정이다. `방향 합의`는 방향만 정해졌고 세부는 미정이다.
 - 다른 문서는 맨 위 상태줄을 먼저 본다. `초안`이나 `논의중`이면 그 내용을 사실처럼 다루지 않고, 사용자에게도 확정된 것처럼 말하지 않는다.
-- 기술 스택이 decisions.md에 확정되기 전에는 앱 코드를 만들지 않는다. 사용자가 실험용 코드를 원하면 `sandbox/내역할/` 아래에 두고, 다른 역할이 그것에 의존하지 않게 한다.
+- 앱 코드는 정해진 폴더에만 둔다(D-35): `frontend/`(FE), `backend/`(BE), `pipeline/`(AI), 공용 실제 결과는 `samples/`. 실험용 코드는 `sandbox/내역할/`에 두고, 다른 역할이 그것에 의존하지 않게 한다.
 
 ## 3. 역할과 나
 
@@ -61,6 +61,8 @@
 
 - **질문과 요청**은 `coordination/questions.md` 맨 아래에 추가한다. ID는 `Q-내역할-번호` 형식이다(예: `Q-FE-03`). 내 역할이 마지막으로 쓴 번호의 다음 번호를 쓴다.
 - **공용 내용 변경 제안**: `contracts/`, `docs/01`~`docs/07`, 다른 역할이 담당하는 영역을 바꾸고 싶으면 직접 고치지 않는다. `coordination/proposals/`에 제안서를 만든다. 양식은 `coordination/proposals/README.md`에 있다.
+- **기능 구현 제안**: 다른 역할에 영향이 있는 기능은 만들기 전에 `coordination/proposals/`에 제안서로 둔다(D-31).
+- **충돌할 지점, 궁금한 점, 쟁점**은 `questions.md`나 해당 제안서에 남긴다. 같이 정할 것이 있으면 사용자에게 메신저로도 알리라고 말한다.
 - **제안서에 의견 달기**: 내 역할의 의견 칸에만 쓴다. 다른 역할의 칸은 고치지 않는다.
 - **결정은 팀장(강현)이 한다.** 에이전트는 결정하지 않고, 선택지와 추천 이유만 제시한다. 팀장이 decisions.md에 기록한 뒤에 해당 문서를 고친다.
 - 받는 사람은 `[to:AI]`, `[to:FE]`, `[to:BE]`, `[to:전원]` 형식으로만 표시한다. 여러 명이면 `[to:AI,BE]`처럼 쓴다. 골뱅이 기호로 사람을 부르지 않는다. Claude Code의 파일 가져오기 문법, GitHub 알림과 충돌하기 때문이다.
@@ -76,6 +78,7 @@
   `> 상태: 초안|논의중|방향 합의|확정 · 담당: 역할 · 최종 수정: 날짜 · 역할/도구`
 - push 전에 다시 `git pull`한다. `questions.md` 같은 공용 파일에서 충돌이 나면 양쪽 내용을 모두 살리는 쪽으로 해결한다. 애매하면 사용자에게 묻는다.
 - 커밋 메시지 형식은 `[역할] 한 일`이다. 예: `[FE] P-AI-01에 FE 의견 추가`
+- **브랜치 (D-31)**: 문서와 샘플은 main에 바로 올린다. 기능 코드는 `feature/짧은-이름` 브랜치에서 만들고, PR 없이 사용자와 확인한 뒤 main에 merge한다. merge 전에 main을 받아 충돌을 먼저 해결한다.
 
 ## 8. 하지 말 것
 
@@ -99,16 +102,17 @@
 | `docs/01-product.md` | 무엇을 왜 만드는지, 구현 범위 |
 | `docs/02-competition.md` | 유사 서비스 비교, 차별점 |
 | `docs/03-architecture.md` | 전체 흐름, 구성 요소 |
-| `docs/04-video-blueprint.md` | 영상 설계도 방식 |
+| `docs/04-video-blueprint.md` | 영상 설계도 형식 v0 (AI ↔ FE 계약) |
 | `docs/05-segmentation-and-modes.md` | 자료를 클립으로 나누는 기준, 학습 단계 모드 |
 | `docs/06-cost-and-budget.md` | 비용 추정, 예산, API 키 관리 |
 | `docs/07-schedule.md` | 일정, 오프라인 14시간 시간표 |
 | `docs/08-collaboration.md` | 협업 방식 (사람용) |
 | `docs/glossary.md` | 용어집 |
-| `contracts/` | 파트 사이 약속: 데이터 모양, API |
+| `contracts/` | 파트 사이 약속: 데이터 모양, API, AI 파이프라인 |
 | `coordination/decisions.md` | 결정 기록 |
 | `coordination/questions.md` | 열린 질문 |
-| `coordination/questions-archive.md` | 끝난 질문 (처음 옮길 때 만든다) |
+| `coordination/questions-archive.md` | 끝난 질문 |
+| `coordination/plan-first-clip.md` | 11/11 목표와 역할별 필수 작업 (D-34) |
 | `coordination/first-session.md` | 첫 세션 안내 순서 |
 | `coordination/proposals/` | 변경 제안서 |
 | `coordination/roles/` | 역할별 책임과 현황 |

@@ -1,6 +1,6 @@
 # P-BE-02: FE·BE API와 AI 파이프라인 연결 계약 v0
 
-> 상태: 의견 수집중 · 제안: BE/Codex · 2026-11-08 · 의견 마감: 팀 협의 시 결정
+> 상태: 결정됨(D-28) · 제안: BE/Codex · 2026-11-08 · 의견 마감: 팀 협의 시 결정
 
 ## 무엇을 정하려는가
 
@@ -177,3 +177,5 @@ AI에는 DB 연결·웹 요청 객체 대신 ID와 입력 데이터·파일 참�
 ### BE
 
 ## 결정 (팀장)
+
+본문과 AI 의견대로 v0을 확정한다(D-28, 2026-11-09, 강현). 생성 흐름은 전체 자동 생성(D-19), 폴링 약 3초(D-21), 모드 값 `intro`/`review`/`exam`(D-29), 검사기는 Python 하나(D-27). 동시 실행 수는 개발 중 1개, 시연 수는 실측 후 정한다. 확정 내용은 [contracts/api.md](../../contracts/api.md), [contracts/data-model.md](../../contracts/data-model.md), [contracts/pipeline.md](../../contracts/pipeline.md)에 있다.
