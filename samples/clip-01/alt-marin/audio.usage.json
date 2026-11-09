@@ -1,0 +1,11 @@
+[
+ {
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "newAudioSec": 129.4,
+  "reusedLines": 0,
+  "costUsd": 0.0324,
+  "costIsEstimate": true
+ }
+]
