@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>team19 개발용 연결 테스트</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0c1424;color:#e8efff;font:16px/1.6 system-ui,sans-serif}main{width:min(960px,94vw);margin:30px auto}h1{font-size:26px}button,select,input{font:inherit}button{background:#3265d9;color:white;border:0;border-radius:9px;padding:10px 17px;cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}select,input{background:#16233c;color:white;border:1px solid #53617f;padding:10px;border-radius:8px}.card{background:#162138;border:1px solid #304666;padding:20px;border-radius:16px;margin:14px 0}.hint{color:#aabbda;font-size:14px}#log{white-space:pre-wrap;font-family:ui-monospace,monospace;font-size:13px;line-height:1.5}.layout{display:grid;grid-template-columns:1fr 310px;gap:18px}.clip{display:block;width:100%;margin:8px 0;text-align:left;background:#243858}video{width:100%;max-height:565px;aspect-ratio:9/16;background:#080e1c;border-radius:16px}#stage{aspect-ratio:9/16;background:#0b1d39;border-radius:16px;display:grid;place-items:center;padding:20px;word-break:break-word;text-align:center;font-size:23px}#caption{color:#abcdfd;font-size:14px} @media(max-width:700px){.layout{grid-template-columns:1fr}}
+</style></head><body><main>
+<h1>team19 · BE 연결 확인용</h1>
+<p class="hint">정식 FE 화면이 아닙니다. AI_MODE=sample이면 실제 PDF에서 뽑은 텍스트로 샘플 MP4를 만들고, 내레이션은 무음입니다.</p>
+<section class="card"><label>PDF 선택 <input id="pdf" type="file" accept=".pdf,application/pdf"></label> <select id="mode"><option value="intro">처음 보기</option><option value="review">복습</option><option value="exam">시험 대비</option></select> <button id="go">PDF 분석 및 클립 생성</button></section>
+<div class="layout"><section><div class="card"><strong>작업 상태</strong><div id="log">PDF를 선택해 주세요.</div></div><div class="card"><strong>클립 목록</strong><div id="clips">아직 클립이 없습니다.</div></div></section><section class="card"><strong>세로 클립</strong><p class="hint" id="tip">클립 선택 후 재생</p><video id="video" controls playsinline style="display:none"></video><div id="stage">클립을 선택해 주세요.</div><p id="caption"></p></section></div>
+</main><script>
+const $ = id => document.getElementById(id), log = text => $('log').textContent = text;
+let lectureId, outlineJob, mode, timer, audio;
+const abs = path => new URL(path, location.origin).href;
+async function json(url, options){const res=await fetch(url,options);const data=await res.json();if(!res.ok)throw Error(data?.error?.message||String(res.status));return data}
+async function waitJob(id){for(let i=0;i<180;i++){const job=await json(`/jobs/${id}`);log(`작업 ${job.type}: ${job.status} / ${job.stage}`);if(job.status==='completed')return;if(job.status==='failed')throw Error(job.error?.message||'작업 실패');await new Promise(r=>setTimeout(r,1000))}throw Error('시간 제한 초과: /docs에서 작업 상태 확인')}
+async function showClip(c){const data=await json(`/clips/${c.id}`);if(data.status!=='completed'){log(`클립 생성 중: ${data.status}`);return;}const r=data.result;
+ $('tip').textContent=r.sample?'개발용 샘플 MP4 / 무음':'AI 결과';$('caption').textContent=(r.captions||[]).map(x=>x.text).join(' / ').slice(0,200);
+ if(audio){audio.pause();audio=null} $('video').pause();$('video').removeAttribute('src');
+ if(r.previewVideoUrl){$('stage').style.display='none';$('video').style.display='block';$('video').src=abs(r.previewVideoUrl);$('video').load()}
+ else{$('video').style.display='none';$('stage').style.display='grid';const first=r.blueprint?.scenes?.[0];$('stage').textContent=first?.texts?.map(t=>t.content).join('\n')||'설계도 없음';if(r.audioUrl){audio=new Audio(abs(r.audioUrl));audio.controls=true;audio.play().catch(()=>{});$('tip').textContent='설계도 미리보기 + 별도 음성 (정식 FE 플레이어 필요)';}}
+}
+async function updateClips(){const o=await json(`/lectures/${lectureId}/outlines/${mode}`);const container=$('clips');container.replaceChildren();for(const c of o.clips){const btn=document.createElement('button');btn.className='clip';btn.textContent=`${c.order+1}. ${c.title} [${c.status}]`;btn.onclick=()=>showClip(c).catch(e=>log(e.message));container.append(btn)}return o.clips}
+$('go').onclick=async()=>{const file=$('pdf').files[0];if(!file){log('PDF 파일을 선택해 주세요.');return}clearInterval(timer);$('go').disabled=true;mode=$('mode').value;try{const f=new FormData();f.append('file',file);const up=await json('/lectures',{method:'POST',body:f});lectureId=up.lectureId;await waitJob(up.jobId);const o=await json(`/lectures/${lectureId}/outlines`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode})});await waitJob(o.jobId);await updateClips();timer=setInterval(()=>updateClips().then(clips=>{if(clips.length&&clips.every(c=>['completed','failed'].includes(c.status))){clearInterval(timer);log('클립 생성 종료. 목록에서 클립을 선택해 주세요.')}}).catch(e=>log(e.message)),1100);}catch(e){log('오류: '+e.message)}finally{$('go').disabled=false}}
+</script></body></html>
