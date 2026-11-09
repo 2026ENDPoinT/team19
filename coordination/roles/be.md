@@ -40,23 +40,23 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
-- 사용자 승인 후 `feature/be-first-clip`에 `origin/main`(`461a643`)을 fast-forward로 반영했다. 충돌 없었고 기존 미등록 `backend/` 전체를 임시 폴더에 백업했다. Commit·Push는 하지 않았다.
-- 기존 PDF 업로드·pypdf 임시 추출·SQLite·Job·샘플 MP4를 유지하고, `GET /clips/parts-test`, `GET /assets/parts-test-audio`를 연결했다. [FE 연동 안내](../../backend/INTEGRATION-NOTES.md)에 실행법·응답·제한을 정리했다.
-- AI 소유 `pipeline.validate.validate_blueprint()`를 사용한다. 샘플 자막 대응·순서·시간과 실제 WAV 길이도 검사한다. `pipeline.extract`와 PyMuPDF는 가져오지 않는다.
-- BE 16개 + AI 검사기 22개, 총 38개 테스트 통과. 기존 PDF→MP4·완료 결과 저장 유지, 샘플 조회·음성·Range·CORS·오류를 확인했다. 실제 Uvicorn HTTP에서도 샘플 조회·206·404·CORS를 확인했다. 유료 호출과 API 키 사용은 없다.
+- 사용자 요청으로 `origin/main`(`a2aab26`)을 `feature/be-first-clip`에 일반 Merge했다(`7318ae0`, 충돌 없음). 아래 새 BE 수정은 미커밋·미푸시다. BE를 main에 병합하지 않았다.
+- `GET /clips/clip-01`, `GET /assets/clip-01-audio`로 실제 설계도·TTS MP3(144.5초, 25문장)를 제공한다. 두 샘플 제공 코드를 공통화했다. [FE 연동 안내](../../backend/INTEGRATION-NOTES.md)에 주소·제한을 정리했다.
+- 공식 검사기·자막 대응/순서/시간·실제 음성 길이를 검사한다. JSON/음성 누락·손상과 디코더 실패를 격리한다. PDF/pypdf·SQLite·Job·샘플 MP4·parts-test는 유지했고 AI/FE 코드는 수정하지 않았다.
+- 노트북 70개 통과(BE 46 + 검사기 22 + PyMuPDF 추출 2). 실제 Uvicorn 8000 포트에서도 두 샘플의 200·206·416·HEAD·If-Range·CORS를 확인했다. 검증 서버는 종료했다. 유료 AI 호출은 없다.
 
 ### 다음 할 일
 
-- FE가 `parts-test`로 재생·일시정지·탐색·반복·자막/동작 복원을 확인한다(Q-BE-02). HTTP 검증은 완료했지만 FE 화면 재생 완료는 아직 아니다.
-- 실제 AI 결과가 올라오면 설계도·내레이션·자막·근거 페이지 PNG를 묶어 제공한다. 현재 샘플은 손으로 쓴 설계도와 신호음이며 실제 TTS가 아니다.
+- 사용자 검토 후 새 BE 수정의 Commit·Push 여부를 확인한다. FE는 공유 후 `clip-01`과 `parts-test`로 재생·일시정지·탐색·반복·자막/동작 복원을 확인한다(Q-BE-02, Q-BE-03).
 - AI 생성 함수가 준비된 후 공식 파이프라인 연결, 오류 클래스, 음성만 재시도·단계 시간 제한·사용량 저장을 구현한다. 현재 `AI_MODE=real` 연결은 미완료다.
 
 ### 막힌 것
 
-- Windows 애플리케이션 제어 정책이 PyMuPDF DLL을 차단한다. pypdf 텍스트 추출을 유지하며 PNG는 대체 그림이다. AI 추출 모듈과 해당 테스트는 실행하지 않았다(Q-BE-01).
-- `samples/clip-01/` 실제 결과와 parts-test 근거 페이지 이미지 API 연결은 아직 없다. 원본 페이지 제공 방법을 AI와 맞춰야 한다.
+- 데스크톱에서는 PyMuPDF DLL이 차단됐고 노트북은 정상 동작한다. 호환성을 위해 업로드의 pypdf 경로를 유지하며 PNG는 대체 그림이다(Q-BE-01).
+- `clip-01`은 slides를 쓰지 않아 PNG 없이 재생 가능하다. parts-test 근거 페이지 이미지 API와 FE의 실제 브라우저 동기화 확인은 남아 있다.
 
 ### 다른 역할에게 요청
 
 - [to:AI] Q-BE-01에서 Windows 추출 제약과 원본 페이지 PNG 제공 방법 확인.
 - [to:FE] Q-BE-02에서 [연동 안내](../../backend/INTEGRATION-NOTES.md)에 따른 실제 브라우저 재생·탐색 확인.
+- [to:FE] Q-BE-03에서 실제 clip-01 재생·탐색·반복 확인(새 BE 수정 공유 후).

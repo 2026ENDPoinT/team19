@@ -7,7 +7,7 @@ FastAPI + SQLite 서버. [공식 API](../contracts/api.md)와 [FE 연동 안내]
 ## 실행 (Windows PowerShell, 저장소 루트)
 
 ```powershell
-$team19Python = 'C:\Users\hahye\anaconda3\envs\team19\python.exe'
+$team19Python = 'C:\anaconda3\envs\team19\python.exe' # 노트북; 다른 PC는 환경 경로에 맞춘다
 # 처음 설치할 때만 실행
 & $team19Python -m pip install -r backend/requirements.txt
 $env:AI_MODE = 'sample'
@@ -15,7 +15,8 @@ $env:AI_MODE = 'sample'
 ```
 
 - API: `http://127.0.0.1:8000`, 설명·호출 화면: `/docs`, 상태: `/health`.
-- 저장된 AI 담당 샘플: `/clips/parts-test`, 음성: `/assets/parts-test-audio`.
+- 실제 AI 결과: `/clips/clip-01`, MP3 음성: `/assets/clip-01-audio` (144.5초, 25문장).
+- 부품 검사 샘플: `/clips/parts-test`, 신호음 WAV: `/assets/parts-test-audio`.
 - 기존 PDF→샘플 MP4 시연: `/demo`. 저장 위치는 `backend/local-data/`이며 Git에서 제외한다.
 - FE 기본 허용 주소: `http://localhost:5173`, `http://127.0.0.1:5173`. 바꾸려면 `FRONTEND_ORIGINS`에 쉼표로 구분해 지정한다.
 
@@ -30,7 +31,7 @@ $env:AI_MODE = 'sample'
 
 ## Windows PDF 추출
 
-PyMuPDF DLL이 애플리케이션 제어 정책에 차단되어 기존 `pdf_text_fallback.py`의 **pypdf 텍스트 추출을 유지**했다. 생성하는 페이지 PNG는 원본 슬라이드가 아닌 표시용 대체 그림이다. Windows 보안을 해제하지 않는다. AI `pipeline/extract.py`는 이 경로에서 가져오거나 실행하지 않는다.
+데스크톱의 PyMuPDF DLL 차단에 대비해 기존 `pdf_text_fallback.py`의 **pypdf 텍스트 추출을 유지**한다. 노트북에서는 PyMuPDF가 정상 동작하지만 업로드 경로는 그대로다. 생성하는 페이지 PNG는 원본 슬라이드가 아닌 표시용 대체 그림이다. AI `pipeline/extract.py`는 이 경로에서 가져오거나 실행하지 않는다.
 
 ## 테스트
 
@@ -40,9 +41,9 @@ $team19TestDir = Join-Path $env:TEMP ('team19-tests-' + [guid]::NewGuid().ToStri
 & $team19Python -m pytest backend/tests/test_api.py pipeline/tests/test_validate.py -q -p no:cacheprovider --basetemp $team19TestDir
 ```
 
-유료 AI API와 키를 사용하지 않는다. 테스트용 PDF도 pypdf로 만든다. 기존 DB 대신 테스트별 임시 저장소를 사용한다. AI의 PDF 추출 테스트(`pipeline/tests/test_extract.py`)는 PyMuPDF가 필요하므로 위 명령에서 제외했다.
+유료 AI API와 키를 사용하지 않는다. 테스트용 PDF도 pypdf로 만든다. 기존 DB 대신 테스트별 임시 저장소를 사용한다. AI의 PDF 추출 테스트(`pipeline/tests/test_extract.py`)는 PyMuPDF가 필요하므로 별도 실행한다. 저장된 MP3는 기존 `imageio-ffmpeg`로 전체 디코딩해 실제 길이·손상을 확인한다. MP3 인코더 지연을 고려해 결과 길이와 0.1초 차이까지 허용한다.
 
-2026-11-09 검증: Python 3.13.15, FastAPI 0.162.2, Starlette 1.10.0에서 **38개 통과**. 기존 업로드·MP4·저장 유지, 공식 검사기, 샘플/음성/Range/CORS/오류 처리를 포함한다. Uvicorn 실제 HTTP 조회도 별도 확인했다. 설치된 Starlette의 TestClient가 httpx 사용에 대한 폐기 예정 경고 1건을 출력하지만 테스트는 통과했다.
+2026-11-09 노트북 검증: **70개 통과**(BE 46 + 검사기 22 + PyMuPDF 추출 2). Python 3.13.15, FastAPI 0.162.2, Starlette 1.10.0에서 기존 업로드·MP4·저장 유지, 두 샘플/음성/Range/CORS/오류 처리를 확인했다. 실제 Uvicorn 8000 포트에서도 두 샘플의 200·206·416·HEAD·If-Range·CORS를 확인했다. TestClient의 httpx 사용에 대한 폐기 예정 경고 1건은 남아 있다.
 
 ## 미구현
 

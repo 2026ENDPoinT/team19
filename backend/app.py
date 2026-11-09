@@ -350,9 +350,9 @@ def get_outline(lecture_id: str, mode: str):
 
 @app.get("/clips/{clip_id}")
 def get_clip(clip_id: str):
-    if clip_id == stored_sample.CLIP_ID:
+    if clip_id in stored_sample.SAMPLES:
         try:
-            return stored_sample.load_clip()
+            return stored_sample.SAMPLES[clip_id].load_clip()
         except PipelineError as exc:
             fail(exc.code, exc.message, 503 if exc.code == "SAMPLE_UNAVAILABLE" else 500)
     with conn() as db:
@@ -393,11 +393,12 @@ def retry_job(job_id: str):
 
 @app.api_route("/assets/{asset_id}", methods=["GET", "HEAD"])
 def asset(asset_id: str):
-    if asset_id == stored_sample.AUDIO_ID:
-        path = stored_sample.audio_path()
+    sample = next((s for s in stored_sample.SAMPLES.values() if s.audio_id == asset_id), None)
+    if sample is not None:
+        path = sample.audio_path()
         if path is None:
             fail("ASSET_NOT_FOUND", "파일을 찾을 수 없습니다.", 404)
-        return FileResponse(path, media_type="audio/wav", filename=path.name, content_disposition_type="inline")
+        return FileResponse(path, media_type=sample.media_type, filename=path.name, content_disposition_type="inline")
     with conn() as db:
         a = row(db, "assets", asset_id)
         if not a:

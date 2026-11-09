@@ -1,8 +1,26 @@
-# FE 연동 안내: 저장된 합병 정렬 샘플
+# FE 연동 안내: 실제 합병 정렬 클립과 부품 샘플
 
 > 상태: 초안 · 담당: BE · 최종 수정: 2026-11-09 · BE/Codex
 
 서버 실행은 [README](README.md), 공식 반환 형식은 [API v0](../contracts/api.md)와 [ClipResult](../contracts/data-model.md#클립-결과-clipresult)를 따른다. FE 파일은 수정하지 않았다.
+
+## 실제 AI 클립 `clip-01`
+
+| 항목 | 값 |
+|---|---|
+| API 기준 주소 | `http://127.0.0.1:8000` |
+| 클립 조회 | `GET /clips/clip-01` |
+| MP3 음성 | `GET /assets/clip-01-audio`, `audio/mpeg` |
+| 결과 | `id: "clip-01"`, `planId: "plan_clip-01"`, `status: "completed"`, `error: null` |
+| ClipResult | `resultId: "clip-01"`, `durationSec: 144.5`, `audioUrl: "/assets/clip-01-audio"`, `blueprint`, `captions` |
+
+[실제 결과](../samples/clip-01/README.md)는 합병 과정(근거 18~20쪽), 장면 7개·자막 25개다. AI가 만든 설계도와 실제 TTS MP3이며, 아래 `parts-test` 신호음과 구분한다. 서버는 저장된 파일을 읽기만 하며 AI 호출이나 새 Job 생성은 없다. 원본 JSON은 유지하고 응답의 `audioUrl`만 바꾼다.
+
+Python 공식 검사기, 문장별 자막 대응·순서·겹침·길이와 실제 음성 길이를 확인한다. MP3의 약 0.05초 인코더 지연은 허용하며 captions 시간은 변경하지 않는다. `GET`/`HEAD`, Range `206`, 범위 초과 `416`, `If-Range`, CORS는 두 음성 모두 지원한다.
+
+FE는 아래 예제의 클립 ID만 `clip-01`로 바꾸고, 음성 URL을 **BE 주소 기준**으로 해석한다. s4~s6은 s3 화면을 이어 쓰므로 재생·일시정지·탐색·반복 시 상태 복원을 확인한다. 이 클립은 slides를 사용하지 않아 원본 페이지 PNG 없이 재생할 수 있다. 브라우저에서 실제 재생·탐색·동작 동기화 확인은 FE와 함께 남아 있다.
+
+JSON/음성 누락 시 클립은 `503 SAMPLE_UNAVAILABLE`, 잘못된 결과·음성은 `500 SAMPLE_INVALID`(설계도/자막 오류는 아래 코드)로 반환하며 다른 클립과 서버는 계속 동작한다. 음성 파일 자체가 없으면 asset은 `404 ASSET_NOT_FOUND`다. 내부 파일 경로나 디코더 오류 내용은 응답하지 않는다.
 
 ## 바로 사용할 주소
 
@@ -67,11 +85,11 @@ const audioUrl = new URL(result.audioUrl, apiBase).href;
 | PDF 업로드·SQLite·Job·클립 조회·미디어 | 기존 구현 유지, 회귀 테스트 통과 |
 | pypdf 추출 | 유지. PNG는 원본 페이지가 아닌 대체 그림 |
 | 업로드 PDF의 샘플 클립·무음 MP4 | 유지, 생성·파일 제공 테스트 통과 |
-| 저장된 parts-test·WAV·HTTP Range | 구현, TestClient와 실제 Uvicorn HTTP 확인 |
+| 저장된 clip-01 MP3·parts-test WAV·HTTP Range | 구현, TestClient와 실제 Uvicorn HTTP 확인 |
 | AI Python 검사기 | 연결. 유료 호출 없이 샘플 조회 시, 생성 음성 처리 전, 결과 저장 전에 검사 |
-| 실제 AI 생성·한국어 TTS | 미구현. 현재 `pipeline/`에는 검사기·PDF 추출만 있음 |
+| 실제 AI 결과 제공 | clip-01 설계도·TTS MP3 제공. 업로드에서 AI 생성 함수를 부르는 공식 연결은 미완료 |
 | 음성만 재시도·단계 전체 시간 제한·사용량 저장 | 미구현. 기존 재시도는 Job 전체 단위 |
 | parts-test 근거 페이지 이미지 API 연결 | 미구현. 페이지 번호 31~33은 샘플 문서의 합성 PNG를 FE에 별도 매핑해야 함 |
 | FE 브라우저의 재생·일시정지·탐색·반복·동작 동기화 | FE와 함께 확인 필요. 이번 HTTP 테스트만으로 화면 재생 완료로 보지 않음 |
 
-검증용 `backend.pipeline`과 AI 소유 `pipeline/`는 서로 다른 모듈이다. 서버는 AI 검사기만 가져오며, Windows 정책에 차단될 수 있는 `pipeline.extract`는 가져오지 않는다. 실제 결과(`samples/clip-01/`)는 아직 없으므로 이번 API의 원본도 계속 `parts-test`다.
+검증용 `backend.pipeline`과 AI 소유 `pipeline/`는 서로 다른 모듈이다. 샘플 제공 서버는 AI 검사기만 가져오며, Windows 정책에 차단될 수 있는 `pipeline.extract`나 유료 생성 모듈은 가져오지 않는다.
