@@ -165,3 +165,92 @@ body {
   color: #64748b;
   font-size: 12px;
 }
+
+/* 공통 다크 테마 색상 */
+:root {
+  color-scheme: dark;
+  --color-background: #0b1120;
+  --color-surface: #111827;
+  --color-surface-inner: #0f172a;
+  --color-border: #334155;
+  --color-text: #f1f5f9;
+  --color-muted: #a8b5c7;
+  --color-accent: #93c5fd;
+  --color-accent-background: #172554;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+/* 헤더와 소개 문구 */
+.site-header {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.page-content > section:first-child {
+  text-align: center;
+}
+
+.page-content > section:first-child p {
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+
+.page-content h1 {
+  font-size: clamp(28px, 5vw, 42px);
+  line-height: 1.3;
+  letter-spacing: -0.04em;
+}
+
+/* 업로드 카드 */
+.upload-card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: 0 16px 45px rgb(0 0 0 / 20%);
+}
+
+.upload-area {
+  background: var(--color-surface-inner);
+  border-color: var(--color-border);
+}
+
+.upload-area__icon {
+  background: var(--color-accent-background);
+  color: var(--color-accent);
+}
+
+.upload-area p {
+  color: var(--color-muted);
+}
+
+/* 파일 선택 버튼 */
+.file-picker {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.file-picker:hover {
+  background: var(--color-accent-background);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.file-picker:focus-within {
+  outline-color: var(--color-accent);
+}
+
+/* 파일 선택 결과와 오류 */
+.selected-file {
+  background: var(--color-accent-background);
+  border-color: #1e40af;
+}
+
+.selected-file__size {
+  color: var(--color-muted);
+}
+
+.upload-error {
+  background: #450a0a;
+  color: #fecaca;
+}
