@@ -1,20 +1,24 @@
 import { useState } from 'react'
 import type { ChangeEvent, DragEvent } from 'react'
 
-export default function PdfUpload() {
-  const [file, setFile] = useState<File | null>(null)
+type PdfUploadProps = {
+  file: File | null
+  onFileChange: (file: File | null) => void
+}
+
+export default function PdfUpload({ file, onFileChange }: PdfUploadProps) {
   const [error, setError] = useState('')
 
     function selectFile(selectedFile?: File) {
     if (!selectedFile) return
 
     if (!selectedFile.name.toLowerCase().endsWith('.pdf')) {
-      setFile(null)
+      onFileChange(null)
       setError('PDF 파일을 선택해 주세요.')
       return
     }
 
-    setFile(selectedFile)
+    onFileChange(selectedFile)
     setError('')
   }
 
@@ -27,7 +31,7 @@ export default function PdfUpload() {
     event.preventDefault()
 
     if (event.dataTransfer.files.length !== 1) {
-      setFile(null)
+      onFileChange(null)
       setError('PDF 파일을 한 개씩 올려 주세요.')
       return
     }

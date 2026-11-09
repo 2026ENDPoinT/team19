@@ -254,3 +254,22 @@ body {
   background: #450a0a;
   color: #fecaca;
 }
+
+/* 학습 모드 선택 */
+button, input { font: inherit; }
+.upload-actions, .mode-selection { max-width: 680px; margin: 24px auto 0; }
+.primary-button, .secondary-button { min-height: 44px; padding: 12px 20px; border-radius: 12px; cursor: pointer; }
+.primary-button { width: 100%; border: 1px solid #2563eb; background: #2563eb; color: white; font-weight: 600; }
+.primary-button:hover:not(:disabled) { background: #1d4ed8; }
+.primary-button:disabled { background: #1e293b; border-color: var(--color-border); color: var(--color-muted); cursor: not-allowed; }
+.secondary-button { border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); }
+.primary-button:focus-visible, .secondary-button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+.mode-selection .selected-file { text-align: left; }
+.mode-options { display: grid; gap: 12px; margin: 28px 0 0; padding: 0; border: 0; text-align: left; }
+.mode-options legend { margin-bottom: 12px; font-weight: 600; }
+.mode-option { display: flex; align-items: center; gap: 14px; padding: 20px; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); cursor: pointer; }
+.mode-option:has(input:checked) { border-color: var(--color-accent); background: var(--color-accent-background); }
+.mode-option:focus-within { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+.mode-option input { flex-shrink: 0; accent-color: #60a5fa; width: 18px; height: 18px; }
+.mode-option__description { display: block; margin-top: 8px; color: var(--color-muted); line-height: 1.6; }
+.mode-notice { font-size: 13px; color: var(--color-muted); }
