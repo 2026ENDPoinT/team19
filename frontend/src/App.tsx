@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import SampleClipFlow from './components/SampleClipFlow'
 import Header from './components/Header'
 import UploadIntro from './components/UploadIntro'
@@ -11,6 +11,23 @@ export default function App() {
   const [file, setFile] = useState<File | null>(null)
   const [screen, setScreen] = useState<'upload' | 'mode' | 'samples'>('upload')
   const [selectedMode, setSelectedMode] = useState<LearningMode | null>(null)
+  const [sessionKey, setSessionKey] = useState(0)
+  const mainRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    mainRef.current?.focus()
+  }, [screen, sessionKey])
+
+  function goHome() {
+    setScreen('upload')
+  }
+
+  function startNewPdf() {
+    setFile(null)
+    setSelectedMode(null)
+    setScreen('upload')
+    setSessionKey((value) => value + 1)
+  }
 
   function handleFileChange(nextFile: File | null) {
     setFile(nextFile)
@@ -23,8 +40,8 @@ export default function App() {
 
   return (
     <>
-      <Header />
-      <main className="page-content">
+      <Header onHome={goHome} onReset={startNewPdf} canReset={file !== null || screen !== 'upload'} />
+      <main className="page-content" ref={mainRef} tabIndex={-1} key={sessionKey} aria-label="학습 화면">
         {screen === 'upload' ? (
           <>
             <UploadIntro />

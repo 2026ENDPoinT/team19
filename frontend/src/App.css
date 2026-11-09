@@ -297,3 +297,20 @@ button, input { font: inherit; }
   outline-offset: 3px;
 }
 .remove-file { margin-top: 12px; }
+
+/* 공통 화면 이동과 좁은 화면 배치 */
+.site-header__inner { justify-content: space-between; flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
+.brand-button { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--color-text); cursor: pointer; }
+.brand-button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; border-radius: 8px; }
+.secondary-button:disabled { opacity: 0.55; cursor: not-allowed; }
+.page-content:focus { outline: none; }
+@media (max-width: 480px) {
+  .site-header__inner { padding-left: 16px; padding-right: 16px; }
+  .brand-name { font-size: 17px; }
+  .site-header .secondary-button { padding: 10px 12px; font-size: 13px; }
+  .page-content { padding: 32px 16px; }
+  .upload-card { padding: 16px; }
+  .upload-area { padding: 28px 12px; }
+  .mode-option, .clip-card { padding: 16px; }
+  .sample-controls .secondary-button { width: 100%; white-space: normal; }
+}
