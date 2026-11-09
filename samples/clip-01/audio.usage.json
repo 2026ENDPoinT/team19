@@ -1,0 +1,1 @@
+{"provider": "openai", "model": "gpt-4o-mini-tts", "voice": "coral", "newAudioSec": 135.5, "reusedLines": 0, "costUsd": 0.0339, "costIsEstimate": true}
