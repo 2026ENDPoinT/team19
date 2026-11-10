@@ -2,9 +2,11 @@ import importlib
 from dataclasses import replace
 import io
 import json
+import os
 import shutil
 import subprocess
 import sys
+import textwrap
 import time
 from pathlib import Path
 
@@ -132,7 +134,7 @@ def sample(request):
     return stored_sample.SAMPLES[request.param]
 
 
-def test_stored_sample_contract_and_validator(client, monkeypatch, sample):
+def test_stored_sample_contract_and_validator(client, monkeypatch, sample, tmp_path):
     import pipeline.validate as validator
     from backend import stored_sample
     from backend.pipeline import Pipeline
@@ -159,7 +161,46 @@ def test_stored_sample_contract_and_validator(client, monkeypatch, sample):
     assert clip['error'] is None
     assert clip['result'] == {**source, 'audioUrl': f'/assets/{sample.audio_id}'}
     assert calls == [57]
-    assert 'pipeline.extract' not in sys.modules and 'fitz' not in sys.modules
+    # BE/Codex: collection of test_extract.py legitimately imports the extractor
+    # in pytest's interpreter. Measure this request's imports in a fresh process.
+    script = textwrap.dedent('''
+        import sys
+        from unittest.mock import patch
+
+        forbidden = {'pipeline.extract', 'pymupdf', 'fitz',
+                     'pipeline.audio', 'pipeline.blueprint', 'openai', 'anthropic'}
+        def guard_import(event, args):
+            if event == 'import' and args[0].split('.')[0] in {'pymupdf', 'fitz', 'openai', 'anthropic'}:
+                raise AssertionError('Unexpected import: ' + args[0])
+            if event == 'import' and args[0] in forbidden:
+                raise AssertionError('Unexpected import: ' + args[0])
+        sys.addaudithook(guard_import)
+        assert forbidden.isdisjoint(sys.modules)
+
+        from fastapi.testclient import TestClient
+        from backend.pipeline import Pipeline
+        from backend.app import app, _executor
+
+        try:
+            with patch.object(Pipeline, '__init__',
+                              side_effect=AssertionError('Stored sample must not generate')):
+                with TestClient(app) as isolated_client:
+                    response = isolated_client.get('/clips/' + sys.argv[1])
+                    assert response.status_code == 200, response.text
+                    assert response.json()['status'] == 'completed'
+        finally:
+            _executor.shutdown(wait=True)
+        assert forbidden.isdisjoint(sys.modules), sorted(forbidden.intersection(sys.modules))
+        print('Stored sample import boundary passed')
+    ''')
+    environment = os.environ.copy()
+    environment.update(AI_MODE='sample', SAMPLE_MP4='0',
+                       TEAM19_DATA_DIR=str(tmp_path / 'isolated-server'))
+    isolated = subprocess.run([sys.executable, '-c', script, sample.clip_id],
+                              cwd=Path(__file__).resolve().parents[2], env=environment,
+                              capture_output=True, text=True, timeout=60)
+    assert isolated.returncode == 0, isolated.stdout + isolated.stderr
+    assert 'Stored sample import boundary passed' in isolated.stdout
     # Neither the sample JSON nor its relative file reference was changed on disk.
     assert json.loads(path.read_text(encoding='utf-8')) == source
     assert str(sample.directory) not in response.text
