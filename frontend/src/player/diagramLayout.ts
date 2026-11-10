@@ -12,6 +12,10 @@ export function layoutDiagram(nodes: LayoutNode[], edges: LayoutEdge[], layout: 
     nodes.forEach((node, index) => positions.set(node.id, { x: 65 + index * 145, y: 55 }))
     return { positions, width: Math.max(300, nodes.length * 145 - 15), height: 110 }
   }
+  if (layout === 'column') {
+    nodes.forEach((node, index) => positions.set(node.id, { x: 130, y: 34 + index * 82 }))
+    return { positions, width: 260, height: Math.max(110, (nodes.length - 1) * 82 + 68) }
+  }
   if (layout !== 'tree') throw new Error(`미지원 다이어그램 배치: ${layout}`)
   const children = new Map(nodes.map((node) => [node.id, [] as string[]]))
   const parents = new Set<string>()

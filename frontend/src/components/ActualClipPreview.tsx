@@ -1,8 +1,9 @@
 import { useAudioClock } from '../player/useAudioClock'
 import { samplePageUrl } from '../services/samplePages'
 import PlayerStage from '../player/PlayerStage'
+import PlayerControls from '../player/PlayerControls'
 import { calculatePlayerState } from '../player/state'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { loadClip } from '../services/clips'
 import type { ClipResult } from '../services/clips'
 
@@ -17,6 +18,24 @@ export default function ActualClipPreview({ onBack }: Props) {
   const [sourceOpen, setSourceOpen] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [playbackError, setPlaybackError] = useState('')
+  const surfaceRef = useRef<HTMLDivElement>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  useEffect(() => {
+    const sync = () => setIsFullscreen(document.fullscreenElement === surfaceRef.current && document.fullscreenElement !== null)
+    document.addEventListener('fullscreenchange', sync)
+    return () => document.removeEventListener('fullscreenchange', sync)
+  }, [])
+
+  async function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen()
+      else if (surfaceRef.current?.requestFullscreen) await surfaceRef.current.requestFullscreen()
+      else throw new Error('unsupported')
+    } catch {
+      setPlaybackError('이 브라우저에서 전체화면을 열지 못했어요.')
+    }
+  }
 
   useEffect(() => {
     const controller = new AbortController()
@@ -79,14 +98,12 @@ export default function ActualClipPreview({ onBack }: Props) {
             {sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}
           </button>
           <div className={`actual-clip-layout${sourceOpen ? ' actual-clip-layout--with-source' : ''}`}>
-          <div className="actual-player">
-          {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={(page) => samplePageUrl(clipId, page)} isPlaying={isPlaying} onTogglePlayback={togglePlayback} />}
-          <div className="actual-player-controls">
-            <button type="button" className="rounded-lg border px-3 py-2" onClick={restart}>처음부터</button>
-            <audio src={result.audioUrl} controls preload="metadata" loop ref={audioRef}
-              onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}
-              onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
-          </div>
+          <div className="actual-player" ref={surfaceRef}>
+          <audio src={result.audioUrl} hidden preload="metadata" loop ref={audioRef}
+            onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}
+            onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
+          {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={(page) => samplePageUrl(clipId, page)} isPlaying={isPlaying} onTogglePlayback={togglePlayback}
+            controls={<PlayerControls audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
           {playbackError && <p role="alert" className="mt-2 text-sm text-red-700">{playbackError}</p>}
           </div>
           {sourceOpen && (
