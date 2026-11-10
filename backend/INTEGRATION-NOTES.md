@@ -1,6 +1,6 @@
 # FE 연동 안내: 실제 합병 정렬 클립과 부품 샘플
 
-> 상태: 초안 · 담당: BE · 최종 수정: 2026-11-09 · BE/Codex
+> 상태: 초안 · 담당: BE · 최종 수정: 2026-11-10 · BE/Codex
 
 서버 실행은 [README](README.md), 공식 반환 형식은 [API v0](../contracts/api.md)와 [ClipResult](../contracts/data-model.md#클립-결과-clipresult)를 따른다. FE 파일은 수정하지 않았다.
 
@@ -87,6 +87,14 @@ const audioUrl = new URL(result.audioUrl, apiBase).href;
 - 없는 클립은 `404 {"error":{"code":"CLIP_NOT_FOUND","message":"클립을 찾을 수 없습니다.","retryable":false}}`다. 없는 파일은 `ASSET_NOT_FOUND`다.
 - 저장된 샘플이 없으면 `503 SAMPLE_UNAVAILABLE`, 잘못된 설계도는 `500 BLUEPRINT_INVALID`, 자막 오류는 `500 TTS_FAILED`다. 잘못된 결과를 `completed`로 반환하지 않는다.
 
+## 원본 페이지 파일과 이미지 API 범위
+
+Q-BE-01의 원본 PNG는 AI가 제공 완료했다. A/B 공통 18~20쪽은 `samples/clip-01/pages/page-018.png`~`page-020.png`, parts-test 31~33쪽은 `samples/parts-test/pages/page-031.png`~`page-033.png`다. 합성 그림이 아닌 실제 강의 페이지다.
+
+원격 frontend(`115f6c3`)의 `src/services/samplePages.ts`가 위 파일을 FE 개발용 URL로 임시 매핑한다. 이는 BE 이미지 API 연결이 아니다. 현재 `backend/stored_sample.py`의 고정 등록은 세 음성뿐이며, 이 PNG의 `/assets/{id}` 매핑은 아직 없다. 이미지 ID를 페이지 번호나 파일 이름에서 추측하지 않는다. 기존 `/assets/{id}`는 DB에 등록된 업로드 미디어도 제공하지만, 저장된 샘플 PNG를 자동 등록하지 않는다.
+
+다음 구현에서 기존 미디어 제공 방식으로 등록 가능한지와 실제 ID를 FE와 확인하고 안내한다. API·ClipResult 변경이 필요하면 별도로 협의한다. 현재 파일 매핑으로 검증 가능한 범위와 API 검증을 구분한다.
+
 ## 현재 기능과 남은 확인
 
 | 기능 | 상태 |
@@ -98,7 +106,7 @@ const audioUrl = new URL(result.audioUrl, apiBase).href;
 | AI Python 검사기 | 연결. 유료 호출 없이 샘플 조회 시, 생성 음성 처리 전, 결과 저장 전에 검사 |
 | 실제 AI 결과 제공 | A/B 설계도·TTS MP3 제공. 업로드에서 AI 자동 생성까지 연결하는 작업은 이번 범위 밖 |
 | 음성만 재시도·단계 전체 시간 제한·사용량 저장 | 미구현. 기존 재시도는 Job 전체 단위 |
-| parts-test 근거 페이지 이미지 API 연결 | 미구현. 페이지 번호 31~33은 샘플 문서의 합성 PNG를 FE에 별도 매핑해야 함 |
+| 저장된 샘플 근거 페이지 이미지 API 연결 | 미구현. 실제 PNG는 제공 완료, FE frontend는 18~20·31~33쪽을 임시 파일 매핑 중. 이미지 asset ID는 미등록 |
 | FE 브라우저의 재생·일시정지·탐색·반복·동작 동기화 | FE와 함께 확인 필요. 이번 HTTP 테스트만으로 화면 재생 완료로 보지 않음 |
 
 검증용 `backend.pipeline`과 AI 소유 `pipeline/`는 서로 다른 모듈이다. 샘플 제공 서버는 AI 검사기만 가져오며, Windows 정책에 차단될 수 있는 `pipeline.extract`나 유료 생성 모듈은 가져오지 않는다.
