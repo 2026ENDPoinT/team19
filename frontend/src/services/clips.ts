@@ -1,3 +1,4 @@
+import type { Blueprint } from '../player/state'
 export type Caption = {
   sceneId: string
   lineIndex: number
@@ -10,7 +11,7 @@ export type ClipResult = {
   resultId: string
   durationSec: number
   audioUrl: string
-  blueprint: { version: number; title: string; theme: string; scenes: unknown[] }
+  blueprint: Blueprint
   captions: Caption[]
 }
 

@@ -1,0 +1,19 @@
+.player-stage { display: flex; flex-direction: column; width: min(100%, 420px); aspect-ratio: 9 / 16; margin: 20px auto 0; padding: 20px; border-radius: 20px; background: #020617; color: #f8fafc; }
+.player-slots { display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 12px; flex: 1; min-height: 0; }
+.player-slot { display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 8px; border-radius: 8px; overflow: auto; }
+.player-highlight { background: #1e3a8a; outline: 2px solid #93c5fd; outline-offset: -2px; }
+.player-text { text-align: center; overflow-wrap: anywhere; line-height: 1.6; }
+.player-text--title { font-size: 22px; font-weight: 700; }
+.player-text--keyword { color: #93c5fd; font-size: 20px; font-weight: 700; }
+.player-text--formula { font-size: 18px; }
+.player-caption { flex-shrink: 0; min-height: 80px; margin-top: 16px; padding: 12px; border-radius: 10px; background: #0f172a; font-size: 15px; line-height: 1.7; }
+.player-grid-scroll { max-width: 100%; overflow: auto; padding: 4px; }
+.player-grid { display: flex; flex-direction: column; gap: 6px; width: max-content; }
+.player-grid-row { display: flex; gap: 6px; }
+.player-cell { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 38px; min-height: 48px; padding: 4px 6px; border: 1px solid #64748b; border-radius: 6px; font-variant-numeric: tabular-nums; }
+.player-cell-index { color: #94a3b8; font-size: 10px; }
+.player-pointer { font-size: 11px; color: #fde68a; padding: 2px; }
+.player-code { max-width: 100%; overflow: auto; margin: 0; font-size: 12px; line-height: 1.7; }
+.player-code-line { display: block; white-space: pre; padding: 0 4px; }
+.player-line-number { display: inline-block; min-width: 24px; color: #94a3b8; user-select: none; }
+.player-unsupported { color: #fde68a; font-size: 13px; line-height: 1.6; }
