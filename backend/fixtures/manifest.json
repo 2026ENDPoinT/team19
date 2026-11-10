@@ -1,0 +1,283 @@
+{
+  "notice": "BE/Codex; state examples only. Contract review does not certify live HTTP or playback. All paths are relative to this directory.",
+  "owner": "BE",
+  "version": 1,
+  "caseCount": 66,
+  "pageCount": 57,
+  "provenance": {
+    "sourceCommit": "e3b378f",
+    "originalCasesSha256": "0077f9daaaa388c128d520fc7c600f50aa8b1aca936909edc533d12888fa17d2",
+    "casePayloadSha256": "04a6025016346b55ccea0740409b012e2e12fadf682f439231323dd7926900b7",
+    "note": "One-time migration of 66 cases. No runtime or rebuild dependency on the historical sandbox source."
+  },
+  "blueprint": {
+    "case": "clip.completed",
+    "sha256": "f87ea3b4982c76a501a525a3bd2caadfe3231ef1c7c553d6a2452a00d346f786",
+    "originSha256": "ec1801bb3393ffe912959a0fdeb63cb6bb7449f54bfbc186a72c418cf9abb539",
+    "note": "Original concept blueprint embedded in cases.json; retained unchanged, not a new AI output."
+  },
+  "contractReview": {
+    "basis": [
+      "D-19",
+      "D-26",
+      "D-28",
+      "D-29",
+      "D-31",
+      "D-34",
+      "D-35"
+    ],
+    "shapeCompatible": [
+      "upload.accepted",
+      "prepare.pending",
+      "prepare.running",
+      "lecture.processing",
+      "prepare.completed",
+      "lecture.ready",
+      "upload.bad.accepted",
+      "prepare.bad.pending",
+      "prepare.bad.running",
+      "prepare.failed",
+      "outline.review.accepted",
+      "outline.review.pending",
+      "outline.review.running",
+      "outline.review.planning",
+      "outline.review.completed",
+      "outline.intro.accepted",
+      "outline.intro.pending",
+      "outline.intro.running",
+      "outline.intro.planning",
+      "outline.intro.completed",
+      "outline.exam.accepted",
+      "outline.exam.pending",
+      "outline.exam.running",
+      "outline.exam.planning",
+      "outline.exam.completed",
+      "outline.review.reused.running",
+      "outline.review.A.registered",
+      "clip01.pending",
+      "clip01.running",
+      "clip01.completed",
+      "clip02.pending",
+      "clip02.running",
+      "clip03.pending",
+      "clip04.pending",
+      "clip04.running",
+      "clip04.failed",
+      "clip05.pending",
+      "clip.pending",
+      "clip.running",
+      "clip.failed",
+      "clip.completed",
+      "retry.accepted",
+      "retry.pending",
+      "retry.running",
+      "retry.failed",
+      "restart.failed",
+      "upload.too-large",
+      "upload.unsupported",
+      "upload.invalid",
+      "upload.storage",
+      "outline.not-ready",
+      "outline.invalid-mode",
+      "lecture.not-found",
+      "outline.not-found",
+      "clip.not-found",
+      "job.not-found",
+      "asset.not-found",
+      "retry.not-found",
+      "retry.conflict"
+    ],
+    "historical": [
+      {
+        "id": "partial-registration",
+        "cases": [
+          "outline.intro.ready",
+          "outline.exam.ready",
+          "outline.review.B.registered",
+          "outline.review.mixed",
+          "outline.review.retrying",
+          "clip.unregistered"
+        ],
+        "reason": "Historical partial/unregistered job snapshots. D-19 and API v0 require automatic registration of all clips after planning. The nullable jobId field exists in the data model but these snapshots do not demonstrate the settled registration policy."
+      },
+      {
+        "id": "reuse-http-200",
+        "cases": [
+          "outline.review.reused.ready"
+        ],
+        "reason": "Historical completed reuse returns HTTP 200. API v0 endpoint table lists 202; current backend/app.py also uses 200 for completed reuse. Preserved as a documented difference, not a new contract decision."
+      }
+    ],
+    "limitations": [
+      "lecture.processing uses processing; API v0 does not enumerate Lecture statuses and the current BE uses running.",
+      "Job types prepare_lecture/build_outline/generate_clip and stages queued/done/audio are historical labels, not a formal vocabulary.",
+      "Multipart PDF files are omitted. Upload examples cannot be replayed as requests.",
+      "lecture.ready lists only four referenced pages from a fictional 57-page lecture.",
+      "IDs, titles, clip counts, error messages/retryability and timing are illustrative, not server snapshots.",
+      "clip.completed is shape-compatible but cannot play from these assets: the 32.25-second synthetic tone was not copied.",
+      "Flows are independent snapshots. In particular retry intentionally fails again; mixed and retrying include historical partial registration."
+    ]
+  },
+  "assets": [
+    {
+      "url": "/assets/img_31",
+      "contentType": "image/png",
+      "availability": "unavailable",
+      "file": null,
+      "reason": "Historical synthetic media excluded; URL is a fixture label, not a registered server asset."
+    },
+    {
+      "url": "/assets/img_32",
+      "contentType": "image/png",
+      "availability": "unavailable",
+      "file": null,
+      "reason": "Historical synthetic media excluded; URL is a fixture label, not a registered server asset."
+    },
+    {
+      "url": "/assets/img_33",
+      "contentType": "image/png",
+      "availability": "unavailable",
+      "file": null,
+      "reason": "Historical synthetic media excluded; URL is a fixture label, not a registered server asset."
+    },
+    {
+      "url": "/assets/img_52",
+      "contentType": "image/png",
+      "availability": "unavailable",
+      "file": null,
+      "reason": "Historical synthetic media excluded; URL is a fixture label, not a registered server asset."
+    },
+    {
+      "url": "/assets/audio_01",
+      "contentType": "audio/wav",
+      "availability": "unavailable",
+      "file": null,
+      "reason": "Historical synthetic media excluded; URL is a fixture label, not a registered server asset."
+    }
+  ],
+  "flows": {
+    "preparation": [
+      "upload.accepted",
+      "prepare.pending",
+      "prepare.running",
+      "lecture.processing",
+      "prepare.completed",
+      "lecture.ready"
+    ],
+    "invalidPdf": [
+      "upload.bad.accepted",
+      "prepare.bad.pending",
+      "prepare.bad.running",
+      "prepare.failed"
+    ],
+    "reviewPlanning": [
+      "outline.review.accepted",
+      "outline.review.pending",
+      "outline.review.running",
+      "outline.review.planning",
+      "outline.review.completed"
+    ],
+    "A": [
+      "outline.review.A.registered"
+    ],
+    "B": [
+      "outline.review.B.registered"
+    ],
+    "clipSuccess": [
+      "clip01.pending",
+      "clip01.running",
+      "clip01.completed",
+      "clip.completed"
+    ],
+    "mixed": [
+      "outline.review.mixed",
+      "clip.pending",
+      "clip.unregistered",
+      "clip.running",
+      "clip.failed",
+      "clip.completed"
+    ],
+    "retry": [
+      "clip04.pending",
+      "clip04.running",
+      "clip04.failed",
+      "clip.failed",
+      "retry.accepted",
+      "retry.pending",
+      "retry.running",
+      "outline.review.retrying",
+      "retry.conflict",
+      "retry.failed",
+      "clip.failed"
+    ],
+    "restart": [
+      "clip02.pending",
+      "clip02.running",
+      "restart.failed"
+    ]
+  },
+  "referenceMedia": [
+    {
+      "file": "../../samples/parts-test/pages/page-031.png",
+      "kind": "image/png",
+      "page": 31,
+      "purpose": "Current parts-test page only; do not substitute for historical concept pages."
+    },
+    {
+      "file": "../../samples/parts-test/pages/page-032.png",
+      "kind": "image/png",
+      "page": 32,
+      "purpose": "Current parts-test page only; do not substitute for historical concept pages."
+    },
+    {
+      "file": "../../samples/parts-test/pages/page-033.png",
+      "kind": "image/png",
+      "page": 33,
+      "purpose": "Current parts-test page only; do not substitute for historical concept pages."
+    },
+    {
+      "file": "../../samples/clip-01/pages/page-018.png",
+      "kind": "image/png",
+      "page": 18,
+      "purpose": "Current A/B page only; do not substitute for historical concept pages."
+    },
+    {
+      "file": "../../samples/clip-01/pages/page-019.png",
+      "kind": "image/png",
+      "page": 19,
+      "purpose": "Current A/B page only; do not substitute for historical concept pages."
+    },
+    {
+      "file": "../../samples/clip-01/pages/page-020.png",
+      "kind": "image/png",
+      "page": 20,
+      "purpose": "Current A/B page only; do not substitute for historical concept pages."
+    }
+  ],
+  "playbackReferences": [
+    {
+      "clipId": "clip-01",
+      "resultFile": "../../samples/clip-01/result.json",
+      "audioFile": "../../samples/clip-01/audio.mp3",
+      "apiPath": "/clips/clip-01",
+      "audioUrl": "/assets/clip-01-audio",
+      "purpose": "Real AI/TTS A"
+    },
+    {
+      "clipId": "clip-01-b",
+      "resultFile": "../../samples/clip-01/alt-terra/result.json",
+      "audioFile": "../../samples/clip-01/alt-terra/audio.mp3",
+      "apiPath": "/clips/clip-01-b",
+      "audioUrl": "/assets/clip-01-b-audio",
+      "purpose": "Real AI/TTS B"
+    },
+    {
+      "clipId": "parts-test",
+      "resultFile": "../../samples/parts-test/result.json",
+      "audioFile": "../../samples/parts-test/audio.wav",
+      "apiPath": "/clips/parts-test",
+      "audioUrl": "/assets/parts-test-audio",
+      "purpose": "Hand-written component test with signal tone, not AI/TTS"
+    }
+  ]
+}
