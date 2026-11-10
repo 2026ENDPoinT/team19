@@ -1,3 +1,4 @@
+import { useAudioClock } from '../player/useAudioClock'
 import { samplePageUrl } from '../services/samplePages'
 import PlayerStage from '../player/PlayerStage'
 import { calculatePlayerState } from '../player/state'
@@ -11,14 +12,13 @@ export default function ActualClipPreview({ onBack }: Props) {
   const [clipId, setClipId] = useState('clip-01')
   const [result, setResult] = useState<ClipResult | null>(null)
   const [error, setError] = useState('')
-  const [time, setTime] = useState(0)
+  const { audioRef, time, restart } = useAudioClock(result ? clipId + ':' + result.resultId : 'loading')
   const [retry, setRetry] = useState(0)
 
   useEffect(() => {
     const controller = new AbortController()
     setResult(null)
     setError('')
-    setTime(0)
     loadClip(clipId, controller.signal)
       .then((data) => { if (!controller.signal.aborted) setResult(data) })
       .catch((cause: unknown) => {
@@ -41,7 +41,7 @@ export default function ActualClipPreview({ onBack }: Props) {
       <p className="mt-2 text-sm text-slate-600">저장된 실제 결과와 음성을 확인하는 개발 화면이에요. 텍스트·수식·격자·코드를 시간에 맞춰 표시해요. 가로 다이어그램·재귀 트리도 표시해요. 원본 그림의 확대·강조도 표시해요. 부드러운 움직임은 아직 연결 전입니다.</p>
       <p className="mt-2 text-xs text-slate-500">원본 그림은 저장소의 정식 samples 파일에 임시 연결했습니다. parts-test는 실제 설명 음성 대신 신호음을 사용합니다.</p>
       <label className="mt-6 block font-semibold" htmlFor="actual-clip">비교할 클립</label>
-      <select id="actual-clip" value={clipId} onChange={(event) => { setResult(null); setTime(0); setClipId(event.target.value) }} className="mt-2 w-full rounded-lg border bg-white p-3">
+      <select id="actual-clip" value={clipId} onChange={(event) => { setResult(null); setClipId(event.target.value) }} className="mt-2 w-full rounded-lg border bg-white p-3">
         <option value="clip-01">A · Sonnet / Cedar</option>
         <option value="clip-01-b">B · Terra / Cedar</option>
         <option value="parts-test">부품 검사 · 신호음 샘플 (실제 TTS 아님)</option>
@@ -56,7 +56,8 @@ export default function ActualClipPreview({ onBack }: Props) {
           <h2 className="text-xl font-bold">{result.blueprint.title}</h2>
           <p className="mt-2 break-all text-xs text-slate-500">{result.resultId} · {result.durationSec.toFixed(1)}초</p>
           {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={(page) => samplePageUrl(clipId, page)} />}
-          <audio className="mt-5 w-full" src={result.audioUrl} controls preload="metadata" loop onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)} onSeeked={(event) => setTime(event.currentTarget.currentTime)} onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
+          <button type="button" className="mt-4 rounded-lg border px-4 py-2" onClick={restart}>처음부터</button>
+          <audio className="mt-5 w-full" src={result.audioUrl} controls preload="metadata" loop ref={audioRef} onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
         </section>
       )}
     </main>
