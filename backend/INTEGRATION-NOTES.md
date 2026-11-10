@@ -91,9 +91,22 @@ const audioUrl = new URL(result.audioUrl, apiBase).href;
 
 Q-BE-01의 원본 PNG는 AI가 제공 완료했다. A/B 공통 18~20쪽은 `samples/clip-01/pages/page-018.png`~`page-020.png`, parts-test 31~33쪽은 `samples/parts-test/pages/page-031.png`~`page-033.png`다. 합성 그림이 아닌 실제 강의 페이지다.
 
-원격 frontend(`115f6c3`)의 `src/services/samplePages.ts`가 위 파일을 FE 개발용 URL로 임시 매핑한다. 이는 BE 이미지 API 연결이 아니다. 현재 `backend/stored_sample.py`의 고정 등록은 세 음성뿐이며, 이 PNG의 `/assets/{id}` 매핑은 아직 없다. 이미지 ID를 페이지 번호나 파일 이름에서 추측하지 않는다. 기존 `/assets/{id}`는 DB에 등록된 업로드 미디어도 제공하지만, 저장된 샘플 PNG를 자동 등록하지 않는다.
+FE main(`2d44b51`)의 `src/services/samplePages.ts`는 위 파일을 FE 개발용 URL로 임시 매핑한다. 이번 BE 구현은 아래 6개만 `backend/stored_sample.py`의 `PAGE_ASSETS`에 고정 등록한다. 원본 파일은 복사·수정하지 않으며 A/B는 같은 세 이미지를 공유한다. FE 매핑은 변경하지 않았고 API URL 전환은 FE와 공유 후 진행한다.
 
-다음 구현에서 기존 미디어 제공 방식으로 등록 가능한지와 실제 ID를 FE와 확인하고 안내한다. API·ClipResult 변경이 필요하면 별도로 협의한다. 현재 파일 매핑으로 검증 가능한 범위와 API 검증을 구분한다.
+| 용도 | asset ID | GET·HEAD URL | 원본 파일(저장소 기준) |
+|---|---|---|---|
+| A/B 18쪽 | `clip-01-page-018` | `http://127.0.0.1:8000/assets/clip-01-page-018` | `samples/clip-01/pages/page-018.png` |
+| A/B 19쪽 | `clip-01-page-019` | `http://127.0.0.1:8000/assets/clip-01-page-019` | `samples/clip-01/pages/page-019.png` |
+| A/B 20쪽 | `clip-01-page-020` | `http://127.0.0.1:8000/assets/clip-01-page-020` | `samples/clip-01/pages/page-020.png` |
+| 부품 31쪽 | `parts-test-page-031` | `http://127.0.0.1:8000/assets/parts-test-page-031` | `samples/parts-test/pages/page-031.png` |
+| 부품 32쪽 | `parts-test-page-032` | `http://127.0.0.1:8000/assets/parts-test-page-032` | `samples/parts-test/pages/page-032.png` |
+| 부품 33쪽 | `parts-test-page-033` | `http://127.0.0.1:8000/assets/parts-test-page-033` | `samples/parts-test/pages/page-033.png` |
+
+응답은 `image/png`이며 HEAD는 본문 없이 같은 파일 정보를 준다. 기존 CORS 설정을 적용한다. Pillow로 실제 PNG 형식·청크/CRC·픽셀 디코딩을 검사하고, 파일이 없거나 손상됐거나 등록 폴더 밖이면 `404 ASSET_NOT_FOUND`다. 임의 경로나 폴더 검색으로 파일을 공개하지 않는다. 이미지 ID를 추측하거나 과거 fixtures의 `/assets/img_31` 같은 예제 ID를 쓰지 않는다.
+
+새 경로나 ClipResult 필드, 강의·Job·DB asset 등록을 추가하지 않는다. 동적 업로드 자산은 `asset_<uuid>`, 정적 이미지와 음성은 위 고정 ID라 서로 구분된다. 기존 MP3/WAV·Range 제공은 유지한다. FE는 위 상대 경로를 `new URL('/assets/clip-01-page-018', apiBase).href`처럼 **BE 기준 주소**로 해석하면 된다. 이 URL 제공과 실제 브라우저의 원본 패널·slides 검증은 구분한다.
+
+2026-11-10 BE/Codex 검증: 이미지 관련 31개 추가 테스트와 기존 147개를 포함해 루트 단일 pytest 실행 **178개 통과**. 실제 임시 Uvicorn(`127.0.0.1:8000`)에서도 6개 PNG의 바이트 일치·GET·HEAD·CORS·OPTIONS, 미등록 이미지 404, 기존 MP3/WAV 3개의 Range 206·CORS를 확인했다. 테스트 서버는 종료했고 포트와 임시 저장소를 정리했다. 유료 호출은 없으며 실제 FE 브라우저 재생은 별도 확인이 필요하다.
 
 ## 현재 기능과 남은 확인
 
@@ -106,7 +119,7 @@ Q-BE-01의 원본 PNG는 AI가 제공 완료했다. A/B 공통 18~20쪽은 `samp
 | AI Python 검사기 | 연결. 유료 호출 없이 샘플 조회 시, 생성 음성 처리 전, 결과 저장 전에 검사 |
 | 실제 AI 결과 제공 | A/B 설계도·TTS MP3 제공. 업로드에서 AI 자동 생성까지 연결하는 작업은 이번 범위 밖 |
 | 음성만 재시도·단계 전체 시간 제한·사용량 저장 | 미구현. 기존 재시도는 Job 전체 단위 |
-| 저장된 샘플 근거 페이지 이미지 API 연결 | 미구현. 실제 PNG는 제공 완료, FE frontend는 18~20·31~33쪽을 임시 파일 매핑 중. 이미지 asset ID는 미등록 |
+| 저장된 샘플 근거 페이지 이미지 API 연결 | BE 고정 이미지 6개 구현. FE는 기존 임시 파일 매핑 유지, API URL로 전환·브라우저 검증은 담당자와 공유 후 진행 |
 | FE 브라우저의 재생·일시정지·탐색·반복·동작 동기화 | FE와 함께 확인 필요. 이번 HTTP 테스트만으로 화면 재생 완료로 보지 않음 |
 
 검증용 `backend.pipeline`과 AI 소유 `pipeline/`는 서로 다른 모듈이다. 샘플 제공 서버는 AI 검사기만 가져오며, Windows 정책에 차단될 수 있는 `pipeline.extract`나 유료 생성 모듈은 가져오지 않는다.

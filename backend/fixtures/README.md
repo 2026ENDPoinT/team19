@@ -47,8 +47,8 @@ FE가 참고할 공식 경로는 `backend/fixtures/cases.json`과 `backend/fixtu
 | 실제 AI/TTS A | `samples/clip-01/result.json`, `audio.mp3` | `/clips/clip-01`, `/assets/clip-01-audio` |
 | 실제 AI/TTS B | `samples/clip-01/alt-terra/result.json`, `audio.mp3` | `/clips/clip-01-b`, `/assets/clip-01-b-audio` |
 | 수작업 부품 검사·신호음 | `samples/parts-test/result.json`, `audio.wav` | `/clips/parts-test`, `/assets/parts-test-audio` |
-| A/B 실제 원본 18~20쪽 | `samples/clip-01/pages/page-018.png`~`020` | 저장된 샘플 이미지 asset ID 미등록 |
-| parts-test 실제 원본 31~33쪽 | `samples/parts-test/pages/page-031.png`~`033` | 저장된 샘플 이미지 asset ID 미등록 |
+| A/B 실제 원본 18~20쪽 | `samples/clip-01/pages/page-018.png`~`020` | `/assets/clip-01-page-018`~`020` ([연동 안내](../INTEGRATION-NOTES.md)) |
+| parts-test 실제 원본 31~33쪽 | `samples/parts-test/pages/page-031.png`~`033` | `/assets/parts-test-page-031`~`033` ([연동 안내](../INTEGRATION-NOTES.md)) |
 
 parts-test는 AI 담당자가 제공한 **수작업 부품 샘플**이며 실제 AI 생성·TTS와 구분한다. FE frontend의 `samplePages.ts`는 원본 PNG를 임시 파일 매핑한다. API 제공 범위는 [연동 안내](../INTEGRATION-NOTES.md)를 따른다. 같은 페이지 번호라고 과거 개념 설계도의 이미지와 동일하다고 가정하지 않는다.
 

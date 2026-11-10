@@ -393,6 +393,12 @@ def retry_job(job_id: str):
 
 @app.api_route("/assets/{asset_id}", methods=["GET", "HEAD"])
 def asset(asset_id: str):
+    page = stored_sample.PAGE_ASSETS.get(asset_id)
+    if page is not None:
+        path = page.png_path()
+        if path is None:
+            fail("ASSET_NOT_FOUND", "파일을 찾을 수 없습니다.", 404)
+        return FileResponse(path, media_type="image/png", filename=path.name, content_disposition_type="inline")
     sample = next((s for s in stored_sample.SAMPLES.values() if s.audio_id == asset_id), None)
     if sample is not None:
         path = sample.audio_path()

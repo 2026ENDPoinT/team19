@@ -226,6 +226,138 @@ def test_sample_audio_and_head(client, sample):
     assert int(response.headers['content-length']) == len(data)
 
 
+# BE/Codex: keep expected paths independent of the registry being tested.
+PAGE_CASES = [
+    ('clip-01-page-018', 'samples/clip-01/pages/page-018.png'),
+    ('clip-01-page-019', 'samples/clip-01/pages/page-019.png'),
+    ('clip-01-page-020', 'samples/clip-01/pages/page-020.png'),
+    ('parts-test-page-031', 'samples/parts-test/pages/page-031.png'),
+    ('parts-test-page-032', 'samples/parts-test/pages/page-032.png'),
+    ('parts-test-page-033', 'samples/parts-test/pages/page-033.png'),
+]
+
+
+@pytest.fixture(params=PAGE_CASES, ids=[c[0] for c in PAGE_CASES])
+def page_case(request):
+    asset_id, relative = request.param
+    return asset_id, Path(__file__).resolve().parents[2] / relative
+
+
+def test_page_asset_and_head(client, page_case):
+    from backend import stored_sample
+    asset_id, source = page_case
+    assert set(stored_sample.PAGE_ASSETS) == {c[0] for c in PAGE_CASES}
+    assert stored_sample.PAGE_ASSETS[asset_id].png_path() == source.resolve()
+    original = source.read_bytes()
+    response = client.get('/assets/' + asset_id)
+    assert response.status_code == 200 and response.content == original
+    assert response.headers['content-type'] == 'image/png'
+    assert response.headers['content-disposition'].startswith('inline;')
+    assert str(source.parent) not in str(response.headers)
+    head = client.head('/assets/' + asset_id)
+    assert head.status_code == 200 and head.content == b''
+    assert head.headers['content-type'] == 'image/png'
+    assert int(head.headers['content-length']) == len(original)
+    assert source.read_bytes() == original
+    module = importlib.import_module('backend.app')
+    with module.conn() as db:
+        assert db.execute('SELECT COUNT(*) FROM assets').fetchone()[0] == 0
+        assert db.execute('SELECT COUNT(*) FROM jobs').fetchone()[0] == 0
+
+
+def test_page_asset_cors(client, page_case):
+    asset_id, _ = page_case
+    url, origin = '/assets/' + asset_id, 'http://localhost:5173'
+    for method in ('GET', 'HEAD'):
+        response = client.request(method, url, headers={'Origin': origin})
+        assert response.status_code == 200
+        assert response.headers['access-control-allow-origin'] == origin
+        preflight = client.options(url, headers={
+            'Origin': origin, 'Access-Control-Request-Method': method})
+        assert preflight.status_code == 200
+        assert preflight.headers['access-control-allow-origin'] == origin
+
+
+def test_missing_page_asset_is_404(client, page_case, tmp_path, monkeypatch):
+    from backend import stored_sample
+    asset_id, _ = page_case
+    page = stored_sample.PAGE_ASSETS[asset_id]
+    monkeypatch.setitem(stored_sample.PAGE_ASSETS, asset_id, replace(page, directory=tmp_path))
+    response = client.get('/assets/' + asset_id, headers={'Origin': 'http://localhost:5173'})
+    assert response.status_code == 404
+    assert response.json()['error'] == {
+        'code': 'ASSET_NOT_FOUND', 'message': '파일을 찾을 수 없습니다.', 'retryable': False}
+    assert response.headers['access-control-allow-origin'] == 'http://localhost:5173'
+    assert client.head('/assets/' + asset_id).status_code == 404
+
+
+@pytest.mark.parametrize('fault', ['not-png', 'jpeg', 'truncated', 'crc'])
+def test_invalid_page_is_not_published(client, tmp_path, monkeypatch, fault):
+    from PIL import Image
+    from backend import stored_sample
+    asset_id = 'clip-01-page-018'
+    page = stored_sample.PAGE_ASSETS[asset_id]
+    path = tmp_path / page.file_name
+    if fault == 'not-png':
+        path.write_bytes(b'not a PNG')
+    elif fault == 'jpeg':
+        Image.new('RGB', (8, 8)).save(path, format='JPEG')
+    else:
+        Image.new('RGB', (8, 8)).save(path, format='PNG')
+        data = bytearray(path.read_bytes())
+        if fault == 'truncated':
+            path.write_bytes(data[:40])
+        else:
+            data[29] ^= 1  # corrupt IHDR CRC while retaining the PNG signature
+            path.write_bytes(data)
+    monkeypatch.setitem(stored_sample.PAGE_ASSETS, asset_id, replace(page, directory=tmp_path))
+    for method in ('GET', 'HEAD'):
+        assert client.request(method, '/assets/' + asset_id).status_code == 404
+    assert client.get('/assets/clip-01-page-019').status_code == 200
+    assert str(tmp_path) not in client.get('/assets/' + asset_id).text
+
+
+@pytest.mark.parametrize('path', [
+    '/assets/clip-01-page-999', '/assets/clip-01-b-page-018',
+    '/assets/page-018.png', '/assets/clip-01-page-018-extra',
+    '/assets/clip-01-page-018%2F..%2Fresult.json',
+    '/assets/..%5C..%5Csamples%5Cclip-01%5Cresult.json',
+    '/assets/%2e%2e%2fsamples%2fclip-01%2fpages%2fpage-018.png',
+])
+def test_unregistered_page_paths_are_not_public(client, path):
+    assert client.get(path).status_code == 404
+    assert client.head(path).status_code == 404
+
+
+def test_registered_page_cannot_escape_its_directory(client, tmp_path, monkeypatch):
+    from backend import stored_sample
+    asset_id = 'clip-01-page-018'
+    page = stored_sample.PAGE_ASSETS[asset_id]
+    outside = tmp_path / 'outside.png'
+    outside.write_bytes(page.png_path().read_bytes())
+    directory = tmp_path / 'registered'
+    directory.mkdir()
+    monkeypatch.setitem(stored_sample.PAGE_ASSETS, asset_id,
+                        replace(page, directory=directory, file_name='../outside.png'))
+    assert client.get('/assets/' + asset_id).status_code == 404
+
+
+def test_page_assets_preserve_dynamic_db_assets(client):
+    from backend import stored_sample
+    module = importlib.import_module('backend.app')
+    original = stored_sample.PAGE_ASSETS['clip-01-page-018'].png_path().read_bytes()
+    path = module.ROOT / 'dynamic.png'
+    path.write_bytes(original)
+    with module.conn() as db:
+        url = module.add_asset(db, path, 'image/png')
+    assert url.startswith('/assets/asset_')
+    assert url.split('/')[-1] not in stored_sample.PAGE_ASSETS
+    response = client.get(url)
+    assert response.status_code == 200 and response.content == original
+    assert client.head(url).status_code == 200
+    assert client.get('/assets/clip-01-page-018').content == original
+
+
 @pytest.mark.parametrize('range_value', ['bytes=0-43', 'bytes=44-', 'bytes=-64'])
 def test_sample_audio_range(client, range_value, sample):
     data = (sample.directory / sample.audio_name).read_bytes()

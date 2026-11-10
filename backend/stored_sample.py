@@ -9,6 +9,7 @@ import subprocess
 import wave
 
 from imageio_ffmpeg import get_ffmpeg_exe
+from PIL import Image
 
 from .pipeline import PipelineError, validate_result
 
@@ -91,6 +92,46 @@ class StoredSample:
 
 
 _ROOT = Path(__file__).resolve().parents[1] / "samples"
+
+
+@dataclass(frozen=True)
+class StoredPage:
+    """BE/Codex: a registered, read-only source page; request IDs are never paths."""
+
+    directory: Path
+    file_name: str
+
+    def png_path(self) -> Path | None:
+        try:
+            directory = self.directory.resolve()
+            path = (directory / self.file_name).resolve()
+            if not path.is_relative_to(directory) or not path.is_file():
+                return None
+            # Check PNG chunks/CRC and fully decode pixels, without rewriting.
+            # A signature alone would accept corrupt or truncated image data.
+            with Image.open(path) as image:
+                if image.format != "PNG":
+                    return None
+                image.verify()
+            with Image.open(path) as image:
+                image.load()
+            return path
+        except (OSError, ValueError, RuntimeError, SyntaxError, EOFError,
+                Image.DecompressionBombError):
+            return None
+
+
+# A/B share these exact three source files. No folder scanning or DB insertion.
+# Dynamic assets use asset_<uuid>; these fixed IDs occupy a separate namespace.
+PAGE_ASSETS = {
+    "clip-01-page-018": StoredPage(_ROOT / "clip-01" / "pages", "page-018.png"),
+    "clip-01-page-019": StoredPage(_ROOT / "clip-01" / "pages", "page-019.png"),
+    "clip-01-page-020": StoredPage(_ROOT / "clip-01" / "pages", "page-020.png"),
+    "parts-test-page-031": StoredPage(_ROOT / "parts-test" / "pages", "page-031.png"),
+    "parts-test-page-032": StoredPage(_ROOT / "parts-test" / "pages", "page-032.png"),
+    "parts-test-page-033": StoredPage(_ROOT / "parts-test" / "pages", "page-033.png"),
+}
+
 SAMPLES = {
     "parts-test": StoredSample("parts-test", _ROOT / "parts-test", "audio.wav", "audio/wav"),
     "clip-01": StoredSample("clip-01", _ROOT / "clip-01", "audio.mp3", "audio/mpeg"),
