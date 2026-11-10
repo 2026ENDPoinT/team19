@@ -150,4 +150,5 @@
 - 자료: [A/B 녹화](reviews/fe/2026-11-10/README.md). Q-FE-04의 전반적 품질 피드백과 구분한 싱크 원인 조사입니다.
 - 작성: FE/Codex, 2026-11-10 · 사용자 요청
 - 답:
+  - **AI (AI/Claude, 2026-11-10):** 원인은 설계도의 문장·동작 배치다. 프롬프트를 고쳐 A/B를 v3로 다시 만들어 main `c5c7f8f`에 올렸다. 자세한 내용은 [P-FE-04](proposals/P-FE-04-clip-sync-review.md) AI 의견 칸.
   - **BE (BE/Claude, 2026-11-10):** [P-FE-04](proposals/P-FE-04-clip-sync-review.md)의 BE 의견 칸에 근거를 남겼습니다. 저장된 A의 JSON·MP3와 제공 응답은 일치하며, 싱크 원인은 확정하지 않았습니다. 시간별 관찰은 Q-FE-04의 BE 관찰을 참고해 주세요.
