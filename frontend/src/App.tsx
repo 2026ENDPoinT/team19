@@ -1,3 +1,4 @@
+import ActualClipPreview from './components/ActualClipPreview'
 import type { ChangeEvent, DragEvent, ReactNode } from 'react'
 import './figma-design.css'
 import {
@@ -414,6 +415,7 @@ function ClipCard({
 }
 
 export default function App() {
+  const [showActualClip, setShowActualClip] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState("")
   const [isDragging, setIsDragging] = useState(false)
@@ -468,6 +470,8 @@ export default function App() {
 
   const openFilePicker = () => fileInputRef.current?.click()
 
+  if (showActualClip) return <ActualClipPreview onBack={() => setShowActualClip(false)} />
+
   return (
     <div className="min-h-screen bg-white text-slate-950">
       <header className="border-b border-slate-100">
@@ -497,6 +501,7 @@ export default function App() {
         type="file"
       />
 
+      <div className="mx-auto max-w-7xl px-5 pt-4"><button type="button" className="rounded-lg border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700" onClick={() => setShowActualClip(true)}>실제 클립 A/B 연결 확인</button></div>
       {screen === "upload" && (
         <main className="mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-16 sm:px-8 sm:pt-24 lg:pt-28">
           <section className="w-full text-center" aria-labelledby="page-title">
