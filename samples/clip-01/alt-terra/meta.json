@@ -1,11 +1,12 @@
 {
  "label": "B",
  "name": "B: Terra 설계도 + Cedar 목소리",
- "resultId": "clip-01-B-terra-cedar",
+ "resultId": "clip-01-B-terra-cedar-v3",
  "blueprintModel": "gpt-6.1-terra",
  "promptLang": "ko",
  "voice": "cedar",
  "use": "품질 비교의 B. A와 목소리가 같아 설계도 차이만 보인다",
- "durationSec": 114.25,
- "sentences": 23
+ "durationSec": 94.05,
+ "sentences": 20,
+ "promptVersion": "v3 (시점 규칙)"
 }

@@ -3,9 +3,9 @@
   "provider": "openai",
   "model": "gpt-4o-mini-tts",
   "voice": "cedar",
-  "newAudioSec": 129.8,
+  "newAudioSec": 165.1,
   "reusedLines": 0,
-  "costUsd": 0.0324,
+  "costUsd": 0.0413,
   "costIsEstimate": true
  }
 ]

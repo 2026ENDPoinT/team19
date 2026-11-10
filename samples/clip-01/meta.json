@@ -1,11 +1,12 @@
 {
  "label": "A",
  "name": "A: Sonnet 설계도 + Cedar 목소리 (메인)",
- "resultId": "clip-01-A-sonnet-cedar",
+ "resultId": "clip-01-A-sonnet-cedar-v3",
  "blueprintModel": "claude-sonnet-5-5",
  "promptLang": "ko",
  "voice": "cedar",
  "use": "기본 재생. 품질 비교의 A",
- "durationSec": 138.8,
- "sentences": 25
+ "durationSec": 179.2,
+ "sentences": 40,
+ "promptVersion": "v3 (시점 규칙)"
 }
