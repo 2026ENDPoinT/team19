@@ -56,3 +56,4 @@
 | [P-BE-02](P-BE-02-api-and-pipeline-v0.md) | API와 AI 파이프라인 연결 계약 v0 | 결정됨(D-28) |
 | [P-FE-01](P-FE-01-figma-design.md) | 승인 Figma 디자인 반영 및 화이트 UI 검토 | 의견 수집중 |
 | [P-FE-02](P-FE-02-frontend-branch.md) | FE 개발 브랜치 단일화 | 의견 수집중 |
+| [P-FE-03](P-FE-03-blueprint-player.md) | 실제 클립 A/B 설계도 플레이어 구현 | 의견 수집중 |
