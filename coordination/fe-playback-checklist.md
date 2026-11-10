@@ -6,8 +6,8 @@
 
 ## 확인할 코드와 실행
 
-- 최신 이동 효과는 `frontend`의 `e3cf124`(교환 `d4a0932` 포함)에 있다. 작성 시점 main에는 이 두 기능이 아직 병합되지 않았다. 브라우저 점검 기록에는 실제 확인한 브랜치와 커밋을 적는다.
-- main의 기존 플레이어도 재생 점검 가능하다. 최신 교환·포인터 이동 검사는 frontend에서 한다. 미커밋 작업이 있으면 먼저 정리하고 브랜치를 전환한다.
+- 최신 이동 효과 `e3cf124`(교환 `d4a0932` 포함)는 사용자 승인으로 main에 병합했다. 브라우저 점검 기록에는 실제 확인한 브랜치와 커밋을 적는다.
+- main에서 최신 교환·포인터 이동을 포함해 점검한다. 미커밋 작업이 있으면 먼저 정리하고 브랜치를 전환한다.
 - 서버는 PC를 재시작하거나 실행을 종료하면 다시 켜야 한다. localhost는 서버를 켠 PC의 브라우저에서 연다.
 
 PowerShell 터미널 1 — 저장소 루트에서 [BE 실행 안내](../backend/README.md#실행-windows-powershell-저장소-루트)의 Python 환경을 준비하고 다음을 실행한다. 아래 `python`은 해당 BE 환경의 실행 파일을 뜻한다. 필요하면 안내의 `$team19Python` 경로와 `&` 호출로 바꾼다.
@@ -18,11 +18,11 @@ $env:AI_MODE = 'sample'
 python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
 ```
 
-PowerShell 터미널 2 — 최신 이동 효과를 확인할 때:
+PowerShell 터미널 2 — main의 시연 버전을 확인할 때:
 
 ```powershell
 cd C:\GitHub\team19
-git switch frontend
+git switch main
 git pull --ff-only
 cd frontend
 npm ci
