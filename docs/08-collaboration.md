@@ -1,6 +1,6 @@
 # 08. 협업 방식 (사람용)
 
-> 상태: 운영하면서 수정 · 담당: AI (팀장) · 최종 수정: 2026-11-09 · AI/Claude
+> 상태: 운영하면서 수정 · 담당: AI (팀장) · 최종 수정: 2026-11-10 · AI/Claude
 
 에이전트용 규칙 원문은 [AGENTS.md](../AGENTS.md)에 있다. 이 문서는 사람이 이해하기 쉽게 같은 내용을 설명한다.
 
@@ -60,7 +60,7 @@ flowchart LR
 | 무엇 | 어디에 | 어떻게 올리나 |
 |---|---|---|
 | 문서, 샘플 | `docs/`, `coordination/`, `samples/` | main에 바로 |
-| 기능 코드 | `frontend/`(FE), `backend/`(BE), `pipeline/`(AI) | `feature/짧은-이름` 브랜치에서 만들고, PR 없이 각자 AI와 확인해서 main에 merge |
+| 기능 코드 | `frontend/`(FE), `backend/`(BE), `pipeline/`(AI) | `feature/짧은-이름` 브랜치에서 만들고(FE는 `frontend` 브랜치 하나, D-37), PR 없이 각자 AI와 확인해서 main에 merge |
 | 실험 코드 | `sandbox/내역할/` | main에 바로. 다른 역할이 의존하지 않는다 |
 
 - 개발은 각자 진행한다. 다른 역할에 영향이 있는 기능은 만들기 전에 제안서로 남긴다.
