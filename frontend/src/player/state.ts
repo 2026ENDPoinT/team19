@@ -4,6 +4,8 @@ export type Entity = {
   cells?: string[][]; row?: number; col?: number; box?: number[]
   nodes?: Entity[]; edges?: Entity[]; pointers?: Entity[]
   highlighted?: boolean; highlightedCells?: string[]; markedLine?: number
+  moveOrigin?: { row: number; col: number; progress: number }
+  cellOrigins?: Record<string, { row: number; col: number; progress: number }>
   focusBox?: number[]; marks?: { box: number[]; label: string }[]
   [key: string]: unknown
 }
@@ -71,18 +73,38 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
       const [r1, c1] = position(args[0], target)
       const [r2, c2] = position(args[1], target)
       const cells = target.cells!
+      const key1 = `${r1},${c1}`, key2 = `${r2},${c2}`
+      if (key1 === key2) break
+      const origins = target.cellOrigins ??= {}
+      const origin1 = origins[key1] ?? { row: r1, col: c1, progress }
+      const origin2 = origins[key2] ?? { row: r2, col: c2, progress }
       ;[cells[r1][c1], cells[r2][c2]] = [cells[r2][c2], cells[r1][c1]]
+      if (progress < 1) {
+        origins[key1] = { ...origin2, progress }
+        origins[key2] = { ...origin1, progress }
+      } else {
+        delete origins[key1]
+        delete origins[key2]
+      }
       break
     }
     case 'setValue': {
       const [row, col] = position(args[0], target)
       target.cells![row][col] = args[1]
+      // 새로 쓴 값에는 이전 교환의 이동 경로를 적용하지 않는다.
+      if (target.cellOrigins) delete target.cellOrigins[`${row},${col}`]
       break
     }
     case 'move': {
       const grid = elements.find((element) => element.pointers?.some((pointer) => pointer.id === target.id))
       if (!grid) throw new Error('포인터의 격자가 없습니다.')
-      ;[target.row, target.col] = position(args[0], grid)
+      const [row, col] = position(args[0], grid)
+      if (row === target.row && col === target.col) break
+      const origin = target.moveOrigin ?? { row: target.row ?? 0, col: target.col ?? 0, progress }
+      target.row = row
+      target.col = col
+      if (progress < 1) target.moveOrigin = { ...origin, progress }
+      else delete target.moveOrigin
       break
     }
     case 'setText': target.content = args[0]; break
@@ -106,7 +128,7 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
 }
 
 // 매 호출을 초기 상태부터 계산하므로 seek/반복 때 이전 결과가 누적되지 않는다.
-// focus는 음성 시간으로 보간하고, 다른 동작은 문장 시작에 즉시 순서대로 적용한다.
+// focus·swap·move의 표시는 음성 시간으로 보간한다. 논리적인 교환 결과는 즉시 계산한다.
 export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], seconds: number): PlayerState {
   if (!Number.isFinite(seconds)) throw new Error('유효하지 않은 재생 시간')
   const time = Math.max(0, seconds)
