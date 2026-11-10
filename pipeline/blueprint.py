@@ -18,6 +18,7 @@ import sys
 import time
 from pathlib import Path
 
+from pipeline import costlog
 from pipeline.errors import PipelineError
 from pipeline.validate import LIMITS, SUPPORTED_LAYOUTS, SUPPORTED_SLOTS, validate_blueprint
 
@@ -229,6 +230,7 @@ def main(argv=None) -> int:
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(r["blueprint"], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     args.out.with_suffix(".usage.json").write_text(json.dumps(r["usage"], ensure_ascii=False, indent=1), encoding="utf-8")
+    costlog.append("blueprint", args.out.as_posix(), r["usage"], note=f"prompt {args.prompt_lang}, attempts {r['attempts']}")
     total = sum(u["costUsd"] for u in r["usage"])
     print(f"통과 (시도 {r['attempts']}번), 비용 ${total:.4f}, {r['usage']} → {args.out}")
     return 0
