@@ -58,3 +58,4 @@
 | [P-FE-02](P-FE-02-frontend-branch.md) | FE 개발 브랜치 단일화 | 결정됨(D-37) |
 | [P-FE-03](P-FE-03-blueprint-player.md) | 실제 클립 A/B 설계도 플레이어 구현 | 의견 수집중 |
 | [P-FE-04](P-FE-04-clip-sync-review.md) | A 클립 음성·자막·동작 싱크 공동 점검 | 의견 수집중 |
+| [P-AI-03](P-AI-03-blueprint-eval-set.md) | 설계도 평가 세트와 예시 구성 | 의견 수집중 |
