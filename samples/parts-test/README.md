@@ -1,6 +1,6 @@
 # 분할정복 부품 샘플 (합병 정렬)
 
-> 상태: 확정 v0용 샘플 · 담당: AI · 최종 수정: 2026-11-09 · AI/Claude
+> 상태: 확정 v0용 샘플 · 담당: AI · 최종 수정: 2026-11-10 · AI/Claude
 
 [plan-first-clip.md](../../coordination/plan-first-clip.md)의 11/11 필수 범위(D-34)를 **모두 한 번 이상 쓰는** 손으로 쓴 설계도다. FE는 이 샘플로 플레이어의 부품과 동작을 확인한다. 검사기를 통과한다.
 
@@ -14,7 +14,9 @@
 | `audio.wav` | 신호음 음성 (약 71초). `result.json`의 `audioUrl`은 이 파일 이름이다. 실제 API에서는 `/assets/{id}` 주소가 된다 |
 | `blueprint.json` | 설계도 원본. 고치면 `py sandbox/ai/make_timed_sample.py samples/parts-test`로 `result.json`과 음성을 다시 만든다 |
 
-원본 페이지 그림(31, 32, 33쪽)은 BE 샘플의 합성 그림을 쓴다: `sandbox/be/fe-fixtures/media/page-31.png` 등. 실제 강의 슬라이드가 아니다.
+| `pages/page-031.png` ~ `page-033.png` | 원본 페이지 그림. `pipeline/extract.py`(PyMuPDF)로 만든 실제 강의 페이지, 긴 변 1600px. s6의 원본 조각(33쪽)도 이 그림을 쓴다 |
+
+이전에 쓰던 BE 합성 그림(`sandbox/be/fe-fixtures/media/page-31.png` 등) 대신 위 `pages/`를 쓴다(Q-BE-01).
 
 ## 장면별로 확인할 것
 
