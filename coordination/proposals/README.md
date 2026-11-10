@@ -60,3 +60,4 @@
 | [P-FE-04](P-FE-04-clip-sync-review.md) | A 클립 음성·자막·동작 싱크 공동 점검 | 결정됨(D-40) |
 | [P-AI-03](P-AI-03-blueprint-eval-set.md) | 설계도 평가 세트와 예시 구성 | 의견 수집중 |
 | [P-AI-04](P-AI-04-speech-text.md) | 설계도에 음성 원고(speech) 분리 | 의견 수집중 |
+| [P-FE-05](P-FE-05-mp4-export.md) | 플레이어 MP4 내보내기 | 의견 수집중 |
