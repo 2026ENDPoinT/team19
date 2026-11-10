@@ -32,12 +32,14 @@ function Grid({ element }: { element: Entity }) {
     if (!grid) return
     function measure() {
       const next: Record<string, { x: number; y: number }> = {}
+      const gridRect = grid!.getBoundingClientRect()
+      const scale = gridRect.width / grid!.offsetWidth || 1
       grid!.querySelectorAll<HTMLElement>('[data-cell]').forEach((cell) => {
         const rect = cell.getBoundingClientRect()
         const value = cell.querySelector<HTMLElement>('.player-cell-value')!
         next[cell.dataset.cell!] = {
-          x: rect.left + cell.clientLeft + value.offsetLeft + value.offsetWidth / 2,
-          y: rect.top + cell.clientTop + value.offsetTop + value.offsetHeight / 2,
+          x: (rect.left - gridRect.left) / scale + cell.clientLeft + value.offsetLeft + value.offsetWidth / 2,
+          y: (rect.top - gridRect.top) / scale + cell.clientTop + value.offsetTop + value.offsetHeight / 2,
         }
       })
       setPositions((previous) => JSON.stringify(previous) === JSON.stringify(next) ? previous : next)
@@ -108,13 +110,47 @@ function ElementView({ element, pageUrl }: { element: Entity; pageUrl: (page: nu
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }
 
-export default function PlayerStage({ state, pageUrl }: { state: PlayerState; pageUrl: (page: number) => string | undefined }) {
+export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlayback }: {
+  state: PlayerState
+  pageUrl: (page: number) => string | undefined
+  isPlaying: boolean
+  onTogglePlayback: () => void
+}) {
+  const frameRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
+  useLayoutEffect(() => {
+    const frame = frameRef.current
+    if (!frame) return
+    function fit() {
+      if (!frame) return
+      // 영상과 아래 48px 조작부·여백만 화면 높이에 맞춘다. 위 설명은 제외한다.
+      const availableHeight = window.innerHeight - 88
+      setScale(Math.max(0.1, Math.min(1, frame.clientWidth / 420, availableHeight / (420 * 16 / 9))))
+    }
+    fit()
+    const observer = new ResizeObserver(fit)
+    observer.observe(frame.parentElement!)
+    const main = frame.closest('main')
+    if (main) observer.observe(main)
+    window.addEventListener('resize', fit)
+    return () => { observer.disconnect(); window.removeEventListener('resize', fit) }
+  }, [])
   const visible = state.elements.filter((element) => !element.hidden)
   const slots = ['top', 'middle', 'bottom']
   const invalid = visible.some((element) => !slots.includes(element.slot ?? '')) || slots.some((slot) => visible.filter((element) => element.slot === slot).length > 1)
   if (invalid) return <p role="alert">현재 지원 범위와 맞지 않는 장면 배치입니다.</p>
   return (
-    <div className="player-stage" aria-label="학습 시각화">
+    <div ref={frameRef} className="player-viewport" style={{ height: 420 * 16 / 9 * scale }}
+      role="button" tabIndex={0} aria-label={isPlaying ? '영상 일시정지' : '영상 재생'} aria-pressed={isPlaying}
+      onClick={onTogglePlayback}
+      onKeyDown={(event) => {
+        if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {
+          event.preventDefault()
+          onTogglePlayback()
+        }
+      }}>
+
+    <div className="player-stage" aria-label="학습 시각화" style={{ transform: `translateX(-50%) scale(${scale})` }}>
       <div className="player-slots">
         {slots.map((slot) => {
           const element = visible.find((item) => item.slot === slot)
@@ -124,6 +160,7 @@ export default function PlayerStage({ state, pageUrl }: { state: PlayerState; pa
         })}
       </div>
       <p className="player-caption" aria-label="현재 자막">{state.caption || '\u00a0'}</p>
+    </div>
     </div>
   )
 }
