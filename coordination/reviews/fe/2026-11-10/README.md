@@ -6,14 +6,14 @@
 
 ## 녹화 파일
 
-사용자가 이 폴더에 업로드할 예정이며, 이 문서 작성 시 저장소에는 아직 없다.
+사용자가 두 녹화 파일을 이 폴더에 추가했다. 아래 파일을 열거나 내려받아 검토한다.
 
 | 파일명 | 비교 대상 |
 |---|---|
-| `A-Sonnet,Cedar.mp4` | A · Sonnet / Cedar · clip-01 |
-| `B-Terra,Cedar.mp4` | B · Terra / Cedar · clip-01-b |
+| [A-Sonnet,Cedar.mp4](A-Sonnet,Cedar.mp4) | A · Sonnet / Cedar · clip-01 |
+| [B-Terra,Cedar.mp4](B-Terra,Cedar.mp4) | B · Terra / Cedar · clip-01-b |
 
-원본 로컬 파일은 FE가 보관한다. 업로드 후 이 폴더의 파일을 열어 검토한다. 녹화본이 있다는 사실만으로 탐색·반복·클립 전환·부품 검사 전체가 통과했다는 뜻은 아니다.
+원본 로컬 파일은 FE가 보관한다. 이 폴더의 두 파일을 검토한다. 녹화본이 있다는 사실만으로 탐색·반복·클립 전환·부품 검사 전체가 통과했다는 뜻은 아니다.
 
 ## 의견 남길 곳
 
