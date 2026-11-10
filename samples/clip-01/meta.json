@@ -6,7 +6,7 @@
  "promptLang": "ko",
  "voice": "cedar",
  "use": "기본 재생. 품질 비교의 A",
- "durationSec": 179.2,
+ "durationSec": 178.15,
  "sentences": 40,
  "promptVersion": "v3 (시점 규칙)"
 }

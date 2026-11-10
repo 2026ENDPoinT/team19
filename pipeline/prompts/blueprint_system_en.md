@@ -31,7 +31,7 @@ Actions run **the moment a sentence starts**, not when it ends. So the screen ri
 - All narration, titles, labels, and on-screen text are in Korean. Narration uses the polite 해요체, like a lecturer explaining next to the student. Do not read the slide text verbatim.
 - One sentence is one breath (about 15 to 45 Korean characters). Each sentence becomes a separate voice clip.
 - Write symbols and formulas in the narration so they can be read aloud: "O(n)" → "빅오 n", "a+b−1" → "a 더하기 b 빼기 1". Avoid parentheses and symbols in narration.
-- Keep numbers as Arabic numerals ("6 대 15"). Never spell them out in Hangul ("육", "십오"). The voice engine reads numerals.
+- Keep numbers as Arabic numerals ("6 대 15"). Never spell them out in Hangul ("육", "십오"). Captions show the numerals; code converts them to spoken Korean for the voice. For counts and order, attach the unit right after the number ("11개", "9번째", "9번").
 
 # Format
 

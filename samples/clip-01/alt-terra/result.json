@@ -1,6 +1,6 @@
 {
   "resultId": "clip-01-B-terra-cedar-v3",
-  "durationSec": 94.05,
+  "durationSec": 88.8,
   "audioUrl": "audio.mp3",
   "blueprint": {
     "version": 0,
@@ -633,119 +633,119 @@
       "lineIndex": 1,
       "text": "먼저 6과 1을 비교해요.",
       "startSec": 14.5,
-      "endSec": 17.75
+      "endSec": 17.1
     },
     {
       "sceneId": "s2",
       "lineIndex": 2,
       "text": "1이 작으니 결과에 저장해요.",
-      "startSec": 18.05,
-      "endSec": 21.0
+      "startSec": 17.4,
+      "endSec": 20.3
     },
     {
       "sceneId": "s2",
       "lineIndex": 3,
       "text": "다음 원소 2가 나와 6과 겨뤄요.",
-      "startSec": 21.3,
-      "endSec": 25.4
+      "startSec": 20.6,
+      "endSec": 24.1
     },
     {
       "sceneId": "s2",
       "lineIndex": 4,
       "text": "2가 작으니 결과에 저장해요.",
-      "startSec": 25.7,
-      "endSec": 29.15
+      "startSec": 24.4,
+      "endSec": 27.25
     },
     {
       "sceneId": "s3",
       "lineIndex": 0,
       "text": "이번에는 6과 15가 겨뤄요.",
-      "startSec": 29.75,
-      "endSec": 33.15
+      "startSec": 27.85,
+      "endSec": 30.5
     },
     {
       "sceneId": "s3",
       "lineIndex": 1,
       "text": "6이 작으니 결과에 저장해요.",
-      "startSec": 33.45,
-      "endSec": 36.4
+      "startSec": 30.8,
+      "endSec": 34.1
     },
     {
       "sceneId": "s3",
       "lineIndex": 2,
       "text": "이제 14와 15를 비교해요.",
-      "startSec": 36.7,
-      "endSec": 39.55
+      "startSec": 34.4,
+      "endSec": 37.45
     },
     {
       "sceneId": "s3",
       "lineIndex": 3,
       "text": "14가 작으니 결과에 저장해요.",
-      "startSec": 39.85,
-      "endSec": 43.95
+      "startSec": 37.75,
+      "endSec": 41.05
     },
     {
       "sceneId": "s3",
       "lineIndex": 4,
       "text": "같은 방식으로 15, 18, 20, 25가 차례로 나와요.",
-      "startSec": 44.25,
-      "endSec": 50.15
+      "startSec": 41.35,
+      "endSec": 46.85
     },
     {
       "sceneId": "s4",
       "lineIndex": 0,
       "text": "이제 29와 30을 비교해요.",
-      "startSec": 50.75,
-      "endSec": 54.7
+      "startSec": 47.45,
+      "endSec": 50.3
     },
     {
       "sceneId": "s4",
       "lineIndex": 1,
       "text": "29가 작아서 저장하면 A가 비어요.",
-      "startSec": 55.0,
-      "endSec": 59.15
+      "startSec": 50.6,
+      "endSec": 54.75
     },
     {
       "sceneId": "s4",
       "lineIndex": 2,
       "text": "남은 30과 45는 비교 없이 복사해요.",
-      "startSec": 59.45,
-      "endSec": 63.65
+      "startSec": 55.05,
+      "endSec": 59.2
     },
     {
       "sceneId": "s4",
       "lineIndex": 3,
       "text": "직접 세면 비교는 9번이에요. 자료의 10단계 표기는 잘못됐어요.",
-      "startSec": 63.95,
-      "endSec": 69.95
+      "startSec": 59.5,
+      "endSec": 65.95
     },
     {
       "sceneId": "s5",
       "lineIndex": 0,
       "text": "두 배열의 크기가 각각 a와 b라면 비교는 최대 a 더하기 b 빼기 1번이에요.",
-      "startSec": 70.55,
-      "endSec": 77.9
+      "startSec": 66.55,
+      "endSec": 73.15
     },
     {
       "sceneId": "s5",
       "lineIndex": 1,
       "text": "한쪽이 비는 순간 남은 원소는 비교 없이 복사하기 때문이에요.",
-      "startSec": 78.2,
-      "endSec": 83.05
+      "startSec": 73.45,
+      "endSec": 78.3
     },
     {
       "sceneId": "s5",
       "lineIndex": 2,
       "text": "의사코드의 5번째 줄에서 합병에 빅오 n이 들어요.",
-      "startSec": 83.35,
-      "endSec": 88.25
+      "startSec": 78.6,
+      "endSec": 83.15
     },
     {
       "sceneId": "s5",
       "lineIndex": 3,
       "text": "재귀 호출 자체의 비용을 빼면 중간 인덱스 계산은 빅오 1이에요.",
-      "startSec": 88.55,
-      "endSec": 94.05
+      "startSec": 83.45,
+      "endSec": 88.8
     }
   ]
 }

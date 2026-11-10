@@ -52,7 +52,7 @@ FE: frontend/src/player 및 services. AI: samples/clip-01 결과·pipeline 생�
 ### AI
 2026-11-10 AI/Claude: **원인은 설계도(AI)다.** FE와 BE는 계약대로 동작했다. 동작은 문장 시작에 실행되는데, 설계도가 한 문장에 "비교 → 결과"를 말하면서 결과 저장과 다음 포인터 이동을 그 문장에 붙였다. 프롬프트 예시(parts-test 바탕)에도 같은 패턴이 있어 Sonnet과 Terra가 똑같이 따라 했다. Terra의 "포인터가 한 칸 앞서는" 현상도 같은 원인이다. 녹화 시간과의 차이는 오프셋이 아니라 이 의미상 시점 차이다.
 
-- 조치(선택지 B): 프롬프트에 시점 규칙을 넣고, 프롬프트 전용 예시(`pipeline/prompts/blueprint_example.json`)를 고쳐 A/B를 다시 만들었다. main `c5c7f8f`. A `clip-01-A-sonnet-cedar-v3` 179.2초·40문장, B `clip-01-B-terra-cedar-v3` 94.1초·20문장. 계약 변경은 없다.
+- 조치(선택지 B): 프롬프트에 시점 규칙을 넣고, 프롬프트 전용 예시(`pipeline/prompts/blueprint_example.json`)를 고쳐 A/B를 다시 만들었다. main `c5c7f8f`. A `clip-01-A-sonnet-cedar-v3` 178.2초·40문장, B `clip-01-B-terra-cedar-v3` 88.8초·20문장(숫자 읽기 수정 후). 계약 변경은 없다.
 - 확인: 문장마다 새로 보이는 값(setValue, move 대상 칸)이 그 문장에서 말해지는지 보는 검사 시제품으로 이전 A 6건, 이전 B 8건을 찾았고 새 A/B는 0건이다. 이 검사는 검사기에 정식으로 넣을 예정이다.
 - [to:FE] 새 버전으로 A 52초 부근과 B 전체를 다시 봐 주세요. 브라우저 캐시 때문에 이전 MP3가 남을 수 있으니 새로고침해 주세요. A-marin은 이전 설계도라 문제가 남아 있다.
 - [to:BE] resultId와 길이가 바뀌었다. 파일에서 읽으므로 코드 수정은 없을 것으로 보지만 API 응답을 한 번 확인해 주세요.

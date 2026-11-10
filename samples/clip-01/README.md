@@ -10,8 +10,8 @@ AI 파이프라인이 실제 강의자료로 만든 결과다. 손으로 고치�
 
 | 표기 | 폴더 | resultId | 설계도 모델 | 목소리 | 길이 | 용도 |
 |---|---|---|---|---|---|---|
-| **A** | `samples/clip-01/` | `clip-01-A-sonnet-cedar-v3` | Claude Sonnet 5.5 | Cedar | 179.2초, 40문장 | **기본 재생.** 품질 비교의 A |
-| **B** | `samples/clip-01/alt-terra/` | `clip-01-B-terra-cedar-v3` | GPT-6.1 Terra | Cedar | 94.1초, 20문장 | 품질 비교의 B |
+| **A** | `samples/clip-01/` | `clip-01-A-sonnet-cedar-v3` | Claude Sonnet 5.5 | Cedar | 178.2초, 40문장 | **기본 재생.** 품질 비교의 A |
+| **B** | `samples/clip-01/alt-terra/` | `clip-01-B-terra-cedar-v3` | GPT-6.1 Terra | Cedar | 88.8초, 20문장 | 품질 비교의 B |
 | A-marin | `samples/clip-01/alt-marin/` | `clip-01-A-sonnet-marin` | Claude Sonnet 5.5 | Marin | 138.5초, 25문장 | 목소리 비교용. **이전(v2) 설계도라 싱크 문제가 남아 있다** |
 
 - 각 폴더의 `result.json`([ClipResult](../../contracts/data-model.md#클립-결과-clipresult) 모양)과 `audio.mp3`를 함께 쓴다. **목소리마다 문장별 시간이 다르므로 다른 폴더의 음성과 섞지 않는다.**
@@ -34,6 +34,6 @@ AI 파이프라인이 실제 강의자료로 만든 결과다. 손으로 고치�
 | PDF 추출 | `pipeline/extract.py` (PyMuPDF) | 0 |
 | 설계도 A | `pipeline/blueprint.py`, Claude Sonnet 5.5 (effort high), 한국어 프롬프트 v3(시점 규칙) | $0.237 |
 | 설계도 B | `pipeline/blueprint.py`, GPT-6.1 Terra, 한국어 프롬프트 v3(시점 규칙) | $0.021 |
-| 음성 A / B | `pipeline/audio.py`, OpenAI gpt-4o-mini-tts, Cedar, 영어 말투 지시 | $0.041 / $0.022 |
+| 음성 A / B | `pipeline/audio.py`, OpenAI gpt-4o-mini-tts, Cedar, 영어 말투 지시. 숫자는 한글 읽기로 바꿔 보낸다(`pipeline/korean_numbers.py`) | 약 $0.04 / $0.02 |
 
 모델 비교 기록: [sandbox/ai/2026-11-09-blueprint-compare.md](../../sandbox/ai/2026-11-09-blueprint-compare.md). `candidates/`는 비교에 쓴 설계도 원본이다.

@@ -21,6 +21,7 @@ import wave
 from pathlib import Path
 
 from pipeline.errors import PipelineError
+from pipeline.korean_numbers import spoken_text
 
 ROOT = Path(__file__).resolve().parents[1]
 RATE = 24000                 # OpenAI TTS pcm 출력: 24kHz, 16비트, 모노
@@ -28,6 +29,8 @@ LINE_GAP, SCENE_GAP = 0.3, 0.6
 DEFAULT_MODEL = "gpt-4o-mini-tts"
 DEFAULT_VOICE = "cedar"      # 팀장이 직접 비교해 고름 (2026-11-09). 다음 후보: marin
 # 영어 지시가 한국어 지시보다 잘 맞았다(팀장 비교). 숫자 읽기 예시만 한국어로 둔다.
+# 숫자는 이제 korean_numbers가 한글로 바꿔 보내서 Numbers 줄은 거의 쓰이지 않는다.
+# 이 글을 바꾸면 모든 문장 음성 캐시가 무효가 되므로 그대로 둔다.
 VOICE_STYLE = """Accent: Native standard Korean (Seoul dialect). No foreign accent; sound like a Korean university lecturer.
 Tone: A friendly lecturer explaining one-on-one. Warm, bright, and calm. Not exaggerated or salesy.
 Pacing: Slightly slower than normal conversation. Pause briefly at commas and at the end of each sentence.
@@ -55,7 +58,9 @@ def make_audio(blueprint: dict, out_dir, model: str = DEFAULT_MODEL, voice: str 
         for li, text in enumerate(scene["lines"]):
             if pcm:
                 pcm += _silence(SCENE_GAP if li == 0 else LINE_GAP)
-            key = hashlib.sha256(f"{model}|{voice}|{VOICE_STYLE}|{text}".encode()).hexdigest()[:16]
+            # 자막은 숫자 그대로, 음성에는 숫자를 한글 읽기로 바꿔 보낸다(korean_numbers.py).
+            speech = spoken_text(text)
+            key = hashlib.sha256(f"{model}|{voice}|{VOICE_STYLE}|{speech}".encode()).hexdigest()[:16]
             cached = out / "lines" / f"{key}.pcm"
             if cached.is_file():
                 data = cached.read_bytes()
@@ -63,7 +68,7 @@ def make_audio(blueprint: dict, out_dir, model: str = DEFAULT_MODEL, voice: str 
             else:
                 if client is None:
                     client = _client()
-                data = _tts(client, model, voice, text)
+                data = _tts(client, model, voice, speech)
                 cached.write_bytes(data)
                 new_seconds += len(data) / 2 / RATE
             start = len(pcm) / 2 / RATE

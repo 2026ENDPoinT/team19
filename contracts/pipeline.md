@@ -1,6 +1,6 @@
 # AI 파이프라인 v0 (BE → AI)
 
-> 상태: 확정 v0 (D-27, D-28) · 담당: AI (검토 BE) · 최종 수정: 2026-11-09 · AI/Claude
+> 상태: 확정 v0 (D-27, D-28) · 담당: AI (검토 BE) · 최종 수정: 2026-11-10 · AI/Claude
 
 BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정 과정은 [P-BE-02 AI 의견](../coordination/proposals/P-BE-02-api-and-pipeline-v0.md#ai). 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 
@@ -26,7 +26,7 @@ BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정
 - 함수 이름과 인자 세부는 구현하며 이 표에 맞춰 고친다.
 - `usage`는 호출마다 `{provider, model, inputTokens, outputTokens, costUsd}`의 목록이다. BE가 Job에 저장한다.
 - `extract_pdf`는 PyMuPDF를 쓴다. 글자 위치로 한국어 띄어쓰기를 복원한다(PPT에서 내보낸 PDF는 띄어쓰기 문자가 없는 경우가 많다). `empty`는 글자와 그림이 거의 없는 페이지이고, 표지·목차는 분할 단계에서 AI가 거른다. 분할정복 자료 57쪽 기준 약 3초.
-- `make_audio`는 문장마다 음성을 만들고 길이를 재서 파일 하나(`audio.mp3`, 64kbps)로 잇는다. 쉼은 [docs/04 시간 규칙](../docs/04-video-blueprint.md#시간-규칙)을 따른다. 지금은 OpenAI `gpt-4o-mini-tts`, 목소리 `coral`(Q-AI-10에서 바꿀 수 있음). 문장 음성은 출력 폴더의 `lines/`에 저장해 같은 문장이면 다시 부르지 않는다.
+- `make_audio`는 문장마다 음성을 만들고 길이를 재서 파일 하나(`audio.mp3`, 64kbps)로 잇는다. 쉼은 [docs/04 시간 규칙](../docs/04-video-blueprint.md#시간-규칙)을 따른다. 지금은 OpenAI `gpt-4o-mini-tts`, 목소리 `cedar`(Q-AI-10). 숫자는 자막에는 그대로 두고, 음성에는 한글 읽기로 바꿔 보낸다(`pipeline/korean_numbers.py`. 값은 한자어 "십사", 개수·순서는 고유어 "열한 개", "아홉 번째"). 문장 음성은 출력 폴더의 `lines/`에 저장해 같은 문장이면 다시 부르지 않는다.
 - `make_blueprint`는 지금 `claude-sonnet-5-5`와 `gpt-6.1-terra`를 지원한다. 어느 쪽을 쓸지는 Q-AI-07에서 정한다.
 
 ## 샘플 모드
