@@ -61,3 +61,4 @@
 | [P-AI-03](P-AI-03-blueprint-eval-set.md) | 설계도 평가 세트와 예시 구성 | 의견 수집중 |
 | [P-AI-04](P-AI-04-speech-text.md) | 설계도에 음성 원고(speech) 분리 | 의견 수집중 |
 | [P-FE-05](P-FE-05-mp4-export.md) | 플레이어 MP4 내보내기 | 의견 수집중 |
+| [P-FE-06](P-FE-06-column-layout.md) | 긴 단계 설명의 세로 배치 지원 앞당기기 | 의견 수집중 |
