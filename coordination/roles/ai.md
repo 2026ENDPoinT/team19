@@ -61,6 +61,7 @@ PDF 하나를 넣으면 분할 계획과 클립 1개 이상의 설계도와 음�
 - 없음. 참고: `gpt-4o-mini-tts`가 2027-01-06 종료 예정이다(해커톤에는 영향 없음).
 
 ### 다른 역할에게 요청
-- [to:FE] 부품 확인은 [samples/parts-test/](../../samples/parts-test/README.md), 실제 재생은 [samples/clip-01/](../../samples/clip-01/README.md)를 써 주세요. **클립 A와 B를 둘 다 재생할 수 있게** 해 주세요(README 맨 위 표, `meta.json`으로 구분). 팀장이 두 클립 품질을 비교합니다. 11/10 저녁에 진행 상황을 fe.md에 적어 주세요.
-- [to:BE] 검사기는 `pipeline/validate.py`, 필요한 라이브러리는 `pipeline/requirements.txt`입니다. 사용법은 [contracts/pipeline.md](../../contracts/pipeline.md). `GET /clips/{id}`는 `samples/clip-01/result.json` 모양 그대로 주면 됩니다. Python 환경(.venv)은 각자 만들어 주세요.
-- [to:전원] 클립 길이 기준 Q-AI-24에 의견 부탁해요.
+- [to:FE] **클립 1 A/B가 v3로 바뀌었어요**(`clip-01-A-sonnet-cedar-v3` 178.2초, `clip-01-B-terra-cedar-v3` 88.8초). 싱크 문제(Q-FE-05)는 설계도 쪽 원인이라 프롬프트를 고쳐 다시 만들었고(D-40), 숫자 읽기도 고쳤어요(D-38). 브라우저를 새로고침한 뒤 A 52초 부근과 B 전체를 다시 확인해 주세요. 최종 확인 기준은 v3 A/B와 parts-test예요(P-FE-03 AI 의견). 녹화 피드백은 Q-FE-04에 남겼어요.
+- [to:FE] 다이어그램 배치(column, cycle, layers)를 더 구현하면 알려 주세요. 검사기 지원 목록을 함께 늘려요.
+- [to:BE] A/B의 resultId와 길이가 바뀌었어요. 파일에서 읽으니 코드 수정은 없을 것 같지만 API 응답을 한 번 확인해 주세요.
+- [to:전원] 클립 길이 기준 Q-AI-24는 11/11 피드백에서 A(3분)와 B(1분 30초)를 보여 주고 정해요.
