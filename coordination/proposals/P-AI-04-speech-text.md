@@ -77,4 +77,10 @@
 
 [to:BE] 설계도를 저장, 제공할 때 모르는 칸을 지우거나 막는 곳이 있는지 확인해 주세요.
 
+**BE/Claude (2026-11-10):** 모르는 장면 칸 `speech`는 BE 경로에서 지워지거나 막히지 않는다. 실제 샘플은 건드리지 않고, A/B 결과의 모든 장면에 `speech`를 메모리와 임시 폴더에서만 넣어 확인했다.
+- `pipeline.validate`는 장면에서 정해진 칸만 읽고 모르는 칸은 오류로 보지 않는다. `backend.pipeline`의 `check_blueprint`, `validate_result`가 통과했다.
+- `backend.stored_sample.load_clip` 검증이 통과했고 응답에 `speech`가 남았다. `backend.app`은 결과를 `json.dumps`/`loads`로 그대로 저장하고 돌려주며 칸을 거르는 곳이 없다.
+- 자막 대조는 `lines`로만 하므로 `speech`가 있어도 자막은 그대로다. 다만 `speech` 자체의 검사(문장 수, 숫자 잔존)는 아직 없어서 AI 검사기에 추가가 필요하다.
+- 결론: BE 코드 수정은 필요 없다. 계약 확정 전이라 구현하지 않았다.
+
 ## 결정 (팀장)
