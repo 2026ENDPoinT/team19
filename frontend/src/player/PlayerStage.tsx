@@ -1,3 +1,4 @@
+import Slide from './Slide'
 import Diagram from './Diagram'
 import { useEffect, useRef } from 'react'
 import katex from 'katex'
@@ -44,7 +45,8 @@ function Grid({ element }: { element: Entity }) {
   )
 }
 
-function ElementView({ element }: { element: Entity }) {
+function ElementView({ element, pageUrl }: { element: Entity; pageUrl: (page: number) => string | undefined }) {
+  if (typeof element.page === 'number' && element.box) return <Slide key={element.id} element={element} imageUrl={pageUrl(element.page)} />
   if (element.nodes) return <Diagram element={element} />
   if (element.cells) return <Grid element={element} />
   if (Array.isArray(element.lines)) {
@@ -61,7 +63,7 @@ function ElementView({ element }: { element: Entity }) {
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }
 
-export default function PlayerStage({ state }: { state: PlayerState }) {
+export default function PlayerStage({ state, pageUrl }: { state: PlayerState; pageUrl: (page: number) => string | undefined }) {
   const visible = state.elements.filter((element) => !element.hidden)
   const slots = ['top', 'middle', 'bottom']
   const invalid = visible.some((element) => !slots.includes(element.slot ?? '')) || slots.some((slot) => visible.filter((element) => element.slot === slot).length > 1)
@@ -72,7 +74,7 @@ export default function PlayerStage({ state }: { state: PlayerState }) {
         {slots.map((slot) => {
           const element = visible.find((item) => item.slot === slot)
           return <div className={`player-slot${element?.highlighted ? ' player-highlight' : ''}`} key={slot}>
-            {element && <ElementView element={element} />}
+            {element && <ElementView key={element.id} element={element} pageUrl={pageUrl} />}
           </div>
         })}
       </div>
