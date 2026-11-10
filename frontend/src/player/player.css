@@ -17,3 +17,5 @@
 .player-code-line { display: block; white-space: pre; padding: 0 4px; }
 .player-line-number { display: inline-block; min-width: 24px; color: #94a3b8; user-select: none; }
 .player-unsupported { color: #fde68a; font-size: 13px; line-height: 1.6; }
+.player-diagram-scroll { width: 100%; max-height: 100%; overflow: auto; }
+.player-diagram { display: block; margin: 0 auto; max-width: none; flex-shrink: 0; }

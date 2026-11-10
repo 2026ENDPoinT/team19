@@ -1,3 +1,4 @@
+import Diagram from './Diagram'
 import { useEffect, useRef } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
@@ -44,6 +45,7 @@ function Grid({ element }: { element: Entity }) {
 }
 
 function ElementView({ element }: { element: Entity }) {
+  if (element.nodes) return <Diagram element={element} />
   if (element.cells) return <Grid element={element} />
   if (Array.isArray(element.lines)) {
     return <pre className="player-code"><code>{element.lines.map((line, index) => (
