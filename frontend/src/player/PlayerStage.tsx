@@ -1,8 +1,13 @@
+import Grid from './Grid'
+import FitContent from './FitContent'
+import { layoutGrid } from './gridLayout'
+import { layoutDiagram } from './diagramLayout'
 import Slide from './Slide'
 import Diagram from './Diagram'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
+import type { ReactNode } from 'react'
 import type { Entity, PlayerState } from './state'
 import './player.css'
 
@@ -19,77 +24,6 @@ function RichText({ content, formula }: { content: string; formula: boolean }) {
   return <>{content.split(/(\$[^$]+\$)/g).map((part, index) => part.startsWith('$') && part.endsWith('$')
     ? <Formula key={index} source={part.slice(1, -1)} />
     : <span key={index}>{part}</span>)}</>
-}
-
-function Grid({ element }: { element: Entity }) {
-  const gridRef = useRef<HTMLDivElement>(null)
-  const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({})
-  // 칸 폭은 글자 길이와 화면 크기에 따라 달라지므로 실제 배치에서 읽는다.
-  const layoutKey = JSON.stringify([element.cells, element.indexLabels,
-    element.pointers?.map(({ id, label, row, col, hidden }) => ({ id, label, row, col, hidden }))])
-  useLayoutEffect(() => {
-    const grid = gridRef.current
-    if (!grid) return
-    function measure() {
-      const next: Record<string, { x: number; y: number }> = {}
-      const gridRect = grid!.getBoundingClientRect()
-      const scale = gridRect.width / grid!.offsetWidth || 1
-      grid!.querySelectorAll<HTMLElement>('[data-cell]').forEach((cell) => {
-        const rect = cell.getBoundingClientRect()
-        const value = cell.querySelector<HTMLElement>('.player-cell-value')!
-        next[cell.dataset.cell!] = {
-          x: (rect.left - gridRect.left) / scale + cell.clientLeft + value.offsetLeft + value.offsetWidth / 2,
-          y: (rect.top - gridRect.top) / scale + cell.clientTop + value.offsetTop + value.offsetHeight / 2,
-        }
-      })
-      setPositions((previous) => JSON.stringify(previous) === JSON.stringify(next) ? previous : next)
-    }
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(grid)
-    return () => observer.disconnect()
-  }, [layoutKey])
-  return (
-    <div className="player-grid-scroll">
-      <div ref={gridRef} className="player-grid" role="table" aria-label="숫자 격자">
-        {element.cells?.map((row, rowIndex) => (
-          <div className="player-grid-row" role="row" key={rowIndex}>
-            {row.map((value, colIndex) => {
-              const cellKey = `${rowIndex},${colIndex}`
-              const origin = element.cellOrigins?.[cellKey]
-              const from = origin && positions[`${origin.row},${origin.col}`]
-              const to = positions[cellKey]
-              const transform = from && to && origin
-                ? `translate(${(from.x - to.x) * (1 - origin.progress)}px, ${(from.y - to.y) * (1 - origin.progress)}px)`
-                : undefined
-              const selected = element.highlightedCells?.includes(cellKey)
-              const pointers = element.pointers?.filter((pointer) => !pointer.hidden && pointer.row === rowIndex && pointer.col === colIndex) ?? []
-              return (
-                <div className={`player-cell${selected ? ' player-highlight' : ''}`} role="cell" key={colIndex} data-cell={cellKey}>
-                  {element.indexLabels === true && <small className="player-cell-index">{rowIndex === 0 && element.cells?.length === 1 ? colIndex : `${rowIndex},${colIndex}`}</small>}
-                  <span className="player-cell-value" style={{ transform }}>{value}</span>
-                  <div className="player-pointer-lanes" style={{ height: (element.pointers?.length ?? 0) * 20 }}>
-                    {pointers.map((pointer) => {
-                      const origin = pointer.moveOrigin
-                      const from = origin && positions[`${origin.row},${origin.col}`]
-                      const to = positions[cellKey]
-                      const dx = from && to && origin ? (from.x - to.x) * (1 - origin.progress) : 0
-                      const dy = from && to && origin ? (from.y - to.y) * (1 - origin.progress) : 0
-                      return <small
-                        className={pointer.highlighted ? 'player-pointer player-highlight' : 'player-pointer'}
-                        key={pointer.id}
-                        style={{ top: (element.pointers?.findIndex((item) => item.id === pointer.id) ?? 0) * 20, transform: `translate(calc(-50% + ${dx}px), ${dy}px)` }}
-                      >↑ {String(pointer.label ?? '')}</small>
-                    })}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
 }
 
 function ElementView({ element, pageUrl }: { element: Entity; pageUrl: (page: number) => string | undefined }) {
@@ -110,11 +44,26 @@ function ElementView({ element, pageUrl }: { element: Entity; pageUrl: (page: nu
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }
 
-export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlayback }: {
+function preferredHeight(element: Entity): number {
+  if (element.cells) return layoutGrid(element.cells, element.indexLabels === true, element.pointers?.length ?? 0).height + 8
+  if (element.nodes) {
+    try {
+      const diagram = layoutDiagram(element.nodes, (element.edges ?? []).map((edge) => ({ from: String(edge.from), to: String(edge.to) })), String(element.layout))
+      return Math.max(70, diagram.height * Math.min(1, 360 / diagram.width)) + 8
+    } catch { return 90 }
+  }
+  if (Array.isArray(element.lines)) return Math.min(260, element.lines.length * 24 + 16)
+  if (typeof element.page === 'number') return 190
+  const text = String(element.content ?? '')
+  return Math.min(140, Math.max(48, Math.ceil(text.length / 20) * 30 + 12))
+}
+
+export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlayback, controls }: {
   state: PlayerState
   pageUrl: (page: number) => string | undefined
   isPlaying: boolean
   onTogglePlayback: () => void
+  controls: ReactNode
 }) {
   const frameRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
@@ -123,9 +72,9 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
     if (!frame) return
     function fit() {
       if (!frame) return
-      // 영상과 아래 48px 조작부·여백만 화면 높이에 맞춘다. 위 설명은 제외한다.
-      const availableHeight = window.innerHeight - 88
-      setScale(Math.max(0.1, Math.min(1, frame.clientWidth / 420, availableHeight / (420 * 16 / 9))))
+      // 조작부는 영상 안에 겹쳐 놓고 전체 영상만 화면 높이에 맞춘다.
+      const availableHeight = window.innerHeight - 24
+      setScale(Math.max(0.1, Math.min(1, (frame.parentElement?.clientWidth ?? 420) / 420, availableHeight / (420 * 16 / 9))))
     }
     fit()
     const observer = new ResizeObserver(fit)
@@ -133,34 +82,35 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
     const main = frame.closest('main')
     if (main) observer.observe(main)
     window.addEventListener('resize', fit)
-    return () => { observer.disconnect(); window.removeEventListener('resize', fit) }
+    document.addEventListener('fullscreenchange', fit)
+    return () => { observer.disconnect(); window.removeEventListener('resize', fit); document.removeEventListener('fullscreenchange', fit) }
   }, [])
   const visible = state.elements.filter((element) => !element.hidden)
   const slots = ['top', 'middle', 'bottom']
   const invalid = visible.some((element) => !slots.includes(element.slot ?? '')) || slots.some((slot) => visible.filter((element) => element.slot === slot).length > 1)
   if (invalid) return <p role="alert">현재 지원 범위와 맞지 않는 장면 배치입니다.</p>
   return (
-    <div ref={frameRef} className="player-viewport" style={{ height: 420 * 16 / 9 * scale }}
-      role="button" tabIndex={0} aria-label={isPlaying ? '영상 일시정지' : '영상 재생'} aria-pressed={isPlaying}
-      onClick={onTogglePlayback}
+    <div ref={frameRef} className="player-viewport" style={{ width: 420 * scale, height: 420 * 16 / 9 * scale }}>
+    <div className="player-stage" aria-label={isPlaying ? '영상 일시정지' : '영상 재생'} style={{ transform: `translateX(-50%) scale(${scale})` }}
+      role="button" tabIndex={0} aria-pressed={isPlaying} onClick={onTogglePlayback}
       onKeyDown={(event) => {
         if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {
           event.preventDefault()
           onTogglePlayback()
         }
       }}>
-
-    <div className="player-stage" aria-label="학습 시각화" style={{ transform: `translateX(-50%) scale(${scale})` }}>
       <div className="player-slots">
         {slots.map((slot) => {
           const element = visible.find((item) => item.slot === slot)
-          return <div className={`player-slot${element?.highlighted ? ' player-highlight' : ''}`} key={slot}>
-            {element && <ElementView key={element.id} element={element} pageUrl={pageUrl} />}
+          if (!element) return null
+          return <div className={`player-slot${element.highlighted ? ' player-highlight' : ''}`} key={slot} style={{ flexBasis: preferredHeight(element) }}>
+            <FitContent key={element.id}><ElementView element={element} pageUrl={pageUrl} /></FitContent>
           </div>
         })}
       </div>
       <p className="player-caption" aria-label="현재 자막">{state.caption || '\u00a0'}</p>
     </div>
+    {controls}
     </div>
   )
 }

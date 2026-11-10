@@ -16,3 +16,25 @@ assert.throws(() => layoutDiagram([{id:'a'},{id:'b'}],[{from:'a',to:'b'},{from:'
 assert.throws(() => layoutDiagram([{id:'a'}],[{from:'a',to:'missing'}],'tree'))
 assert.throws(() => layoutDiagram([{id:'a'}],[],'cycle'))
 console.log('PASS diagram positions, tree depth, hidden stability, source immutability, invalid references/cycles/layouts')
+
+for (const count of [1, 3, 6]) {
+  const nodes = Array.from({length: count}, (_, index) => ({id: `step-${index}`}))
+  const edges = nodes.slice(1).map((node, index) => ({from: nodes[index].id, to: node.id}))
+  const before = JSON.stringify({nodes, edges})
+  const column = layoutDiagram(nodes, edges, 'column')
+  assert.ok(column.width <= 360)
+  const positions = [...column.positions.values()]
+  assert.equal(new Set(positions.map((point) => point.x)).size, 1)
+  for (let index = 0; index < positions.length; index++) {
+    assert.ok(positions[index].x - 95 >= 0)
+    assert.ok(positions[index].x + 95 <= column.width)
+    assert.ok(positions[index].y - 22 >= 0)
+    assert.ok(positions[index].y + 22 <= column.height)
+    if (index) assert.ok(positions[index].y - positions[index - 1].y >= 80)
+  }
+  assert.deepEqual(layoutDiagram(nodes.map((node) => ({...node, hidden: true})), edges, 'column'), column)
+  const row = layoutDiagram(nodes, edges, 'row')
+  assert.equal(new Set([...row.positions.values()].map((point) => point.y)).size, 1)
+  assert.equal(JSON.stringify({nodes, edges}), before)
+}
+console.log('PASS column order, 1/3/6 node bounds, readable box width, stable hidden positions and unchanged row meaning')
