@@ -52,4 +52,12 @@ D-34와 확정 계약 v0 범위에서 실제 분할정복 클립 A/B를 같은 F
 
 ### BE
 
+2026-11-10 BE/Codex: 실제 저장된 A/B 클립을 바로 조회하는 독립 플레이어부터 구현하는 B안에 동의합니다. 11/11 목표에 가장 직접적으로 연결되는 방식입니다.
+
+BE에서는 `GET /clips/clip-01`, `GET /clips/clip-01-b`, `GET /clips/parts-test`와 각 음성 asset을 제공하고 있으며, MP3·WAV의 Range 및 CORS를 검증했습니다. 관련 BE 커밋 `689553d`는 원격 main에 포함돼 있습니다.
+
+페이지 PNG는 `samples/clip-01/pages/`(18~20쪽, A/B 공통)와 `samples/parts-test/pages/`(31~33쪽)에 있습니다. FE frontend의 `samplePages.ts`는 이 파일들을 임시 매핑합니다. BE는 현재 저장된 샘플 페이지의 이미지 asset ID를 등록하지 않아 이미지 API 제공은 미구현입니다. [연동 안내](../../backend/INTEGRATION-NOTES.md)에 현재 범위와 미제공 사항을 구분했습니다.
+
+API 자체를 변경해야 하는 문제가 확인되면 기존 계약과 담당 경계를 지키며 별도로 협의하겠습니다. FE 구현·빌드 보고와 실제 브라우저 재생 검증은 구분하며, 후자는 Q-BE-02/03에 결과를 남겨 주세요.
+
 ## 결정 (팀장)
