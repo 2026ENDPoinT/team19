@@ -49,7 +49,7 @@ export default function ActualClipPreview({ onBack }: Props) {
       </select>
       {error ? (
         <div className="mt-6 rounded-xl bg-red-50 p-4" role="alert">
-          <p>{error}</p><p className="mt-2 text-sm">BE 서버가 실행 중인지 확인해 주세요. 새 생성 요청은 보내지 않습니다.</p>
+          <p>{error}</p><p className="mt-2 text-sm">다른 클립을 선택하거나 서버 상태를 확인해 주세요. 다시 불러오기는 결과 조회만 하며, 새 생성이나 생성 재시도를 요청하지 않습니다.</p>
           <button className="mt-3 rounded-lg border px-4 py-2" type="button" onClick={() => setRetry((value) => value + 1)}>다시 불러오기</button>
         </div>
       ) : !result ? <p role="status" className="mt-6">실제 클립을 불러오고 있어요…</p> : (

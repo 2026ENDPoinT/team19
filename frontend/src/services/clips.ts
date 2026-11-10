@@ -19,13 +19,23 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+function clipResponseError(payload: unknown, fallback: string): Error {
+  if (isRecord(payload) && isRecord(payload.error)) {
+    const { message, code } = payload.error
+    if (typeof message === 'string' && message.trim()) {
+      return new Error(typeof code === 'string' && code.trim() ? `${message} (${code})` : message)
+    }
+  }
+  return new Error(fallback)
+}
+
 export async function loadClip(clipId: string, signal: AbortSignal): Promise<ClipResult> {
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+  const base = import.meta.env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
   const response = await fetch(new URL(`/clips/${encodeURIComponent(clipId)}`, base), { signal })
-  if (!response.ok) throw new Error(`클립을 불러오지 못했어요 (${response.status})`)
-  const payload: unknown = await response.json()
+  const payload: unknown = await response.json().catch(() => null)
+  if (!response.ok) throw clipResponseError(payload, `클립을 불러오지 못했어요 (${response.status})`)
   if (!isRecord(payload) || payload.status !== 'completed' || !isRecord(payload.result)) {
-    throw new Error('아직 재생 가능한 클립 결과가 없어요.')
+    throw clipResponseError(payload, '아직 재생 가능한 클립 결과가 없어요.')
   }
   const result = payload.result
   if (typeof result.resultId !== 'string' || typeof result.durationSec !== 'number' || !Number.isFinite(result.durationSec) || result.durationSec <= 0 || typeof result.audioUrl !== 'string' || !isRecord(result.blueprint) || typeof result.blueprint.title !== 'string' || result.blueprint.version !== 0 || result.blueprint.theme !== 'dark' || !Array.isArray(result.blueprint.scenes) || !Array.isArray(result.captions)) {
