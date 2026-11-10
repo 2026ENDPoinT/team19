@@ -43,7 +43,12 @@ function coordinates(value: string): number[] {
   return box
 }
 
-function applyAction(elements: Entity[], action: Action) {
+// 음성 시간으로 확대 영역을 계산하므로 정지·탐색에도 같은 화면을 만든다.
+function focusBoxAtTime(from: number[], to: number[], progress: number): number[] {
+  return to.map((value, index) => from[index] + (value - from[index]) * progress)
+}
+
+function applyAction(elements: Entity[], action: Action, progress = 1) {
   const all = elements.flatMap((element) => [element, ...(element.nodes ?? []), ...(element.edges ?? []), ...(element.pointers ?? [])])
   const target = all.find((element) => element.id === action.target)
   if (!target) throw new Error(`동작 대상 없음: ${action.target}`)
@@ -82,7 +87,11 @@ function applyAction(elements: Entity[], action: Action) {
     }
     case 'setText': target.content = args[0]; break
     case 'markLine': target.markedLine = Number(args[0]); break
-    case 'focus': target.focusBox = coordinates(args[0]); break
+    case 'focus': {
+      const destination = coordinates(args[0])
+      target.focusBox = focusBoxAtTime(target.focusBox ?? target.box ?? destination, destination, progress)
+      break
+    }
     case 'mark': target.marks = [...(target.marks ?? []), { box: coordinates(args[0]), label: args[1] ?? '' }]; break
     case 'unmark': {
       if (!args.length) target.marks = []
@@ -97,7 +106,7 @@ function applyAction(elements: Entity[], action: Action) {
 }
 
 // 매 호출을 초기 상태부터 계산하므로 seek/반복 때 이전 결과가 누적되지 않는다.
-// 현재 블록에서는 동작을 즉시 순서대로 적용한다. 보간 애니메이션은 렌더러 단계다.
+// focus는 음성 시간으로 보간하고, 다른 동작은 문장 시작에 즉시 순서대로 적용한다.
 export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], seconds: number): PlayerState {
   if (!Number.isFinite(seconds)) throw new Error('유효하지 않은 재생 시간')
   const time = Math.max(0, seconds)
@@ -113,7 +122,12 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
     for (const action of scene.actions) {
       const caption = timings.get(`${scene.id}:${action.line}`)
       if (!caption) throw new Error(`동작의 자막 없음: ${scene.id}:${action.line}`)
-      if (caption.startSec <= time) applyAction(state.elements, action)
+      if (caption.startSec <= time) {
+        // 짧은 문장도 끝나기 전에 완료해 다음 문장에는 최종 상태가 된다.
+        const duration = Math.min(0.4, caption.endSec - caption.startSec)
+        const progress = Math.min(1, Math.max(0, (time - caption.startSec) / duration))
+        applyAction(state.elements, action, progress)
+      }
     }
     const last = timings.get(`${scene.id}:${scene.lines.length - 1}`)
     if (!last) throw new Error(`장면의 마지막 자막 없음: ${scene.id}`)

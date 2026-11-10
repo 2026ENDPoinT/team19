@@ -39,7 +39,7 @@ export default function ActualClipPreview({ onBack }: Props) {
     <main className="mx-auto max-w-4xl px-5 py-8">
       <button type="button" className="rounded-lg border px-4 py-2" onClick={onBack}>← 업로드 화면</button>
       <h1 className="mt-6 text-2xl font-bold">실제 클립 연결 확인</h1>
-      <p className="mt-2 text-sm text-slate-600">저장된 실제 결과와 음성을 확인하는 개발 화면이에요. 텍스트·수식·격자·코드를 시간에 맞춰 표시해요. 가로 다이어그램·재귀 트리도 표시해요. 원본 그림의 확대·강조도 표시해요. 부드러운 움직임은 아직 연결 전입니다.</p>
+      <p className="mt-2 text-sm text-slate-600">저장된 실제 결과와 음성을 확인하는 개발 화면이에요. 텍스트·수식·격자·코드를 시간에 맞춰 표시해요. 가로 다이어그램·재귀 트리도 표시해요. 원본 그림의 확대·강조도 표시해요. 원본 확대는 음성 시간에 맞춰 이동해요. 나머지 동작은 즉시 적용됩니다.</p>
       <p className="mt-2 text-xs text-slate-500">원본 그림은 저장소의 정식 samples 파일에 임시 연결했습니다. parts-test는 실제 설명 음성 대신 신호음을 사용합니다.</p>
       <label className="mt-6 block font-semibold" htmlFor="actual-clip">비교할 클립</label>
       <select id="actual-clip" value={clipId} onChange={(event) => { setResult(null); setClipId(event.target.value) }} className="mt-2 w-full rounded-lg border bg-white p-3">
