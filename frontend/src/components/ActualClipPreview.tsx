@@ -14,6 +14,7 @@ export default function ActualClipPreview({ onBack }: Props) {
   const [error, setError] = useState('')
   const { audioRef, time, restart } = useAudioClock(result ? clipId + ':' + result.resultId : 'loading')
   const [retry, setRetry] = useState(0)
+  const [sourceOpen, setSourceOpen] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -55,11 +56,40 @@ export default function ActualClipPreview({ onBack }: Props) {
         <section className="mt-6" key={`${clipId}-${result.resultId}`}>
           <h2 className="text-xl font-bold">{result.blueprint.title}</h2>
           <p className="mt-2 break-all text-xs text-slate-500">{result.resultId} · {result.durationSec.toFixed(1)}초</p>
+          <button type="button" className="source-page-toggle mt-4 rounded-lg border px-4 py-2" aria-expanded={sourceOpen} aria-controls="source-page-panel" onClick={() => setSourceOpen((open) => !open)}>
+            {sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}
+          </button>
+          <div className={`actual-clip-layout${sourceOpen ? ' actual-clip-layout--with-source' : ''}`}>
+          <div>
           {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={(page) => samplePageUrl(clipId, page)} />}
+          </div>
+          {sourceOpen && (
+            <aside id="source-page-panel" className="source-page-panel" aria-label="현재 장면의 원본 페이지">
+              <h3 className="font-semibold">현재 장면의 원본</h3>
+              {stageError ? <p className="mt-3 text-sm">장면을 확인할 수 없어 원본을 표시하지 못했어요.</p>
+                : !stage?.sourcePages.length ? <p className="mt-3 text-sm">이 장면에는 연결된 원본 페이지가 없어요.</p>
+                : stage.sourcePages.map((page) => <SourcePage key={`${clipId}-${page}`} clipId={clipId} page={page} />)}
+            </aside>
+          )}
+          </div>
           <button type="button" className="mt-4 rounded-lg border px-4 py-2" onClick={restart}>처음부터</button>
           <audio className="mt-5 w-full" src={result.audioUrl} controls preload="metadata" loop ref={audioRef} onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
         </section>
       )}
     </main>
+  )
+}
+
+
+function SourcePage({ clipId, page }: { clipId: string; page: number }) {
+  const [failed, setFailed] = useState(false)
+  const imageUrl = samplePageUrl(clipId, page)
+  return (
+    <figure className="mt-4">
+      <figcaption className="mb-2 text-sm text-slate-600">원본 {page}쪽</figcaption>
+      {!imageUrl || failed
+        ? <p className="rounded-lg bg-slate-100 p-3 text-sm">이 페이지의 그림을 불러올 수 없어요.</p>
+        : <img src={imageUrl} alt={`현재 장면의 근거 자료 ${page}쪽 전체`} className="w-full rounded-lg border" onError={() => setFailed(true)} />}
+    </figure>
   )
 }
