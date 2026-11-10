@@ -1,0 +1,739 @@
+{
+  "version": 0,
+  "title": "합병 정렬: 나누고 합치기",
+  "theme": "dark",
+  "scenes": [
+    {
+      "id": "s1",
+      "clear": true,
+      "lines": [
+        "합병 정렬은 분할 정복으로 정렬하는 방법이에요.",
+        "먼저 반으로 나누고, 각각 정렬한 뒤, 다시 합쳐요."
+      ],
+      "texts": [
+        {
+          "id": "t_title",
+          "slot": "top",
+          "style": "title",
+          "content": "합병 정렬",
+          "hidden": false
+        },
+        {
+          "id": "t_key",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "분할 정복",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_steps",
+          "slot": "middle",
+          "layout": "row",
+          "hidden": true,
+          "nodes": [
+            {
+              "id": "st_div",
+              "label": "나누기",
+              "shape": "box"
+            },
+            {
+              "id": "st_conq",
+              "label": "정복",
+              "shape": "box"
+            },
+            {
+              "id": "st_comb",
+              "label": "합치기",
+              "shape": "box"
+            }
+          ],
+          "edges": [
+            {
+              "id": "es_1",
+              "from": "st_div",
+              "to": "st_conq",
+              "label": "재귀"
+            },
+            {
+              "id": "es_2",
+              "from": "st_conq",
+              "to": "st_comb"
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "t_key",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "d_steps",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "st_div",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "st_comb",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        31
+      ]
+    },
+    {
+      "id": "s2",
+      "clear": true,
+      "lines": [
+        "배열 8, 3, 5, 1을 반씩 나누면 이런 트리가 돼요.",
+        "왼쪽은 8, 3이고 오른쪽은 5, 1이에요.",
+        "왼쪽을 다시 나누면 8과 3이 남아요.",
+        "오른쪽도 5와 1로 나눠요. 더는 나눌 수 없어요."
+      ],
+      "texts": [
+        {
+          "id": "t_tree",
+          "slot": "top",
+          "style": "title",
+          "content": "재귀 트리",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_tree",
+          "slot": "middle",
+          "layout": "tree",
+          "hidden": false,
+          "nodes": [
+            {
+              "id": "n_root",
+              "label": "8 3 5 1",
+              "shape": "box"
+            },
+            {
+              "id": "n_l",
+              "label": "8 3",
+              "shape": "box"
+            },
+            {
+              "id": "n_r",
+              "label": "5 1",
+              "shape": "box"
+            },
+            {
+              "id": "n_l1",
+              "label": "8",
+              "shape": "circle",
+              "hidden": true
+            },
+            {
+              "id": "n_l2",
+              "label": "3",
+              "shape": "circle",
+              "hidden": true
+            },
+            {
+              "id": "n_r1",
+              "label": "5",
+              "shape": "circle",
+              "hidden": true
+            },
+            {
+              "id": "n_r2",
+              "label": "1",
+              "shape": "circle",
+              "hidden": true
+            }
+          ],
+          "edges": [
+            {
+              "id": "e_l",
+              "from": "n_root",
+              "to": "n_l"
+            },
+            {
+              "id": "e_r",
+              "from": "n_root",
+              "to": "n_r"
+            },
+            {
+              "id": "e_l1",
+              "from": "n_l",
+              "to": "n_l1",
+              "hidden": true
+            },
+            {
+              "id": "e_l2",
+              "from": "n_l",
+              "to": "n_l2",
+              "hidden": true
+            },
+            {
+              "id": "e_r1",
+              "from": "n_r",
+              "to": "n_r1",
+              "hidden": true
+            },
+            {
+              "id": "e_r2",
+              "from": "n_r",
+              "to": "n_r2",
+              "hidden": true
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_root",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "n_root",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_l",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_r",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "e_l",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "e_r",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "n_l1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "n_l2",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "e_l1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "e_l2",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "n_r1",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "n_r2",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "e_r1",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "e_r2",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        32
+      ]
+    },
+    {
+      "id": "s3",
+      "clear": true,
+      "lines": [
+        "크기가 2인 부분은 비교해서 순서만 바꾸면 돼요.",
+        "8이 3보다 크니까 두 칸을 바꿔요."
+      ],
+      "texts": [
+        {
+          "id": "t_small",
+          "slot": "top",
+          "style": "title",
+          "content": "가장 작은 문제",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g_pair",
+          "slot": "middle",
+          "indexLabels": true,
+          "hidden": false,
+          "cells": [
+            [
+              "8",
+              "3"
+            ]
+          ],
+          "pointers": []
+        }
+      ],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "g_pair",
+          "args": [
+            "0-1"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "swap",
+          "target": "g_pair",
+          "args": [
+            "0",
+            "1"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "g_pair",
+          "args": [
+            "0-1"
+          ]
+        }
+      ],
+      "sourcePages": [
+        32
+      ]
+    },
+    {
+      "id": "s4",
+      "clear": true,
+      "lines": [
+        "이제 정렬된 두 부분 3, 8과 1, 5를 합쳐요.",
+        "맨 앞의 3과 1을 비교해요.",
+        "1이 더 작으니까 결과의 첫 칸에 써요.",
+        "다음 선수 5가 나와서 3과 겨뤄요.",
+        "3이 더 작으니 결과에 써요."
+      ],
+      "texts": [
+        {
+          "id": "t_merge",
+          "slot": "top",
+          "style": "title",
+          "content": "합치기 단계",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g_merge",
+          "slot": "middle",
+          "indexLabels": false,
+          "hidden": false,
+          "cells": [
+            [
+              "3",
+              "8"
+            ],
+            [
+              "1",
+              "5"
+            ],
+            [
+              "",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "pointers": [
+            {
+              "id": "p_i",
+              "label": "i",
+              "row": 0,
+              "col": 0,
+              "hidden": true
+            },
+            {
+              "id": "p_j",
+              "label": "j",
+              "row": 1,
+              "col": 0,
+              "hidden": true
+            }
+          ]
+        }
+      ],
+      "codes": [
+        {
+          "id": "c_merge",
+          "slot": "bottom",
+          "language": "pseudo",
+          "hidden": true,
+          "lines": [
+            "merge(L, R):",
+            "  while L과 R에 값이 남음:",
+            "    작은 쪽 값을 결과에 씀",
+            "  남은 값을 결과 뒤에 붙임"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "p_i",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "show",
+          "target": "p_j",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "show",
+          "target": "c_merge",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "markLine",
+          "target": "c_merge",
+          "args": [
+            "1"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "markLine",
+          "target": "c_merge",
+          "args": [
+            "2"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g_merge",
+          "args": [
+            "0,0",
+            "1,0"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "markLine",
+          "target": "c_merge",
+          "args": [
+            "3"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "setValue",
+          "target": "g_merge",
+          "args": [
+            "2,0",
+            "1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "g_merge",
+          "args": [
+            "1,0"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "move",
+          "target": "p_j",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "g_merge",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "setValue",
+          "target": "g_merge",
+          "args": [
+            "2,1",
+            "3"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "unhighlight",
+          "target": "g_merge",
+          "args": [
+            "0,0",
+            "1,1"
+          ]
+        }
+      ],
+      "sourcePages": [
+        33
+      ]
+    },
+    {
+      "id": "s5",
+      "clear": false,
+      "lines": [
+        "같은 방식으로 끝까지 합치면 1, 3, 5, 8이 돼요.",
+        "이 과정을 식으로 쓰면 이렇게 돼요."
+      ],
+      "texts": [
+        {
+          "id": "t_rec",
+          "slot": "bottom",
+          "style": "formula",
+          "content": "$T(n) = 2T(n/2) + O(n)$",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "setValue",
+          "target": "g_merge",
+          "args": [
+            "2,2",
+            "5"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "setValue",
+          "target": "g_merge",
+          "args": [
+            "2,3",
+            "8"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "hide",
+          "target": "p_i",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "hide",
+          "target": "p_j",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "setText",
+          "target": "t_merge",
+          "args": [
+            "합치기 끝"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "hide",
+          "target": "c_merge",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "t_rec",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "t_rec",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        33
+      ]
+    },
+    {
+      "id": "s6",
+      "clear": true,
+      "lines": [
+        "강의자료의 그림으로 다시 확인해요.",
+        "이 부분이 나누는 단계예요.",
+        "나눌 때는 계산이 거의 없고, 합칠 때 일을 해요.",
+        "마지막으로 퀵 정렬과 비교해 봐요."
+      ],
+      "texts": [
+        {
+          "id": "t_point",
+          "slot": "middle",
+          "style": "body",
+          "content": "합병 정렬은 합칠 때, 퀵 정렬은 나눌 때 일한다",
+          "hidden": true
+        }
+      ],
+      "slides": [
+        {
+          "id": "sl_33",
+          "slot": "top",
+          "page": 33,
+          "box": [
+            0.05,
+            0.3,
+            0.9,
+            0.35
+          ],
+          "hidden": false
+        }
+      ],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g_cmp",
+          "slot": "bottom",
+          "indexLabels": false,
+          "hidden": true,
+          "cells": [
+            [
+              "",
+              "합병",
+              "퀵"
+            ],
+            [
+              "나누기",
+              "O(1)",
+              "O(n)"
+            ],
+            [
+              "합치기",
+              "O(n)",
+              "없음"
+            ]
+          ],
+          "pointers": []
+        }
+      ],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "focus",
+          "target": "sl_33",
+          "args": [
+            "0.05,0.3,0.45,0.35"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "mark",
+          "target": "sl_33",
+          "args": [
+            "0.1,0.35,0.3,0.2",
+            "나누기"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unmark",
+          "target": "sl_33",
+          "args": [
+            "0.1,0.35,0.3,0.2"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "t_point",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "g_cmp",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "g_cmp",
+          "args": [
+            "1,1-2",
+            "2,1-2"
+          ]
+        }
+      ],
+      "sourcePages": [
+        33
+      ]
+    }
+  ]
+}

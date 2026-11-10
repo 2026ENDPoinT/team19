@@ -23,7 +23,8 @@ from pipeline.validate import LIMITS, SUPPORTED_LAYOUTS, SUPPORTED_SLOTS, valida
 
 ROOT = Path(__file__).resolve().parents[1]
 PROMPT_FILE = Path(__file__).with_name("prompts") / "blueprint_system.md"
-EXAMPLE_FILE = ROOT / "samples" / "parts-test" / "blueprint.json"
+# parts-test를 바탕으로 시점 규칙에 맞게 고친 프롬프트 전용 예시. parts-test는 FE 테스트가 쓰므로 따로 둔다.
+EXAMPLE_FILE = Path(__file__).with_name("prompts") / "blueprint_example.json"
 
 # 100만 토큰당 달러 (입력, 출력). docs/06 기준. 캐시 읽기는 Claude만 따로 계산한다.
 PRICES = {
