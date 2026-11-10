@@ -25,7 +25,8 @@ function Grid({ element }: { element: Entity }) {
   const gridRef = useRef<HTMLDivElement>(null)
   const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({})
   // 칸 폭은 글자 길이와 화면 크기에 따라 달라지므로 실제 배치에서 읽는다.
-  const layoutKey = JSON.stringify([element.cells, element.indexLabels, element.pointers])
+  const layoutKey = JSON.stringify([element.cells, element.indexLabels,
+    element.pointers?.map(({ id, label, row, col, hidden }) => ({ id, label, row, col, hidden }))])
   useLayoutEffect(() => {
     const grid = gridRef.current
     if (!grid) return
@@ -65,7 +66,20 @@ function Grid({ element }: { element: Entity }) {
                 <div className={`player-cell${selected ? ' player-highlight' : ''}`} role="cell" key={colIndex} data-cell={cellKey}>
                   {element.indexLabels === true && <small className="player-cell-index">{rowIndex === 0 && element.cells?.length === 1 ? colIndex : `${rowIndex},${colIndex}`}</small>}
                   <span className="player-cell-value" style={{ transform }}>{value}</span>
-                  {pointers.map((pointer) => <small className={pointer.highlighted ? 'player-pointer player-highlight' : 'player-pointer'} key={pointer.id}>↑ {String(pointer.label ?? '')}</small>)}
+                  <div className="player-pointer-lanes" style={{ height: (element.pointers?.length ?? 0) * 20 }}>
+                    {pointers.map((pointer) => {
+                      const origin = pointer.moveOrigin
+                      const from = origin && positions[`${origin.row},${origin.col}`]
+                      const to = positions[cellKey]
+                      const dx = from && to && origin ? (from.x - to.x) * (1 - origin.progress) : 0
+                      const dy = from && to && origin ? (from.y - to.y) * (1 - origin.progress) : 0
+                      return <small
+                        className={pointer.highlighted ? 'player-pointer player-highlight' : 'player-pointer'}
+                        key={pointer.id}
+                        style={{ top: (element.pointers?.findIndex((item) => item.id === pointer.id) ?? 0) * 20, transform: `translate(calc(-50% + ${dx}px), ${dy}px)` }}
+                      >↑ {String(pointer.label ?? '')}</small>
+                    })}
+                  </div>
                 </div>
               )
             })}

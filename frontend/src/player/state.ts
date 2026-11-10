@@ -4,6 +4,7 @@ export type Entity = {
   cells?: string[][]; row?: number; col?: number; box?: number[]
   nodes?: Entity[]; edges?: Entity[]; pointers?: Entity[]
   highlighted?: boolean; highlightedCells?: string[]; markedLine?: number
+  moveOrigin?: { row: number; col: number; progress: number }
   cellOrigins?: Record<string, { row: number; col: number; progress: number }>
   focusBox?: number[]; marks?: { box: number[]; label: string }[]
   [key: string]: unknown
@@ -97,7 +98,13 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
     case 'move': {
       const grid = elements.find((element) => element.pointers?.some((pointer) => pointer.id === target.id))
       if (!grid) throw new Error('포인터의 격자가 없습니다.')
-      ;[target.row, target.col] = position(args[0], grid)
+      const [row, col] = position(args[0], grid)
+      if (row === target.row && col === target.col) break
+      const origin = target.moveOrigin ?? { row: target.row ?? 0, col: target.col ?? 0, progress }
+      target.row = row
+      target.col = col
+      if (progress < 1) target.moveOrigin = { ...origin, progress }
+      else delete target.moveOrigin
       break
     }
     case 'setText': target.content = args[0]; break
@@ -121,7 +128,7 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
 }
 
 // 매 호출을 초기 상태부터 계산하므로 seek/반복 때 이전 결과가 누적되지 않는다.
-// focus와 swap의 표시는 음성 시간으로 보간한다. 논리적인 교환 결과는 즉시 계산한다.
+// focus·swap·move의 표시는 음성 시간으로 보간한다. 논리적인 교환 결과는 즉시 계산한다.
 export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], seconds: number): PlayerState {
   if (!Number.isFinite(seconds)) throw new Error('유효하지 않은 재생 시간')
   const time = Math.max(0, seconds)
