@@ -1,3 +1,5 @@
+import PreparationPanel from './components/PreparationPanel'
+import { usePreparation } from './components/usePreparation'
 import ActualClipPreview from './components/ActualClipPreview'
 import type { ChangeEvent, DragEvent, ReactNode } from 'react'
 import './figma-design.css'
@@ -160,7 +162,7 @@ const statusStyles: Record<ClipStatus, {
   },
 }
 
-type Screen = "upload" | "mode" | "analyzing" | "clips" | "feed"
+type Screen = "upload" | "preparing" | "mode" | "analyzing" | "clips" | "feed"
 
 function UploadIcon() {
   return (
@@ -420,6 +422,7 @@ export default function App() {
   const [error, setError] = useState("")
   const [isDragging, setIsDragging] = useState(false)
   const [screen, setScreen] = useState<Screen>("upload")
+  const preparation = usePreparation(screen === "preparing" && !showActualClip)
   const [selectedMode, setSelectedMode] = useState("")
   const [selectedClip, setSelectedClip] = useState(sampleClips[0].id)
   const [clipStatuses, setClipStatuses] = useState<Record<string, ClipStatus>>(
@@ -453,6 +456,9 @@ export default function App() {
       return
     }
 
+    preparation.reset()
+    setScreen("upload")
+    setSelectedMode("")
     setFile(selectedFile)
     setError("")
   }
@@ -605,10 +611,15 @@ export default function App() {
               <button
                 className="mt-5 flex h-13 w-full items-center justify-center rounded-xl bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
                 disabled={!file}
-                onClick={() => setScreen("mode")}
+                onClick={() => {
+                  if (!file) return
+                  setScreen("preparing")
+                  if (preparation.ticket) preparation.resume()
+                  else void preparation.start(file)
+                }}
                 type="button"
               >
-                학습 모드 선택하기
+                {preparation.lecture ? '자료 준비 결과 보기' : '자료 준비 시작'}
                 <span className="ml-2">
                   <ArrowIcon />
                 </span>
@@ -617,6 +628,8 @@ export default function App() {
           </section>
         </main>
       )}
+
+      {screen === "preparing" && file && <PreparationPanel fileName={file.name} preparation={preparation} onBack={() => setScreen("upload")} onContinue={() => setScreen("mode")} />}
 
       {screen === "mode" && file && (
         <main className="mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-12 sm:px-8 sm:pt-18">
@@ -644,7 +657,7 @@ export default function App() {
                 지금 나에게 맞는 학습 모드는?
               </h1>
               <p className="mt-4 text-[15px] leading-7 text-slate-500 sm:text-base">
-                선택한 단계에 맞춰 클립의 설명 깊이와 예시 구성을 달리해요.
+                모드별 클립 생성은 아직 시제품이에요. 다음 화면은 고정 예시를 보여줘요.
               </p>
             </div>
 
@@ -704,7 +717,7 @@ export default function App() {
                 onClick={() => setScreen("analyzing")}
                 type="button"
               >
-                학습 클립 구성하기
+                학습 클립 구성 미리보기 (시제품)
                 <span className="ml-2">
                   <ArrowIcon />
                 </span>
@@ -721,7 +734,7 @@ export default function App() {
             className="w-full max-w-[620px] text-center"
           >
             <div
-              aria-label="강의 내용 분석 중"
+              aria-label="시제품 화면 전환 중"
               className="relative mx-auto mb-9 h-24 w-24"
               role="status"
             >
@@ -734,17 +747,16 @@ export default function App() {
 
             <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-semibold text-blue-700">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-600" />
-              강의자료 분석 중
+              시제품 미리보기
             </div>
             <h1
               className="text-[30px] font-bold leading-tight tracking-[-0.04em] text-slate-950 sm:text-[38px]"
               id="analyzing-title"
             >
-              강의 내용을 학습 클립으로 나누고 있어요
+              학습 클립 화면을 미리 보여드려요
             </h1>
             <p className="mt-4 text-[15px] leading-7 text-slate-500 sm:text-base">
-              개념과 예시의 흐름을 살펴보고 학습하기 좋은 순서로 정리하고
-              있어요.
+              실제 분할·영상 생성 요청은 보내지 않아요. 다음 단계에서 서버의 클립 목록을 연결할 예정이에요.
             </p>
 
             <div className="mx-auto mt-9 max-w-md rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-[0_12px_35px_rgba(15,23,42,0.06)] sm:p-5">
