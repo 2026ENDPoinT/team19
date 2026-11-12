@@ -35,7 +35,11 @@ try {
   const ready = await watchPreparation(ticket, job => seen.push(job.status), signal, async ms => { waits.push(ms) })
   assert.deepEqual(seen, ['pending','running','completed'])
   assert.deepEqual(waits, [3000,3000])
-  assert.deepEqual(ready, { id: 'lec_01', pageCount: body('lecture.ready').pageCount })
+  assert.equal(ready.id, 'lec_01')
+  assert.equal(ready.pageCount, body('lecture.ready').pageCount)
+  for (const page of body('lecture.ready').pages) {
+    if (page.imageUrl) assert.equal(ready.pages[page.number], new URL(page.imageUrl, 'http://127.0.0.1:8000').href)
+  }
   assert.equal(paths.at(-1), '/lectures/lec_01')
   // Failure terminates without a timer or lecture request.
   globalThis.fetch = async () => Response.json({ id: 'job_01', status: 'failed', error: { message: 'PDF error' } })

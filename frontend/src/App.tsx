@@ -1,3 +1,4 @@
+import OutlineFlow from './components/OutlineFlow'
 import PreparationPanel from './components/PreparationPanel'
 import { usePreparation } from './components/usePreparation'
 import ActualClipPreview from './components/ActualClipPreview'
@@ -162,7 +163,7 @@ const statusStyles: Record<ClipStatus, {
   },
 }
 
-type Screen = "upload" | "preparing" | "mode" | "analyzing" | "clips" | "feed"
+type Screen = "outline" | "upload" | "preparing" | "mode" | "analyzing" | "clips" | "feed"
 
 function UploadIcon() {
   return (
@@ -657,7 +658,7 @@ export default function App() {
                 지금 나에게 맞는 학습 모드는?
               </h1>
               <p className="mt-4 text-[15px] leading-7 text-slate-500 sm:text-base">
-                모드별 클립 생성은 아직 시제품이에요. 다음 화면은 고정 예시를 보여줘요.
+                선택한 모드를 샘플 서버에 전달해 클립 준비 상태를 확인해요. 실제 AI 설명 생성은 아직 연결 전이에요.
               </p>
             </div>
 
@@ -713,11 +714,11 @@ export default function App() {
             <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,0.06)] sm:p-5">
               <button
                 className="flex h-13 w-full items-center justify-center rounded-xl bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
-                disabled={!selectedMode}
-                onClick={() => setScreen("analyzing")}
+                disabled={!selectedMode || !preparation.lecture}
+                onClick={() => setScreen("outline")}
                 type="button"
               >
-                학습 클립 구성 미리보기 (시제품)
+                선택한 모드로 계속
                 <span className="ml-2">
                   <ArrowIcon />
                 </span>
@@ -726,6 +727,8 @@ export default function App() {
           </section>
         </main>
       )}
+
+      {screen === "outline" && preparation.lecture && selectedModeData && <OutlineFlow key={`${preparation.lecture.id}:${selectedMode}`} lecture={preparation.lecture} mode={selectedMode as 'intro' | 'review' | 'exam'} modeName={selectedModeData.name} onBack={() => setScreen("mode")} />}
 
       {screen === "analyzing" && file && selectedModeData && (
         <main className="mx-auto flex min-h-[calc(100vh-68px)] w-full max-w-4xl flex-col items-center justify-center px-5 py-16 sm:px-8">
