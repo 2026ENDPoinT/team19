@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
@@ -56,11 +57,25 @@ def setup() -> None:
         CREATE TABLE IF NOT EXISTS jobs (id TEXT PRIMARY KEY, type TEXT NOT NULL, target_id TEXT NOT NULL, status TEXT NOT NULL, stage TEXT, error TEXT, retry_of TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
         CREATE TABLE IF NOT EXISTS assets (id TEXT PRIMARY KEY, path TEXT NOT NULL, mime TEXT NOT NULL);
         """)
-        # Never automatically rerun a charged call after a process restart.
-        db.execute("UPDATE jobs SET status='failed',stage='interrupted',error=? WHERE status='running'", (json.dumps({"code": "SERVER_RESTARTED", "message": "서버 재시작으로 중단되었습니다. 다시 시도해 주세요.", "retryable": True}, ensure_ascii=False),))
-        db.execute("UPDATE lectures SET status='failed' WHERE status='running'")
-        db.execute("UPDATE outlines SET status='failed' WHERE status='running'")
-        db.execute("UPDATE clips SET status='failed' WHERE status='running'")
+        # Never automatically rerun a charged call after a process restart. Show the same
+        # error on every record the FE reads (job, lecture, clip); outlines use 'planning' while running.
+        restarted = json.dumps({"code": "SERVER_RESTARTED", "message": "서버 재시작으로 중단되었습니다. 다시 시도해 주세요.", "retryable": True}, ensure_ascii=False)
+        db.execute("UPDATE jobs SET status='failed',stage='interrupted',error=? WHERE status='running'", (restarted,))
+        db.execute("UPDATE lectures SET status='failed',error=? WHERE status='running'", (restarted,))
+        db.execute("UPDATE outlines SET status='failed' WHERE status IN ('running','planning')")
+        db.execute("UPDATE clips SET status='failed',error=? WHERE status='running'", (restarted,))
+
+
+def resume_pending() -> int:
+    """Queue jobs that were accepted but never started (still 'pending') again after a restart.
+
+    Their executor queue lived only in memory. Running jobs are NOT rerun (setup() fails them),
+    because they may already have made charged calls; pending jobs have not started any call."""
+    with conn() as db:
+        ids = [r["id"] for r in db.execute("SELECT id FROM jobs WHERE status='pending' ORDER BY rowid")]
+    for jid in ids:
+        dispatch(jid)
+    return len(ids)
 
 
 def fail(code: str, message: str, status: int, retryable: bool = False):
@@ -228,6 +243,7 @@ def do_clip(job: dict, pipe: Pipeline):
 
 
 setup()
+resume_pending()
 app = FastAPI(title="team19 BE", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origins=os.getenv("FRONTEND_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(","), allow_credentials=False, allow_methods=["GET", "HEAD", "POST"], allow_headers=["*"], expose_headers=["Accept-Ranges", "Content-Range", "Content-Length", "ETag", "Last-Modified"])
 
@@ -236,6 +252,12 @@ app.add_middleware(CORSMiddleware, allow_origins=os.getenv("FRONTEND_ORIGINS", "
 async def custom_http_error(request, exc: HTTPException):
     detail = exc.detail if isinstance(exc.detail, dict) else {"code": "HTTP_ERROR", "message": str(exc.detail), "retryable": False}
     return JSONResponse(status_code=exc.status_code, content={"error": detail})
+
+
+@app.exception_handler(RequestValidationError)
+async def invalid_request(request, exc: RequestValidationError):
+    # Same error shape as every other error (contracts/api.md), instead of FastAPI's {"detail": [...]}.
+    return JSONResponse(status_code=422, content={"error": {"code": "INVALID_REQUEST", "message": "요청 형식이 올바르지 않습니다.", "retryable": False}})
 
 
 @app.get("/demo", include_in_schema=False)
@@ -295,7 +317,8 @@ def lecture(lecture_id: str):
         for p in db.execute("SELECT * FROM pages WHERE lecture_id=? ORDER BY number", (lecture_id,)):
             asset = db.execute("SELECT id FROM assets WHERE path=? LIMIT 1", (p["image_path"],)).fetchone()
             pages.append({"number": p["number"], "imageUrl": f"/assets/{asset['id']}" if asset else None})
-        j = db.execute("SELECT id FROM jobs WHERE target_id=? AND type='prepare' ORDER BY created_at LIMIT 1", (lecture_id,)).fetchone()
+        # Latest preparation job: after a retry the FE must follow the new job, not the failed one.
+        j = db.execute("SELECT id FROM jobs WHERE target_id=? AND type='prepare' ORDER BY rowid DESC LIMIT 1", (lecture_id,)).fetchone()
         return {"id": l["id"], "title": l["title"], "status": l["status"], "pageCount": l["page_count"], "preparationJobId": j["id"] if j else None, "pages": pages}
 
 
@@ -308,6 +331,9 @@ def create_outline(lecture_id: str, payload: OutlineRequest):
     if payload.mode not in ("intro", "review", "exam"):
         fail("INVALID_MODE", "지원하지 않는 학습 모드입니다.", 422)
     with conn() as db:
+        # Take the write lock first so simultaneous duplicate requests see each other's outline
+        # (otherwise the second INSERT violates UNIQUE(lecture_id, mode) and returns HTTP 500).
+        db.execute("BEGIN IMMEDIATE")
         lec = row(db, "lectures", lecture_id)
         if lec is None:
             fail("LECTURE_NOT_FOUND", "강의를 찾을 수 없습니다.", 404)
@@ -335,6 +361,8 @@ def get_job(job_id: str):
 
 @app.get("/lectures/{lecture_id}/outlines/{mode}")
 def get_outline(lecture_id: str, mode: str):
+    if mode not in ("intro", "review", "exam"):
+        fail("INVALID_MODE", "지원하지 않는 학습 모드입니다.", 422)
     with conn() as db:
         if not row(db, "lectures", lecture_id):
             fail("LECTURE_NOT_FOUND", "강의를 찾을 수 없습니다.", 404)
@@ -365,11 +393,15 @@ def get_clip(clip_id: str):
 @app.post("/jobs/{job_id}/retry", status_code=202)
 def retry_job(job_id: str):
     with conn() as db:
+        db.execute("BEGIN IMMEDIATE")  # a double click must not start two (possibly charged) runs
         j = row(db, "jobs", job_id)
         if not j:
             fail("JOB_NOT_FOUND", "작업을 찾을 수 없습니다.", 404)
         if j["status"] != "failed":
             fail("RETRY_NOT_ALLOWED", "실패한 작업만 다시 실행할 수 있습니다.", 409)
+        newest = db.execute("SELECT id FROM jobs WHERE target_id=? AND type=? ORDER BY rowid DESC LIMIT 1", (j["target_id"], j["type"])).fetchone()
+        if newest["id"] != j["id"]:
+            fail("RETRY_NOT_ALLOWED", "이미 다시 실행한 작업입니다. 새 작업의 상태를 확인해 주세요.", 409)
         target = j["target_id"]
         if j["type"] == "outline":
             if db.execute("SELECT COUNT(*) FROM clips WHERE outline_id=?", (target,)).fetchone()[0]:
