@@ -11,8 +11,10 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 import math
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -143,6 +145,8 @@ class _Checker:
             lines = lines if isinstance(lines, list) else []
         if len(lines) > LIMITS["scene_lines"]:
             self.err(where, f"문장이 {len(lines)}개 (상한 {LIMITS['scene_lines']}개). 장면을 나눌 것")
+        if "speech" in sc:
+            self.check_speech(sc["speech"], lines, where)
 
         for key in (*COMPONENT_KEYS, "actions", "sourcePages"):
             if not isinstance(sc.get(key), list):
@@ -158,6 +162,22 @@ class _Checker:
                 self.add_component(comp, kind, where, pages)
 
         self.run_actions(sc.get("actions") or [], len(lines), where)
+
+    def check_speech(self, speech, lines: list, where: str) -> None:
+        """음성 원고(P-AI-04). 생략 가능. 쓰면 lines와 문장 수가 같고, ""는 그 문장을 lines로 읽는다는 뜻."""
+        if not isinstance(speech, list) or not all(isinstance(x, str) for x in speech):
+            self.err(where, "speech는 문자열 목록이어야 함")
+            return
+        if len(speech) != len(lines):
+            self.err(where, f"speech가 {len(speech)}개, lines가 {len(lines)}개. 문장 수가 같아야 함")
+            return
+        for i, (sp, ln) in enumerate(zip(speech, lines)):
+            if not sp.strip():
+                continue
+            if re.search(r"[0-9]", sp):
+                self.err(where, f"speech[{i}]에 아라비아 숫자가 남아 있음. 한글로 읽는 대로 쓸 것")
+            if _similarity(sp, ln) < SPEECH_MIN_SIMILARITY:
+                self.err(where, f"speech[{i}]가 lines[{i}]와 내용이 너무 다름. 읽는 법만 바꿀 것")
 
     def check_page(self, p, where, field) -> bool:
         if not isinstance(p, int) or isinstance(p, bool) or p < 1 or p > self.page_count:
@@ -526,6 +546,18 @@ class _Checker:
                 self.err(w, f"범위가 거꾸로임: {s}")
         else:
             self.cell_of(cells, s, w)
+
+
+# speech와 lines 비교(P-AI-04): 숫자·수사·기호를 빼고 남은 글이 이만큼은 같아야 한다.
+SPEECH_MIN_SIMILARITY = 0.5
+_NUMBERISH = re.compile(r"[0-9\s.,!?~·:;()\[\]{}+\-*/=<>^%'\"“”‘’…]|[영공일이삼사오육칠팔구십백천만억하나둘셋넷다섯여섯일곱여덟아홉열스물서른마흔쉰]")
+
+
+def _similarity(a: str, b: str) -> float:
+    a, b = _NUMBERISH.sub("", a), _NUMBERISH.sub("", b)
+    if not a or not b:
+        return 1.0
+    return difflib.SequenceMatcher(None, a, b).ratio()
 
 
 def _nonempty_str(x) -> bool:

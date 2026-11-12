@@ -30,13 +30,13 @@ LINE_GAP, SCENE_GAP = 0.3, 0.6
 DEFAULT_MODEL = "gpt-4o-mini-tts"
 DEFAULT_VOICE = "cedar"      # 팀장이 직접 비교해 고름 (2026-11-09). 다음 후보: marin
 # 영어 지시가 한국어 지시보다 잘 맞았다(팀장 비교). 숫자 읽기 예시만 한국어로 둔다.
-# 숫자는 이제 korean_numbers가 한글로 바꿔 보내서 Numbers 줄은 거의 쓰이지 않는다.
-# 이 글을 바꾸면 모든 문장 음성 캐시가 무효가 되므로 그대로 둔다.
+# 11/12 P-AI-04: 숫자 예시 줄을 "적힌 그대로 읽기"로 바꿨다. 설계도의 speech나 korean_numbers가 이미 한글로 바꿔 보낸다.
+# 이 글을 바꾸면 모든 문장 음성 캐시가 무효가 된다(이전 samples는 다시 만들지 않는 한 영향 없음).
 VOICE_STYLE = """Accent: Native standard Korean (Seoul dialect). No foreign accent; sound like a Korean university lecturer.
 Tone: A friendly lecturer explaining one-on-one. Warm, bright, and calm. Not exaggerated or salesy.
 Pacing: Slightly slower than normal conversation. Pause briefly at commas and at the end of each sentence.
 Intonation: Let polite endings like "~예요" and "~해요" fall naturally. Do not raise the pitch at the end unless it is a question.
-Numbers: Read Arabic numerals the way a Korean speaker naturally would. Examples: "6 대 1" → "육 대 일", "10단계" → "십 단계", "9번" → "아홉 번".
+Script: Read the text exactly as written. Do not change any numbers or words.
 English terms: Pronounce English words such as "merge" and "sort" the way a Korean lecturer would say them in class.
 Emphasis: Put slight stress on key numbers and on the conclusion of each explanation."""
 USD_PER_MINUTE = 0.015       # docs/06 추정 (gpt-4o-mini-tts)
@@ -59,8 +59,10 @@ def make_audio(blueprint: dict, out_dir, model: str = DEFAULT_MODEL, voice: str 
         for li, text in enumerate(scene["lines"]):
             if pcm:
                 pcm += _silence(SCENE_GAP if li == 0 else LINE_GAP)
-            # 자막은 숫자 그대로, 음성에는 숫자를 한글 읽기로 바꿔 보낸다(korean_numbers.py).
-            speech = spoken_text(text)
+            # 자막은 lines 그대로. 음성은 설계도의 speech(P-AI-04)를 쓰고, 없거나 ""이면 숫자를 한글 읽기로 바꿔 보낸다.
+            script = scene.get("speech") or []
+            raw = script[li] if li < len(script) and isinstance(script[li], str) and script[li].strip() else text
+            speech = spoken_text(raw)
             key = hashlib.sha256(f"{model}|{voice}|{VOICE_STYLE}|{speech}".encode()).hexdigest()[:16]
             cached = out / "lines" / f"{key}.pcm"
             if cached.is_file():

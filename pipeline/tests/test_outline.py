@@ -126,3 +126,18 @@ class PackageTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CapTest(unittest.TestCase):
+    def test_cap_scales_with_content_pages(self):
+        self.assertEqual(outline.clip_cap("intro", 5), 2)
+        self.assertEqual(outline.clip_cap("review", 26), 6)
+        self.assertEqual(outline.clip_cap("exam", 57), 19)
+        self.assertEqual(outline.clip_cap("exam", 200), 20)
+        pages = [{"number": n, "text": "t"} for n in range(1, 5)]
+        self.assertEqual(outline.count_content_pages(pages, {1: "[표지] 제목", 2: "글자만"}), 3)
+
+    def test_cap_applied_in_validation(self):
+        data = {"clipPlans": [plan(f"c{i}", [1]) for i in range(3)]}
+        self.assertTrue(outline.validate_outline(data, "review", {1}, cap=2))
+        self.assertEqual(outline.validate_outline(data, "review", {1}, cap=3), [])

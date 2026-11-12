@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 from pathlib import Path
@@ -25,7 +26,11 @@ PROMPT_FILE = Path(__file__).with_name("prompts") / "outline_system.md"
 DEFAULT_MODEL = "gpt-6.1-terra"    # 환경변수 AI_OUTLINE_MODEL로 바꾼다. 모델 비교는 Q-AI-07
 MODES = ("intro", "review", "exam")
 # 모드별 클립 수 상한(D-29: 상한만 두고 숫자는 실험 후). 초기값이다.
-CAPS = {"intro": 6, "review": 12, "exam": 20}
+# 자료 분량에 비례한다: 내용 페이지 PAGES_PER_CLIP쪽당 1개를 [최소, 최대] 안으로 자른다.
+PAGES_PER_CLIP = {"intro": 10, "review": 5, "exam": 3}
+CAP_RANGE = {"intro": (2, 6), "review": (3, 12), "exam": (4, 20)}
+CAPS = {m: hi for m, (_, hi) in CAP_RANGE.items()}   # 절대 상한
+NON_CONTENT_TAGS = ("[표지]", "[목차]", "[행정 안내]", "[빈 페이지]")
 CLIP_KINDS = ("concept", "process", "example", "compare")
 TITLE_MAX = 30                     # 영어 용어를 괄호로 붙이면 길어진다
 PAGE_TEXT_MAX = 1200               # 페이지 하나에서 보내는 글자 수 상한
@@ -48,8 +53,9 @@ def plan_outline(mode: str, pages: list[dict], descriptions: list[dict] | None =
     if not any((p.get("text") or "").strip() or desc.get(int(p["number"])) or p.get("description") for p in pages):
         raise PipelineError("PDF_NO_TEXT", "자료에서 글자와 그림 내용을 읽지 못했습니다.", False)
 
+    cap = clip_cap(mode, count_content_pages(pages, desc))
     system = build_system_prompt(mode)
-    user = build_user_prompt(mode, pages, desc)
+    user = build_user_prompt(mode, pages, desc, cap)
     usage: list[dict] = []
     errors: list[str] = []
     data: dict = {}
@@ -57,21 +63,40 @@ def plan_outline(mode: str, pages: list[dict], descriptions: list[dict] | None =
         prompt = user if attempt == 1 else user + _retry_note(data, errors)
         data, u = llm.call_json(model, system, prompt)
         usage.append(u)
-        errors = validate_outline(data, mode, page_numbers)
+        errors = validate_outline(data, mode, page_numbers, cap)
         if not errors:
             return {**normalize(data), "usage": usage}
     raise PipelineError("OUTLINE_INVALID", "클립 목록을 만들지 못했습니다. 다시 시도해 주세요.", True)
 
 
+def clip_cap(mode: str, content_pages: int) -> int:
+    lo, hi = CAP_RANGE[mode]
+    return max(lo, min(hi, math.ceil(content_pages / PAGES_PER_CLIP[mode])))
+
+
+def count_content_pages(pages: list[dict], desc: dict[int, str]) -> int:
+    """표지·목차·행정 안내·빈 페이지를 뺀 페이지 수. 해설이 없으면 글자가 있는 페이지 수."""
+    n = 0
+    for p in pages:
+        d = desc.get(int(p["number"])) or p.get("description") or ""
+        if p.get("empty") or d.startswith(NON_CONTENT_TAGS):
+            continue
+        if (p.get("text") or "").strip() or d:
+            n += 1
+    return n
+
+
 def build_system_prompt(mode: str) -> str:
     text = PROMPT_FILE.read_text(encoding="utf-8").replace("<<MODE>>", mode)
-    for m, cap in CAPS.items():
-        text = text.replace(f"<<CAP_{m}>>", str(cap))
+    for m in MODES:
+        text = text.replace(f"<<PPC_{m}>>", str(PAGES_PER_CLIP[m])).replace(f"<<MAX_{m}>>", str(CAP_RANGE[m][1]))
     return text
 
 
-def build_user_prompt(mode: str, pages: list[dict], desc: dict[int, str]) -> str:
-    parts = [f"모드: {mode} (클립 최대 {CAPS[mode]}개)", f"강의 전체 페이지 수: {len(pages)}", "\n# 강의 페이지"]
+def build_user_prompt(mode: str, pages: list[dict], desc: dict[int, str], cap: int | None = None) -> str:
+    cap = cap or clip_cap(mode, count_content_pages(pages, desc))
+    parts = [f"모드: {mode}. 이번 자료의 클립은 **최대 {cap}개**다. 상한을 채울 필요는 없다.",
+             f"강의 전체 페이지 수: {len(pages)}", "\n# 강의 페이지"]
     for p in pages:
         n = int(p["number"])
         text = " ".join((p.get("text") or "").split())[:PAGE_TEXT_MAX]
@@ -83,16 +108,17 @@ def build_user_prompt(mode: str, pages: list[dict], desc: dict[int, str]) -> str
     return "\n".join(parts)
 
 
-def validate_outline(data: dict, mode: str, page_numbers: set[int]) -> list[str]:
-    """오류 문장 목록. 비어 있으면 통과."""
+def validate_outline(data: dict, mode: str, page_numbers: set[int], cap: int | None = None) -> list[str]:
+    """오류 문장 목록. 비어 있으면 통과. cap을 안 주면 모드의 절대 상한."""
+    cap = cap or CAPS[mode]
     if not isinstance(data, dict):
         return ["JSON 객체가 아니다"]
     plans = data.get("clipPlans")
     if not isinstance(plans, list) or not plans:
         return ["clipPlans가 비어 있다"]
     errs = []
-    if len(plans) > CAPS[mode]:
-        errs.append(f"클립이 {len(plans)}개다. {mode} 모드는 최대 {CAPS[mode]}개")
+    if len(plans) > cap:
+        errs.append(f"클립이 {len(plans)}개다. 이번 자료는 최대 {cap}개")
     seen: set[str] = set()
     for i, p in enumerate(plans):
         where = f"clipPlans[{i}]"
