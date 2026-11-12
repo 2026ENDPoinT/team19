@@ -31,7 +31,11 @@ function clipResponseError(payload: unknown, fallback: string): Error {
 
 export async function loadClip(clipId: string, signal: AbortSignal): Promise<ClipResult> {
   const base = import.meta.env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
-  const response = await fetch(new URL(`/clips/${encodeURIComponent(clipId)}`, base), { signal })
+  const response = await fetch(new URL(`/clips/${encodeURIComponent(clipId)}`, base), { signal }).catch((cause: unknown) => {
+    // 클립 전환·화면 이탈로 취소한 요청은 연결 실패로 바꾸지 않는다.
+    if (signal.aborted || (cause instanceof Error && cause.name === 'AbortError')) throw cause
+    throw new Error(`백엔드 서버에 연결하지 못했어요. ${new URL(base).origin} 주소에서 서버가 실행 중인지 확인하고 다시 불러와 주세요.`)
+  })
   const payload: unknown = await response.json().catch(() => null)
   if (!response.ok) throw clipResponseError(payload, `클립을 불러오지 못했어요 (${response.status})`)
   if (!isRecord(payload) || payload.status !== 'completed' || !isRecord(payload.result)) {
