@@ -1,17 +1,21 @@
-// D-34 부품 확인용 실제 정식 샘플 파일. API 이미지 제공 전 임시 URL 매핑이다.
-// 샘플 원본은 복사하거나 수정하지 않는다.
+// BE 연동 안내의 공식 샘플 이미지 ID만 사용한다.
+// A/B는 같은 원본 페이지를 공유하며, samples PNG를 FE 번들에 포함하지 않는다.
 const partPages: Record<number, string> = {
-  31: new URL('../../../samples/parts-test/pages/page-031.png', import.meta.url).href,
-  32: new URL('../../../samples/parts-test/pages/page-032.png', import.meta.url).href,
-  33: new URL('../../../samples/parts-test/pages/page-033.png', import.meta.url).href,
+  31: 'parts-test-page-031',
+  32: 'parts-test-page-032',
+  33: 'parts-test-page-033',
 }
 const clipPages: Record<number, string> = {
-  18: new URL('../../../samples/clip-01/pages/page-018.png', import.meta.url).href,
-  19: new URL('../../../samples/clip-01/pages/page-019.png', import.meta.url).href,
-  20: new URL('../../../samples/clip-01/pages/page-020.png', import.meta.url).href,
+  18: 'clip-01-page-018',
+  19: 'clip-01-page-019',
+  20: 'clip-01-page-020',
 }
 export function samplePageUrl(clipId: string, page: number): string | undefined {
-  if (clipId === 'parts-test') return partPages[page]
-  if (clipId === 'clip-01' || clipId === 'clip-01-b') return clipPages[page]
-  return undefined
+  if (!Number.isInteger(page)) return undefined
+  const pages = clipId === 'parts-test' ? partPages
+    : clipId === 'clip-01' || clipId === 'clip-01-b' ? clipPages : undefined
+  const assetId = pages?.[page]
+  if (typeof assetId !== 'string') return undefined
+  const base = import.meta.env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+  return new URL(`/assets/${assetId}`, base).href
 }

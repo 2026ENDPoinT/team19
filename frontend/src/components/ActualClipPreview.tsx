@@ -77,7 +77,7 @@ export default function ActualClipPreview({ onBack }: Props) {
       <details className="mt-2 text-sm text-slate-600">
         <summary className="cursor-pointer">샘플 안내</summary>
       <p className="mt-2 text-sm text-slate-600">저장된 실제 결과와 음성을 확인하는 개발 화면이에요. 텍스트·수식·격자·코드를 시간에 맞춰 표시해요. 가로 다이어그램·재귀 트리도 표시해요. 원본 그림의 확대·강조도 표시해요. 원본 확대·배열 교환·포인터는 음성 시간에 맞춰 이동해요. 나머지 동작은 즉시 적용됩니다.</p>
-      <p className="mt-2 text-xs text-slate-500">원본 그림은 저장소의 정식 samples 파일에 임시 연결했습니다. parts-test는 실제 설명 음성 대신 신호음을 사용합니다.</p>
+      <p className="mt-2 text-xs text-slate-500">원본 그림은 BE의 공식 샘플 이미지 API에서 불러옵니다. parts-test는 실제 설명 음성 대신 신호음을 사용합니다.</p>
       </details>
       <label className="mt-3 block font-semibold" htmlFor="actual-clip">비교할 클립</label>
       <select id="actual-clip" value={clipId} onChange={(event) => { setResult(null); setClipId(event.target.value) }} className="mt-2 w-full rounded-lg border bg-white p-2">

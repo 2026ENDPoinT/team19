@@ -38,6 +38,17 @@ try {
     assert.equal(loaded.audioUrl, 'http://127.0.0.1:8000/assets/test-audio')
     assert.deepEqual(loaded.captions, result.captions)
   }
+  globalThis.fetch = async () => { throw new TypeError('Failed to fetch') }
+  await assert.rejects(loadClip('test', controller.signal), (error) => {
+    assert.ok(error.message.includes('백엔드 서버에 연결하지 못했어요'))
+    assert.ok(error.message.includes('http://127.0.0.1:8000'))
+    return true
+  })
+  const canceled = new AbortController()
+  canceled.abort()
+  const cancelReason = new Error('request canceled')
+  globalThis.fetch = async () => { throw cancelReason }
+  await assert.rejects(loadClip('test', canceled.signal), (error) => error === cancelReason)
   // Canceled requests keep their AbortError so the caller can ignore stale loads.
   globalThis.fetch = async () => { throw new DOMException('canceled', 'AbortError') }
   await assert.rejects(loadClip('test', controller.signal), { name: 'AbortError' })
