@@ -1,6 +1,6 @@
 # API v0 (FE ↔ BE)
 
-> 상태: 확정 v0 (D-28) · 담당: BE (검토 FE) · 최종 수정: 2026-11-09 · AI/Claude
+> 상태: 확정 v0 (D-28) · 담당: BE (검토 FE) · 최종 수정: 2026-11-12 · BE/Claude
 
 결정 과정과 응답 예시 전체는 [P-BE-02](../coordination/proposals/P-BE-02-api-and-pipeline-v0.md), FE용 샘플 응답은 [sandbox/be/fe-fixtures/](../sandbox/be/fe-fixtures/README.md)에 있다. 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 
@@ -47,7 +47,35 @@ Job의 `error`도 같은 모양이다. 내부 예외를 그대로 보여 주지 
 | Job | `pending` → `running` → `completed` / `failed` |
 | Clip | `pending`(생성 전) / `running` / `completed` / `failed` |
 
-`stage`, Job `type`의 세부 이름은 BE가 정하고 이 표에 추가한다.
+### Job `type`과 `stage`
+
+> 2026-11-12 BE/Claude: 새 이름 없이 `backend/app.py`에 이미 있는 값만 적었다. `backend/tests/test_integration_flow.py`와 로컬 HTTP로 확인했다.
+
+Job `type`은 3가지이고 `jobId`를 받는 곳이 다르다.
+
+| `type` | 하는 일 | `jobId`를 받는 곳 | `stage` 순서 |
+|---|---|---|---|
+| `prepare` | PDF의 페이지 글자·그림 추출, 페이지 해설 | `POST /lectures`, `GET /lectures/{id}`의 `preparationJobId` | `queued` → `starting` → `extracting` → `describing` → `finished` |
+| `outline` | 강의·모드별 분할 계획 | `POST /lectures/{id}/outlines`, Outline의 `jobId` | `queued` → `starting` → `planning` → `finished` |
+| `clip` | 클립 하나의 설계도와 음성 (분할이 끝나면 클립마다 자동 등록, D-19) | Outline `clips[].jobId` | `queued` → `starting` → `blueprint` → `audio` → `finished` |
+
+| `stage` | Job `status` | 발생 조건과 의미 |
+|---|---|---|
+| `queued` | `pending` | 접수됐고 실행 순서를 기다린다. 개발 중 동시 실행은 1개라(D-28) 앞 작업이 끝나야 시작한다. |
+| `starting` | `running` | 실행기가 작업을 집어 AI 모듈을 준비하는 중이다. |
+| `extracting` | `running` | `prepare`만. PDF 페이지의 글자를 뽑고 페이지 그림을 저장한다. |
+| `describing` | `running` | `prepare`만. 페이지 해설 단계. 샘플 모드에서는 해설을 만들지 않고 자리만 거친다. |
+| `planning` | `running` | `outline`만. 자료를 클립으로 나누는 계획을 만든다. |
+| `blueprint` | `running` | `clip`만. 영상 설계도를 만들고 형식 검사를 한다. |
+| `audio` | `running` | `clip`만. 음성과 자막 시간을 만들고 검사한 뒤 결과를 저장한다. |
+| `finished` | `completed` | 작업이 끝났다. `error`는 `null`이다. |
+| `failed` | `failed` | 작업이 실패했다. `error`에 `{code, message, retryable}`이 있다. |
+| `interrupted` | `failed` | 실행 중에 서버가 재시작돼 중단됐다. `error.code`는 `SERVER_RESTARTED`, `retryable: true`다. 자동으로 다시 실행하지 않는다. |
+
+- `progress`는 지금 항상 `null`이다(D-21). 잴 수 없는 퍼센트를 만들지 않는다.
+- 빠른 단계는 3초 간격 조회 사이에 지나가 FE가 못 볼 수 있다. 모든 `stage`를 볼 것이라고 가정하지 않는다.
+- FE는 모르는 `stage` 값이 오면 일반 문구로 보여 준다. 값은 나중에 늘 수 있다.
+- 실패한 Job은 `POST /jobs/{id}/retry`로 같은 `type`의 새 Job이 만들어진다(`retryOf`가 이전 `jobId`).
 
 ## 2단계
 

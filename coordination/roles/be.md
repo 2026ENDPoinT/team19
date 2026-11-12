@@ -1,6 +1,6 @@
 # 역할: 백엔드 (BE)
 
-> 상태: 초안 · 담당: BE · 최종 수정: 2026-11-10 · BE/Claude
+> 상태: 초안 · 담당: BE · 최종 수정: 2026-11-12 · BE/Claude
 
 > 이 파일은 BE 역할만 고친다. 다른 역할은 읽기만 하고, 요청은 `questions.md`에 남긴다.
 > 아래 "책임"은 팀장이 쓴 초안이다. BE 담당자가 자기 에이전트와 검토하고 고쳐서 확정한다.
@@ -36,10 +36,14 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ## 현황 (세션마다 갱신)
 
-> 최종 갱신: 2026-11-10 · BE/Claude
+> 최종 갱신: 2026-11-12 · BE/Claude
 
 ### 최근 한 일
 
+- **(11/12) FE 업로드·클립 흐름 통합 검증 (샘플 모드, 유료 호출 없음).** main `3c6c473` 기준. P-FE-07/08의 BE 의견을 남겼다. `업로드→준비→모드→클립 완료→ClipResult→음성`을 `backend/tests/test_integration_flow.py`(신규 20개)와 로컬 HTTP(임시 데이터, 포트 8010)로 확인했고 FE 요청·응답 필드와 맞다. 샘플 결과는 PDF 발췌·대체 그림·무음이며 실제 AI 생성이 아니다.
+- **(11/12) 찾아서 고친 BE 문제 6개** (`feature/be-integration-checks`, 미커밋·미병합): 재시작 후 시작 전 `pending` 작업이 영원히 대기 · 재시작 후 Outline `planning` 잔류 · 중단 클립의 `error` 공백 · 재시도 후 `preparationJobId`가 옛 작업 · 같은 강의·모드 동시 `POST` 500 · 같은 실패 Job 재시도 중복 실행. 계약과 어긋난 `GET …/outlines/{잘못된 모드}`(404→422)와 형식 오류 응답(`{detail}`→`{error}`, 새 코드 `INVALID_REQUEST`)도 맞췄다.
+- **(11/12) Q-AI-27:** 새 이름 없이 기존 `stage`·Job `type`을 `contracts/api.md`에 표로 문서화하고 화면 문구를 제안했다. **Q-FE-08:** 원본 PDF가 없어 원인 미확정으로 기록했다(합성 PDF 비교만 했다).
+- 전체 pytest 204개 통과(`backend/tests`+`pipeline/tests`, 이전 184 + 신규 20). 기본 pytest 임시 폴더가 권한 오류라 `--basetemp`를 지정해 실행했다. httpx 경고 1건 유지.
 - 실제 A/B 제공(`689553d`)과 공식 fixtures·통합 테스트 안정화(`6b7b155`)를 main에 반영·Push했다. [연동 안내](../../backend/INTEGRATION-NOTES.md)를 FE에 공유했고 Q-BE-02/03에서 확인했다.
 - `backend/fixtures/`에 66개 개발용 사례를 보존하고 계약 구조 일치 59개·과거 사례 7개를 구분했다. sandbox 원본은 보존하며 실제 플레이어에 fixtures import를 요구하지 않는다. 변경·삭제 전 FE와 협의한다(Q-FE-03).
 - 원본 페이지 PNG 6개 제공을 main `6970e46`에 병합·Push했다. 기존 `GET/HEAD /assets/{id}`를 쓰며 A/B는 `clip-01-page-018`~`020`, parts-test는 `parts-test-page-031`~`033`이다. 전체 pytest 178개 통과(BE/Claude 재실행), 이미지 6개·MP3/WAV 3개 HTTP 응답을 확인했다. 유료 호출 없음, 기존 httpx 경고 1건은 남아 있다. 이전 147개·117개 통과는 이전 기록이다.
@@ -50,6 +54,9 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 다음 할 일
 
+- 사용자 검토 후 `feature/be-integration-checks`(코드·테스트)를 main에 병합하고, 문서(계약·제안서·질문·이 파일)는 main에 올린다. 병합 전 main을 받아 충돌을 먼저 해결한다.
+- Q-FE-08: 문제의 Software Engineering PDF(또는 깨진 2·3쪽)를 받아 원본·`pypdf`·`PyMuPDF`·DB 텍스트·제목을 비교한다. 재처리 API나 깨짐 감지 표시는 원인 확인 뒤 제안서로 낸다.
+- 팀장 결정 필요: `POST …/outlines` 완료 재사용이 `200`인 것을 계약 표에 반영할지(P-FE-08 BE 의견).
 - FE와 실제 브라우저 재생·정지·탐색·반복·전환을 확인한다(Q-BE-02/03). A s4~s6, B s3~s4의 화면 이어 쓰기와 자막/동작 복원을 포함한다.
 - (싱크 재검증은 D-40, P-FE-04 기록 참조. 필요하면 FE 요청 시 지원한다.)
 - B·parts-test와 정지·탐색·반복 동작 확인을 FE와 이어간다. `samplePages.ts` API URL 전환은 FE와 협의한다(FE 담당 파일).
@@ -63,5 +70,7 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 다른 역할에게 요청
 
+- [to:FE] P-FE-07/08의 BE 의견과 Q-AI-27의 단계 표·문구 제안을 확인해 주세요. 새 API는 필요 없습니다. 병합 전 서버에서는 재시작 뒤 클립 폴링이 끝나지 않을 수 있습니다.
+- [to:전원] Q-FE-08 재현을 위해 해당 PDF(또는 깨진 쪽만 낸 PDF)를 사용자 동의 아래 BE에 전달해 주세요.
 - [to:FE] Q-BE-02/03에서 B·parts-test와 정지·탐색·반복의 브라우저 확인 결과가 있으면 알려 주세요. BE A/B 기능은 이미 main에 공유됐습니다. 같은 응답의 resultId·설계도·자막·음성을 묶어서 사용합니다.
 - [to:FE] 공식 fixtures는 [안내](../../backend/fixtures/README.md)를 참고해 주세요. 변경·삭제 전 협의하며, 이미지 API는 main에 반영됐으니 FE의 API 매핑 전환 시점을 함께 협의합니다.
