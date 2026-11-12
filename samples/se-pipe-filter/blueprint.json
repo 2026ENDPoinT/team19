@@ -1,0 +1,694 @@
+{
+  "version": 0,
+  "title": "파이프 앤 필터: 출력을 다음 입력으로",
+  "theme": "dark",
+  "scenes": [
+    {
+      "id": "s1",
+      "clear": true,
+      "lines": [
+        "파이프 앤 필터는 변환을 이어 붙이는 구조예요.",
+        "각 필터는 입력을 받아 처리한 뒤 출력을 만들어요.",
+        "파이프는 앞 필터의 출력을 다음 입력으로 넘겨요.",
+        "유닉스 명령에서 세로 막대가 파이프예요."
+      ],
+      "texts": [
+        {
+          "id": "t_intro",
+          "slot": "top",
+          "style": "title",
+          "content": "파이프 앤 필터",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_intro",
+          "slot": "middle",
+          "layout": "row",
+          "hidden": false,
+          "nodes": [
+            {
+              "id": "n_input",
+              "label": "입력",
+              "shape": "box"
+            },
+            {
+              "id": "n_filter1",
+              "label": "필터",
+              "shape": "circle"
+            },
+            {
+              "id": "n_pipe",
+              "label": "파이프",
+              "shape": "box"
+            },
+            {
+              "id": "n_filter2",
+              "label": "필터",
+              "shape": "circle"
+            },
+            {
+              "id": "n_output",
+              "label": "출력",
+              "shape": "box"
+            }
+          ],
+          "edges": [
+            {
+              "id": "e_input",
+              "from": "n_input",
+              "to": "n_filter1"
+            },
+            {
+              "id": "e_pipe1",
+              "from": "n_filter1",
+              "to": "n_pipe"
+            },
+            {
+              "id": "e_pipe2",
+              "from": "n_pipe",
+              "to": "n_filter2"
+            },
+            {
+              "id": "e_output",
+              "from": "n_filter2",
+              "to": "n_output"
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [
+        {
+          "id": "c_unix",
+          "slot": "bottom",
+          "language": "shell",
+          "hidden": true,
+          "lines": [
+            "cat 2021-03-31.log |",
+            "grep \"error\" | wc -l"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_filter1",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_filter2",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_input",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_output",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n_input",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n_output",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n_pipe",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "c_unix",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "markLine",
+          "target": "c_unix",
+          "args": [
+            "1"
+          ]
+        }
+      ],
+      "sourcePages": [
+        21
+      ]
+    },
+    {
+      "id": "s2",
+      "clear": true,
+      "lines": [
+        "이 명령에서는 3개의 명령을 필터로 이어요.",
+        "먼저 캣이 로그 파일의 내용을 출력해요.",
+        "그렙은 그 내용에서 에러가 포함된 줄을 골라요.",
+        "마지막으로 더블유 씨가 전달된 줄의 수를 세요.",
+        "각 출력이 파이프를 통해 다음 명령으로 넘어가요."
+      ],
+      "texts": [
+        {
+          "id": "t_unix",
+          "slot": "top",
+          "style": "title",
+          "content": "유닉스 명령 따라가기",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_unix",
+          "slot": "middle",
+          "layout": "row",
+          "hidden": false,
+          "nodes": [
+            {
+              "id": "n_cat",
+              "label": "cat",
+              "shape": "circle"
+            },
+            {
+              "id": "n_pipe_a",
+              "label": "|",
+              "shape": "box"
+            },
+            {
+              "id": "n_grep",
+              "label": "grep",
+              "shape": "circle"
+            },
+            {
+              "id": "n_pipe_b",
+              "label": "|",
+              "shape": "box"
+            },
+            {
+              "id": "n_wc",
+              "label": "wc -l",
+              "shape": "circle"
+            }
+          ],
+          "edges": [
+            {
+              "id": "e_cat_pipe",
+              "from": "n_cat",
+              "to": "n_pipe_a"
+            },
+            {
+              "id": "e_pipe_grep",
+              "from": "n_pipe_a",
+              "to": "n_grep"
+            },
+            {
+              "id": "e_grep_pipe",
+              "from": "n_grep",
+              "to": "n_pipe_b"
+            },
+            {
+              "id": "e_pipe_wc",
+              "from": "n_pipe_b",
+              "to": "n_wc"
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [
+        {
+          "id": "c_example",
+          "slot": "bottom",
+          "language": "shell",
+          "hidden": false,
+          "lines": [
+            "cat 2021-03-31.log |",
+            "grep \"error\" | wc -l"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_cat",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_grep",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_wc",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "n_grep",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "n_wc",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "markLine",
+          "target": "c_example",
+          "args": [
+            "1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n_cat",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n_grep",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "markLine",
+          "target": "c_example",
+          "args": [
+            "2"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "n_grep",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "n_wc",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "unhighlight",
+          "target": "n_wc",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "highlight",
+          "target": "n_pipe_a",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "highlight",
+          "target": "n_pipe_b",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        21
+      ]
+    },
+    {
+      "id": "s3",
+      "clear": true,
+      "lines": [
+        "출력과 입력 형식이 맞으면 필터를 이어 쓸 수 있어요.",
+        "그래서 필터를 다른 처리 흐름에도 재사용할 수 있어요.",
+        "변환이 차례대로 이어지는 경우를 배치 순차 모델이라 해요.",
+        "이 모델은 데이터 처리 시스템에서 많이 써요."
+      ],
+      "texts": [
+        {
+          "id": "t_reuse",
+          "slot": "top",
+          "style": "title",
+          "content": "연결과 재사용",
+          "hidden": false
+        },
+        {
+          "id": "t_batch",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "배치 순차 모델",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_reuse",
+          "slot": "middle",
+          "layout": "row",
+          "hidden": false,
+          "nodes": [
+            {
+              "id": "n_reuse1",
+              "label": "필터",
+              "shape": "circle"
+            },
+            {
+              "id": "n_format",
+              "label": "형식 일치",
+              "shape": "box"
+            },
+            {
+              "id": "n_reuse2",
+              "label": "필터",
+              "shape": "circle"
+            }
+          ],
+          "edges": [
+            {
+              "id": "e_reuse1",
+              "from": "n_reuse1",
+              "to": "n_format"
+            },
+            {
+              "id": "e_reuse2",
+              "from": "n_format",
+              "to": "n_reuse2"
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_format",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "n_format",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_reuse1",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_reuse2",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "t_batch",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "e_reuse1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "e_reuse2",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "setText",
+          "target": "t_reuse",
+          "args": [
+            "데이터 처리에 활용"
+          ]
+        }
+      ],
+      "sourcePages": [
+        21
+      ]
+    },
+    {
+      "id": "s4",
+      "clear": true,
+      "lines": [
+        "결제 시스템에서는 먼저 발행된 송장을 읽어요.",
+        "결제 데이터도 받아서 결제 내역을 확인해요.",
+        "한 갈래에서는 영수증을 발행해요.",
+        "다른 갈래에서는 결제 기한이 된 항목을 찾아요.",
+        "이어서 독촉장을 발행해요."
+      ],
+      "texts": [
+        {
+          "id": "t_payments",
+          "slot": "top",
+          "style": "title",
+          "content": "결제 시스템의 흐름",
+          "hidden": false
+        }
+      ],
+      "slides": [
+        {
+          "id": "sl_payments",
+          "slot": "middle",
+          "page": 22,
+          "box": [
+            0.11,
+            0.35,
+            0.78,
+            0.42
+          ],
+          "hidden": false
+        }
+      ],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "mark",
+          "target": "sl_payments",
+          "args": [
+            "0.12,0.64,0.13,0.11",
+            "송장"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "mark",
+          "target": "sl_payments",
+          "args": [
+            "0.12,0.46,0.13,0.10",
+            "송장 읽기"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "unmark",
+          "target": "sl_payments",
+          "args": [
+            "0.12,0.64,0.13,0.11"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "unmark",
+          "target": "sl_payments",
+          "args": [
+            "0.12,0.46,0.13,0.10"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "mark",
+          "target": "sl_payments",
+          "args": [
+            "0.27,0.64,0.13,0.11",
+            "결제 데이터"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "mark",
+          "target": "sl_payments",
+          "args": [
+            "0.27,0.46,0.13,0.10",
+            "결제 확인"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unmark",
+          "target": "sl_payments",
+          "args": [
+            "0.27,0.64,0.13,0.11"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unmark",
+          "target": "sl_payments",
+          "args": [
+            "0.27,0.46,0.13,0.10"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "mark",
+          "target": "sl_payments",
+          "args": [
+            "0.45,0.36,0.12,0.10",
+            "영수증 발행"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "mark",
+          "target": "sl_payments",
+          "args": [
+            "0.59,0.36,0.13,0.10",
+            "영수증"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unmark",
+          "target": "sl_payments",
+          "args": [
+            "0.45,0.36,0.12,0.10"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unmark",
+          "target": "sl_payments",
+          "args": [
+            "0.59,0.36,0.13,0.10"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "mark",
+          "target": "sl_payments",
+          "args": [
+            "0.45,0.54,0.12,0.14",
+            "기한 확인"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "unmark",
+          "target": "sl_payments",
+          "args": [
+            "0.45,0.54,0.12,0.14"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "mark",
+          "target": "sl_payments",
+          "args": [
+            "0.59,0.54,0.13,0.14",
+            "독촉장 발행"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "mark",
+          "target": "sl_payments",
+          "args": [
+            "0.75,0.56,0.13,0.10",
+            "독촉장"
+          ]
+        }
+      ],
+      "sourcePages": [
+        22
+      ]
+    },
+    {
+      "id": "s5",
+      "clear": true,
+      "lines": [
+        "다만 사용자 입력에 바로 반응해야 하는 경우도 있어요.",
+        "이런 대화형 시스템에는 파이프 앤 필터가 잘 맞지 않아요."
+      ],
+      "texts": [
+        {
+          "id": "t_limit",
+          "slot": "top",
+          "style": "title",
+          "content": "어울리지 않는 경우",
+          "hidden": false
+        },
+        {
+          "id": "t_interactive",
+          "slot": "middle",
+          "style": "body",
+          "content": "대화형 시스템: 사용자 입력에 바로 반응",
+          "hidden": false
+        },
+        {
+          "id": "t_warning",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "대화형에는 부적합",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "t_interactive",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "t_warning",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        21
+      ]
+    }
+  ]
+}

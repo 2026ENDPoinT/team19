@@ -1,0 +1,20 @@
+{
+ "pageCount": 59,
+ "source": "materials/05_architecture_design_impl.pdf (저장소에 올리지 않음)",
+ "pages": [
+  {
+   "number": 21,
+   "text": "Pipe and filter architecture\n• Functional transformations process their inputs to produce outputs.\n• May be referred to as a pipe and ﬁlter model (as in UNIX shell).\n• e.g.) cat 2021-03-31.log | grep \"error\" | wc -l\n• Variants of this approach are very common.\n• When transformations are sequential, this is a batch sequential model\nwhich is extensively used in data processing systems.\n• Not really suitable for interactive systems.\n입력, 출력 형식만 맞추면 이어붙일 수 있음\n1g파일안에\n↓\npipe\ns line숫자를우\ne\n포함하는\n활력\n∅\nㅇ\n세주기\n…\nPipe 로\n뿌리기\nㅲ\n문자열 왜아\n연결\n물력을 입력으로 걸러내는 역할(filfring)\n넘김\n_\nex) data- processing\nLSal때\n그때 결정↑\ntdihiven형태\npipelining\nMWC/ Even",
+   "description": "영어 글머리표 슬라이드. 가운데 UNIX 명령 예시 `cat 2021-03-31.log | grep \"error\" | wc -l`이 코드 글꼴로 있다. 위에 빨강·파랑·초록 손글씨 필기가 겹쳐 있다(학생 필기라 사실 근거로 쓰지 않는다). 페이지 아래 작은 인쇄 글씨: '입력, 출력 형식만 맞추면 이어붙일 수 있음'. 다시 그릴 필요가 있는 그림은 없다.",
+   "imagePath": "pages/page-021.png",
+   "empty": false
+  },
+  {
+   "number": 22,
+   "text": "An example of the pipe and filter architecture used in a payments system",
+   "description": "글자는 제목뿐이고 흐름도 그림 하나가 있다(결제 시스템의 파이프 앤 필터). 둥근 상자는 필터(처리), 네모 상자는 데이터다. 흐름: 데이터 Invoices → 필터 Read issued invoices → 필터 Identify payments(데이터 Payments도 여기로 들어감) → 두 갈래. 위 갈래: Issue receipts → 데이터 Receipts. 아래 갈래: Find payments due → Issue payment reminder → 데이터 Reminders. 원본 페이지 기준 위치 [x, y, w, h]: 흐름도 전체 [0.11, 0.35, 0.78, 0.42], Read issued invoices [0.12, 0.46, 0.13, 0.10], Invoices [0.12, 0.64, 0.13, 0.11], Identify payments [0.27, 0.46, 0.13, 0.10], Payments [0.27, 0.64, 0.13, 0.11], Issue receipts [0.45, 0.36, 0.12, 0.10], Receipts [0.59, 0.36, 0.13, 0.10], Find payments due [0.45, 0.54, 0.12, 0.14], Issue payment reminder [0.59, 0.54, 0.13, 0.14], Reminders [0.75, 0.56, 0.13, 0.10].",
+   "imagePath": "pages/page-022.png",
+   "empty": false
+  }
+ ]
+}

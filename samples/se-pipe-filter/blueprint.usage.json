@@ -1,0 +1,11 @@
+[
+ {
+  "provider": "openai",
+  "model": "gpt-6.1-terra",
+  "inputTokens": 5622,
+  "outputTokens": 4088,
+  "costUsd": 0.0261,
+  "stopReason": "completed",
+  "seconds": 53.3
+ }
+]
