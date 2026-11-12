@@ -41,6 +41,7 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 ### 최근 한 일
 
 - **(11/12) FE 업로드·클립 흐름 통합 검증 (샘플 모드, 유료 호출 없음).** main `3c6c473` 기준. P-FE-07/08의 BE 의견을 남겼다. `업로드→준비→모드→클립 완료→ClipResult→음성`을 `backend/tests/test_integration_flow.py`(신규 20개)와 로컬 HTTP(임시 데이터, 포트 8010)로 확인했고 FE 요청·응답 필드와 맞다. 샘플 결과는 PDF 발췌·대체 그림·무음이며 실제 AI 생성이 아니다.
+- **(11/12) Q-AI-28 BE 호환 수정(`feature/be-ai-compat`, main 병합·Push 완료).** ① 실제 AI 모드 기본 모듈을 `pipeline`으로(환경변수 우선) ② 어댑터가 AI의 `PipelineError` 클래스를 `isinstance`로 구분해 `{code,message,retryable}` 보존, 그 밖의 예외는 `INTERNAL_ERROR`. 가짜 AI 모듈·격리 데이터 폴더로 전체 흐름·오류·계획 ID(`plan_json`의 `c1`·`prerequisites` 보존) 확인, 신규 29개, 전체 250개 통과(이전 221). 유료 호출·실제 AI 함수 실행 없음. **가짜 AI 모듈을 통한 호환성 검증이며 실제 AI 파이프라인 통합 완료가 아니다.** 결정 필요 사항(`pending` 자동 재개, `AI_MODE` 검증, 동시 실행·동의)과 차이 3가지는 Q-AI-28 BE 답변에 정리했다.
 - **(11/12) Q-FE-08 정밀 점검(조사·기록만, 코드 변경 없음).** 실제 PDF 4종(07_software_evolution 33쪽, `local-data` 업로드 3건)을 격리 폴더에서 PDF→`pypdf`→DB→`clips.title`→API까지 글자 단위로 비교했고 BE 저장·응답 단계 손실은 없었다. `pypdf`가 줄 사이 공백을 지워 `Software EngineeringChapter …`가 되는 현상은 재현했다. 스크린샷 원본·AI의 굿노트 PDF는 없어 원인 미확정이며, `KSCms-UHC-H`+대응표 없음 합성 PDF에서만 `pypdf`가 깨지고 `PyMuPDF`는 정상이었다(가설). 결과는 Q-FE-08 BE 답에 기록했다. 회귀 pytest 221개 통과(`backend/tests`+`pipeline/tests`, AI 추가분 포함).
 - **(11/12) 찾아서 고친 BE 문제 6개** (`feature/be-integration-checks`, main `403dc83`에 병합·Push 완료): 재시작 후 시작 전 `pending` 작업이 영원히 대기 · 재시작 후 Outline `planning` 잔류 · 중단 클립의 `error` 공백 · 재시도 후 `preparationJobId`가 옛 작업 · 같은 강의·모드 동시 `POST` 500 · 같은 실패 Job 재시도 중복 실행. 계약과 어긋난 `GET …/outlines/{잘못된 모드}`(404→422)와 형식 오류 응답(`{detail}`→`{error}`, 새 코드 `INVALID_REQUEST`)도 맞췄다.
 - **(11/12) Q-AI-27:** 새 이름 없이 기존 `stage`·Job `type`을 `contracts/api.md`에 표로 문서화하고 화면 문구를 제안했다. **Q-FE-08:** 원본 PDF가 없어 원인 미확정으로 기록했다(합성 PDF 비교만 했다).
@@ -55,8 +56,8 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 다음 할 일
 
-- Q-FE-08 점검 기록을 사용자가 검토한 뒤 문서를 main에 올린다(아직 미커밋). 스크린샷의 Software Engineering PDF나 AI가 쓴 `05_architecture_design_impl.pdf`(또는 깨진 쪽만 낸 PDF)를 받으면 같은 방식으로 원본·`pypdf`·`PyMuPDF`·DB 텍스트·제목을 비교한다. 추출기 우선순위 변경·깨짐 감지·재처리는 원인 확인 뒤 제안서로 낸다(구현 안 함).
-- Q-AI-28(AI_PIPELINE_MODULE 기본값, 오류 클래스 인식, plan id) 확인은 아직 하지 않았다. 사용자 요청이 있을 때 진행한다.
+- Q-FE-08: 스크린샷의 Software Engineering PDF나 AI가 쓴 `05_architecture_design_impl.pdf`(또는 깨진 쪽만 낸 PDF)를 받으면 같은 방식으로 원본·`pypdf`·`PyMuPDF`·DB 텍스트·제목을 비교한다. 추출기 우선순위 변경·깨짐 감지·재처리는 원인 확인 뒤 제안서로 낸다(구현 안 함).
+- Q-AI-28 팀장 결정(실제 모드 `pending` 재개, `AI_MODE` 검증, 동시 실행·예산, 오류 코드 `PDF_INVALID`/`INVALID_PDF`)이 나오면 그에 맞춰 구현한다. 실제 `pipeline`과의 소량 실호출 확인은 사용자 확인 뒤에만 한다.
 - 팀장 결정 필요: `POST …/outlines` 완료 재사용이 `200`인 것을 계약 표에 반영할지(P-FE-08 BE 의견).
 - FE와 실제 브라우저 재생·정지·탐색·반복·전환을 확인한다(Q-BE-02/03). A s4~s6, B s3~s4의 화면 이어 쓰기와 자막/동작 복원을 포함한다.
 - (싱크 재검증은 D-40, P-FE-04 기록 참조. 필요하면 FE 요청 시 지원한다.)
