@@ -18,6 +18,7 @@ import argparse
 import json
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from pipeline import costlog, llm
@@ -27,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PROMPT_FILE = Path(__file__).with_name("prompts") / "describe_system.md"
 DEFAULT_MODEL = "gpt-6.1-terra"   # 환경변수 AI_DESCRIBE_MODEL로 바꾼다. 모델 비교는 Q-AI-07
 BATCH = 6                          # 한 번에 보내는 페이지 수
+PARALLEL = 4                       # 동시에 보내는 묶음 수 (요청 한도를 넘지 않게 작게)
 TEXT_HINT = 300                    # 깨짐 판단용으로 함께 보내는 추출 글자 수
 KINDS = ("content", "cover", "toc", "admin", "empty")
 
@@ -48,10 +50,17 @@ def describe_pages(pages: list[dict], model: str | None = None) -> dict:
         else:
             todo.append(p)
 
+    batches = [todo[i:i + BATCH] for i in range(0, len(todo), BATCH)]
+
+    def run(batch):
+        return llm.call_json(model, system, _user_text(batch), [p["imagePath"] for p in batch], max_tokens=8000)
+
+    # 묶음끼리는 서로 기다릴 필요가 없어 동시에 부른다. 57쪽 기준 약 2분 → 30초대(계약 시간 제한 3분).
+    with ThreadPoolExecutor(max_workers=PARALLEL) as pool:
+        replies = list(pool.map(run, batches))
+
     usage: list[dict] = []
-    for i in range(0, len(todo), BATCH):
-        batch = todo[i:i + BATCH]
-        data, u = llm.call_json(model, system, _user_text(batch), [p["imagePath"] for p in batch], max_tokens=8000)
+    for batch, (data, u) in zip(batches, replies):
         usage.append(u)
         got = {}
         for item in data.get("pages", []) if isinstance(data, dict) else []:

@@ -204,3 +204,44 @@ class ErrorTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SpeechTests(unittest.TestCase):
+    """음성 원고 speech (P-AI-04)."""
+
+    def with_speech(self, speech):
+        clip = base_clip()
+        clip["scenes"][0]["speech"] = speech
+        return errors_of(clip)
+
+    def test_speech_ok(self):
+        self.assertEqual(self.with_speech(["", "나눈 결과를 트리로 봐요."]), [])
+
+    def test_speech_count_mismatch(self):
+        self.assertTrue(any("문장 수" in e for e in self.with_speech([""])))
+
+    def test_speech_digits(self):
+        self.assertTrue(any("아라비아 숫자" in e for e in self.with_speech(["배열을 2개로 나눕니다.", ""])))
+
+    def test_speech_content_changed(self):
+        self.assertTrue(any("내용이 너무 다름" in e for e in self.with_speech(["오늘은 날씨가 좋아요.", ""])))
+
+    def test_audio_uses_speech(self):
+        from unittest import mock
+        from pipeline import audio
+        clip = base_clip()
+        clip["scenes"][0]["speech"] = ["배열을 반으로 갈라요.", ""]
+        sent = []
+
+        def fake_tts(client, model, voice, text):
+            sent.append(text)
+            return b"\x00\x00" * 2400
+
+        import tempfile
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(audio, "_tts", side_effect=fake_tts), \
+                mock.patch.object(audio, "_client", return_value=object()):
+            r = audio.make_audio(clip, d, fmt="wav")
+        self.assertEqual(sent[0], "배열을 반으로 갈라요.")
+        self.assertEqual(sent[1], clip["scenes"][0]["lines"][1])
+        self.assertEqual(r["captions"][0]["text"], clip["scenes"][0]["lines"][0])
