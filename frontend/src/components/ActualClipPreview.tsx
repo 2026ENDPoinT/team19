@@ -7,10 +7,10 @@ import { useEffect, useRef, useState } from 'react'
 import { loadClip } from '../services/clips'
 import type { ClipResult } from '../services/clips'
 
-type Props = { onBack: () => void }
+type Props = { onBack: () => void; initialClipId?: string; pages?: Record<number, string> }
 
-export default function ActualClipPreview({ onBack }: Props) {
-  const [clipId, setClipId] = useState('clip-01')
+export default function ActualClipPreview({ onBack, initialClipId, pages }: Props) {
+  const [clipId, setClipId] = useState(initialClipId ?? 'clip-01')
   const [result, setResult] = useState<ClipResult | null>(null)
   const [error, setError] = useState('')
   const { audioRef, time, restart } = useAudioClock(result ? clipId + ':' + result.resultId : 'loading')
@@ -70,10 +70,13 @@ export default function ActualClipPreview({ onBack }: Props) {
     catch (cause) { stageError = cause instanceof Error ? cause.message : '장면 계산 오류' }
   }
 
+  const pageUrl = (page: number) => initialClipId ? pages?.[page] : samplePageUrl(clipId, page)
+
   return (
     <main className="mx-auto max-w-4xl px-5 py-3">
-      <button type="button" className="rounded-lg border px-4 py-2" onClick={onBack}>← 업로드 화면</button>
-      <h1 className="mt-3 text-xl font-bold">실제 클립 연결 확인</h1>
+      <button type="button" className="rounded-lg border px-4 py-2" onClick={onBack}>← {initialClipId ? '클립 목록' : '업로드 화면'}</button>
+      <h1 className="mt-3 text-xl font-bold">{initialClipId ? '업로드 자료의 샘플 클립' : '실제 클립 연결 확인'}</h1>
+      {initialClipId ? <p className="mt-3 text-sm text-slate-500">샘플 모드의 PDF 발췌·무음 음성 결과예요. 실제 AI 요약·TTS 생성 결과가 아니에요.</p> : <>
       <details className="mt-2 text-sm text-slate-600">
         <summary className="cursor-pointer">샘플 안내</summary>
       <p className="mt-2 text-sm text-slate-600">저장된 실제 결과와 음성을 확인하는 개발 화면이에요. 텍스트·수식·격자·코드를 시간에 맞춰 표시해요. 가로 다이어그램·재귀 트리도 표시해요. 원본 그림의 확대·강조도 표시해요. 원본 확대·배열 교환·포인터는 음성 시간에 맞춰 이동해요. 나머지 동작은 즉시 적용됩니다.</p>
@@ -85,6 +88,7 @@ export default function ActualClipPreview({ onBack }: Props) {
         <option value="clip-01-b">B · Terra / Cedar</option>
         <option value="parts-test">부품 검사 · 신호음 샘플 (실제 TTS 아님)</option>
       </select>
+      </>}
       {error ? (
         <div className="mt-6 rounded-xl bg-red-50 p-4" role="alert">
           <p>{error}</p><p className="mt-2 text-sm">다른 클립을 선택하거나 서버 상태를 확인해 주세요. 다시 불러오기는 결과 조회만 하며, 새 생성이나 생성 재시도를 요청하지 않습니다.</p>
@@ -102,7 +106,7 @@ export default function ActualClipPreview({ onBack }: Props) {
           <audio src={result.audioUrl} hidden preload="metadata" loop ref={audioRef}
             onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}
             onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
-          {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={(page) => samplePageUrl(clipId, page)} isPlaying={isPlaying} onTogglePlayback={togglePlayback}
+          {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={pageUrl} isPlaying={isPlaying} onTogglePlayback={togglePlayback}
             controls={<PlayerControls audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
           {playbackError && <p role="alert" className="mt-2 text-sm text-red-700">{playbackError}</p>}
           </div>
@@ -111,7 +115,7 @@ export default function ActualClipPreview({ onBack }: Props) {
               <h3 className="font-semibold">현재 장면의 원본</h3>
               {stageError ? <p className="mt-3 text-sm">장면을 확인할 수 없어 원본을 표시하지 못했어요.</p>
                 : !stage?.sourcePages.length ? <p className="mt-3 text-sm">이 장면에는 연결된 원본 페이지가 없어요.</p>
-                : stage.sourcePages.map((page) => <SourcePage key={`${clipId}-${page}`} clipId={clipId} page={page} />)}
+                : stage.sourcePages.map((page) => <SourcePage key={`${clipId}-${page}`} clipId={clipId} page={page} imageUrl={pageUrl(page)} />)}
             </aside>
           )}
           </div>
@@ -123,9 +127,8 @@ export default function ActualClipPreview({ onBack }: Props) {
 }
 
 
-function SourcePage({ clipId, page }: { clipId: string; page: number }) {
+function SourcePage({ page, imageUrl }: { clipId: string; page: number; imageUrl?: string }) {
   const [failed, setFailed] = useState(false)
-  const imageUrl = samplePageUrl(clipId, page)
   return (
     <figure className="mt-4">
       <figcaption className="mb-2 text-sm text-slate-600">원본 {page}쪽</figcaption>
