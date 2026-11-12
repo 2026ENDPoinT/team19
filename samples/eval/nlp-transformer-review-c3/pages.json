@@ -1,0 +1,33 @@
+{
+ "pageCount": 58,
+ "pages": [
+  {
+   "number": 27,
+   "text": "Self-Attention: Step 1\n create three vectors from each of the encoder’s input (embedding) vec\ntors\n• query, key, value\n• how? multiply embedding vectors by three trainable matrices\n• size of query/key/value vectors:\nsmaller than embedding\n–\nin the original paper: 64 vs 512\n27",
+   "description": "오른쪽 도식에서 Thinking과 Machines의 임베딩 x₁, x₂는 각각 4칸, 대응하는 q, k, v 벡터는 각각 3칸으로 표시된다. 오른쪽에는 각 벡터 유형에 대응하는 4×3 격자 행렬 WQ, WK, WV가 세로로 놓여 있다.",
+   "imagePath": "pages/page-027.png",
+   "empty": false
+  },
+  {
+   "number": 29,
+   "text": "Self-Attention: Step 2\n calculate a self-attention score for each word\n• the score determines how much focus to place on other parts of the input as we\nencode a word at a certain position\n how? take a dot product:\n• score = (query vector) · (key vector of the word we’re scoring)\n29",
+   "description": "아래 도식은 Thinking과 Machines를 두 열로 놓고 각각 임베딩, query, key, value 벡터를 표시한다. 첫 단어의 query를 두 key와 각각 내적한 예로 q₁·k₁=112, q₁·k₂=96이 아래에 제시된다.",
+   "imagePath": "pages/page-029.png",
+   "empty": false
+  },
+  {
+   "number": 31,
+   "text": "Self-Attention: Step 3\n normalize attention scores\n3-a) divide each score by key vector size =\n𝑑𝑑𝑘𝑘 (original paper: 𝑑𝑑𝑘𝑘 = 64 = 8)\n–\nleads to having more stable gradients\n3-b) softmax operation\n–\ngives positional probabilities\n–\n(which sum to 1)\n31",
+   "description": "오른쪽 도식은 두 단어의 임베딩과 Q·K·V 벡터를 두 열로 놓고, q₁과 각 키의 내적 점수 112·96을 8로 나눠 14·12로 만든 뒤 softmax를 거쳐 0.88·0.12를 얻는 순서를 보여 준다.",
+   "imagePath": "pages/page-031.png",
+   "empty": false
+  },
+  {
+   "number": 33,
+   "text": "Self-Attention: Step 4\n Calculate\nthe output of self-attention layer\n• weighted sum of value vectors\n33",
+   "description": "오른쪽 두 열의 도식은 q₁의 점수 112·96을 8로 나눈 뒤 softmax 가중치 0.88·0.12를 얻고, 각각 v₁·v₂에 곱해 합산하여 z₁을 만드는 과정을 보여 준다. 아래에는 다음 출력 z₂도 표시되어 있다.",
+   "imagePath": "pages/page-033.png",
+   "empty": false
+  }
+ ]
+}

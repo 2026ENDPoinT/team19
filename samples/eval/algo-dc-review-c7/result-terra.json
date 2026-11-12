@@ -1,0 +1,926 @@
+{
+ "resultId": "eval-algo-dc-c7-terra",
+ "durationSec": 100.35,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "피봇 분할은 어떻게 진행하나?",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "이 배열을 피봇을 기준으로 나눠 볼게요.",
+     "인덱스 6의 8을 피봇으로 골라요.",
+     "8을 맨 왼쪽의 6과 교환해요.",
+     "low는 피봇보다 작은 수를 지나가요.",
+     "high는 피봇보다 큰 수를 지나가요."
+    ],
+    "speech": [
+     "",
+     "인덱스 육의 팔을 피봇으로 골라요.",
+     "팔을 맨 왼쪽의 육과 교환해요.",
+     "로우는 피봇보다 작은 수를 지나가요.",
+     "하이는 피봇보다 큰 수를 지나가요."
+    ],
+    "texts": [
+     {
+      "id": "t_main",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "피봇 분할"
+     },
+     {
+      "id": "t_rule",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "low: 작은 수를 지나감"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g_main",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "6",
+        "3",
+        "11",
+        "9",
+        "12",
+        "2",
+        "8",
+        "15",
+        "18",
+        "10",
+        "7",
+        "14"
+       ]
+      ],
+      "indexLabels": true,
+      "pointers": [
+       {
+        "id": "p_low",
+        "label": "low",
+        "row": 0,
+        "col": 1,
+        "hidden": true
+       },
+       {
+        "id": "p_high",
+        "label": "high",
+        "row": 0,
+        "col": 11,
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "6"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g_main",
+      "args": [
+       "0",
+       "6"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_main",
+      "args": [
+       "6"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "0"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "t_rule",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "high: 큰 수를 지나감"
+      ]
+     }
+    ],
+    "sourcePages": [
+     34,
+     38
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "low는 3을 지나 11에서 멈춰요.",
+     "high는 14를 지나 7에서 멈춰요.",
+     "11과 7을 서로 교환해요.",
+     "low는 다음 9에서 멈춰요.",
+     "high는 10과 18과 15를 지나 6에서 멈춰요."
+    ],
+    "speech": [
+     "로우는 삼을 지나 십일에서 멈춰요.",
+     "하이는 십사를 지나 칠에서 멈춰요.",
+     "십일과 칠을 서로 교환해요.",
+     "로우는 다음 구에서 멈춰요.",
+     "하이는 십과 십팔과 십오를 지나 육에서 멈춰요."
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "g_main",
+      "args": [
+       "0"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "move",
+      "target": "p_low",
+      "args": [
+       "2"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "p_low",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "2"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "피봇보다 큰 수에서 정지"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "move",
+      "target": "p_high",
+      "args": [
+       "10"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "p_high",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "10"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "피봇보다 작은 수에서 정지"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g_main",
+      "args": [
+       "2",
+       "10"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_main",
+      "args": [
+       "2",
+       "10"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "멈춘 두 수를 교환"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "move",
+      "target": "p_low",
+      "args": [
+       "3"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "3"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "move",
+      "target": "p_high",
+      "args": [
+       "6"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "6"
+      ]
+     }
+    ],
+    "sourcePages": [
+     34,
+     39
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": false,
+    "lines": [
+     "이번에는 9와 6을 교환해요.",
+     "low는 다음 12에서 멈춰요.",
+     "high는 다음 2에서 멈춰요.",
+     "12와 2도 서로 교환해요.",
+     "두 인덱스가 교차해서 탐색을 멈춰요."
+    ],
+    "speech": [
+     "이번에는 구와 육을 교환해요.",
+     "로우는 다음 십이에서 멈춰요.",
+     "하이는 다음 이에서 멈춰요.",
+     "십이와 이도 서로 교환해요.",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "swap",
+      "target": "g_main",
+      "args": [
+       "3",
+       "6"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "g_main",
+      "args": [
+       "3",
+       "6"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "move",
+      "target": "p_low",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "move",
+      "target": "p_high",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "swap",
+      "target": "g_main",
+      "args": [
+       "4",
+       "5"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_main",
+      "args": [
+       "4",
+       "5"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "move",
+      "target": "p_low",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "move",
+      "target": "p_high",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "4",
+       "5"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "low와 high가 교차"
+      ]
+     }
+    ],
+    "sourcePages": [
+     34,
+     39
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": false,
+    "lines": [
+     "피봇 8을 high가 가리킨 2와 바꿔요.",
+     "8은 인덱스 4에 자리를 잡아요.",
+     "왼쪽 0부터 3까지 재귀적으로 정렬해요.",
+     "오른쪽 5부터 11까지도 재귀 호출해요.",
+     "피봇은 제외하고 양쪽을 따로 처리해요."
+    ],
+    "speech": [
+     "피봇 팔을 하이가 가리킨 이와 바꿔요.",
+     "팔은 인덱스 사에 자리를 잡아요.",
+     "왼쪽 영부터 삼까지 재귀적으로 정렬해요.",
+     "오른쪽 오부터 십일까지도 재귀 호출해요.",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "swap",
+      "target": "g_main",
+      "args": [
+       "0",
+       "4"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "g_main",
+      "args": [
+       "4",
+       "5"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "p_low",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "p_high",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "피봇과 high 위치 교환"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "피봇 위치: 인덱스 4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_main",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "0-3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "왼쪽 구간 재귀 호출"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_main",
+      "args": [
+       "0-3"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "5-11"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "오른쪽 구간 재귀 호출"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "g_main",
+      "args": [
+       "5-11"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "g_main",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t_rule",
+      "args": [
+       "피봇을 제외한 두 부분문제"
+      ]
+     }
+    ],
+    "sourcePages": [
+     34,
+     39
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": true,
+    "lines": [
+     "왼쪽 구간에서는 6을 피봇으로 골라요.",
+     "피봇 6을 맨 왼쪽으로 옮겨요.",
+     "7과 2를 교환하면 두 인덱스가 교차해요.",
+     "6을 인덱스 2로 옮겨 분할을 마쳐요.",
+     "2와 3은 다시 정렬하고, 7은 하나라 끝나요."
+    ],
+    "speech": [
+     "왼쪽 구간에서는 육을 피봇으로 골라요.",
+     "피봇 육을 맨 왼쪽으로 옮겨요.",
+     "칠과 이를 교환하면 두 인덱스가 교차해요.",
+     "육을 인덱스 이로 옮겨 분할을 마쳐요.",
+     "이와 삼은 다시 정렬하고, 칠은 하나라 끝나요."
+    ],
+    "texts": [
+     {
+      "id": "t_left",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "왼쪽 구간도 반복"
+     },
+     {
+      "id": "t_left_note",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "남은 구간을 각각 재귀 호출"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g_left",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "2",
+        "3",
+        "7",
+        "6"
+       ]
+      ],
+      "indexLabels": true,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "g_left",
+      "args": [
+       "3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_left",
+      "args": [
+       "0",
+       "3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "g_left",
+      "args": [
+       "3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_left",
+      "args": [
+       "0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g_left",
+      "args": [
+       "2",
+       "3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_left",
+      "args": [
+       "0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_left",
+      "args": [
+       "2",
+       "3"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "swap",
+      "target": "g_left",
+      "args": [
+       "0",
+       "2"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_left",
+      "args": [
+       "2",
+       "3"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "g_left",
+      "args": [
+       "2"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "g_left",
+      "args": [
+       "2"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "g_left",
+      "args": [
+       "0-1",
+       "3"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "t_left_note",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     40
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "이 배열을 피봇을 기준으로 나눠 볼게요.",
+   "startSec": 0.0,
+   "endSec": 3.5
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "인덱스 6의 8을 피봇으로 골라요.",
+   "startSec": 3.8,
+   "endSec": 7.35
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "8을 맨 왼쪽의 6과 교환해요.",
+   "startSec": 7.65,
+   "endSec": 11.35
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "low는 피봇보다 작은 수를 지나가요.",
+   "startSec": 11.65,
+   "endSec": 15.15
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 4,
+   "text": "high는 피봇보다 큰 수를 지나가요.",
+   "startSec": 15.45,
+   "endSec": 18.7
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "low는 3을 지나 11에서 멈춰요.",
+   "startSec": 19.3,
+   "endSec": 22.8
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "high는 14를 지나 7에서 멈춰요.",
+   "startSec": 23.1,
+   "endSec": 26.7
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "11과 7을 서로 교환해요.",
+   "startSec": 27.0,
+   "endSec": 29.8
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "low는 다음 9에서 멈춰요.",
+   "startSec": 30.1,
+   "endSec": 33.25
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "high는 10과 18과 15를 지나 6에서 멈춰요.",
+   "startSec": 33.55,
+   "endSec": 38.8
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "이번에는 9와 6을 교환해요.",
+   "startSec": 39.4,
+   "endSec": 42.45
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "low는 다음 12에서 멈춰요.",
+   "startSec": 42.75,
+   "endSec": 45.8
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "high는 다음 2에서 멈춰요.",
+   "startSec": 46.1,
+   "endSec": 49.3
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "12와 2도 서로 교환해요.",
+   "startSec": 49.6,
+   "endSec": 52.7
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "두 인덱스가 교차해서 탐색을 멈춰요.",
+   "startSec": 53.0,
+   "endSec": 56.85
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "피봇 8을 high가 가리킨 2와 바꿔요.",
+   "startSec": 57.45,
+   "endSec": 61.7
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "8은 인덱스 4에 자리를 잡아요.",
+   "startSec": 62.0,
+   "endSec": 65.4
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "왼쪽 0부터 3까지 재귀적으로 정렬해요.",
+   "startSec": 65.7,
+   "endSec": 70.75
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "오른쪽 5부터 11까지도 재귀 호출해요.",
+   "startSec": 71.05,
+   "endSec": 75.35
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 4,
+   "text": "피봇은 제외하고 양쪽을 따로 처리해요.",
+   "startSec": 75.65,
+   "endSec": 80.0
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "왼쪽 구간에서는 6을 피봇으로 골라요.",
+   "startSec": 80.6,
+   "endSec": 84.35
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "피봇 6을 맨 왼쪽으로 옮겨요.",
+   "startSec": 84.65,
+   "endSec": 87.9
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "7과 2를 교환하면 두 인덱스가 교차해요.",
+   "startSec": 88.2,
+   "endSec": 91.95
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "6을 인덱스 2로 옮겨 분할을 마쳐요.",
+   "startSec": 92.25,
+   "endSec": 95.75
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 4,
+   "text": "2와 3은 다시 정렬하고, 7은 하나라 끝나요.",
+   "startSec": 96.05,
+   "endSec": 100.35
+  }
+ ]
+}

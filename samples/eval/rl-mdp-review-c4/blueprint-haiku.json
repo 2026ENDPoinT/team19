@@ -1,0 +1,514 @@
+{
+  "version": 0,
+  "title": "가치함수의 벨만 방정식은?",
+  "theme": "dark",
+  "scenes": [
+    {
+      "id": "s1",
+      "clear": true,
+      "lines": [
+        "가치함수에는 재귀 관계라는 성질이 있어요.",
+        "현재 상태의 가치는 보상과 다음 가치의 기댓값으로 표현돼요.",
+        "식으로 쓰면 이렇게 되고, 감마는 할인율이에요."
+      ],
+      "speech": [
+        "",
+        "",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t_title1",
+          "slot": "top",
+          "style": "title",
+          "content": "가치함수의 벨만 방정식",
+          "hidden": false
+        },
+        {
+          "id": "t_f1",
+          "slot": "middle",
+          "style": "formula",
+          "content": "$V^\\pi(s)=\\mathbb{E}_\\pi[r_{t+1}+\\gamma R_{t+1}\\mid s_t=s]$",
+          "hidden": true
+        },
+        {
+          "id": "t_key1",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "재귀 관계",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "t_key1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "t_f1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "t_f1",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        17
+      ]
+    },
+    {
+      "id": "s2",
+      "clear": false,
+      "lines": [
+        "이 식을 풀어 쓰면, 기댓값을 두 부분으로 나눌 수 있어요.",
+        "하나는 즉시 보상의 기댓값이고, 다른 하나는 할인된 다음 수익의 기댓값이에요.",
+        "정책 π로 행동을 고르고, 전이 확률 P로 다음 상태가 정해져요.",
+        "그래서 행동과 다음 상태에 대해 차례로 평균을 내면 이 식이 나와요."
+      ],
+      "speech": [
+        "",
+        "",
+        "정책 파이로 행동을 고르고, 전이 확률 피로 다음 상태가 정해져요.",
+        ""
+      ],
+      "texts": [],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "hide",
+          "target": "t_key1",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "setText",
+          "target": "t_f1",
+          "args": [
+            "$V^\\pi(s)=\\mathbb{E}_\\pi[r_{t+1}\\mid s]+\\gamma\\,\\mathbb{E}_\\pi[R_{t+1}\\mid s]$"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setText",
+          "target": "t_f1",
+          "args": [
+            "$V^\\pi(s)=\\sum_a \\pi(s,a)\\sum_{s'}P^a_{ss'}[R^a_{ss'}+\\gamma V^\\pi(s')]$"
+          ]
+        }
+      ],
+      "sourcePages": [
+        21
+      ]
+    },
+    {
+      "id": "s3",
+      "clear": true,
+      "lines": [
+        "벨만 방정식을 그림으로 보면 더 쉬워요.",
+        "빈 원은 상태이고, 네모는 상태와 행동의 쌍이에요.",
+        "상태 s에서 정책 π에 따라 세 가지 행동 중 하나를 골라요.",
+        "그중 첫 번째 행동 가지를 펼쳐 볼게요.",
+        "그 행동을 하면 전이 확률 p에 따라 다음 상태와 보상이 정해져요."
+      ],
+      "speech": [
+        "",
+        "",
+        "상태 에스에서 정책 파이에 따라 세 가지 행동 중 하나를 골라요.",
+        "",
+        "그 행동을 하면 전이 확률 피에 따라 다음 상태와 보상이 정해져요."
+      ],
+      "texts": [
+        {
+          "id": "t_title3",
+          "slot": "top",
+          "style": "title",
+          "content": "벨만 방정식 그림",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_tree",
+          "slot": "middle",
+          "layout": "tree",
+          "hidden": true,
+          "nodes": [
+            {
+              "id": "n_s",
+              "label": "상태 s",
+              "shape": "circle"
+            },
+            {
+              "id": "n_a1",
+              "label": "행동 1",
+              "shape": "box"
+            },
+            {
+              "id": "n_a2",
+              "label": "행동 2",
+              "shape": "box"
+            },
+            {
+              "id": "n_a3",
+              "label": "행동 3",
+              "shape": "box"
+            },
+            {
+              "id": "n_s1",
+              "label": "다음 상태 1",
+              "shape": "circle",
+              "hidden": true
+            },
+            {
+              "id": "n_s2",
+              "label": "다음 상태 2",
+              "shape": "circle",
+              "hidden": true
+            }
+          ],
+          "edges": [
+            {
+              "id": "e_pi1",
+              "from": "n_s",
+              "to": "n_a1",
+              "label": "π"
+            },
+            {
+              "id": "e_pi2",
+              "from": "n_s",
+              "to": "n_a2",
+              "label": "π"
+            },
+            {
+              "id": "e_pi3",
+              "from": "n_s",
+              "to": "n_a3",
+              "label": "π"
+            },
+            {
+              "id": "e_p1",
+              "from": "n_a1",
+              "to": "n_s1",
+              "label": "p, r",
+              "hidden": true
+            },
+            {
+              "id": "e_p2",
+              "from": "n_a1",
+              "to": "n_s2",
+              "label": "p, r",
+              "hidden": true
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "d_tree",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n_s",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "n_s",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "n_a1",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "e_pi1",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "show",
+          "target": "e_p1",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "show",
+          "target": "e_p2",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "show",
+          "target": "n_s1",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "show",
+          "target": "n_s2",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        24
+      ]
+    },
+    {
+      "id": "s4",
+      "clear": false,
+      "lines": [
+        "트리의 모든 가지를 확률로 가중해서 평균을 내요.",
+        "정책 확률 π와 전이 확률 p를 곱해서 더하는 방식이에요.",
+        "그러면 시작 상태의 가치는 보상과 할인된 다음 가치의 평균이 돼요."
+      ],
+      "speech": [
+        "",
+        "정책 확률 파이와 전이 확률 피를 곱해서 더하는 방식이에요.",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t_f2",
+          "slot": "bottom",
+          "style": "formula",
+          "content": "$V^\\pi(s)=\\sum_a \\pi(s,a)\\sum_{s'}P^a_{ss'}[R^a_{ss'}+\\gamma V^\\pi(s')]$",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "e_pi1",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "e_pi2",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "e_pi3",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "e_pi1",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "e_pi2",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "e_pi3",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "e_p1",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "e_p2",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "t_f2",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        24
+      ]
+    },
+    {
+      "id": "s5",
+      "clear": true,
+      "lines": [
+        "행동 가치 함수 Q도 같은 방식으로 쓸 수 있어요.",
+        "Q는 상태 s에서 행동 a를 이미 골랐다고 보고 가치를 따져요.",
+        "그래서 첫 행동은 정해져 있고, 다음 상태의 행동부터 평균을 내요.",
+        "식에서 정책 확률 π(s′, a′)가 바로 그 부분이에요."
+      ],
+      "speech": [
+        "행동 가치 함수 큐도 같은 방식으로 쓸 수 있어요.",
+        "큐는 상태 에스에서 행동 에이를 이미 골랐다고 보고 가치를 따져요.",
+        "",
+        "식에서 정책 확률 파이 에스 프라임, 에이 프라임이 바로 그 부분이에요."
+      ],
+      "texts": [
+        {
+          "id": "t_title5",
+          "slot": "top",
+          "style": "title",
+          "content": "행동 가치 함수 Q",
+          "hidden": false
+        },
+        {
+          "id": "t_fq",
+          "slot": "middle",
+          "style": "formula",
+          "content": "$Q^\\pi(s,a)=\\sum_{s'}P^a_{ss'}[R^a_{ss'}+\\gamma\\sum_{a'}\\pi(s',a')Q^\\pi(s',a')]$",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "t_fq",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "t_fq",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        25
+      ]
+    },
+    {
+      "id": "s6",
+      "clear": true,
+      "lines": [
+        "정리하면, 두 식의 차이는 평균을 어디서부터 내느냐예요.",
+        "상태 가치 V는 첫 행동부터 정책으로 평균을 내요.",
+        "행동 가치 Q는 첫 행동을 고정하고, 다음 행동부터 평균을 내요.",
+        "두 식 모두 즉시 보상과 할인된 다음 가치의 기댓값으로 이루어져요."
+      ],
+      "speech": [
+        "",
+        "상태 가치 브이는 첫 행동부터 정책으로 평균을 내요.",
+        "행동 가치 큐는 첫 행동을 고정하고, 다음 행동부터 평균을 내요.",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t_title6",
+          "slot": "top",
+          "style": "title",
+          "content": "V와 Q의 차이",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g_cmp",
+          "slot": "middle",
+          "indexLabels": false,
+          "hidden": true,
+          "cells": [
+            [
+              "",
+              "상태 가치 V",
+              "행동 가치 Q"
+            ],
+            [
+              "첫 행동",
+              "정책 평균",
+              "고정"
+            ],
+            [
+              "다음 행동",
+              "정책 평균",
+              "정책 평균"
+            ]
+          ],
+          "pointers": []
+        }
+      ],
+      "codes": [],
+      "actions": [
+        {
+          "line": 1,
+          "do": "show",
+          "target": "g_cmp",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g_cmp",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "g_cmp",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "g_cmp",
+          "args": [
+            "1,2",
+            "2,2"
+          ]
+        }
+      ],
+      "sourcePages": [
+        21,
+        25
+      ]
+    }
+  ]
+}

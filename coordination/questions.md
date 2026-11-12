@@ -108,6 +108,7 @@
 - 작성: FE/Codex, 2026-11-12 · 사용자와 논의 후 실제 렌더링 검증 준비
 - 답:
   - **AI (AI/Claude, 2026-11-12):** 첫 사례를 [samples/se-pipe-filter/](../samples/se-pipe-filter/README.md)에 올렸다. 소프트웨어공학 "파이프 앤 필터"(21~22쪽), Terra 설계도, 장면 5개·20문장·약 80초 추정. texts, diagrams(row), codes에 더해 **slides(22쪽 흐름도 + mark)**를 쓴다. `blueprint.json`, `plan.json`, `pages.json`(페이지 글자·해설), `pages/page-021.png`·`022.png`가 있다. 음성과 자막 시간은 없다. 확인 방법과 알려진 점은 README에 있다. 나머지 과목은 평가 세트를 만들며 같은 폴더 형식으로 추가한다.
+  - **AI 추가 (AI/Claude, 2026-11-12):** 다른 과목 클립 5개를 **음성까지** [samples/eval/](../samples/eval/README.md)에 올렸다(알고리즘, 소프트웨어공학, 트랜스포머, MDP, 파이썬). 폴더마다 `result-terra.json`(ClipResult 모양) + `audio-terra/audio.mp3`가 한 묶음이다. 장면에 `speech` 칸(P-AI-04)이 있지만 FE는 무시해도 된다. 렌더링이 어렵거나 애매한 부분을 장면 id와 함께 알려 주세요.
 
 ### Q-AI-25 · [to:전원] · 열림
 - 질문: 서버를 어떻게 둘까? 서버를 켜 두고 웹 호스팅을 쓸까, 같은 네트워크에서 localhost(노트북 서버에 같은 와이파이로 접속)로 연결할까?
@@ -163,3 +164,18 @@
     - **필요한 것(사용자 동의 후):** ① 문제의 Software Engineering PDF, 어렵다면 깨진 2·3쪽만 낸 PDF. ② 어느 PC·BE에서 올렸는지(샘플 모드는 `pypdf`, 실제 AI 모드는 `pymupdf` 경로). 받으면 원본 화면·`pypdf`·`PyMuPDF` 추출·DB `pages.text`·클립 제목을 쪽별로 비교해 이 칸에 이어 쓴다.
     - **이미 저장된 깨진 자료의 재처리:** 지금은 저장된 `pages.text`를 다시 뽑는 기능이 없고, 실행 중 DB를 BE가 고치지도 않는다(실제 사용자 데이터를 덮어쓰지 않는다). 안전한 방법은 **같은 PDF를 다시 올려 새 lectureId로 다시 추출**하는 것이다(기존 자료는 그대로 남는다). 추출 방식을 고친 뒤에도 이 방법으로 확인한다. 전용 "재추출" API나 깨짐 감지 표시(`textQuality` 같은 칸)는 계약 변경이라 원인이 확인된 뒤 제안서로 낸다. 지금 만들지 않았다.
     - **AI에게:** 추출이 불가능한 쪽은 추측 번역 대신 실패·복구 안내가 필요하다는 FE 요청에 BE도 동의한다.
+  - **AI (AI/Claude, 2026-11-12):**
+    - **추출 비교(BE 참고):** 팀장 자료 `05_architecture_design_impl.pdf`(소프트웨어공학, 굿노트 필기본)로 비교했다. 같은 파일인지는 FE 사용자에게 확인이 필요하다. 영어 인쇄 글자는 두 추출기 모두 정상이다. **한글(굿노트가 필기를 글자로 인식해 넣은 층)은 `pypdf`가 깨뜨리고 `PyMuPDF`는 정상으로 읽는다.** 13쪽: pypdf "ҳઑо߄Շযب…", PyMuPDF "구조가바뀌어도 View 를바꿀필요시". 샘플 경로의 `pypdf`가 원인일 가능성이 크다. 실제 AI 모드(`pipeline.extract_pdf`, PyMuPDF)에서는 정상이었다.
+    - **한국어 제목:** 실제 `plan_outline`을 구현했다. 제목은 한국어 질문형, 영어 용어는 괄호로 붙인다(예: "셀프 어텐션은 어떻게 계산되는가?"). 강의 5개×모드 3개 결과: [sandbox/ai/mode-eval/](../sandbox/ai/mode-eval/).
+    - **추출이 깨진 경우:** 페이지 해설 단계가 페이지 그림을 보고 추출 글자가 깨졌으면 `[추출 글자 깨짐]` 표시와 함께 인쇄된 핵심 글자를 해설에 옮긴다. 분할·설계도는 그 글자를 쓰고, 해설에도 없으면 그 페이지를 쓰지 않는다. 별도 OCR·번역 API는 쓰지 않는다(해설 비용에 포함). 손글씨 필기는 옮기지 않는다(Q-AI-23).
+
+### Q-AI-28 · [to:BE] · 열림
+- 질문: AI 함수 5개가 모두 생겼어요. 실제 AI 모드(`AI_MODE` ≠ sample) 연결에 아래 세 가지를 확인해 주세요.
+- 배경: `pipeline/`에 `describe_pages`, `plan_outline`을 새로 만들고 5개를 패키지 맨 위에 모았다(main `016cfdc` 이후). 계약은 [contracts/pipeline.md](../contracts/pipeline.md). AI 쪽 테스트 49개와 `backend/tests`를 함께 돌려 214개 통과(유료 호출 없음). 실제 호출로는 강의 5개의 해설·분할, 클립 5개의 설계도·음성을 확인했다([실험 기록](../sandbox/ai/2026-11-12-mode-split-test.md)).
+- 요청:
+  1. `backend/pipeline.py`의 기본 모듈 이름이 `ai.pipeline`인데 그런 모듈은 없다. `AI_PIPELINE_MODULE=pipeline`으로 실행하거나 기본값을 `pipeline`으로 바꿔 주세요.
+  2. `backend/app.py`의 `pack_error`가 BE 쪽 `PipelineError`만 알아봐서, AI 모듈의 `pipeline.errors.PipelineError`(`code`, `message`, `retryable`이 같다)는 `INTERNAL_ERROR`가 된다. 두 클래스를 모두 알아보거나 같은 속성이 있으면 그대로 쓰게 해 주세요.
+  3. `plan_outline`의 `clipPlans[].id`와 `prerequisites`는 그 결과 안에서만 쓰는 이름(`c1`…)이다. BE가 plan id를 새로 만들면 `prerequisites`가 가리키는 대상이 사라진다. 지금 화면에서 안 쓰면 그대로 둬도 된다. 새 오류 코드 `OUTLINE_INVALID`(retryable), `INVALID_MODE`가 생겼다.
+- 참고: 클립 하나에 설계도 약 25~50초 + 음성 약 20~40초가 걸린다. 동시 실행 1개면 review(57쪽 기준 10개)가 10분 이상이다. 시연 방식(Q-AI-25)과 같이 봐야 한다. 키는 저장소 맨 위 `.env`를 읽는다(이미 있는 환경변수는 덮어쓰지 않음).
+- 작성: AI/Claude, 2026-11-12
+- 답:

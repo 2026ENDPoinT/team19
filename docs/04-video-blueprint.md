@@ -1,6 +1,6 @@
 # 04. 영상 설계도 형식 v0
 
-> 상태: 확정 v0 (D-26, D-27) · 담당: AI (형식), FE (재생) · 최종 수정: 2026-11-10 · AI/Claude
+> 상태: 확정 v0 (D-26, D-27) · 담당: AI (형식), FE (재생) · 최종 수정: 2026-11-12 · AI/Claude
 
 AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**를 쓰고, 브라우저가 그 설계도대로 화면을 그린다(D-05). 이 문서가 AI와 FE 사이의 기준이다. 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 결정 과정과 근거는 [P-AI-02](../coordination/proposals/P-AI-02-blueprint-v0.md), 샘플은 [sandbox/ai/blueprint_v0/](../sandbox/ai/blueprint_v0/)에 있다.
@@ -21,6 +21,7 @@ AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**�
   id,                    // 클립 안에서 겹치지 않음
   clear,                 // true면 앞 장면의 부품을 모두 지우고 시작. false면 이어서 씀
   lines: [문장],          // 내레이션. 문장마다 음성과 자막이 된다
+  speech: [문장],         // (생략 가능, P-AI-04 시험 반영) 음성 원고. lines와 개수가 같고 ""이면 lines를 읽는다. 자막은 lines
   texts, slides, diagrams, grids, codes: [부품],   // 없으면 []
   actions: [동작],
   sourcePages: [쪽 번호]   // 옆 패널에 띄울 근거 페이지

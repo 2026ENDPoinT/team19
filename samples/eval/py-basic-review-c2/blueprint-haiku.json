@@ -1,0 +1,565 @@
+{
+  "version": 0,
+  "title": "연산과 조건문으로 팩토리얼을 구하려면?",
+  "theme": "dark",
+  "scenes": [
+    {
+      "id": "s1",
+      "clear": true,
+      "lines": [
+        "이번에는 연산자와 조건문으로 팩토리얼을 구하는 코드를 봐요.",
+        "먼저 21쪽의 나눗셈과 나머지 연산부터 볼게요."
+      ],
+      "speech": [
+        "",
+        "이십일 쪽의 나눗셈과 나머지 연산부터 볼게요."
+      ],
+      "texts": [
+        {
+          "id": "t_title",
+          "slot": "top",
+          "style": "title",
+          "content": "연산자와 팩토리얼",
+          "hidden": false
+        },
+        {
+          "id": "t_key",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "/  %  //  **",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 1,
+          "do": "show",
+          "target": "t_key",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        21
+      ]
+    },
+    {
+      "id": "s2",
+      "clear": true,
+      "lines": [
+        "슬래시 하나는 나눗셈이고, 결과는 항상 실수예요.",
+        "4 나누기 2는 2.0이라서 float 타입이에요.",
+        "두 슬래시는 내림 나눗셈이에요. 7.5를 2로 나눈 몫은 3이에요.",
+        "음수도 작은 쪽으로 내려요. -7.5의 몫은 -4가 돼요."
+      ],
+      "speech": [
+        "",
+        "사 나누기 이는 이점영이라서 플로트 타입이에요.",
+        "두 슬래시는 내림 나눗셈이에요. 칠점오를 이로 나눈 몫은 삼이에요.",
+        "음수도 작은 쪽으로 내려요. 마이너스 칠점오의 몫은 마이너스 사가 돼요."
+      ],
+      "texts": [
+        {
+          "id": "t_ops",
+          "slot": "top",
+          "style": "title",
+          "content": "나눗셈 / 과 //",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [
+        {
+          "id": "c_ops",
+          "slot": "middle",
+          "language": "python",
+          "hidden": true,
+          "lines": [
+            "type(4 / 2) == float",
+            "(7.5 % 2) == 1.5",
+            "(7.5 // 2) == 3",
+            "(-7.5 // 2) == -4",
+            "(2 ** 4) == 16"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "c_ops",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "markLine",
+          "target": "c_ops",
+          "args": [
+            "1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "markLine",
+          "target": "c_ops",
+          "args": [
+            "3"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "markLine",
+          "target": "c_ops",
+          "args": [
+            "4"
+          ]
+        }
+      ],
+      "sourcePages": [
+        21
+      ]
+    },
+    {
+      "id": "s3",
+      "clear": false,
+      "lines": [
+        "퍼센트는 나머지예요. 7.5를 2로 나눈 나머지는 1.5예요.",
+        "별 두 개는 거듭제곱이에요. 2의 4제곱은 16이에요.",
+        "강의는 int라고 했지만, 실수에 //를 쓰면 결과가 3.0처럼 실수예요."
+      ],
+      "speech": [
+        "퍼센트는 나머지예요. 칠점오를 이로 나눈 나머지는 일점오예요.",
+        "별 두 개는 거듭제곱이에요. 이의 사제곱은 십육이에요.",
+        "강의는 인트라고 했지만, 실수에 두 슬래시를 쓰면 결과가 삼점영처럼 실수예요."
+      ],
+      "texts": [],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "setText",
+          "target": "t_ops",
+          "args": [
+            "나머지와 거듭제곱"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "markLine",
+          "target": "c_ops",
+          "args": [
+            "2"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "markLine",
+          "target": "c_ops",
+          "args": [
+            "5"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "markLine",
+          "target": "c_ops",
+          "args": [
+            "3"
+          ]
+        }
+      ],
+      "sourcePages": [
+        21
+      ]
+    },
+    {
+      "id": "s4",
+      "clear": true,
+      "lines": [
+        "이제 22쪽의 팩토리얼 코드를 볼게요. n은 7, f는 결과를 담는 변수예요.",
+        "팩토리얼은 1부터 n까지 모두 곱한 값이에요.",
+        "맨 위 if는 n이 0보다 작을 때 들어가는 분기예요.",
+        "그 안의 pass는 아무 동작도 하지 않는 자리 표시예요."
+      ],
+      "speech": [
+        "이제 이십이 쪽의 팩토리얼 코드를 볼게요. 엔은 칠, 에프는 결과를 담는 변수예요.",
+        "팩토리얼은 일부터 엔까지 모두 곱한 값이에요.",
+        "맨 위 이프는 엔이 영보다 작을 때 들어가는 분기예요.",
+        "그 안의 패스는 아무 동작도 하지 않는 자리 표시예요."
+      ],
+      "texts": [
+        {
+          "id": "t_fact",
+          "slot": "top",
+          "style": "title",
+          "content": "팩토리얼 코드",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [
+        {
+          "id": "c_fact",
+          "slot": "bottom",
+          "language": "python",
+          "hidden": true,
+          "lines": [
+            "n = 7",
+            "f = 1",
+            "if n < 0:",
+            "    pass",
+            "elif n == 0:",
+            "    pass",
+            "else:",
+            "    while n > 0:",
+            "        f = f * n",
+            "        n = n - 1"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "c_fact",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "1"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "9"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "3"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "4"
+          ]
+        }
+      ],
+      "sourcePages": [
+        22
+      ]
+    },
+    {
+      "id": "s5",
+      "clear": false,
+      "lines": [
+        "n이 7이라서 n == 0도 거짓이고, 그래서 else로 가요.",
+        "else 안의 while은 n이 0보다 큰 동안 계속 돌아요.",
+        "먼저 f에 f 곱하기 n을 해요. 지금은 1 곱하기 7이에요.",
+        "그 결과 f는 7이 돼요.",
+        "다음은 n을 1 줄여서 6이 돼요. 이제 n이 6이니 다시 확인해요."
+      ],
+      "speech": [
+        "엔이 칠이라서 엔이 영과 같은지도 거짓이고, 그래서 엘스로 가요.",
+        "엘스 안의 와일은 엔이 영보다 큰 동안 계속 돌아요.",
+        "먼저 에프에 에프 곱하기 엔을 해요. 지금은 일 곱하기 칠이에요.",
+        "그 결과 에프는 칠이 돼요.",
+        "다음은 엔을 일 줄여서 육이 돼요. 이제 엔이 육이니 다시 확인해요."
+      ],
+      "texts": [],
+      "slides": [],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g_vars",
+          "slot": "middle",
+          "indexLabels": false,
+          "hidden": true,
+          "cells": [
+            [
+              "n",
+              "7"
+            ],
+            [
+              "f",
+              "1"
+            ]
+          ],
+          "pointers": []
+        }
+      ],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "g_vars",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "7"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "8"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "9"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "g_vars",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setValue",
+          "target": "g_vars",
+          "args": [
+            "1,1",
+            "7"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "g_vars",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "10"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "setValue",
+          "target": "g_vars",
+          "args": [
+            "0,1",
+            "6"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "highlight",
+          "target": "g_vars",
+          "args": [
+            "0,1"
+          ]
+        }
+      ],
+      "sourcePages": [
+        22
+      ]
+    },
+    {
+      "id": "s6",
+      "clear": false,
+      "lines": [
+        "n이 6이니 한 번 더 돌아요. 이번에도 f에 n을 곱해요.",
+        "7 곱하기 6은 42예요. 그래서 f는 42가 돼요.",
+        "n은 1 줄어 5가 돼요. 같은 방식으로 n이 0이 될 때까지 계속해요."
+      ],
+      "speech": [
+        "엔이 육이니 한 번 더 돌아요. 이번에도 에프에 엔을 곱해요.",
+        "칠 곱하기 육은 사십이예요. 그래서 에프는 사십이가 돼요.",
+        "엔은 일 줄어 오가 돼요. 같은 방식으로 엔이 영이 될 때까지 계속해요."
+      ],
+      "texts": [],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "unhighlight",
+          "target": "g_vars",
+          "args": [
+            "0,1"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "g_vars",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "9"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "setValue",
+          "target": "g_vars",
+          "args": [
+            "1,1",
+            "42"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "10"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "g_vars",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "setValue",
+          "target": "g_vars",
+          "args": [
+            "0,1",
+            "5"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "g_vars",
+          "args": [
+            "0,1"
+          ]
+        }
+      ],
+      "sourcePages": [
+        22
+      ]
+    },
+    {
+      "id": "s7",
+      "clear": false,
+      "lines": [
+        "끝까지 하면 f는 5040, n은 0이 되고 while이 끝나요.",
+        "5040은 7 팩토리얼이에요. 1부터 7까지 곱한 값이에요.",
+        "n이 0이었다면 elif의 pass라 f는 처음 값 1 그대로예요."
+      ],
+      "speech": [
+        "끝까지 하면 에프는 오천사십, 엔은 영이 되고 와일이 끝나요.",
+        "오천사십은 칠 팩토리얼이에요. 일부터 칠까지 곱한 값이에요.",
+        "엔이 영이었다면 엘리프의 패스라 에프는 처음 값 일 그대로예요."
+      ],
+      "texts": [],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "setValue",
+          "target": "g_vars",
+          "args": [
+            "1,1",
+            "5040"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "setValue",
+          "target": "g_vars",
+          "args": [
+            "0,1",
+            "0"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "unhighlight",
+          "target": "g_vars",
+          "args": [
+            "0,1"
+          ]
+        },
+        {
+          "line": 0,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "8"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g_vars",
+          "args": [
+            "1,1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "markLine",
+          "target": "c_fact",
+          "args": [
+            "6"
+          ]
+        }
+      ],
+      "sourcePages": [
+        22
+      ]
+    }
+  ]
+}

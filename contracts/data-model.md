@@ -1,6 +1,6 @@
 # 데이터 모양 v0
 
-> 상태: 확정 v0 (D-26, D-28) · 담당: BE (설계도 부분은 AI) · 최종 수정: 2026-11-09 · AI/Claude
+> 상태: 확정 v0 (D-26, D-28) · 담당: BE (설계도 부분은 AI) · 최종 수정: 2026-11-12 · AI/Claude
 
 결정 과정은 [P-BE-02](../coordination/proposals/P-BE-02-api-and-pipeline-v0.md). 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 
@@ -32,7 +32,7 @@
 | 클립 계획 | clipPlans[] | 아래 |
 | 클립 계획: 순서 | order | 0부터, 피드 순서 |
 | 클립 계획: 제목 | title | |
-| 클립 계획: 종류 | kind | 값은 AI가 프롬프트를 만들며 정하고 이 표에 적는다 |
+| 클립 계획: 종류 | kind | `concept`(개념) / `process`(과정 따라가기) / `example`(예시 풀기) / `compare`(비교). AI가 정한다(2026-11-12) |
 | 클립 계획: 근거 페이지 | sourcePages | 1부터 |
 | 클립 계획: 선수 클립 | prerequisites | 먼저 볼 클립 계획 id |
 | 클립 계획: 핵심 메모 | brief | 설계도를 만들 때 AI에게 줄 요약 |

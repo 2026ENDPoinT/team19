@@ -1,12 +1,12 @@
 # AI 파이프라인 v0 (BE → AI)
 
-> 상태: 확정 v0 (D-27, D-28) · 담당: AI (검토 BE) · 최종 수정: 2026-11-10 · AI/Claude
+> 상태: 확정 v0 (D-27, D-28) · 담당: AI (검토 BE) · 최종 수정: 2026-11-12 · AI/Claude
 
 BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정 과정은 [P-BE-02 AI 의견](../coordination/proposals/P-BE-02-api-and-pipeline-v0.md#ai). 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 
 ## 위치와 호출 방식
 
-- 코드 위치: `pipeline/` (AI 담당). BE는 `import`해서 쓴다. 필요한 라이브러리는 `pipeline/requirements.txt`.
+- 코드 위치: `pipeline/` (AI 담당). BE는 `import`해서 쓴다. **함수 5개는 패키지 맨 위(`import pipeline`)에 있다. BE는 `AI_PIPELINE_MODULE=pipeline`으로 쓴다.** 패키지를 불러와도 PyMuPDF·SDK는 함수를 부를 때 불러온다. 필요한 라이브러리는 `pipeline/requirements.txt`.
 - 오류 클래스: `pipeline/errors.py`의 `PipelineError`.
 - 보통 Python 함수다. 끝날 때까지 기다리는 함수라 BE 실행기가 별도 스레드에서 부른다.
 - DB 연결이나 웹 요청 객체는 받지 않는다. 입력 데이터와 파일 경로를 받고 결과(dict)를 돌려준다.
@@ -18,8 +18,8 @@ BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정
 | 함수 | 입력 | 출력 | 유료 |
 |---|---|---|---|
 | `extract_pdf` | PDF 경로, 출력 폴더 | pageCount, pages[{number, text, imagePath, empty}] | 아니오 |
-| `describe_pages` | pages | pages[{number, description}], usage | 예 (Q-AI-07 실험 결과에 따라 빠질 수 있음) |
-| `plan_outline` | mode, pages, descriptions | sections, clipPlans, usage | 예 |
+| `describe_pages` | pages | pages[{number, description, kind, textBroken}], usage | 예 |
+| `plan_outline` | mode, pages, descriptions | sections[{title, planIds}], clipPlans[{id, order, title, kind, sourcePages, prerequisites, brief}], usage | 예 |
 | `make_blueprint` | clipPlan, 관련 pages·descriptions, pageCount | blueprint, usage | 예 |
 | `make_audio` | 검증된 blueprint, 출력 폴더 | audioPath, durationSec, captions, usage | 예 |
 
@@ -27,7 +27,10 @@ BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정
 - `usage`는 호출마다 `{provider, model, inputTokens, outputTokens, costUsd}`의 목록이다. BE가 Job에 저장한다.
 - `extract_pdf`는 PyMuPDF를 쓴다. 글자 위치로 한국어 띄어쓰기를 복원한다(PPT에서 내보낸 PDF는 띄어쓰기 문자가 없는 경우가 많다). `empty`는 글자와 그림이 거의 없는 페이지이고, 표지·목차는 분할 단계에서 AI가 거른다. 분할정복 자료 57쪽 기준 약 3초.
 - `make_audio`는 문장마다 음성을 만들고 길이를 재서 파일 하나(`audio.mp3`, 64kbps)로 잇는다. 쉼은 [docs/04 시간 규칙](../docs/04-video-blueprint.md#시간-규칙)을 따른다. 지금은 OpenAI `gpt-4o-mini-tts`, 목소리 `cedar`(Q-AI-10). 숫자는 자막에는 그대로 두고, 음성에는 한글 읽기로 바꿔 보낸다(`pipeline/korean_numbers.py`. 값은 한자어 "십사", 개수·순서는 고유어 "열한 개", "아홉 번째"). 문장 음성은 출력 폴더의 `lines/`에 저장해 같은 문장이면 다시 부르지 않는다.
-- `make_blueprint`는 지금 `claude-sonnet-5-5`와 `gpt-6.1-terra`를 지원한다. 어느 쪽을 쓸지는 Q-AI-07에서 정한다.
+- `describe_pages`는 페이지 그림을 6쪽씩 묶어 동시에 4묶음까지 보낸다(57쪽 약 30초대, 약 $0.14). `description`은 글 하나이고, 표지·목차 등은 앞에 `[표지]`, `[목차]`, `[행정 안내]`, `[빈 페이지]`를, 추출 글자가 깨진 페이지는 `[추출 글자 깨짐…]`을 붙인다. BE는 `description` 글만 저장하면 분할 단계에 그대로 전달된다.
+- `plan_outline`의 클립 수 상한은 자료 분량에 비례한다(내용 페이지 intro 10쪽, review 5쪽, exam 3쪽당 1개, 최대 6/12/20개). 제목은 한국어(영어 용어는 괄호)다. `kind`는 `concept` / `process` / `example` / `compare`. `id`와 `prerequisites`는 이 결과 안에서만 쓰는 이름(`c1`…)이다. 검사에 실패하면 한 번 다시 만들고, 또 실패하면 `OUTLINE_INVALID`.
+- 모델은 환경변수로 바꾼다: `AI_DESCRIBE_MODEL`, `AI_OUTLINE_MODEL`, `AI_BLUEPRINT_MODEL`. 기본값은 모두 `gpt-6.1-terra`(Q-AI-07 팀장 방향). 지원 모델은 `pipeline/blueprint.py`의 `PRICES`.
+- `make_audio`는 장면에 `speech`(P-AI-04)가 있으면 그 글을 읽고, 없거나 `""`이면 `lines`를 숫자 한글 변환해 읽는다. 자막(`captions.text`)은 언제나 `lines`다.
 
 ## 샘플 모드
 
@@ -55,6 +58,8 @@ AI 모듈은 `PipelineError` 하나를 던진다. `code`, `retryable`, 사용자
 | `PROVIDER_REFUSED` | false | AI가 안전 정책으로 생성을 거절함 |
 | `BLUEPRINT_INVALID` | true | 다시 만들어도 형식 검사 실패 |
 | `TTS_FAILED` | true | 음성 생성 실패 |
+| `OUTLINE_INVALID` | true | 다시 만들어도 분할 계획 검사 실패 |
+| `INVALID_MODE` | false | 모르는 모드 |
 
 ## 시간 제한과 재시도
 

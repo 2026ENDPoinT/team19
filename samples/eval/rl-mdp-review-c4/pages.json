@@ -1,0 +1,33 @@
+{
+ "pageCount": 26,
+ "pages": [
+  {
+   "number": 17,
+   "text": "17\n❑ A fundamental property of value functions used throughout\nreinforcement learning is that they satisfy recursive relationships as\nfollows:\n𝑉𝜋 𝑠 = 𝔼𝜋 𝑅𝑡 𝑠𝑡 = 𝑠\n= 𝔼𝜋[𝑟𝑡+1 + 𝛾𝑅𝑡+1|𝑠𝑡 = 𝑠]\nRecursive Relationships in Value Function\n□\n계산이 가능\nㅇ\n□\nd\nRtt 을알면\nRE를 바로구할수 .\n이속 배번\n계산필요시\n.\nMemV니에도\n효율적",
+   "description": "글자만. 손글씨 필기 있음.",
+   "imagePath": "pages/page-017.png",
+   "empty": false
+  },
+  {
+   "number": 21,
+   "text": "21\n❑ Bellman equation for the value function\n𝑉𝜋 𝑠 = 𝔼𝜋 𝑅𝑡 𝑠𝑡 = 𝑠\n= 𝔼𝜋 𝑟𝑡+1 + 𝛾𝑅𝑡+1 𝑠𝑡 = 𝑠\n= 𝔼𝜋 𝑟𝑡+1|𝑠𝑡 = 𝑠] + 𝔼𝜋[𝛾𝑅𝑡+1 𝑠𝑡 = 𝑠\n= 𝔼𝜋 𝑟𝑡+1|𝑠𝑡 = 𝑠] + 𝛾𝔼𝜋[𝑅𝑡+1 𝑠𝑡 = 𝑠\n= ෍\n𝑎\n𝜋 𝑠, 𝑎 ෍\n𝑠′\n𝑃𝑠𝑠′\n𝑎 𝑅𝑠𝑠′\n𝑎 + 𝛾෍\n𝑎\n𝜋 𝑠, 𝑎 ෍\n𝑠′\n𝑃𝑠𝑠′\n𝑎 𝑉𝜋 𝑠′\n= ෍\n𝑎\n𝜋 𝑠, 𝑎 ෍\n𝑠′\n𝑃𝑠𝑠′\n𝑎\n𝑅𝑠𝑠′\n𝑎 + 𝛾𝑉𝜋 𝑠′\nBellman Equation and Optimality\n∅\nU(s)\nQn recarsive\nπ ⑨\nㅇ\nㅇ\nDO\n상승\n⑤\n\"\n합\n*\n문이는\n⑤\n…\n≈\n_ …동의 Value\n…\nfanction",
+   "description": "[추출 글자 깨짐: 아래 해설의 글자를 쓴다] 제목은 ‘Bellman Equation and Optimality’, 요점은 가치함수의 벨만 방정식이다. 최종식은 Vπ(s) = Σₐπ(s,a) Σₛ′Pᵃₛₛ′[Rᵃₛₛ′ + γVπ(s′)]이다. 손글씨 필기 있음.",
+   "imagePath": "pages/page-021.png",
+   "empty": false
+  },
+  {
+   "number": 24,
+   "text": "22\n❑ Bellman equation for the value function (cont’)\n- It expresses a relationship between the value of a state and the values of\nits successor states\n- Each open circle represents a state and each solid circle represents a\nstate–action pair\n- Starting from state 𝑠, the root node at the top, the agent could take any of\nsome set of actions—three are shown in the diagram—based on its\npolicy 𝜋. From each of these, the environment could respond with one of\nseveral next states, 𝑠′ (two are shown in the figure), along with a reward,\n𝑟, depending on its dynamics given by the probability 𝑝\n- The Bellman equation averages over all the possibilities, weighting each\nby its probability of occurring\n- It states that the value of the start state must equal the (discounted) value\nof the expected next state, plus the reward expected along the way\nBellman Equation and Optimality\nValue는\nImmidiate reward Retery\nα다음\nㅇ ㅇ\nㅇ\n_\nㅇ\n_\n_\n평재state\nsuccessor 5tatey discount\n기서\nvalue\n부터는\n또\n반복\n∞ _\n보든상황\n[\n신에\n)",
+   "description": "오른쪽 위 트리는 빈 원 상태 s에서 정책 π에 따라 세 개의 검은 원 상태–행동 쌍으로 갈라지고, 각각이 두 개의 빈 원 후속 상태로 이어진다. 한 가지에는 행동 a와 전이 확률 p, 보상 r, 후속 상태 s′가 표시되어 있다. 손글씨 필기 있음.",
+   "imagePath": "pages/page-024.png",
+   "empty": false
+  },
+  {
+   "number": 25,
+   "text": "23\n❑ Bellman equation for Q function\n𝑄𝜋 𝑠, 𝑎 = 𝔼𝜋 𝑅𝑡 𝑠𝑡 = 𝑠, 𝑎𝑡 = 𝑎\n= ෍\n𝑠′\n𝑃𝑠𝑠′\n𝑎 [𝑅𝑠𝑠′\n𝑎\n+ 𝛾෍\n𝑎′\n𝜋(𝑠′, 𝑎′)𝑄𝜋 𝑠′, 𝑎′ ]\nBellman Equation and Optimality\nㆁ\na\n'이\n「선택될활률(Policy)\nㄴ\n~\n⑦\nㅇ\nDsactioill\n정해져\n있음\n쉽할필요X\n경험은 0 부터 9 까지\n(\n)\n□다훤택\nme\n계산 자체는\nDP 로\nstep\n어\n뒤9 앞) Tevmin\n까지의\nrevard가\n_\n하므로!\n더 중요",
+   "description": "오른쪽 트리는 검은 노드 (s, a)에서 p, r로 표시된 화살표가 두 흰 노드로 갈라지고, 각 흰 노드에서 다시 두 검은 노드로 갈라지는 구조다. 오른쪽 흰 노드에는 s′, 아래 가지에는 π, 끝 노드에는 a′가 표시되어 있다. 손글씨 필기 있음.",
+   "imagePath": "pages/page-025.png",
+   "empty": false
+  }
+ ]
+}

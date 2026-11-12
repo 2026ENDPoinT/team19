@@ -1,0 +1,647 @@
+{
+ "resultId": "eval-rl-mdp-c4-terra",
+ "durationSec": 96.85,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "가치함수의 벨만 방정식은?",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "가치함수의 핵심은 미래 수익의 재귀 관계예요.",
+     "현재 수익은 즉시 보상과 이후 수익으로 나눠요.",
+     "이후 수익에는 할인율을 곱해서 더해요.",
+     "현재 상태의 가치는 이 수익을 평균한 값이에요.",
+     "이 관계를 이용해 다음 상태의 가치로 연결해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t1_title",
+      "slot": "top",
+      "style": "title",
+      "content": "수익의 재귀 관계",
+      "hidden": false
+     },
+     {
+      "id": "t1_formula",
+      "slot": "middle",
+      "style": "formula",
+      "content": "$R_t=r_{t+1}+\\gamma R_{t+1}$",
+      "hidden": true
+     },
+     {
+      "id": "t1_note",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "즉시 보상 + 이후 수익",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "t1_formula",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "t1_note",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t1_note",
+      "args": [
+       "이후 수익에 할인율 적용"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t1_formula",
+      "args": [
+       "$V^\\pi(s)=\\mathbb{E}_\\pi[R_t\\mid s_t=s]$"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t1_note",
+      "args": [
+       "상태가치 = 수익의 기댓값"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t1_note",
+      "args": [
+       "현재 가치와 다음 가치"
+      ]
+     }
+    ],
+    "sourcePages": [
+     17,
+     21
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "벨만 방정식은 현재 가치를 다음 가치로 연결해요.",
+     "각 경우에 즉시 보상과 할인된 다음 가치를 더해요.",
+     "행동은 현재 상태의 정책에 따라 확률로 평균해요.",
+     "각 행동에서 다음 상태도 전이확률로 평균해요.",
+     "가능한 경로마다 확률을 곱해서 모두 더하는 거예요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t2_title",
+      "slot": "top",
+      "style": "title",
+      "content": "상태가치의 벨만 방정식",
+      "hidden": false
+     },
+     {
+      "id": "t2_formula",
+      "slot": "middle",
+      "style": "formula",
+      "content": "$V^\\pi(s)=\\sum_a\\pi(s,a)\\sum_{s'}P^a_{ss'}[R^a_{ss'}+\\gamma V^\\pi(s')]$",
+      "hidden": false
+     },
+     {
+      "id": "t2_note",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "보상 + 할인된 다음 가치",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "t2_formula",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "t2_note",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t2_note",
+      "args": [
+       "정책으로 행동을 평균"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t2_note",
+      "args": [
+       "전이확률로 다음 상태 평균"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t2_note",
+      "args": [
+       "가능한 경로의 확률 가중합"
+      ]
+     }
+    ],
+    "sourcePages": [
+     21
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "트리의 맨 위 상태에서 3개 행동 가지가 뻗어요.",
+     "각 행동 가지의 확률은 정책이 정해요.",
+     "한 행동에서 가능한 다음 상태들이 다시 갈라져요.",
+     "각 전이의 보상과 다음 상태의 가치를 함께 봐요.",
+     "다른 행동도 같은 방식으로 확률을 가중해요."
+    ],
+    "speech": [
+     "트리의 맨 위 상태에서 세 개 행동 가지가 뻗어요.",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t3_title",
+      "slot": "top",
+      "style": "title",
+      "content": "트리로 보는 평균",
+      "hidden": false
+     },
+     {
+      "id": "t3_note",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "정책 → 전이 → 다음 가치",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d3_tree",
+      "slot": "middle",
+      "layout": "tree",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n3_state",
+        "label": "상태 s",
+        "shape": "circle"
+       },
+       {
+        "id": "n3_act1",
+        "label": "상태·행동 a",
+        "shape": "circle"
+       },
+       {
+        "id": "n3_act2",
+        "label": "다른 행동",
+        "shape": "circle"
+       },
+       {
+        "id": "n3_act3",
+        "label": "다른 행동",
+        "shape": "circle"
+       },
+       {
+        "id": "n3_next1",
+        "label": "다음 상태",
+        "shape": "circle",
+        "hidden": true
+       },
+       {
+        "id": "n3_next2",
+        "label": "다음 상태",
+        "shape": "circle",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e3_act1",
+        "from": "n3_state",
+        "to": "n3_act1",
+        "label": "정책"
+       },
+       {
+        "id": "e3_act2",
+        "from": "n3_state",
+        "to": "n3_act2",
+        "label": "정책"
+       },
+       {
+        "id": "e3_act3",
+        "from": "n3_state",
+        "to": "n3_act3",
+        "label": "정책"
+       },
+       {
+        "id": "e3_next1",
+        "from": "n3_act1",
+        "to": "n3_next1",
+        "label": "전이·보상",
+        "hidden": true
+       },
+       {
+        "id": "e3_next2",
+        "from": "n3_act1",
+        "to": "n3_next2",
+        "label": "전이·보상",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "n3_state",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "n3_state",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "e3_act1",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "t3_note",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "e3_act1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n3_next1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n3_next2",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e3_next1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e3_next2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "e3_next1",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "e3_next2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n3_next1",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n3_next2",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "e3_next1",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "e3_next2",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "n3_next1",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "n3_next2",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "n3_act2",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     24
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "행동가치는 현재 상태와 첫 행동을 함께 정해요.",
+     "그래서 첫 행동을 정책으로 다시 평균하지 않아요.",
+     "가능한 다음 상태는 전이확률로 평균해요.",
+     "다음 상태의 행동은 정책에 따라 평균해요.",
+     "이렇게 보상과 할인된 다음 행동가치를 연결해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t4_title",
+      "slot": "top",
+      "style": "title",
+      "content": "행동가치의 벨만 방정식",
+      "hidden": false
+     },
+     {
+      "id": "t4_formula",
+      "slot": "middle",
+      "style": "formula",
+      "content": "$Q^\\pi(s,a)=\\sum_{s'}P^a_{ss'}[R^a_{ss'}+\\gamma\\sum_{a'}\\pi(s',a')Q^\\pi(s',a')]$",
+      "hidden": false
+     },
+     {
+      "id": "t4_note",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "첫 행동은 이미 정해짐",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "t4_formula",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "t4_note",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t4_note",
+      "args": [
+       "전이로 다음 상태를 평균"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t4_note",
+      "args": [
+       "정책으로 다음 행동을 평균"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t4_note",
+      "args": [
+       "보상 + 할인된 행동가치"
+      ]
+     }
+    ],
+    "sourcePages": [
+     25
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "가치함수의 핵심은 미래 수익의 재귀 관계예요.",
+   "startSec": 0.0,
+   "endSec": 5.05
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "현재 수익은 즉시 보상과 이후 수익으로 나눠요.",
+   "startSec": 5.35,
+   "endSec": 10.3
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "이후 수익에는 할인율을 곱해서 더해요.",
+   "startSec": 10.6,
+   "endSec": 14.25
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "현재 상태의 가치는 이 수익을 평균한 값이에요.",
+   "startSec": 14.55,
+   "endSec": 18.95
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 4,
+   "text": "이 관계를 이용해 다음 상태의 가치로 연결해요.",
+   "startSec": 19.25,
+   "endSec": 23.5
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "벨만 방정식은 현재 가치를 다음 가치로 연결해요.",
+   "startSec": 24.1,
+   "endSec": 29.05
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "각 경우에 즉시 보상과 할인된 다음 가치를 더해요.",
+   "startSec": 29.35,
+   "endSec": 33.6
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "행동은 현재 상태의 정책에 따라 확률로 평균해요.",
+   "startSec": 33.9,
+   "endSec": 38.75
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "각 행동에서 다음 상태도 전이확률로 평균해요.",
+   "startSec": 39.05,
+   "endSec": 44.2
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "가능한 경로마다 확률을 곱해서 모두 더하는 거예요.",
+   "startSec": 44.5,
+   "endSec": 49.35
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "트리의 맨 위 상태에서 3개 행동 가지가 뻗어요.",
+   "startSec": 49.95,
+   "endSec": 54.8
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "각 행동 가지의 확률은 정책이 정해요.",
+   "startSec": 55.1,
+   "endSec": 58.4
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "한 행동에서 가능한 다음 상태들이 다시 갈라져요.",
+   "startSec": 58.7,
+   "endSec": 63.05
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "각 전이의 보상과 다음 상태의 가치를 함께 봐요.",
+   "startSec": 63.35,
+   "endSec": 67.8
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "다른 행동도 같은 방식으로 확률을 가중해요.",
+   "startSec": 68.1,
+   "endSec": 72.15
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "행동가치는 현재 상태와 첫 행동을 함께 정해요.",
+   "startSec": 72.75,
+   "endSec": 78.35
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "그래서 첫 행동을 정책으로 다시 평균하지 않아요.",
+   "startSec": 78.65,
+   "endSec": 82.8
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "가능한 다음 상태는 전이확률로 평균해요.",
+   "startSec": 83.1,
+   "endSec": 88.15
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "다음 상태의 행동은 정책에 따라 평균해요.",
+   "startSec": 88.45,
+   "endSec": 92.25
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 4,
+   "text": "이렇게 보상과 할인된 다음 행동가치를 연결해요.",
+   "startSec": 92.55,
+   "endSec": 96.85
+  }
+ ]
+}

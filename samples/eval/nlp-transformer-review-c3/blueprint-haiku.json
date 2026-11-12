@@ -1,0 +1,782 @@
+{
+  "version": 0,
+  "title": "셀프 어텐션은 어떻게 계산되는가?",
+  "theme": "dark",
+  "scenes": [
+    {
+      "id": "s1",
+      "clear": true,
+      "lines": [
+        "셀프 어텐션은 입력 단어마다 다른 단어를 얼마나 볼지 계산해요.",
+        "오늘은 첫 번째 단어 Thinking의 출력이 만들어지는 순서를 봐요."
+      ],
+      "speech": [
+        "",
+        "오늘은 첫 번째 단어 띵킹의 출력이 만들어지는 순서를 봐요."
+      ],
+      "texts": [
+        {
+          "id": "t_title",
+          "slot": "top",
+          "style": "title",
+          "content": "셀프 어텐션 계산",
+          "hidden": false
+        },
+        {
+          "id": "t_key",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "한 위치의 출력 z₁",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 1,
+          "do": "show",
+          "target": "t_key",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        27
+      ]
+    },
+    {
+      "id": "s2",
+      "clear": true,
+      "lines": [
+        "먼저 각 입력 임베딩에서 쿼리, 키, 값 벡터를 만들어요.",
+        "임베딩에 학습 가능한 행렬 WQ, WK, WV를 곱해요.",
+        "원 논문에서는 임베딩 512차원, 세 벡터는 64차원이에요."
+      ],
+      "speech": [
+        "",
+        "임베딩에 학습 가능한 행렬 더블유큐, 더블유케이, 더블유브이를 곱해요.",
+        "원 논문에서는 임베딩 오백십이 차원, 세 벡터는 육십사 차원이에요."
+      ],
+      "texts": [
+        {
+          "id": "t_t2",
+          "slot": "top",
+          "style": "title",
+          "content": "1단계: q, k, v 만들기",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_qkv",
+          "slot": "middle",
+          "layout": "row",
+          "hidden": false,
+          "nodes": [
+            {
+              "id": "n_x",
+              "label": "임베딩 x",
+              "shape": "box"
+            },
+            {
+              "id": "n_q",
+              "label": "쿼리 q",
+              "shape": "box",
+              "hidden": true
+            },
+            {
+              "id": "n_k",
+              "label": "키 k",
+              "shape": "box",
+              "hidden": true
+            },
+            {
+              "id": "n_v",
+              "label": "값 v",
+              "shape": "box",
+              "hidden": true
+            }
+          ],
+          "edges": [
+            {
+              "id": "e_wq",
+              "from": "n_x",
+              "to": "n_q",
+              "label": "WQ",
+              "hidden": true
+            },
+            {
+              "id": "e_wk",
+              "from": "n_x",
+              "to": "n_k",
+              "label": "WK",
+              "hidden": true
+            },
+            {
+              "id": "e_wv",
+              "from": "n_x",
+              "to": "n_v",
+              "label": "WV",
+              "hidden": true
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_x",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "show",
+          "target": "n_q",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "show",
+          "target": "n_k",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "show",
+          "target": "n_v",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e_wq",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e_wk",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e_wv",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n_q",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n_k",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n_v",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        27
+      ]
+    },
+    {
+      "id": "s3",
+      "clear": true,
+      "lines": [
+        "두 번째 단계는 점수를 계산하는 거예요.",
+        "첫 단어의 쿼리 q₁을 자기 자신의 키 k₁과 내적해요.",
+        "q₁과 k₁의 내적은 112예요.",
+        "같은 쿼리를 다른 단어의 키 k₂와 내적하면 96이에요."
+      ],
+      "speech": [
+        "",
+        "첫 단어의 쿼리 큐 일을 자기 자신의 키 케이 일과 내적해요.",
+        "큐 일과 케이 일의 내적은 백십이예요.",
+        "같은 쿼리를 다른 단어의 키 케이 이와 내적하면 구십육이에요."
+      ],
+      "texts": [
+        {
+          "id": "t_t3",
+          "slot": "top",
+          "style": "title",
+          "content": "2단계: 점수 계산",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_score",
+          "slot": "middle",
+          "layout": "row",
+          "hidden": false,
+          "nodes": [
+            {
+              "id": "n_q1",
+              "label": "쿼리 q₁",
+              "shape": "box"
+            },
+            {
+              "id": "n_k1",
+              "label": "키 k₁",
+              "shape": "box"
+            },
+            {
+              "id": "n_k2",
+              "label": "키 k₂",
+              "shape": "box"
+            }
+          ],
+          "edges": [
+            {
+              "id": "e_s1",
+              "from": "n_q1",
+              "to": "n_k1",
+              "label": "112",
+              "hidden": true
+            },
+            {
+              "id": "e_s2",
+              "from": "n_q1",
+              "to": "n_k2",
+              "label": "96",
+              "hidden": true
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_q1",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_k1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "e_s1",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "n_k1",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "n_k2",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "e_s2",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        29
+      ]
+    },
+    {
+      "id": "s4",
+      "clear": true,
+      "lines": [
+        "세 번째 단계는 점수를 정규화하는 거예요.",
+        "각 점수를 키 차원의 제곱근으로 나눠요.",
+        "원 논문에서 키 차원은 64라서 8로 나눠요.",
+        "112는 14가 되고, 96은 12가 돼요."
+      ],
+      "speech": [
+        "",
+        "",
+        "원 논문에서 키 차원은 육십사라서 팔로 나눠요.",
+        "백십이는 십사가 되고, 구십육은 십이가 돼요."
+      ],
+      "texts": [
+        {
+          "id": "t_t4",
+          "slot": "top",
+          "style": "title",
+          "content": "3단계: 정규화",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g_score",
+          "slot": "middle",
+          "indexLabels": false,
+          "hidden": true,
+          "cells": [
+            [
+              "점수",
+              "112",
+              "96"
+            ],
+            [
+              "÷8",
+              "",
+              ""
+            ],
+            [
+              "가중치",
+              "",
+              ""
+            ]
+          ],
+          "pointers": []
+        }
+      ],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "g_score",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g_score",
+          "args": [
+            "0,1-2"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "g_score",
+          "args": [
+            "1,0"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "g_score",
+          "args": [
+            "0,1-2"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "g_score",
+          "args": [
+            "1,0"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setValue",
+          "target": "g_score",
+          "args": [
+            "1,1",
+            "14"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setValue",
+          "target": "g_score",
+          "args": [
+            "1,2",
+            "12"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "g_score",
+          "args": [
+            "1,1-2"
+          ]
+        }
+      ],
+      "sourcePages": [
+        31
+      ]
+    },
+    {
+      "id": "s5",
+      "clear": false,
+      "lines": [
+        "마지막으로 소프트맥스를 적용해요.",
+        "14와 12에 소프트맥스를 적용하면 0.88과 0.12가 돼요.",
+        "합이 1이 되는 가중치라서 확률처럼 읽을 수 있어요."
+      ],
+      "speech": [
+        "",
+        "십사와 십이에 소프트맥스를 적용하면 영 점 팔팔과 영 점 일이 돼요.",
+        "합이 일이 되는 가중치라서 확률처럼 읽을 수 있어요."
+      ],
+      "texts": [],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "g_score",
+          "args": [
+            "1,1-2"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "setValue",
+          "target": "g_score",
+          "args": [
+            "2,1",
+            "0.88"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "setValue",
+          "target": "g_score",
+          "args": [
+            "2,2",
+            "0.12"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g_score",
+          "args": [
+            "2,1-2"
+          ]
+        }
+      ],
+      "sourcePages": [
+        31
+      ]
+    },
+    {
+      "id": "s6",
+      "clear": true,
+      "lines": [
+        "마지막 단계는 값 벡터의 가중 합으로 출력을 만드는 거예요.",
+        "v₁에 0.88을 곱하고, v₂에 0.12를 곱해요.",
+        "두 결과를 더하면 첫 단어의 출력 z₁이 나와요."
+      ],
+      "speech": [
+        "",
+        "브이 일에 영 점 팔팔을 곱하고, 브이 이에 영 점 일이를 곱해요.",
+        "두 결과를 더하면 첫 단어의 출력 지 일이 나와요."
+      ],
+      "texts": [
+        {
+          "id": "t_t6",
+          "slot": "top",
+          "style": "title",
+          "content": "4단계: 출력 계산",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_out",
+          "slot": "middle",
+          "layout": "row",
+          "hidden": false,
+          "nodes": [
+            {
+              "id": "n_v1",
+              "label": "값 v₁",
+              "shape": "box"
+            },
+            {
+              "id": "n_v2",
+              "label": "값 v₂",
+              "shape": "box"
+            },
+            {
+              "id": "n_z1",
+              "label": "출력 z₁",
+              "shape": "box",
+              "hidden": true
+            }
+          ],
+          "edges": [
+            {
+              "id": "e_o1",
+              "from": "n_v1",
+              "to": "n_z1",
+              "label": "0.88",
+              "hidden": true
+            },
+            {
+              "id": "e_o2",
+              "from": "n_v2",
+              "to": "n_z1",
+              "label": "0.12",
+              "hidden": true
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_v1",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n_v2",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e_o1",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e_o2",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "n_z1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n_z1",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        33
+      ]
+    },
+    {
+      "id": "s7",
+      "clear": true,
+      "lines": [
+        "지금까지 본 계산을 네 단계로 정리해 볼게요.",
+        "임베딩으로 쿼리, 키, 값을 만들어요.",
+        "쿼리와 키를 내적해서 점수를 얻어요.",
+        "점수를 나누고 소프트맥스로 가중치를 만들어요.",
+        "가중치로 값을 합하면 출력이 나와요."
+      ],
+      "speech": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t_t7",
+          "slot": "top",
+          "style": "title",
+          "content": "전체 흐름",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_flow",
+          "slot": "middle",
+          "layout": "row",
+          "hidden": false,
+          "nodes": [
+            {
+              "id": "n_f1",
+              "label": "q, k, v 만들기",
+              "shape": "box",
+              "hidden": true
+            },
+            {
+              "id": "n_f2",
+              "label": "점수 내적",
+              "shape": "box",
+              "hidden": true
+            },
+            {
+              "id": "n_f3",
+              "label": "나누고 소프트맥스",
+              "shape": "box",
+              "hidden": true
+            },
+            {
+              "id": "n_f4",
+              "label": "가중 합",
+              "shape": "box",
+              "hidden": true
+            }
+          ],
+          "edges": []
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "show",
+          "target": "n_f1",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "show",
+          "target": "n_f2",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "show",
+          "target": "n_f3",
+          "args": []
+        },
+        {
+          "line": 0,
+          "do": "show",
+          "target": "n_f4",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n_f1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n_f1",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n_f2",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "n_f2",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "n_f3",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "unhighlight",
+          "target": "n_f3",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "highlight",
+          "target": "n_f4",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        33
+      ]
+    },
+    {
+      "id": "s8",
+      "clear": true,
+      "lines": [
+        "z₂도 쿼리를 q₂로 바꾸면 같은 방식으로 계산해요.",
+        "전체 식은 이렇게 써요."
+      ],
+      "speech": [
+        "지 이도 쿼리를 큐 이로 바꾸면 같은 방식으로 계산해요.",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t_t8",
+          "slot": "top",
+          "style": "title",
+          "content": "전체 식",
+          "hidden": false
+        },
+        {
+          "id": "t_formula",
+          "slot": "middle",
+          "style": "formula",
+          "content": "$z_i = \\sum_j \\mathrm{softmax}_j\\left(\\frac{q_i \\cdot k_j}{\\sqrt{d_k}}\\right) v_j$",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 1,
+          "do": "show",
+          "target": "t_formula",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "t_formula",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        33
+      ]
+    }
+  ]
+}

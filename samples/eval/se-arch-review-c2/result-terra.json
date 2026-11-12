@@ -1,0 +1,916 @@
+{
+ "resultId": "eval-se-arch-c2-terra",
+ "durationSec": 87.7,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "모델·뷰·컨트롤러는 어떻게 협력하나?",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "아키텍처 패턴은 설계 지식을 재사용하는 방법이에요.",
+     "여러 환경에서 검증된 좋은 설계 방식을 정리해요.",
+     "어떨 때 유용하고 또 아닐지도 함께 살펴야 해요.",
+     "그럼 모델, 뷰, 컨트롤러가 협력하는 방식을 볼게요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_intro",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "아키텍처 패턴"
+     },
+     {
+      "id": "t_intro_detail",
+      "slot": "middle",
+      "hidden": false,
+      "style": "body",
+      "content": "설계 지식을 표현하고 공유하고 재사용해요."
+     },
+     {
+      "id": "t_intro_key",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "keyword",
+      "content": "모델·뷰·컨트롤러"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_intro_detail",
+      "args": [
+       "여러 환경에서 검증된 설계 방식"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_intro_detail",
+      "args": [
+       "언제 유용한지, 장단점은 무엇인지 확인"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "t_intro_key",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     12
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "세 역할은 서로 구분되지만 함께 일해요.",
+     "모델은 애플리케이션의 상태를 맡아요.",
+     "뷰는 모델의 상태를 사용자에게 보여 줘요.",
+     "컨트롤러는 사용자 입력을 처리해요.",
+     "이제 입력이 들어왔을 때의 흐름을 따라가 볼게요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_roles",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "세 역할의 분담"
+     },
+     {
+      "id": "t_role_detail",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "모델: 상태"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_roles",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "n_role_model",
+        "label": "모델",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_role_view",
+        "label": "뷰",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_role_controller",
+        "label": "컨트롤러",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n_role_model",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "t_role_detail",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_role_model",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_role_model",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n_role_view",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_role_view",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_role_detail",
+      "args": [
+       "뷰: 상태 표시"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_role_view",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n_role_controller",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_role_controller",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t_role_detail",
+      "args": [
+       "컨트롤러: 입력 처리"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "n_role_controller",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t_role_detail",
+      "args": [
+       "입력에서 화면 갱신까지"
+      ]
+     }
+    ],
+    "sourcePages": [
+     13
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "먼저 뷰가 사용자 이벤트를 컨트롤러에 전해요.",
+     "컨트롤러는 모델의 상태를 변경해요.",
+     "모델은 변경 사실을 뷰에 알려 줘요.",
+     "뷰는 모델에 현재 상태를 조회해요.",
+     "컨트롤러가 표시할 뷰를 선택할 수도 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_flow",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "역할 사이의 흐름"
+     },
+     {
+      "id": "t_flow_detail",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "body",
+      "content": "뷰 → 컨트롤러: 사용자 이벤트"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_flow",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "n_flow_view",
+        "label": "뷰",
+        "shape": "box"
+       },
+       {
+        "id": "n_flow_controller",
+        "label": "컨트롤러",
+        "shape": "box"
+       },
+       {
+        "id": "n_flow_model",
+        "label": "모델",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_flow_event",
+        "from": "n_flow_view",
+        "to": "n_flow_controller",
+        "label": "이벤트",
+        "hidden": true
+       },
+       {
+        "id": "e_flow_change",
+        "from": "n_flow_controller",
+        "to": "n_flow_model",
+        "label": "상태 변경",
+        "hidden": true
+       },
+       {
+        "id": "e_flow_notice",
+        "from": "n_flow_model",
+        "to": "n_flow_view",
+        "label": "변경 알림",
+        "hidden": true
+       },
+       {
+        "id": "e_flow_query",
+        "from": "n_flow_view",
+        "to": "n_flow_model",
+        "label": "상태 조회",
+        "hidden": true
+       },
+       {
+        "id": "e_flow_select",
+        "from": "n_flow_controller",
+        "to": "n_flow_view",
+        "label": "뷰 선택",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "show",
+      "target": "e_flow_event",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "e_flow_event",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "e_flow_event",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_flow_change",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "e_flow_change",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_flow_detail",
+      "args": [
+       "컨트롤러 → 모델: 상태 변경"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "e_flow_change",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e_flow_notice",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "e_flow_notice",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_flow_detail",
+      "args": [
+       "모델 → 뷰: 변경 알림"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "e_flow_notice",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "e_flow_query",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "e_flow_query",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t_flow_detail",
+      "args": [
+       "뷰 → 모델: 상태 조회"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "e_flow_query",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "e_flow_select",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "e_flow_select",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t_flow_detail",
+      "args": [
+       "컨트롤러 → 뷰: 뷰 선택"
+      ]
+     }
+    ],
+    "sourcePages": [
+     13
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "웹에서는 브라우저가 컨트롤러와 연결돼요.",
+     "뷰의 사용자 이벤트도 컨트롤러로 전달돼요.",
+     "컨트롤러는 모델에 갱신을 요청해요.",
+     "모델은 변경이 있으면 뷰에 알려 줘요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_web",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "웹에서의 연결"
+     },
+     {
+      "id": "t_web_detail",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "body",
+      "content": "브라우저 → 컨트롤러"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_web",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "n_web_browser",
+        "label": "브라우저",
+        "shape": "box"
+       },
+       {
+        "id": "n_web_controller",
+        "label": "컨트롤러",
+        "shape": "box"
+       },
+       {
+        "id": "n_web_view",
+        "label": "뷰",
+        "shape": "box"
+       },
+       {
+        "id": "n_web_model",
+        "label": "모델",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_web_input",
+        "from": "n_web_browser",
+        "to": "n_web_controller",
+        "hidden": true
+       },
+       {
+        "id": "e_web_event",
+        "from": "n_web_view",
+        "to": "n_web_controller",
+        "label": "이벤트",
+        "hidden": true
+       },
+       {
+        "id": "e_web_update",
+        "from": "n_web_controller",
+        "to": "n_web_model",
+        "label": "갱신 요청",
+        "hidden": true
+       },
+       {
+        "id": "e_web_notice",
+        "from": "n_web_model",
+        "to": "n_web_view",
+        "label": "변경 알림",
+        "hidden": true
+       },
+       {
+        "id": "e_web_refresh",
+        "from": "n_web_view",
+        "to": "n_web_model",
+        "label": "새로고침",
+        "hidden": true
+       },
+       {
+        "id": "e_web_select",
+        "from": "n_web_controller",
+        "to": "n_web_view",
+        "hidden": true
+       },
+       {
+        "id": "e_web_display",
+        "from": "n_web_view",
+        "to": "n_web_browser",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "show",
+      "target": "e_web_input",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "e_web_input",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "e_web_input",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_web_event",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "e_web_event",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_web_detail",
+      "args": [
+       "뷰 → 컨트롤러: 사용자 이벤트"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "e_web_event",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e_web_update",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "e_web_update",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_web_detail",
+      "args": [
+       "컨트롤러 → 모델: 갱신 요청"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "e_web_update",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "e_web_notice",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "e_web_notice",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t_web_detail",
+      "args": [
+       "모델 → 뷰: 변경 알림"
+      ]
+     }
+    ],
+    "sourcePages": [
+     14
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": false,
+    "lines": [
+     "뷰는 모델에 새로고침을 요청해요.",
+     "컨트롤러는 표시할 뷰와도 연결돼요.",
+     "뷰가 만든 화면은 브라우저로 전달돼요."
+    ],
+    "speech": [
+     "",
+     "",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "e_web_notice",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "e_web_refresh",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "e_web_refresh",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "setText",
+      "target": "t_web_detail",
+      "args": [
+       "뷰 → 모델: 새로고침 요청"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "e_web_refresh",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_web_select",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "e_web_select",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_web_detail",
+      "args": [
+       "컨트롤러 → 뷰"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "e_web_select",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e_web_display",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "e_web_display",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_web_detail",
+      "args": [
+       "뷰 → 브라우저: 화면 표시"
+      ]
+     }
+    ],
+    "sourcePages": [
+     14
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "아키텍처 패턴은 설계 지식을 재사용하는 방법이에요.",
+   "startSec": 0.0,
+   "endSec": 4.55
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "여러 환경에서 검증된 좋은 설계 방식을 정리해요.",
+   "startSec": 4.85,
+   "endSec": 9.1
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "어떨 때 유용하고 또 아닐지도 함께 살펴야 해요.",
+   "startSec": 9.4,
+   "endSec": 14.35
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "그럼 모델, 뷰, 컨트롤러가 협력하는 방식을 볼게요.",
+   "startSec": 14.65,
+   "endSec": 19.5
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "세 역할은 서로 구분되지만 함께 일해요.",
+   "startSec": 20.1,
+   "endSec": 23.9
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "모델은 애플리케이션의 상태를 맡아요.",
+   "startSec": 24.2,
+   "endSec": 27.15
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "뷰는 모델의 상태를 사용자에게 보여 줘요.",
+   "startSec": 27.45,
+   "endSec": 31.05
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "컨트롤러는 사용자 입력을 처리해요.",
+   "startSec": 31.35,
+   "endSec": 35.05
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "이제 입력이 들어왔을 때의 흐름을 따라가 볼게요.",
+   "startSec": 35.35,
+   "endSec": 39.45
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "먼저 뷰가 사용자 이벤트를 컨트롤러에 전해요.",
+   "startSec": 40.05,
+   "endSec": 45.0
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "컨트롤러는 모델의 상태를 변경해요.",
+   "startSec": 45.3,
+   "endSec": 48.45
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "모델은 변경 사실을 뷰에 알려 줘요.",
+   "startSec": 48.75,
+   "endSec": 52.15
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "뷰는 모델에 현재 상태를 조회해요.",
+   "startSec": 52.45,
+   "endSec": 55.65
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "컨트롤러가 표시할 뷰를 선택할 수도 있어요.",
+   "startSec": 55.95,
+   "endSec": 59.95
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "웹에서는 브라우저가 컨트롤러와 연결돼요.",
+   "startSec": 60.55,
+   "endSec": 63.85
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "뷰의 사용자 이벤트도 컨트롤러로 전달돼요.",
+   "startSec": 64.15,
+   "endSec": 68.2
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "컨트롤러는 모델에 갱신을 요청해요.",
+   "startSec": 68.5,
+   "endSec": 72.05
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "모델은 변경이 있으면 뷰에 알려 줘요.",
+   "startSec": 72.35,
+   "endSec": 76.0
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "뷰는 모델에 새로고침을 요청해요.",
+   "startSec": 76.6,
+   "endSec": 80.15
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "컨트롤러는 표시할 뷰와도 연결돼요.",
+   "startSec": 80.45,
+   "endSec": 84.0
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "뷰가 만든 화면은 브라우저로 전달돼요.",
+   "startSec": 84.3,
+   "endSec": 87.7
+  }
+ ]
+}
