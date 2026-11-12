@@ -5,6 +5,7 @@ import importlib
 import math
 import os
 from pathlib import Path
+import re
 import wave
 
 from .pdf_text_fallback import extract_pdf_text_only
@@ -16,23 +17,63 @@ class PipelineError(Exception):
         self.code, self.message, self.retryable = code, message, retryable
 
 
+DEFAULT_AI_MODULE = "pipeline"  # AI-owned package at the repository root (contracts/pipeline.md)
+AI_FUNCTIONS = ("extract_pdf", "describe_pages", "plan_outline", "make_blueprint", "make_audio")
+_CODE_FORMAT = re.compile(r"[A-Z][A-Z0-9_]{1,63}")
+_MAX_MESSAGE = 300
+
+
+def _ai_error_classes(module_name: str) -> tuple[type, ...]:
+    """The AI package's own PipelineError class(es). Only these explicit classes are trusted."""
+    found = []
+    for name in dict.fromkeys((f"{module_name}.errors", "pipeline.errors")):
+        try:
+            cls = importlib.import_module(name).PipelineError
+        except Exception:
+            continue
+        if isinstance(cls, type) and issubclass(cls, Exception) and cls is not PipelineError and cls not in found:
+            found.append(cls)
+    return tuple(found)
+
+
+def convert_ai_error(exc: Exception) -> PipelineError:
+    """AI PipelineError -> BE PipelineError. Malformed fields fall back to the generic internal error."""
+    code, message, retryable = getattr(exc, "code", None), getattr(exc, "message", None), getattr(exc, "retryable", None)
+    if (isinstance(code, str) and _CODE_FORMAT.fullmatch(code) and isinstance(message, str) and message.strip()
+            and isinstance(retryable, bool)):
+        return PipelineError(code, message.strip()[:_MAX_MESSAGE], retryable)
+    return PipelineError("INTERNAL_ERROR", "처리 중 오류가 발생했습니다. 서버 로그를 확인해 주세요.", True)
+
+
 class Pipeline:
-    """Bridge to AI-owned functions, configurable with AI_PIPELINE_MODULE."""
+    """Bridge to AI-owned functions. Real mode loads AI_PIPELINE_MODULE (default: `pipeline`)."""
     def __init__(self):
         self.sample = os.getenv("AI_MODE", "sample").lower() == "sample"
         if not self.sample:
-            module_name = os.getenv("AI_PIPELINE_MODULE", "ai.pipeline")
+            module_name = os.getenv("AI_PIPELINE_MODULE") or DEFAULT_AI_MODULE
             try:
                 self.module = importlib.import_module(module_name)
             except ImportError as exc:
                 raise RuntimeError(f"AI 모듈을 불러오지 못했습니다: {module_name}") from exc
-            for name in ("extract_pdf", "describe_pages", "plan_outline", "make_blueprint", "make_audio"):
+            for name in AI_FUNCTIONS:
                 if not callable(getattr(self.module, name, None)):
                     raise RuntimeError(f"AI 함수 누락: {module_name}.{name}")
+            self._ai_errors = _ai_error_classes(module_name)
+
+    def _call(self, name: str, *args):
+        """Call an AI function; turn the AI's own PipelineError into the BE's, leave everything else alone."""
+        try:
+            return getattr(self.module, name)(*args)
+        except PipelineError:
+            raise
+        except Exception as exc:
+            if self._ai_errors and isinstance(exc, self._ai_errors):
+                raise convert_ai_error(exc) from exc
+            raise  # unexpected exception: app.pack_error reports INTERNAL_ERROR, details only in the log
 
     def extract_pdf(self, pdf_path: Path, output_dir: Path) -> dict:
         if not self.sample:
-            return self.module.extract_pdf(str(pdf_path), str(output_dir))
+            return self._call("extract_pdf", str(pdf_path), str(output_dir))
         output_dir.mkdir(parents=True, exist_ok=True)
         try:
             return extract_pdf_text_only(pdf_path, output_dir)
@@ -41,12 +82,12 @@ class Pipeline:
 
     def describe_pages(self, pages: list[dict]) -> dict:
         if not self.sample:
-            return self.module.describe_pages(pages)
+            return self._call("describe_pages", pages)
         return {"pages": [{"number": p["number"], "description": "샘플 모드: 이미지 해설 미생성"} for p in pages], "usage": []}
 
     def plan_outline(self, mode: str, pages: list[dict], descriptions: list[dict]) -> dict:
         if not self.sample:
-            return self.module.plan_outline(mode, pages, descriptions)
+            return self._call("plan_outline", mode, pages, descriptions)
         # Keep demo bounded. Each clip genuinely derives its visible text from the uploaded PDF.
         candidates = []
         for page in pages:
@@ -61,7 +102,7 @@ class Pipeline:
 
     def make_blueprint(self, clip_plan: dict, pages: list[dict], page_count: int) -> dict:
         if not self.sample:
-            return self.module.make_blueprint(clip_plan, pages, page_count)
+            return self._call("make_blueprint", clip_plan, pages, page_count)
         title = str(clip_plan.get("title") or "학습 클립")[:20]
         brief = str(clip_plan.get("brief") or title)
         # Actual PDF excerpts, not AI summaries. Label clearly in the demo UI.
@@ -77,7 +118,7 @@ class Pipeline:
 
     def make_audio(self, blueprint: dict, output_dir: Path) -> dict:
         if not self.sample:
-            return self.module.make_audio(blueprint, str(output_dir))
+            return self._call("make_audio", blueprint, str(output_dir))
         output_dir.mkdir(parents=True, exist_ok=True)
         captions, t = [], 0.0
         for scene in blueprint["scenes"]:
