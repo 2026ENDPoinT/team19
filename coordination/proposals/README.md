@@ -64,4 +64,5 @@
 | [P-FE-06](P-FE-06-column-layout.md) | 긴 단계 설명의 세로 배치 지원 앞당기기 | 의견 수집중 |
 | [P-FE-07](P-FE-07-upload-preparation.md) | PDF 업로드와 준비 작업 상태 연결 | 의견 수집중 |
 | [P-FE-08](P-FE-08-outline-flow.md) | 모드 요청·실제 클립 목록·재생 연결 | 의견 수집중 |
+| [P-FE-09](P-FE-09-eval-player.md) | 다른 과목 저장 결과 플레이어 연결 | 의견 수집중 |
 | [P-FE-10](P-FE-10-ponytail.md) | Ponytail 개인 환경 시험 사용 | 의견 수집중 |
