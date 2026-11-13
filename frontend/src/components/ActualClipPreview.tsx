@@ -125,9 +125,11 @@ export default function ActualClipPreview({ onBack, initialClipId, pages, clipId
   const feedEnabled = !initialClipId || Boolean(clipIds)
   const order = clipIds ?? ['clip-01', 'clip-01-b', 'parts-test', ...evalClips.map((clip) => clip.id)]
   const position = order.indexOf(clipId)
+  // 끝에서 더 넘기면 반대쪽 끝으로 돌아간다(마지막 → 처음, 처음 → 마지막). 넘김 방향 효과는 누른 방향 그대로.
   function moveClip(step: number) {
-    const next = order[position + step]
-    if (next) chooseClip(next, step)
+    if (position < 0 || order.length < 2) return
+    const next = order[(position + step + order.length) % order.length]
+    chooseClip(next, step)
   }
 
   async function togglePlayback() {
@@ -159,8 +161,8 @@ export default function ActualClipPreview({ onBack, initialClipId, pages, clipId
     ? <button type="button" className="source-page-toggle mt-2 rounded-lg border px-4 py-2" aria-expanded={sourceOpen} aria-controls="source-page-panel" onClick={() => setSourceOpen((open) => !open)}>{sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}</button>
     : <button type="button" className="source-page-toggle clip-feed-source" aria-label={sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'} title={sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'} aria-expanded={sourceOpen} aria-controls="source-page-panel" onClick={() => setSourceOpen((open) => !open)}><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6M8 13h8M8 17h5" /></svg></button>
   const feedNav = !feedEnabled ? null : <div className="clip-feed-nav">
-            <button type="button" aria-label="이전 클립" disabled={transitionBusy || position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
-            <button type="button" aria-label="다음 클립" disabled={transitionBusy || position < 0 || position >= order.length - 1} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
+            <button type="button" aria-label="이전 클립" disabled={transitionBusy || position < 0 || order.length < 2} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
+            <button type="button" aria-label="다음 클립" disabled={transitionBusy || position < 0 || order.length < 2} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
             {!isFullscreen && sourceToggle}
           </div>
 
