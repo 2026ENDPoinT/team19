@@ -43,7 +43,7 @@ def main() -> int:
     extracted = json.loads((ext / "pages.json").read_text(encoding="utf-8"))
     desc = {d["number"]: d["description"] for d in json.loads((ext / "descriptions.json").read_text(encoding="utf-8"))["pages"]}
     outline = json.loads((ROOT / "sandbox/ai/mode-eval" / args.lecture / f"outline-{args.mode}.json").read_text(encoding="utf-8"))
-    plan = next(p for p in outline["clipPlans"] if p["id"] == args.clip_id)
+    plan = {**next(p for p in outline["clipPlans"] if p["id"] == args.clip_id), "mode": args.mode}   # 옛 분할 결과에는 mode가 없다
 
     out = ROOT / "samples" / "eval" / f"{args.lecture}-{args.mode}-{args.clip_id}"
     (out / "pages").mkdir(parents=True, exist_ok=True)

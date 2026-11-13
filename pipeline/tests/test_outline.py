@@ -141,3 +141,20 @@ class CapTest(unittest.TestCase):
         data = {"clipPlans": [plan(f"c{i}", [1]) for i in range(3)]}
         self.assertTrue(outline.validate_outline(data, "review", {1}, cap=2))
         self.assertEqual(outline.validate_outline(data, "review", {1}, cap=3), [])
+
+
+class ModeTests(unittest.TestCase):
+    def test_exam_coverage_and_mode_passed(self):
+        plan = lambda pid, src: {"id": pid, "title": "제목", "kind": "concept", "sourcePages": src, "prerequisites": [], "brief": "가" * 40}
+        data = {"sections": [], "clipPlans": [plan("c1", [1, 2])]}
+        content = set(range(1, 11))
+        self.assertTrue(any("90%" in e for e in outline.validate_outline(data, "exam", content, 20, content)))
+        self.assertEqual(outline.validate_outline(data, "review", content, 20, content), [])   # 기본·입문은 반영률을 보지 않는다
+        data["clipPlans"].append(plan("c2", list(range(3, 10))))
+        self.assertEqual(outline.validate_outline(data, "exam", content, 20, content), [])     # 9/10 = 90%
+        self.assertEqual(outline.normalize(data, "intro")["clipPlans"][0]["mode"], "intro")
+
+    def test_blueprint_prompt_gets_mode(self):
+        from pipeline.blueprint import build_user_prompt
+        self.assertIn("입문", build_user_prompt({"title": "t", "mode": "intro"}, [], 1))
+        self.assertNotIn("모드:", build_user_prompt({"title": "t"}, [], 1))

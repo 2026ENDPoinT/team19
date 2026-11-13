@@ -28,7 +28,8 @@ MODES = ("intro", "review", "exam")
 # 모드별 클립 수 상한(D-29: 상한만 두고 숫자는 실험 후). 초기값이다.
 # 자료 분량에 비례한다: 내용 페이지 PAGES_PER_CLIP쪽당 1개를 [최소, 최대] 안으로 자른다.
 PAGES_PER_CLIP = {"intro": 10, "review": 5, "exam": 3}
-CAP_RANGE = {"intro": (2, 6), "review": (3, 12), "exam": (4, 20)}
+CAP_RANGE = {"intro": (2, 5), "review": (3, 12), "exam": (4, 20)}   # 입문은 목차 수준이라 적게 (P-AI-10)
+EXAM_COVERAGE = 0.9                # 심화는 내용 페이지의 90% 이상을 근거로 쓴다 (P-AI-10)
 CAPS = {m: hi for m, (_, hi) in CAP_RANGE.items()}   # 절대 상한
 NON_CONTENT_TAGS = ("[표지]", "[목차]", "[행정 안내]", "[빈 페이지]")
 CLIP_KINDS = ("concept", "process", "example", "compare")
@@ -53,7 +54,8 @@ def plan_outline(mode: str, pages: list[dict], descriptions: list[dict] | None =
     if not any((p.get("text") or "").strip() or desc.get(int(p["number"])) or p.get("description") for p in pages):
         raise PipelineError("PDF_NO_TEXT", "자료에서 글자와 그림 내용을 읽지 못했습니다.", False)
 
-    cap = clip_cap(mode, count_content_pages(pages, desc))
+    content = content_page_numbers(pages, desc)
+    cap = clip_cap(mode, len(content))
     system = build_system_prompt(mode)
     user = build_user_prompt(mode, pages, desc, cap)
     usage: list[dict] = []
@@ -63,9 +65,9 @@ def plan_outline(mode: str, pages: list[dict], descriptions: list[dict] | None =
         prompt = user if attempt == 1 else user + _retry_note(data, errors)
         data, u = llm.call_json(model, system, prompt)
         usage.append(u)
-        errors = validate_outline(data, mode, page_numbers, cap)
+        errors = validate_outline(data, mode, page_numbers, cap, content)
         if not errors:
-            return {**normalize(data), "usage": usage}
+            return {**normalize(data, mode), "usage": usage}
     raise PipelineError("OUTLINE_INVALID", "클립 목록을 만들지 못했습니다. 다시 시도해 주세요.", True)
 
 
@@ -75,15 +77,19 @@ def clip_cap(mode: str, content_pages: int) -> int:
 
 
 def count_content_pages(pages: list[dict], desc: dict[int, str]) -> int:
-    """표지·목차·행정 안내·빈 페이지를 뺀 페이지 수. 해설이 없으면 글자가 있는 페이지 수."""
-    n = 0
+    return len(content_page_numbers(pages, desc))
+
+
+def content_page_numbers(pages: list[dict], desc: dict[int, str]) -> set[int]:
+    """표지·목차·행정 안내·빈 페이지를 뺀 페이지 번호. 해설이 없으면 글자가 있는 페이지."""
+    found = set()
     for p in pages:
         d = desc.get(int(p["number"])) or p.get("description") or ""
         if p.get("empty") or d.startswith(NON_CONTENT_TAGS):
             continue
         if (p.get("text") or "").strip() or d:
-            n += 1
-    return n
+            found.add(int(p["number"]))
+    return found
 
 
 def build_system_prompt(mode: str) -> str:
@@ -108,8 +114,9 @@ def build_user_prompt(mode: str, pages: list[dict], desc: dict[int, str], cap: i
     return "\n".join(parts)
 
 
-def validate_outline(data: dict, mode: str, page_numbers: set[int], cap: int | None = None) -> list[str]:
-    """오류 문장 목록. 비어 있으면 통과. cap을 안 주면 모드의 절대 상한."""
+def validate_outline(data: dict, mode: str, page_numbers: set[int], cap: int | None = None,
+                     content: set[int] | None = None) -> list[str]:
+    """오류 문장 목록. 비어 있으면 통과. cap을 안 주면 모드의 절대 상한. content를 주면 심화의 페이지 반영률도 본다."""
     cap = cap or CAPS[mode]
     if not isinstance(data, dict):
         return ["JSON 객체가 아니다"]
@@ -161,12 +168,17 @@ def validate_outline(data: dict, mode: str, page_numbers: set[int], cap: int | N
                 errs.append(f"sections[{j}]: title과 planIds가 필요하다")
             elif any(x not in seen for x in s["planIds"]):
                 errs.append(f"sections[{j}]: 없는 클립 id")
+    if mode == "exam" and content:
+        used = {n for p in plans if isinstance(p, dict) and isinstance(p.get("sourcePages"), list) for n in p["sourcePages"]}
+        missing = sorted(content - used)
+        if len(content) - len(missing) < EXAM_COVERAGE * len(content):
+            errs.append(f"심화는 내용 페이지의 {EXAM_COVERAGE:.0%} 이상을 다뤄야 한다. 어느 클립에도 없는 내용 페이지: {missing}")
     return errs
 
 
-def normalize(data: dict) -> dict:
-    """검사를 통과한 결과에서 계약에 있는 칸만 남기고 order를 붙인다."""
-    plans = [{"id": p["id"], "order": i, "title": p["title"].strip(), "kind": p["kind"],
+def normalize(data: dict, mode: str) -> dict:
+    """검사를 통과한 결과에서 계약에 있는 칸만 남기고 order와 mode를 붙인다. mode는 설계도 단계가 말투를 고르는 데 쓴다."""
+    plans = [{"id": p["id"], "order": i, "mode": mode, "title": p["title"].strip(), "kind": p["kind"],
               "sourcePages": list(p["sourcePages"]), "prerequisites": list(p.get("prerequisites", [])),
               "brief": p["brief"].strip()} for i, p in enumerate(data["clipPlans"])]
     sections = [{"title": s["title"], "planIds": list(s["planIds"])} for s in data.get("sections", [])]
