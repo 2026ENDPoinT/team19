@@ -562,7 +562,7 @@ async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(N
         if pages < 1:  # corrupt, encrypted or empty: never show library errors or paths
             fail("INVALID_PDF", "올바른 PDF 파일이 아니거나 읽을 수 없습니다.", 422)
         if pages > MAX_PDF_PAGES:
-            fail("PDF_PAGE_LIMIT_EXCEEDED", f"PDF는 최대 {MAX_PDF_PAGES}페이지까지 업로드할 수 있습니다.", 422)
+            fail("PDF_TOO_LONG", f"PDF가 {pages}쪽이에요. 최대 {MAX_PDF_PAGES}쪽까지 올릴 수 있어요. 필요한 부분만 나눠서 올려 주세요.", 422)
         lecture_id, jid, status, created = claim_lecture(owner, digest.hexdigest(), Path(file.filename).name, path, lid)
         claimed = created
         if not created:

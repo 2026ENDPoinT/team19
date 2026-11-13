@@ -16,7 +16,7 @@
 
 | API | 요청 | 성공 응답 | 주요 오류 |
 |---|---|---|---|
-| `POST /lectures` | `multipart/form-data`, `file`; 선택 헤더 `X-Owner-Id` | `202 {lectureId, jobId, status}` | `415 UNSUPPORTED_FILE_TYPE`, `422 INVALID_PDF`, `422 PDF_PAGE_LIMIT_EXCEEDED`, `422 INVALID_REQUEST`(헤더 형식), `503 STORAGE_UNAVAILABLE` (아래 "PDF 업로드 정책") |
+| `POST /lectures` | `multipart/form-data`, `file`; 선택 헤더 `X-Owner-Id` | `202 {lectureId, jobId, status}` | `415 UNSUPPORTED_FILE_TYPE`, `422 INVALID_PDF`, `422 PDF_TOO_LONG`, `422 INVALID_REQUEST`(헤더 형식), `503 STORAGE_UNAVAILABLE` (아래 "PDF 업로드 정책") |
 | `GET /lectures` | 선택 헤더 `X-Owner-Id` | `200 [{id, title, status, pageCount}]` 그 주인의 강의, 최신순 | `422 INVALID_REQUEST`(헤더 형식) |
 | `GET /lectures/{id}` | | `200 {id, title, status, pageCount, preparationJobId, pages: [{number, imageUrl}]}` | `404 LECTURE_NOT_FOUND` |
 | `DELETE /lectures/{id}` | **필수** 헤더 `X-Owner-Id` | `204` 본문 없음 (영구 삭제 완료) | `404 LECTURE_NOT_FOUND`, `422 INVALID_REQUEST`, `409 LECTURE_BUSY`, `503 STORAGE_UNAVAILABLE`, `500 STORAGE_CLEANUP_PENDING` (아래 "강의 영구 삭제") |
@@ -83,19 +83,19 @@ Job `type`은 3가지이고 `jobId`를 받는 곳이 다르다.
 
 사용자·팀장·FE 담당자가 합의한 정책이다(사용자 전달, 11/14. `decisions.md`에는 아직 기록되지 않았다).
 
-- **파일 크기 제한이 없다.** 이전의 `413 FILE_TOO_LARGE`는 더 이상 나오지 않는다. 파일은 1 MiB씩 디스크에 저장하며 크기로는 거부하지 않는다.
+- **파일 크기 제한이 없다.** 이전의 `413 FILE_TOO_LARGE`는 더 이상 나오지 않고 `MAX_PDF_MB` 같은 크기 설정도 없다(AI 쪽의 "기본 0, 환경변수로 제한 가능" 흔적은 BE에서 제거했다. 사용자 최종 요청). 파일은 1 MiB씩 디스크에 저장하며 크기로는 거부하지 않는다.
 - **페이지 수는 실제 PDF 구조에서 읽는다.** 파일 크기로 추정하지 않으며, 페이지를 그림으로 만들거나 글자를 추출하지 않는다. **1~100페이지는 허용, 101페이지 이상은 거부**한다. 큰 파일이어도 100페이지 이하면 받는다.
-- AI 파이프라인의 추출 단계도 100쪽을 넘으면 `PDF_TOO_LONG`으로 거절한다([pipeline.md](pipeline.md), D-67). 업로드에서 먼저 거절하므로 보통 도달하지 않는 **방어선**이며, 도달하면 준비 Job 실패로 보인다. 쪽수 상수는 BE `MAX_PDF_PAGES`와 AI `MAX_PAGES`가 따로 있어 바꿀 때 함께 맞춘다.
+- **오류 코드는 AI 추출 단계와 같은 `PDF_TOO_LONG`이다**([pipeline.md](pipeline.md), D-67). 업로드에서 먼저 거절(HTTP 422)하고, AI 추출 단계의 같은 검사는 업로드를 통과한 뒤 도달할 때를 위한 **방어선**이다(도달하면 준비 Job 실패로 보인다). 쪽수 상수는 BE `MAX_PDF_PAGES`와 AI `MAX_PAGES`가 따로 있어 바꿀 때 함께 맞춘다.
 - 검사는 **업로드 요청 안에서, 강의·Job을 만들기 전에** 한다. 거부되면 강의와 Job이 **만들어지지 않고**, 임시 PDF와 폴더도 지우며, AI 파이프라인(유료 호출)도 시작하지 않는다. 기존 강의·자료에는 영향이 없다.
 
 | 상황 | HTTP · `error.code` | `message` | `retryable` |
 |---|---|---|---|
-| 101페이지 이상 | `422 PDF_PAGE_LIMIT_EXCEEDED` | `PDF는 최대 100페이지까지 업로드할 수 있습니다.` | `false` |
+| 101쪽 이상 | `422 PDF_TOO_LONG` | `PDF가 {N}쪽이에요. 최대 100쪽까지 올릴 수 있어요. 필요한 부분만 나눠서 올려 주세요.` ({N}은 실제 쪽수) | `false` |
 | PDF가 아니거나(머리 `%PDF-` 없음), 손상·암호화·페이지 0개로 읽을 수 없음 | `422 INVALID_PDF` | `올바른 PDF 파일이 아닙니다.` 또는 `올바른 PDF 파일이 아니거나 읽을 수 없습니다.` | `false` |
 | 확장자가 `.pdf`가 아님 | `415 UNSUPPORTED_FILE_TYPE` | `PDF 파일만 업로드할 수 있습니다.` | `false` |
 | 저장 공간 부족 등으로 파일을 저장하지 못함 | `503 STORAGE_UNAVAILABLE` | `파일을 저장하지 못했습니다. …` | `true` |
 
-오류 본문은 "오류 모양"과 같고, 내부 경로·라이브러리 예외는 보여 주지 않는다. FE는 `PDF_PAGE_LIMIT_EXCEEDED`일 때 위 `message`를 그대로 사용자에게 보여 주면 된다. 업로드 화면의 안내 문구는 FE 담당이다.
+오류 본문은 "오류 모양"과 같고, 내부 경로·라이브러리 예외는 보여 주지 않는다. FE는 `PDF_TOO_LONG`일 때 위 `message`를 그대로 사용자에게 보여 주면 된다. 업로드 화면의 안내 문구는 FE 담당이다.
 
 ### 내 강의함: `X-Owner-Id` (D-50, 구현됨 · 목록 분리만, 팀장 결정 [Q-BE-06](../coordination/questions.md))
 
@@ -123,7 +123,7 @@ Job `type`은 3가지이고 `jobId`를 받는 곳이 다르다.
 
 오류 본문은 위 "오류 모양"과 같다.
 
-- **삭제 범위(동일 PDF 전체):** 같은 `X-Owner-Id`가 올린 **같은 PDF(바이트 SHA-256)의 강의 기록 전체**를 한 번에 삭제한다. 내 강의함이 같은 PDF를 대표 한 건으로 묶어 보여 주므로, 대표만 지우면 옛 중복이 다시 나타나기 때문이다. **이것은 D-64가 따로 명시한 것은 아니고 BE가 목록 동작에 맞춘 구현이다**(D-64는 "그 강의"의 삭제만 말한다). 파일명은 보지 않는다. 다른 PDF, **다른 소유자의 같은 PDF**, 소유자 없는 강의, 공용 개발 샘플은 삭제하지 않는다. 해시가 없는 옛 강의는 저장된 원본을 읽어 비교하며 모드(sample/real)는 추정하지 않는다.
+- **삭제 범위(동일 PDF 전체):** 같은 `X-Owner-Id`가 올린 **같은 PDF(바이트 SHA-256)의 강의 기록 전체**를 한 번에 삭제한다. 내 강의함이 같은 PDF를 대표 한 건으로 묶어 보여 주므로, 대표만 지우면 옛 중복이 다시 나타나기 때문이다. **이 범위는 D-64가 따로 명시한 것이 아니다**(D-64는 "그 강의"의 삭제만 말한다). **사용자가 이 범위를 승인했고**(사용자 전달) BE가 목록 동작에 맞춰 구현했으며, 팀장이 이 세부 범위를 별도로 승인한 기록은 없다. 파일명은 보지 않는다. 다른 PDF, **다른 소유자의 같은 PDF**, 소유자 없는 강의, 공용 개발 샘플은 삭제하지 않는다. 해시가 없는 옛 강의는 저장된 원본을 읽어 비교하며 모드(sample/real)는 추정하지 않는다.
 - **삭제 대상:** 강의·페이지·분할 계획·클립·Job(재시도 이력 포함)·사용량 기록·자산 행과 `lectures/{id}/`(원본 PDF·페이지 이미지), `clips/{clipId}/`(음성·미리보기 MP4·재시도 결과) 폴더. 삭제한 강의·분할 계획·클립·Job·자산 주소는 이후 모두 `404`이고, 같은 PDF를 다시 올리면 **새 강의·새 Job**(새 ID)이 만들어진다.
 - **여러 개 삭제:** 한 번에 하나씩 보낸다. 같은 PDF 묶음의 두 ID를 연달아 보내면 **첫 호출이 성공한 뒤 두 번째 ID는 `404`**가 될 수 있다. 이는 이미 삭제된 것이므로 성공으로 취급한다. 한 항목의 실패(`409`·`503`)는 다른 항목에 영향이 없다.
 - **일관성:** 실행 중 Job 확인과 삭제는 한 SQLite 쓰기 트랜잭션 안에서 한다. 대기 중(`pending`) Job은 강의와 함께 삭제되어 이후 실행되지 않는다. 폴더는 먼저 `.trash`로 옮긴 뒤 DB를 커밋하고 삭제하며, 중간 실패는 복구하고 서버 시작 때 남은 임시 폴더를 정리한다.

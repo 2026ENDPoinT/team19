@@ -1,4 +1,4 @@
-"""Upload policy: no PDF file-size limit, at most 100 pages (101+ -> 422 PDF_PAGE_LIMIT_EXCEEDED).
+"""Upload policy: no PDF file-size limit, at most 100 pages (101+ -> 422 PDF_TOO_LONG).
 
 Temp SQLite / temp folders / fake AI only. Page counts come from the PDF structure; the file size never decides.
 """
@@ -16,7 +16,8 @@ from test_ai_module_compat import forbid_real_ai, live  # noqa: F401
 A = "device-pagelimit000001"
 B = "device-pagelimit000002"
 MIB = 1024 * 1024
-MESSAGE = "PDF는 최대 100페이지까지 업로드할 수 있습니다."
+def message(pages):
+    return f"PDF가 {pages}쪽이에요. 최대 100쪽까지 올릴 수 있어요. 필요한 부분만 나눠서 올려 주세요."
 
 
 def pdf_with_pages(n, padding_mib=0, encrypt=False):
@@ -67,7 +68,7 @@ def test_over_100_pages_is_rejected_with_the_documented_error(client, pages):
     before_folders = lecture_folders()
     r = up(client, pdf_with_pages(pages))
     assert r.status_code == 422
-    assert r.json() == {"error": {"code": "PDF_PAGE_LIMIT_EXCEEDED", "message": MESSAGE, "retryable": False}}
+    assert r.json() == {"error": {"code": "PDF_TOO_LONG", "message": message(pages), "retryable": False}}
     assert counts() == (0, 0, 0)
     assert lecture_folders() == before_folders == []
 
@@ -79,7 +80,7 @@ def test_rejected_upload_creates_no_job_and_calls_no_ai_and_changes_nothing_else
     kept_pdf = (module().ROOT / "lectures" / kept["lectureId"] / "original.pdf").read_bytes()
     for owner in (A, B, None):
         r = up(live, pdf_with_pages(101), owner)
-        assert r.status_code == 422 and r.json()["error"]["code"] == "PDF_PAGE_LIMIT_EXCEEDED"
+        assert r.status_code == 422 and r.json()["error"]["code"] == "PDF_TOO_LONG"
     assert counts() == before_counts and lecture_folders() == before_folders  # no row, Job, file or folder
     assert live.fake.CALLS == before_calls  # the (fake) AI pipeline was never called
     assert (module().ROOT / "lectures" / kept["lectureId"] / "original.pdf").read_bytes() == kept_pdf
@@ -101,7 +102,7 @@ def test_files_over_20_and_32_mib_are_accepted_when_within_100_pages(client, mon
 def test_a_huge_file_is_still_rejected_by_page_count_not_by_size(client):
     data = pdf_with_pages(101, padding_mib=33)
     r = up(client, data)
-    assert r.status_code == 422 and r.json()["error"]["code"] == "PDF_PAGE_LIMIT_EXCEEDED"
+    assert r.status_code == 422 and r.json()["error"]["code"] == "PDF_TOO_LONG"
     assert counts() == (0, 0, 0) and lecture_folders() == []
 
 
@@ -144,7 +145,7 @@ def test_page_count_falls_back_to_pypdf_when_pymupdf_cannot_load(client, monkeyp
     assert module().count_pdf_pages.__name__ == "count_pdf_pages"
     ok, over = up(client, pdf_with_pages(100)), up(client, pdf_with_pages(101))
     assert ok.status_code == 202
-    assert over.status_code == 422 and over.json()["error"]["code"] == "PDF_PAGE_LIMIT_EXCEEDED"
+    assert over.status_code == 422 and over.json()["error"]["code"] == "PDF_TOO_LONG"
 
 
 def test_storage_error_while_saving_is_503_and_cleans_up(client, monkeypatch):

@@ -24,7 +24,7 @@ $env:AI_MODE = 'sample'
 
 ## PDF 업로드 정책
 
-파일 크기 제한은 없고(`MAX_PDF_MB` 설정도 없다) **최대 100페이지**다. 101페이지 이상은 업로드 요청에서 `422 PDF_PAGE_LIMIT_EXCEEDED`로 거부하며 강의·Job을 만들지 않고 AI를 호출하지 않는다. 페이지 수는 PyMuPDF(없으면 pypdf)로 구조만 읽어 확인한다. 자세한 오류 계약은 [API 계약](../contracts/api.md)의 "PDF 업로드 정책".
+파일 크기 제한은 없고(`MAX_PDF_MB` 설정도 없다) **최대 100페이지**다. 101페이지 이상은 업로드 요청에서 `422 PDF_TOO_LONG`로 거부하며 강의·Job을 만들지 않고 AI를 호출하지 않는다. 페이지 수는 PyMuPDF(없으면 pypdf)로 구조만 읽어 확인한다. 자세한 오류 계약은 [API 계약](../contracts/api.md)의 "PDF 업로드 정책".
 
 ## 기존 업로드 흐름
 
