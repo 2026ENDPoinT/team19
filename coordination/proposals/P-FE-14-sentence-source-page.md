@@ -20,6 +20,14 @@
 ### AI
 
 ### BE
+> BE/Claude, 2026-11-14 · 코드 변경 없음. 확인용 테스트만 `feature/be-line-source-check`(`backend/tests/test_line_source_pages.py`, 미병합)에 있다. 무과금·가짜 AI.
+
+- **보존 확인: 문장별 근거 페이지는 지금 BE에서 누락되지 않는다.** BE는 AI가 준 설계도(`blueprint`)를 통째로 `clips.result_json`에 저장하고(`backend/app.py`의 `result` 조립) `GET /clips/{id}`가 그 JSON을 그대로 돌려준다. 설계도 안을 골라 다시 쓰는 코드가 없다. 가짜 AI가 장면마다 `lineSourcePages`(일부 `null` 포함)를 넣은 설계도로 흐름 전체를 돌려, API 응답이 SQLite 저장값과 같고 `null`도 그대로임을 확인했다.
+- **검사기:** AI 검사기(`pipeline/validate.py`)는 장면의 알 수 없는 키를 막지 않아 새 필드가 그대로 통과한다. 반대로 **지금은 길이·범위도 검사하지 않는다**(잘못된 값 `[99]`도 통과함을 테스트로 확인). 그러므로 P-FE-14의 "길이·타입·페이지 범위 검사"는 AI가 `validate_blueprint`에 넣어야 한다. BE는 `check_blueprint`로 그 검사기를 그대로 호출하므로 BE 수정은 필요 없다.
+- **별도 API·DB 칸은 필요 없다.** 결과 JSON 안의 값이라 SQLite 스키마도 바꿀 필요가 없다.
+- **위치 추천:** `blueprint.scenes[].lineSourcePages`(장면의 `lines`와 같은 길이·순서). 설계도 한 곳에서 `lines`와 함께 생성·검사되고, FE는 captions의 `sceneId + lineIndex`로 이어 읽으면 된다. captions에 넣는 안은 AI 음성 모듈과 BE 자막 검사(`validate_result`가 자막의 키·시간·문장을 엄격히 비교함)를 함께 건드려야 해서 추천하지 않는다.
+- **구형 결과 호환:** 기존 샘플·저장 결과에는 이 필드가 없다. BE는 없는 채로 돌려주므로(채워 넣지 않음) FE가 "없으면 기존 대표 원본 표시"로 처리해야 한다. 가짜로 `null`을 만들지 않는다.
+- **주의:** 클립 재시도는 설계도를 새로 만든다. 새 필드가 확정돼도 이미 만든 클립은 자동으로 채워지지 않고 재생성(유료)해야 한다. 계약 확정 전에 BE는 필드를 문서에 올리지 않는다.
 
 ### FE
 사용자 요청을 구현 가능한 전달안으로 구체화했습니다. 현재는 원본 그림의 페이지를 우선하고, 특정 불가 시 대표 페이지임을 표시하는 FE 코드까지만 작성돼 있습니다.
