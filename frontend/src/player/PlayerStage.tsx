@@ -1,4 +1,6 @@
 import Grid from './Grid'
+import { playerColorVariables } from './colors'
+import { emphasizeFormula } from './formulaEmphasis'
 import FitContent from './FitContent'
 import { layoutGrid } from './gridLayout'
 import { layoutDiagram } from './diagramLayout'
@@ -19,14 +21,14 @@ function Formula({ source }: { source: string }) {
   return <span ref={ref} />
 }
 
-function RichText({ content, formula }: { content: string; formula: boolean }) {
-  if (formula && !content.includes('$')) return <Formula source={content} />
+function RichText({ content, formula, caption, active }: { content: string; formula: boolean; caption: string; active: boolean }) {
+  if (formula && !content.includes('$')) return <Formula source={emphasizeFormula(content, caption, active)} />
   return <>{content.split(/(\$[^$]+\$)/g).map((part, index) => part.startsWith('$') && part.endsWith('$')
-    ? <Formula key={index} source={part.slice(1, -1)} />
+    ? <Formula key={index} source={emphasizeFormula(part.slice(1, -1), caption, active)} />
     : <span key={index}>{part}</span>)}</>
 }
 
-function ElementView({ element, pageUrl }: { element: Entity; pageUrl: (page: number) => string | undefined }) {
+function ElementView({ element, pageUrl, caption }: { element: Entity; caption: string; pageUrl: (page: number) => string | undefined }) {
   if (typeof element.page === 'number' && element.box) return <Slide key={element.id} element={element} imageUrl={pageUrl(element.page)} />
   if (element.nodes) return <Diagram element={element} />
   if (element.cells) return <Grid element={element} />
@@ -39,7 +41,7 @@ function ElementView({ element, pageUrl }: { element: Entity; pageUrl: (page: nu
   }
   if (typeof element.content === 'string') {
     const style = ['title', 'body', 'keyword', 'formula'].includes(String(element.style)) ? String(element.style) : 'body'
-    return <div className={`player-text player-text--${style}`}><RichText content={element.content} formula={style === 'formula'} /></div>
+    return <div className={`player-text player-text--${style}`}><RichText content={element.content} formula={style === 'formula'} caption={caption} active={element.explaining === true} /></div>
   }
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }
@@ -90,7 +92,7 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
   const invalid = visible.some((element) => !slots.includes(element.slot ?? '')) || slots.some((slot) => visible.filter((element) => element.slot === slot).length > 1)
   if (invalid) return <p role="alert">현재 지원 범위와 맞지 않는 장면 배치입니다.</p>
   return (
-    <div ref={frameRef} className="player-viewport" style={{ width: 420 * scale, height: 420 * 16 / 9 * scale }}>
+    <div ref={frameRef} className="player-viewport" style={{ ...playerColorVariables, width: 420 * scale, height: 420 * 16 / 9 * scale }}>
     <div className="player-stage" aria-label={isPlaying ? '영상 일시정지' : '영상 재생'} style={{ transform: `translateX(-50%) scale(${scale})` }}
       role="button" tabIndex={0} aria-pressed={isPlaying} onClick={onTogglePlayback}
       onKeyDown={(event) => {
@@ -103,8 +105,8 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
         {slots.map((slot) => {
           const element = visible.find((item) => item.slot === slot)
           if (!element) return null
-          return <div className={`player-slot${element.highlighted ? ' player-highlight' : ''}`} key={slot} style={{ flexBasis: preferredHeight(element) }}>
-            <FitContent key={element.id}><ElementView element={element} pageUrl={pageUrl} /></FitContent>
+          return <div className={`player-slot${element.highlighted && element.style !== 'formula' ? ' player-highlight' : ''}`} key={slot} style={{ flexBasis: preferredHeight(element) }}>
+            <FitContent key={element.id}><ElementView element={element} pageUrl={pageUrl} caption={state.caption} /></FitContent>
           </div>
         })}
       </div>

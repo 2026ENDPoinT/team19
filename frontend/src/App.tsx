@@ -1,3 +1,4 @@
+import FileSummary from './components/FileSummary'
 import OutlineFlow from './components/OutlineFlow'
 import PreparationPanel from './components/PreparationPanel'
 import { usePreparation } from './components/usePreparation'
@@ -94,32 +95,6 @@ function UploadIcon() {
   )
 }
 
-function DocumentIcon({ className = "h-6 w-6" }: { className?: string }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M14 3.5H7.5A2.5 2.5 0 0 0 5 6v12a2.5 2.5 0 0 0 2.5 2.5h9A2.5 2.5 0 0 0 19 18V8.5L14 3.5Z"
-        stroke="currentColor"
-        strokeLinejoin="round"
-        strokeWidth="1.7"
-      />
-      <path
-        d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.7"
-      />
-    </svg>
-  )
-}
-
 function ArrowIcon({ direction = "right" }: { direction?: "left" | "right" }) {
   return (
     <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 20 20">
@@ -131,37 +106,6 @@ function ArrowIcon({ direction = "right" }: { direction?: "left" | "right" }) {
         strokeWidth="1.7"
       />
     </svg>
-  )
-}
-
-function FileSummary({
-  file,
-  onReplace,
-}: {
-  file: File
-  onReplace: () => void
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-3.5 sm:p-4">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm">
-        <DocumentIcon />
-      </div>
-      <div className="min-w-0 flex-1 text-left">
-        <p className="truncate text-sm font-semibold text-slate-800">
-          {file.name}
-        </p>
-        <p className="mt-1 text-xs text-slate-500">
-          {(file.size / 1024 / 1024).toFixed(1)}MB · PDF
-        </p>
-      </div>
-      <button
-        className="shrink-0 rounded-lg px-2 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        onClick={onReplace}
-        type="button"
-      >
-        파일 교체
-      </button>
-    </div>
   )
 }
 
@@ -331,6 +275,7 @@ export default function App() {
 
           <section className="mt-10 w-full max-w-[680px] sm:mt-12">
             <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.07)] sm:p-6">
+              {!file && (
               <div
                 aria-label="PDF 파일 드래그 앤 드롭 영역"
                 className={`flex min-h-[255px] flex-col items-center justify-center rounded-[18px] border border-dashed px-6 py-10 text-center transition-colors ${
@@ -373,6 +318,7 @@ export default function App() {
                 </button>
                 <p className="mt-4 text-xs text-slate-400">PDF 형식</p>
               </div>
+              )}
 
               {error && (
                 <div
@@ -404,11 +350,7 @@ export default function App() {
                 </div>
               )}
 
-              {file && (
-                <div className="mt-4">
-                  <FileSummary file={file} onReplace={openFilePicker} />
-                </div>
-              )}
+              {file && <FileSummary file={file} onReplace={openFilePicker} />}
 
               <button
                 className="mt-5 flex h-13 w-full items-center justify-center rounded-xl bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
@@ -529,7 +471,7 @@ export default function App() {
         </main>
       )}
 
-      {screen === "outline" && preparation.lecture && selectedModeData && <OutlineFlow key={`${preparation.lecture.id}:${selectedMode}`} lecture={preparation.lecture} mode={selectedModeData.id} modeName={selectedModeData.name} onBack={() => setScreen("mode")} />}
+      {screen === "outline" && preparation.lecture && selectedModeData && <OutlineFlow key={`${preparation.lecture.id}:${selectedMode}`} lecture={preparation.lecture} mode={selectedModeData.id} modeName={selectedModeData.name} fileName={file?.name} onBack={() => setScreen("mode")} />}
 
     </div>
   )

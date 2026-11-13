@@ -3,7 +3,7 @@ export type Entity = {
   id: string; hidden?: boolean; slot?: string; content?: string
   cells?: string[][]; row?: number; col?: number; box?: number[]
   nodes?: Entity[]; edges?: Entity[]; pointers?: Entity[]
-  highlighted?: boolean; highlightedCells?: string[]; markedLine?: number
+  explaining?: boolean; highlighted?: boolean; highlightedCells?: string[]; markedLine?: number
   moveOrigin?: { row: number; col: number; progress: number }
   cellOrigins?: Record<string, { row: number; col: number; progress: number }>
   focusBox?: number[]; marks?: { box: number[]; label: string }[]
@@ -134,6 +134,7 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
   const time = Math.max(0, seconds)
   const state: PlayerState = { sceneId: null, sourcePages: [], elements: [], caption: '' }
   const timings = new Map(captions.map((caption) => [`${caption.sceneId}:${caption.lineIndex}`, caption]))
+  const explaining = new Set<string>()
   let sceneStart = 0
   for (const scene of blueprint.scenes) {
     if (time < sceneStart) break
@@ -149,11 +150,18 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
         const duration = Math.min(0.4, caption.endSec - caption.startSec)
         const progress = Math.min(1, Math.max(0, (time - caption.startSec) / duration))
         applyAction(state.elements, action, progress)
+        if (time < caption.endSec) {
+          if (action.do === 'highlight') explaining.add(action.target)
+          if (action.do === 'unhighlight') explaining.delete(action.target)
+        }
       }
     }
     const last = timings.get(`${scene.id}:${scene.lines.length - 1}`)
     if (!last) throw new Error(`장면의 마지막 자막 없음: ${scene.id}`)
     sceneStart = last.endSec
+  }
+  for (const element of state.elements) {
+    if (element.style === 'formula') element.explaining = explaining.has(element.id) && element.highlighted === true
   }
   state.caption = captions.find((caption) => time >= caption.startSec && time < caption.endSec)?.text ?? ''
   return state
