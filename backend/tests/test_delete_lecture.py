@@ -398,3 +398,26 @@ def test_every_delete_outcome_has_its_own_status_and_code_for_the_fe(client):
                      "other_owner": (404, "LECTURE_NOT_FOUND"), "bad_header": (422, "INVALID_REQUEST"),
                      "no_header": (422, "INVALID_REQUEST")}
     assert all(r.json()["error"]["retryable"] in (True, False) and r.json()["error"]["message"] for r in outcomes.values())
+
+
+def test_representative_rule_and_delete_work_together(client):
+    """Q-FE-19 + D-64: the newest ready lecture is shown (clips are ignored); deleting it removes the whole group
+    and no old duplicate resurfaces; the same PDF uploaded again is a brand-new lecture."""
+    old = make_duplicates(client, count_=3)
+    for lid in old[:1]:  # the oldest duplicate has finished clips
+        client.post(f"/lectures/{lid}/outlines", json={"mode": "intro"})
+        assert all(c["status"] == "completed" for c in wait_clips(client, lid)["clips"])
+    other = build(client, OTHER, A, "other.pdf")[0]
+    other_owner = build(client, SAME, B, "b.pdf")[0]
+    shown = [l["id"] for l in client.get("/lectures", headers={"X-Owner-Id": A}).json()]
+    assert shown == [other, old[-1]]  # newest ready duplicate, not the older one with clips
+    assert delete(client, old[-1]).status_code == 204
+    after = [l["id"] for l in client.get("/lectures", headers={"X-Owner-Id": A}).json()]
+    assert after == [other]  # no old duplicate comes back
+    assert all(client.get(f"/lectures/{i}").status_code == 404 for i in old)
+    assert client.get(f"/lectures/{other}").status_code == 200
+    assert [l["id"] for l in client.get("/lectures", headers={"X-Owner-Id": B}).json()] == [other_owner]
+    again = up(client, SAME, A, "again.pdf").json()
+    assert again["lectureId"] not in old and again["jobId"]
+    assert wait_job(client, again["jobId"])["status"] == "completed"
+    assert [l["id"] for l in client.get("/lectures", headers={"X-Owner-Id": A}).json()] == [again["lectureId"], other]
