@@ -15,13 +15,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
-from .pipeline import Pipeline, PipelineError, check_blueprint, validate_result
+from .pipeline import Pipeline, PipelineError, check_blueprint, get_ai_mode, validate_result
 from . import stored_sample
 
+AI_MODE = get_ai_mode()  # Reject typos before creating a data directory, DB or executor.
 ROOT = Path(os.getenv("TEAM19_DATA_DIR", "./backend/local-data")).resolve()
 DB = ROOT / "team19.sqlite3"
 MAX_BYTES = int(os.getenv("MAX_PDF_MB", "20")) * 1024 * 1024
-WORKERS = max(1, min(4, int(os.getenv("BE_WORKERS", "1"))))
+WORKERS = max(1, min(3 if AI_MODE == "real" else 4,
+                     int(os.getenv("BE_WORKERS", "3" if AI_MODE == "real" else "1"))))
 ROOT.mkdir(parents=True, exist_ok=True)
 _executor = ThreadPoolExecutor(max_workers=WORKERS, thread_name_prefix="team19-job")
 
@@ -60,17 +62,18 @@ def setup() -> None:
         # Never automatically rerun a charged call after a process restart. Show the same
         # error on every record the FE reads (job, lecture, clip); outlines use 'planning' while running.
         restarted = json.dumps({"code": "SERVER_RESTARTED", "message": "서버 재시작으로 중단되었습니다. 다시 시도해 주세요.", "retryable": True}, ensure_ascii=False)
-        db.execute("UPDATE jobs SET status='failed',stage='interrupted',error=? WHERE status='running'", (restarted,))
-        db.execute("UPDATE lectures SET status='failed',error=? WHERE status='running'", (restarted,))
-        db.execute("UPDATE outlines SET status='failed' WHERE status IN ('running','planning')")
-        db.execute("UPDATE clips SET status='failed',error=? WHERE status='running'", (restarted,))
+        states = "'pending','running'" if AI_MODE == "real" else "'running'"
+        # A job can be claimed just before a crash, while its target is still pending.
+        db.execute(f"UPDATE lectures SET status='failed',error=? WHERE status='running' OR id IN (SELECT target_id FROM jobs WHERE type='prepare' AND status IN ({states}))", (restarted,))
+        db.execute(f"UPDATE outlines SET status='failed' WHERE status IN ('running','planning') OR id IN (SELECT target_id FROM jobs WHERE type='outline' AND status IN ({states}))")
+        db.execute(f"UPDATE clips SET status='failed',error=? WHERE status='running' OR id IN (SELECT target_id FROM jobs WHERE type='clip' AND status IN ({states}))", (restarted,))
+        db.execute(f"UPDATE jobs SET status='failed',stage='interrupted',error=?,updated_at=CURRENT_TIMESTAMP WHERE status IN ({states})", (restarted,))
 
 
 def resume_pending() -> int:
-    """Queue jobs that were accepted but never started (still 'pending') again after a restart.
-
-    Their executor queue lived only in memory. Running jobs are NOT rerun (setup() fails them),
-    because they may already have made charged calls; pending jobs have not started any call."""
+    """Only sample jobs resume automatically; real jobs need an explicit retry (D-44)."""
+    if AI_MODE != "sample":
+        return 0
     with conn() as db:
         ids = [r["id"] for r in db.execute("SELECT id FROM jobs WHERE status='pending' ORDER BY rowid")]
     for jid in ids:
@@ -267,7 +270,7 @@ def demo_page():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "aiMode": os.getenv("AI_MODE", "sample")}
+    return {"status": "ok", "aiMode": AI_MODE}
 
 
 @app.post("/lectures", status_code=202)
