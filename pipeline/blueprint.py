@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 
 from pipeline import costlog
-from pipeline.errors import PipelineError
+from pipeline.errors import PipelineError, raise_if_no_credit
 from pipeline.validate import LIMITS, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_SLOTS, validate_blueprint
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -180,10 +180,12 @@ def _call_claude(model: str, system: str, user: str) -> tuple[str, dict]:
         ) as stream:
             msg = stream.get_final_message()
     except anthropic.RateLimitError as e:
+        raise_if_no_credit(e)
         raise PipelineError("PROVIDER_RATE_LIMIT", "AI 서비스 요청이 많습니다. 잠시 후 다시 시도해 주세요.", True) from e
     except anthropic.APITimeoutError as e:
         raise PipelineError("PROVIDER_TIMEOUT", "AI 서비스 응답이 늦습니다. 다시 시도해 주세요.", True) from e
     except (anthropic.APIStatusError, anthropic.APIConnectionError) as e:
+        raise_if_no_credit(e)
         raise PipelineError("PROVIDER_ERROR", "AI 서비스 오류가 났습니다. 다시 시도해 주세요.", True) from e
 
     if msg.stop_reason == "refusal":
@@ -213,10 +215,12 @@ def _call_openai(model: str, system: str, user: str) -> tuple[str, dict]:
             text={"format": {"type": "json_object"}},
         )
     except openai.RateLimitError as e:
+        raise_if_no_credit(e)
         raise PipelineError("PROVIDER_RATE_LIMIT", "AI 서비스 요청이 많습니다. 잠시 후 다시 시도해 주세요.", True) from e
     except openai.APITimeoutError as e:
         raise PipelineError("PROVIDER_TIMEOUT", "AI 서비스 응답이 늦습니다. 다시 시도해 주세요.", True) from e
     except (openai.APIStatusError, openai.APIConnectionError) as e:
+        raise_if_no_credit(e)
         raise PipelineError("PROVIDER_ERROR", "AI 서비스 오류가 났습니다. 다시 시도해 주세요.", True) from e
     u = resp.usage
     pin, pout = PRICES[model]

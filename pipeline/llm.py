@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 from pipeline.blueprint import CLAUDE_CACHE_READ, PRICES
-from pipeline.errors import PipelineError
+from pipeline.errors import PipelineError, raise_if_no_credit
 
 TIMEOUT_SEC = 120     # 호출 한 번의 시간 제한. 순간 오류는 SDK가 2번까지 다시 시도한다(contracts/pipeline.md).
 
@@ -63,10 +63,12 @@ def _claude(model, system, text, images, max_tokens):
             messages=[{"role": "user", "content": content}],
         )
     except anthropic.RateLimitError as e:
+        raise_if_no_credit(e)
         raise PipelineError("PROVIDER_RATE_LIMIT", "AI 서비스 요청이 많습니다. 잠시 후 다시 시도해 주세요.", True) from e
     except anthropic.APITimeoutError as e:
         raise PipelineError("PROVIDER_TIMEOUT", "AI 서비스 응답이 늦습니다. 다시 시도해 주세요.", True) from e
     except (anthropic.APIStatusError, anthropic.APIConnectionError) as e:
+        raise_if_no_credit(e)
         raise PipelineError("PROVIDER_ERROR", "AI 서비스 오류가 났습니다. 다시 시도해 주세요.", True) from e
     if msg.stop_reason == "refusal":
         raise PipelineError("PROVIDER_REFUSED", "AI가 이 자료의 처리를 거절했습니다.", False)
@@ -96,10 +98,12 @@ def _openai(model, system, text, images, max_tokens):
             text={"format": {"type": "json_object"}},
         )
     except openai.RateLimitError as e:
+        raise_if_no_credit(e)
         raise PipelineError("PROVIDER_RATE_LIMIT", "AI 서비스 요청이 많습니다. 잠시 후 다시 시도해 주세요.", True) from e
     except openai.APITimeoutError as e:
         raise PipelineError("PROVIDER_TIMEOUT", "AI 서비스 응답이 늦습니다. 다시 시도해 주세요.", True) from e
     except (openai.APIStatusError, openai.APIConnectionError) as e:
+        raise_if_no_credit(e)
         raise PipelineError("PROVIDER_ERROR", "AI 서비스 오류가 났습니다. 다시 시도해 주세요.", True) from e
     u = resp.usage
     pin, pout = PRICES[model]
