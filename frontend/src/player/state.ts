@@ -9,6 +9,7 @@ export type Entity = {
   moveOrigin?: { row: number; col: number; progress: number }
   cellOrigins?: Record<string, { row: number; col: number; progress: number }>
   focusBox?: number[]; marks?: { box: number[]; label: string }[]
+  stamp?: 'x' | 'o'
   [key: string]: unknown
 }
 export type Scene = {
@@ -59,7 +60,16 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
   const args = action.args
   switch (action.do) {
     case 'show': target.hidden = false; break
-    case 'hide': target.hidden = true; break
+    case 'hide': target.hidden = true; delete target.stamp; break
+    // 부정(X)·맞음(O) 도장(D-53, P-AI-07). 대상은 텍스트·노드·선. 한 대상에 하나만 남는다.
+    case 'stamp': {
+      if (args[0] !== 'x' && args[0] !== 'o') throw new Error(`도장은 x 또는 o만 가능해요: ${args[0]}`)
+      const stampable = typeof target.content === 'string' || elements.some((element) => element.nodes?.includes(target) || element.edges?.includes(target))
+      if (!stampable) throw new Error(`도장을 찍을 수 없는 대상: ${target.id}`)
+      target.stamp = args[0]
+      break
+    }
+    case 'unstamp': delete target.stamp; break
     case 'highlight':
     case 'unhighlight': {
       const enabled = action.do === 'highlight'

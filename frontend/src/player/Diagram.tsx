@@ -2,7 +2,8 @@ import { defaultLineColor, defaultTextColor, palette } from './colors'
 import { useId } from 'react'
 import type { Entity } from './state'
 import { layoutNode } from './diagramLayout'
-import { layoutDiagramEdges } from './diagramEdges'
+import { layoutDiagramEdges, midpoint } from './diagramEdges'
+import { StampMark } from './Stamp'
 
 type Edge = Entity & { from: string; to: string }
 
@@ -14,6 +15,8 @@ export default function Diagram({ element }: { element: Entity }) {
   let geometry
   try { geometry = layoutDiagramEdges(nodes, edges, String(element.layout)) }
   catch (cause) { return <p role="alert" className="player-unsupported">{cause instanceof Error ? cause.message : '다이어그램 배치 오류'}</p> }
+  // 선 위 도장은 노드보다 위에 보이도록 마지막에 그린다.
+  const edgeStamps: { id: string; kind: 'x' | 'o'; at: { x: number; y: number } }[] = []
   return (
     <div className="player-diagram-frame" style={{ width: 380, marginLeft: -10, height: geometry.height * 380 / geometry.width }}>
       <svg className="player-diagram" width="100%" height="100%" viewBox={`0 0 ${geometry.width} ${geometry.height}`} role="img" aria-label={element.layout === 'tree' ? '재귀 트리' : element.layout === 'cycle' ? '순환 다이어그램' : element.layout === 'layers' ? '층 다이어그램' : vertical ? '세로 단계 다이어그램' : '가로 다이어그램'}>
@@ -33,7 +36,9 @@ export default function Diagram({ element }: { element: Entity }) {
           }
           const a = boundary(fromNode), b = boundary(toNode) + 5
           const route = geometry.routes.get(edge.id)
-          const path = route ? route.points.map((point,index)=>`${index ? 'L' : 'M'} ${point.x} ${point.y}`).join(' ') : `M ${from.x + dx / distance * a} ${from.y + dy / distance * a} L ${to.x - dx / distance * b} ${to.y - dy / distance * b}`
+          const points = route?.points ?? [{x:from.x + dx / distance * a,y:from.y + dy / distance * a},{x:to.x - dx / distance * b,y:to.y - dy / distance * b}]
+          const path = points.map((point,index)=>`${index ? 'L' : 'M'} ${point.x} ${point.y}`).join(' ')
+          if (edge.stamp) edgeStamps.push({ id: edge.id, kind: edge.stamp, at: midpoint(points) })
           const label = route?.label ?? {x:(from.x + to.x)/2,y:(from.y + to.y)/2-8}
           const labelLines = route?.lines ?? (edge.label ? [String(edge.label)] : [])
           return <g key={edge.id} className="player-shape-enter">
@@ -50,8 +55,10 @@ export default function Diagram({ element }: { element: Entity }) {
           return <g key={node.id} className="player-shape-enter" transform={`translate(${point.x},${point.y})`}>
             {node.shape === 'circle' ? <circle r={size.radius} fill={fill} fillOpacity={active ? .18 : 1} stroke={stroke} strokeWidth={active ? 3 : 2} /> : <rect x={-size.width / 2} y={-size.height / 2} width={size.width} height={size.height} rx="7" fill={fill} fillOpacity={active ? .18 : 1} stroke={stroke} strokeWidth={active ? 3 : 2} />}
             <text textAnchor="middle" dominantBaseline="middle" fill={active ? palette.mint : defaultTextColor} fontSize={size.fontSize}>{size.lines.map((line, index) => <tspan key={index} x={0} y={(index - (size.lines.length - 1) / 2) * size.lineHeight}>{line}</tspan>)}</text>
+            {node.stamp && <StampMark kind={node.stamp} size={Math.min(size.width, size.height) * .94} />}
           </g>
         })}
+        {edgeStamps.map((stamp) => <g key={`stamp-${stamp.id}`} transform={`translate(${stamp.at.x},${stamp.at.y})`}><StampMark kind={stamp.kind} size={27} /></g>)}
       </svg>
     </div>
   )

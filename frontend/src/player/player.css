@@ -109,3 +109,12 @@
 .player-slot--title .player-text--title { font-size: 40.5px; }
 
 .player-icon-button--off { opacity: 0.55; }
+
+/* 도장(stamp): 글자 위에 겹치되 클릭을 막지 않는다. */
+.player-text { position: relative; }
+.player-stamp-overlay { position: absolute; inset: 0; pointer-events: none; }
+.player-stamp-overlay svg { position: absolute; top: 50%; left: 50%; height: min(98%, 90px); aspect-ratio: 1; overflow: visible; transform: translate(-50%, -50%); }
+@keyframes player-stamp-in { from { opacity: 0; transform: scale(1.6); } to { opacity: .9; transform: scale(1); } }
+.player-stamp { animation: player-stamp-in 220ms ease-out; transform-box: fill-box; transform-origin: center; }
+.player-stage[data-playing="false"] .player-stamp { animation: none; }
+@media (prefers-reduced-motion: reduce) { .player-stamp { animation: none; } }
