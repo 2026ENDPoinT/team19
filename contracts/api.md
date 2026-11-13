@@ -1,6 +1,6 @@
 # API v0 (FE ↔ BE)
 
-> 상태: 확정 v0 (D-28) · 담당: BE (검토 FE) · 최종 수정: 2026-11-12 · BE/Claude
+> 상태: 확정 v0 (D-28) · 담당: BE (검토 FE) · 최종 수정: 2026-11-14 · BE/Claude
 
 결정 과정과 응답 예시 전체는 [P-BE-02](../coordination/proposals/P-BE-02-api-and-pipeline-v0.md), FE용 샘플 응답은 [sandbox/be/fe-fixtures/](../sandbox/be/fe-fixtures/README.md)에 있다. 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 
@@ -16,7 +16,8 @@
 
 | API | 요청 | 성공 응답 | 주요 오류 |
 |---|---|---|---|
-| `POST /lectures` | `multipart/form-data`, `file` | `202 {lectureId, jobId, status}` | `413 FILE_TOO_LARGE`, `415 UNSUPPORTED_FILE_TYPE`, `422 INVALID_PDF`, `503 STORAGE_UNAVAILABLE` |
+| `POST /lectures` | `multipart/form-data`, `file`; 선택 헤더 `X-Owner-Id` | `202 {lectureId, jobId, status}` | `413 FILE_TOO_LARGE`, `415 UNSUPPORTED_FILE_TYPE`, `422 INVALID_PDF`, `422 INVALID_REQUEST`(헤더 형식), `503 STORAGE_UNAVAILABLE` |
+| `GET /lectures` | 선택 헤더 `X-Owner-Id` | `200 [{id, title, status, pageCount}]` 그 주인의 강의, 최신순 | `422 INVALID_REQUEST`(헤더 형식) |
 | `GET /lectures/{id}` | | `200 {id, title, status, pageCount, preparationJobId, pages: [{number, imageUrl}]}` | `404 LECTURE_NOT_FOUND` |
 | `POST /lectures/{id}/outlines` | `{mode}` | `202 {outlineId, jobId, status, reused}` | `404 LECTURE_NOT_FOUND`, `422 INVALID_MODE`, `409 LECTURE_NOT_READY` |
 | `GET /jobs/{id}` | | `200 {id, type, status, stage, progress, error}` | `404 JOB_NOT_FOUND` |
@@ -77,10 +78,17 @@ Job `type`은 3가지이고 `jobId`를 받는 곳이 다르다.
 - FE는 모르는 `stage` 값이 오면 일반 문구로 보여 준다. 값은 나중에 늘 수 있다.
 - 실패한 Job은 `POST /jobs/{id}/retry`로 같은 `type`의 새 Job이 만들어진다(`retryOf`가 이전 `jobId`).
 
+### 내 강의함: `X-Owner-Id` (D-50, 구현됨 · 목록 분리만)
+
+- FE가 브라우저마다 무작위 문자열을 한 번 만들어 저장하고, **강의 업로드와 `GET /lectures`에** `X-Owner-Id` 헤더로 보낸다. 형식은 영문·숫자·`-`·`_` 16~64자이다(예: UUID에서 `-`를 뺀 32자). BE는 형식만 검사한다.
+- 헤더가 **없으면** 업로드는 주인 없는 강의로 저장되고(기존과 같이 동작), `GET /lectures`는 `[]`를 돌려준다. 헤더가 **있으나 형식이 틀리면** 무시하지 않고 `422 INVALID_REQUEST`이다.
+- 이 기능 이전에 저장된 강의는 주인이 없어 누구의 목록에도 나오지 않는다. 단, 강의 ID를 알면 아래 API로 그대로 열린다. 기존 데이터는 지우거나 바꾸지 않는다.
+- 다른 API의 요청·응답은 바뀌지 않았다. 응답에 주인 ID는 나오지 않는다. CORS는 모든 요청 헤더를 허용해 새 헤더를 받는다.
+- **보안 한계(확정 정책 아님):** 이 ID는 기기 구분표일 뿐 인증이 아니다. ID 문자열을 알면 그 사람의 목록이 보인다. **목록만 분리**하므로 `GET /lectures/{id}`, outlines, `/clips/{id}`, `/jobs/{id}`, `/assets/{id}`는 주인 검사 없이 ID만으로 열린다(`<audio>`·`<img>`는 헤더를 보내지 못한다). ID는 추측하기 어려운 무작위 값(64비트)이지만 비밀번호가 아니다. 이들 API의 접근 통제 확대·서명 URL은 구현하지 않았고 팀장 결정 대기이다([Q-BE-06](../coordination/questions.md)).
+
 ## 2단계
 
 | API | 하는 일 |
 |---|---|
-| `GET /lectures` | 내 강의함 |
 | `POST /clips/{id}/save` | 클립 저장 표시 |
 | `POST /clips/{id}/regenerate` | 요청을 적어서 다시 만들기 (Q-AI-21) |

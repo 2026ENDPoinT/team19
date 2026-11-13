@@ -3,13 +3,14 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sqlite3
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -69,6 +70,11 @@ def setup() -> None:
             CHECK((status='recorded' AND usage_json IS NOT NULL) OR (status!='recorded' AND usage_json IS NULL))
         );
         """)
+        # D-50: lecture owner for the personal list. Added in place so existing databases and rows are kept;
+        # lectures that predate it keep owner_id NULL and are never listed for anyone.
+        if "owner_id" not in {c["name"] for c in db.execute("PRAGMA table_info(lectures)")}:
+            db.execute("ALTER TABLE lectures ADD COLUMN owner_id TEXT")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_lectures_owner ON lectures(owner_id)")
         # Never automatically rerun a charged call after a process restart. Show the same
         # error on every record the FE reads (job, lecture, clip); outlines use 'planning' while running.
         restarted = json.dumps({"code": "SERVER_RESTARTED", "message": "서버 재시작으로 중단되었습니다. 다시 시도해 주세요.", "retryable": True}, ensure_ascii=False)
@@ -94,6 +100,19 @@ def resume_pending() -> int:
 
 def fail(code: str, message: str, status: int, retryable: bool = False):
     raise HTTPException(status_code=status, detail={"code": code, "message": message, "retryable": retryable})
+
+
+OWNER_ID = re.compile(r"[A-Za-z0-9_-]{16,64}")
+
+
+def owner_of(header: str | None) -> str | None:
+    """X-Owner-Id (D-50): None when absent; a present but malformed value is rejected, never ignored.
+    This is a device label, not authentication."""
+    if header is None:
+        return None
+    if not OWNER_ID.fullmatch(header):
+        fail("INVALID_REQUEST", "X-Owner-Id 형식이 올바르지 않습니다.", 422)
+    return header
 
 
 def row(db: sqlite3.Connection, table: str, key: str):
@@ -306,7 +325,8 @@ def health():
 
 
 @app.post("/lectures", status_code=202)
-async def upload(file: UploadFile = File(...)):
+async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(None)):
+    owner = owner_of(x_owner_id)
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         fail("UNSUPPORTED_FILE_TYPE", "PDF 파일만 업로드할 수 있습니다.", 415)
     lid = ident("lec")
@@ -325,7 +345,7 @@ async def upload(file: UploadFile = File(...)):
             if src.read(5) != b"%PDF-":
                 fail("INVALID_PDF", "올바른 PDF 파일이 아닙니다.", 422)
         with conn() as db:
-            db.execute("INSERT INTO lectures(id,title,pdf_path,status) VALUES(?,?,?,'pending')", (lid, Path(file.filename).name, str(path)))
+            db.execute("INSERT INTO lectures(id,title,pdf_path,status,owner_id) VALUES(?,?,?,'pending',?)", (lid, Path(file.filename).name, str(path), owner))
             jid = job_create(db, "prepare", lid)
         dispatch(jid)
         return {"lectureId": lid, "jobId": jid, "status": "pending"}
@@ -337,9 +357,12 @@ async def upload(file: UploadFile = File(...)):
 
 
 @app.get("/lectures")
-def lectures():
+def lectures(x_owner_id: str | None = Header(None)):
+    owner = owner_of(x_owner_id)
+    if owner is None:
+        return []  # no device ID, no list (D-50); old lectures without an owner are never listed
     with conn() as db:
-        return [{"id": r["id"], "title": r["title"], "status": r["status"], "pageCount": r["page_count"]} for r in db.execute("SELECT * FROM lectures ORDER BY created_at DESC")]
+        return [{"id": r["id"], "title": r["title"], "status": r["status"], "pageCount": r["page_count"]} for r in db.execute("SELECT * FROM lectures WHERE owner_id=? ORDER BY created_at DESC, rowid DESC", (owner,))]
 
 
 @app.get("/lectures/{lecture_id}")
