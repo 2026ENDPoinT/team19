@@ -48,7 +48,7 @@ AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**�
 
 | 부품 | 필드 | 쓰임 |
 |---|---|---|
-| **texts** | `style`: title / body / keyword / formula, `content` | 제목, 핵심 문장, 키워드, 수식. `$...$` 안은 LaTeX이고 KaTeX로 그린다. 수식 안의 항은 `\term{항id}{LaTeX}`로 감쌀 수 있다(D-46) |
+| **texts** | `style`: title / body / keyword / formula, `content` | 제목, 핵심 문장, 키워드, 수식. `$...$` 안은 LaTeX이고 KaTeX로 그린다. 수식 안의 항은 `\term{항id}{LaTeX}`로 감쌀 수 있다(D-46). body·keyword 안의 `**단어**`는 그 단어만 강조색(D-63). `slot` 대신 `near: {target, side, cell?}`로 부품·노드·칸 옆에 붙일 수 있다(D-60) |
 | **slides** (원본 조각) | `page`, `box`: [x, y, w, h] | 차트, 사진처럼 다시 그릴 수 없는 것. `page`는 그 장면의 `sourcePages`에 있어야 한다 |
 | **diagrams** | `layout`: row / column / tree / layers / cycle, `nodes`: [{id, label, shape: box / circle / text(테두리 없이 글자만, D-54), hidden?}], `edges`: [{id, from, to, label?, hidden?}] | 흐름도, 계층, 구조도, 신경망, 상태 그래프 |
 | **grids** | `cells`: [[문자열]], `indexLabels`: true / false, `pointers`: [{id, label, row, col, hidden}] | 배열(한 줄), 행렬, 표. 줄마다 칸 수가 달라도 된다 |
@@ -64,7 +64,7 @@ AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**�
 - **`full` 부품이 보이는 동안 다른 부품은 보일 수 없다.** 세로로 긴 그림이나 페이지 전체를 크게 보여 줄 때 쓴다. 가로 슬라이드는 세로 화면에서 폭을 꽉 채워도 높이의 약 1/3이라, 보통은 3칸 자리 하나와 `focus`로 충분하다.
 - 자막은 자리와 상관없이 FE가 항상 보여 준다.
 
-## 동작 14개
+## 동작 17개
 
 | 동작 | 대상 | args | 뜻 |
 |---|---|---|---|
@@ -78,6 +78,8 @@ AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**�
 | mark / unmark | 원본 조각 | `"x,y,w,h"`, 라벨(생략 가능) | 강조 상자와 짧은 라벨 표시, 지우기 |
 | markLine | 코드 | 줄 번호 | 지금 설명하는 줄 표시 |
 | stamp / unstamp | 텍스트, 노드, 선 | `x` 또는 `o` / 없음 | 대상 위에 X(O) 도장, 지우기. `unstamp`·`hide`·`clear`까지 남는다(D-53) |
+| attach | 글(body, keyword, formula) | [주인 id, 방향] 또는 [주인 id, 방향, 칸] | 글을 그 주인 옆으로 움직여 붙인다(D-60) |
+| divide / undivide | 격자 | `row:k`(k번째 줄 아래) / `col:k`(k번째 칸 오른쪽) | 구분선 긋기, 지우기(P-AI-13) |
 | place | 부품 | 자리(top / middle / bottom) | 부품을 그 자리로 옮긴다. 위 자리는 제목과 부품 하나를 함께 두고 부품은 작게 그린다(D-56) |
 
 - **수식 항 강조 (D-46):** 수식 `content` 안에서 강조할 부분을 `\term{항id}{LaTeX}`로 감싸고, `highlight`의 args에 항id를 넣는다. 감싼 자리 하나만 가리키므로 같은 기호가 여러 번 나와도 정확하다. 분수·첨자 안도 감쌀 수 있다. 색은 FE가 한 highlight의 args 순서로 정하고(분홍 → 파랑 → 노랑 → 초록), unhighlight할 때까지 유지한다. args 없는 highlight는 수식 전체다. FE는 그리기 전에 `\term{id}{X}`를 강조 중이면 `\textcolor{색}{X}`, 아니면 `{X}`로 바꾼다. `\term`은 `lines`와 `speech`에 쓰지 않는다. 예시는 [P-FE-11](../coordination/proposals/P-FE-11-player-colors.md#ai).
