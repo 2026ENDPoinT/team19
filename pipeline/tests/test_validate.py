@@ -5,7 +5,7 @@ import json
 import unittest
 from pathlib import Path
 
-from pipeline.validate import ALL_LAYOUTS, ALL_SLOTS, validate_blueprint
+from pipeline.validate import ALL_LAYOUTS, ALL_SLOTS, screen_text_errors, validate_blueprint
 
 ROOT = Path(__file__).resolve().parents[2]
 SAMPLES = ROOT / "sandbox" / "ai" / "blueprint_v0"
@@ -134,6 +134,19 @@ class ErrorTests(unittest.TestCase):
         c = base_clip()
         c["scenes"][0]["texts"][0]["content"] = "가" * 21
         self.assertError(c, "title 글자 수 21자")
+
+    def test_body_text_must_not_be_a_sentence(self):
+        for content, bad in [("이제 양쪽 네 구간이 모두 정렬됐어요", True), ("분할은 상수 시간이다.", True),
+                             ("네 구간 정렬 완료", False), ("MVC 개요", False), ("합병에 필요", False)]:
+            c = base_clip()
+            c["scenes"][0]["texts"][0].update(style="body", content=content)
+            self.assertEqual(bool(screen_text_errors(c)), bad, content)
+            self.assertEqual(errors_of(c), [])  # 형식 계약은 문장형을 막지 않는다(BE 샘플 모드)
+        c = base_clip()  # setText로 바꾼 글과 title은 각각 잡고, 넘어간다
+        c["scenes"][0]["texts"].append({"id": "t9", "slot": "middle", "style": "keyword", "content": "분할", "hidden": True})
+        c["scenes"][0]["actions"].append({"line": 1, "do": "setText", "target": "t9", "args": ["반으로 나눠요"]})
+        c["scenes"][0]["actions"].append({"line": 1, "do": "setText", "target": "t1", "args": ["반으로 나눠요"]})
+        self.assertEqual(len(screen_text_errors(c)), 1)
 
     def test_swap_out_of_range(self):
         c = base_clip()

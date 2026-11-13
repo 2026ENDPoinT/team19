@@ -21,7 +21,7 @@ from pathlib import Path
 
 from pipeline import costlog
 from pipeline.errors import PipelineError, raise_if_no_credit
-from pipeline.validate import LIMITS, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_SLOTS, validate_blueprint
+from pipeline.validate import LIMITS, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_SLOTS, screen_text_errors, validate_blueprint
 
 ROOT = Path(__file__).resolve().parents[1]
 # 수식 항 강조 규칙(D-46). 검사기의 SUPPORTED_FORMULA_TERMS가 True일 때만 프롬프트에 넣는다.
@@ -80,6 +80,9 @@ def make_blueprint(clip_plan: dict, pages: list[dict], page_count: int, model: s
         try:
             bp = _parse_json(raw)
             last_errors = validate_blueprint(bp, page_count)
+            # 문체(화면 글이 문장형)는 한 번만 다시 시킨다. 형식이 맞으면 두 번째 결과는 그대로 쓴다.
+            if not last_errors and attempt == 1:
+                last_errors = screen_text_errors(bp)
         except ValueError as e:
             bp, last_errors = None, [f"JSON을 읽을 수 없음: {e}"]
         if not last_errors:
