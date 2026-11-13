@@ -1,0 +1,60 @@
+import { layoutDiagram, layoutNode } from './diagramLayout.ts'
+import type { LayoutNode, LayoutEdge } from './diagramLayout.ts'
+
+type Point = { x: number; y: number }
+type Edge = LayoutEdge & { id: string; label?: unknown }
+type Route = { points: Point[]; label: Point; anchor: 'start' | 'end'; lines: string[] }
+
+export function layoutDiagramEdges(nodes: LayoutNode[], edges: Edge[], layout: string) {
+  const geometry = layoutDiagram(nodes, edges, layout)
+  const routes = new Map<string, Route>()
+  if (layout !== 'column') return { ...geometry, routes }
+  const index = new Map(nodes.map((node, i) => [node.id, i]))
+  const sizes = new Map(nodes.map(node => [node.id, layoutNode(node, layout)]))
+  const left = Math.min(...nodes.map(node => geometry.positions.get(node.id)!.x - sizes.get(node.id)!.width / 2))
+  const right = Math.max(...nodes.map(node => geometry.positions.get(node.id)!.x + sizes.get(node.id)!.width / 2))
+  const lanes = { left: 0, right: 0 }
+  for (const edge of edges) {
+    const from = geometry.positions.get(edge.from)!, to = geometry.positions.get(edge.to)!
+    const a = sizes.get(edge.from)!, b = sizes.get(edge.to)!
+    const forward = index.get(edge.to)! >= index.get(edge.from)!
+    const side = forward ? 1 : -1
+    const reciprocal = edges.some(other => other.from === edge.to && other.to === edge.from)
+    const duplicates = edges.filter(other => other.from === edge.from && other.to === edge.to).length > 1
+    const bypass = Math.abs(index.get(edge.to)! - index.get(edge.from)!) > 1 || duplicates || edge.from === edge.to
+    let points: Point[], label: Point
+    if (bypass) {
+      const lane = side > 0 ? right + 28 + lanes.right++ * 24 : left - 28 - lanes.left++ * 24
+      const fromY = edge.from === edge.to ? from.y - a.height / 4 : from.y
+      const toY = edge.from === edge.to ? to.y + b.height / 4 : to.y
+      const fromHalf = nodes[index.get(edge.from)!].shape === 'circle' ? Math.sqrt(Math.max(0, a.radius ** 2 - (fromY - from.y) ** 2)) : a.width / 2
+      const toHalf = nodes[index.get(edge.to)!].shape === 'circle' ? Math.sqrt(Math.max(0, b.radius ** 2 - (toY - to.y) ** 2)) : b.width / 2
+      points = [{x:from.x + side * (fromHalf + 1), y:fromY}, {x:lane,y:fromY}, {x:lane,y:toY}, {x:to.x + side * (toHalf + 6),y:toY}]
+      label = {x:lane + side * 8, y:(fromY + toY) / 2}
+    } else {
+      const offset = reciprocal ? side * Math.min(24, a.width / 4, b.width / 4) : 0
+      const aHalf = nodes[index.get(edge.from)!].shape === 'circle' ? Math.sqrt(a.radius ** 2 - offset ** 2) : a.height / 2
+      const bHalf = nodes[index.get(edge.to)!].shape === 'circle' ? Math.sqrt(b.radius ** 2 - offset ** 2) : b.height / 2
+      points = [{x:from.x + offset,y:from.y + side * (aHalf + 1)}, {x:to.x + offset,y:to.y - side * (bHalf + 6)}]
+      label = {x:from.x + offset + side * 8,y:(points[0].y + points[1].y) / 2}
+    }
+    const chars = Array.from(String(edge.label ?? ''))
+    const lines = Array.from({length:Math.ceil(chars.length / 8)}, (_,i)=>chars.slice(i*8,i*8+8).join(''))
+    routes.set(edge.id,{points,label,anchor:side > 0 ? 'start' : 'end',lines})
+  }
+  let minX=0,minY=0,maxX=geometry.width,maxY=geometry.height
+  for (const route of routes.values()) {
+    for (const point of route.points) { minX=Math.min(minX,point.x-8);maxX=Math.max(maxX,point.x+8);minY=Math.min(minY,point.y-8);maxY=Math.max(maxY,point.y+8) }
+    const width=Math.max(0,...route.lines.map(line=>Array.from(line).length*11))+8
+    minX=Math.min(minX,route.label.x-(route.anchor==='end'?width:0))
+    maxX=Math.max(maxX,route.label.x+(route.anchor==='start'?width:0))
+    minY=Math.min(minY,route.label.y-route.lines.length*7-8)
+    maxY=Math.max(maxY,route.label.y+route.lines.length*7+8)
+  }
+  for (const point of geometry.positions.values()) {point.x-=minX;point.y-=minY}
+  for (const route of routes.values()) {
+    for (const point of route.points) {point.x-=minX;point.y-=minY}
+    route.label.x-=minX;route.label.y-=minY
+  }
+  return { positions:geometry.positions,routes,width:maxX-minX,height:maxY-minY }
+}

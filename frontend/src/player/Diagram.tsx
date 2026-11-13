@@ -1,7 +1,8 @@
 import { defaultLineColor, defaultTextColor, palette } from './colors'
 import { useId } from 'react'
 import type { Entity } from './state'
-import { layoutDiagram, layoutNode } from './diagramLayout'
+import { layoutNode } from './diagramLayout'
+import { layoutDiagramEdges } from './diagramEdges'
 
 type Edge = Entity & { from: string; to: string }
 
@@ -11,7 +12,7 @@ export default function Diagram({ element }: { element: Entity }) {
   const edges = (element.edges ?? []) as Edge[]
   const vertical = element.layout === 'column'
   let geometry
-  try { geometry = layoutDiagram(nodes, edges, String(element.layout)) }
+  try { geometry = layoutDiagramEdges(nodes, edges, String(element.layout)) }
   catch (cause) { return <p role="alert" className="player-unsupported">{cause instanceof Error ? cause.message : '다이어그램 배치 오류'}</p> }
   return (
     <div className="player-diagram-frame" style={{ height: geometry.height * Math.min(1, 360 / geometry.width) }}>
@@ -25,15 +26,19 @@ export default function Diagram({ element }: { element: Entity }) {
           const to = geometry.positions.get(edge.to)!
           const dx = to.x - from.x, dy = to.y - from.y
           const distance = Math.hypot(dx, dy)
-          if (!distance) return null
+          if (!distance && !geometry.routes.has(edge.id)) return null
           function boundary(node: Entity | undefined) {
             const size = layoutNode(node!, String(element.layout))
             return node?.shape === 'circle' ? size.radius + 1 : Math.min(dx ? (size.width / 2 + 1) * distance / Math.abs(dx) : Infinity, dy ? (size.height / 2 + 1) * distance / Math.abs(dy) : Infinity)
           }
           const a = boundary(fromNode), b = boundary(toNode) + 5
+          const route = geometry.routes.get(edge.id)
+          const path = route ? route.points.map((point,index)=>`${index ? 'L' : 'M'} ${point.x} ${point.y}`).join(' ') : `M ${from.x + dx / distance * a} ${from.y + dy / distance * a} L ${to.x - dx / distance * b} ${to.y - dy / distance * b}`
+          const label = route?.label ?? {x:(from.x + to.x)/2,y:(from.y + to.y)/2-8}
+          const labelLines = route?.lines ?? (edge.label ? [String(edge.label)] : [])
           return <g key={edge.id}>
-            <line x1={from.x + dx / distance * a} y1={from.y + dy / distance * a} x2={to.x - dx / distance * b} y2={to.y - dy / distance * b} stroke={edge.explaining || element.explaining ? palette.yellow : defaultLineColor} strokeWidth={edge.explaining || element.explaining ? 3 : 2} markerEnd={`url(#${arrowId})`} />
-            {typeof edge.label === 'string' && edge.label.length > 0 && <text x={(from.x + to.x) / 2 + (vertical ? 14 : 0)} y={(from.y + to.y) / 2 + (vertical ? 4 : -8)} textAnchor={vertical ? 'start' : 'middle'} fill={edge.explaining || element.explaining ? palette.yellow : defaultTextColor} fontSize="11" paintOrder="stroke" stroke="#020617" strokeWidth="4">{String(edge.label)}</text>}
+            <path d={path} fill="none" stroke={edge.explaining || element.explaining ? palette.yellow : defaultLineColor} strokeWidth={edge.explaining || element.explaining ? 3 : 2} markerEnd={`url(#${arrowId})`} />
+            {labelLines.length > 0 && <text x={label.x} y={label.y} textAnchor={route?.anchor ?? 'middle'} fill={edge.explaining || element.explaining ? palette.yellow : defaultTextColor} fontSize="11" paintOrder="stroke" stroke="#020617" strokeWidth="4">{labelLines.map((line,index)=><tspan key={index} x={label.x} y={label.y+(index-(labelLines.length-1)/2)*14}>{line}</tspan>)}</text>}
           </g>
         })}
         {nodes.filter((node) => !node.hidden).map((node) => {
