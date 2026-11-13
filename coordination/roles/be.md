@@ -40,6 +40,8 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
+- **(11/14 · BE/Claude) 목록 대표 선정 수정(`feature/be-lecture-representative`, 미병합).** FE 검증에서 깨진 옛 강의가 정상 새 강의를 가리는 문제가 발견돼 `GET /lectures` 대표를 `ready → 최신 업로드`로 바꿨다(완성 클립 수 제외). API·DB·삭제 없음, 영구 삭제 브랜치(`feature/be-delete-lecture`)와 분리. 무과금 테스트 갱신. FE 브라우저 확인은 병합 뒤([Q-FE-19](../questions.md)).
+
 - **(11/14 · BE/Claude) P-AI-11·P-AI-12 BE 영향 검토(코드 변경 없음).** 설계도는 AI 검사기를 통과한 뒤 `result_json`에 통째로 저장돼 그대로 반환되므로 `bars`·`done`·`headline`·`near`·`attach` 모두 BE 코드·API·DB 변경이 필요 없다고 두 제안서 BE 칸에 기록했다. 현재 AI 검사기는 `bars`만 통과시키고 나머지는 FE 구현 전이라 거부(`SUPPORTED_NEAR=False` 등)한다. 켜진 뒤 실제 통합 검증은 미완료.
 
 - **(11/14 · BE/Claude) Q-FE-19 / P-FE-15 동일 PDF 중복 방지 MVP 구현(`feature/be-pdf-dedup`, main 병합 `a4d0811`).** FE 담당자와 요구사항을 재확인해 범위를 "같은 PDF 재사용 + 내 강의함 중복 표시 방지"로 줄였다(`reprocess`·`stale`·버전 재처리·영상 다시 만들기는 별도 후속, 앞서 적은 팀장 결정 8가지는 선행 조건 아님). SHA-256·`X-Owner-Id` 범위 재사용, UNIQUE+트랜잭션 동시성, failed 미재사용, 목록 대표 1건(삭제 없음)을 구현하고 무과금 테스트 13개로 확인했다. **main 병합 완료, FE 브라우저 검증 전(미완료).** BUG-FE-01의 BE 해결 범위는 완료, 종료 판단은 FE([Q-FE-08](../questions.md)).
