@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import os
 import re
 import sys
@@ -127,6 +128,8 @@ def make_blueprint(clip_plan: dict, pages: list[dict], page_count: int, model: s
             bp, last_errors = None, [f"JSON을 읽을 수 없음: {e}"]
         if not last_errors:
             return {"blueprint": bp, "usage": usage, "attempts": attempt}
+        # 어떤 규칙에서 자주 실패하는지 서버 기록으로 보려고 남긴다(사용자 화면에는 안 나감).
+        logging.getLogger("pipeline").warning("설계도 검사 실패 %d/2 [%s]: %s", attempt, clip_plan.get("title", ""), " | ".join(last_errors))
     raise PipelineError("BLUEPRINT_INVALID", "설계도를 만들지 못했습니다. 다시 시도해 주세요.", retryable=True)
 
 
