@@ -1,7 +1,7 @@
-export const palette = { mint: '#4fe3c1', yellow: '#ffdf00', coral: '#fb6b6e' } as const
+export const palette = { mint: '#4fe3c1', yellow: '#ffdf00', coral: '#fb6b6e', pink: '#f52e7f' } as const
 export const playerColorVariables = {
   '--player-mint': palette.mint, '--player-yellow': palette.yellow,
-  '--player-coral': palette.coral,
+  '--player-coral': palette.coral, '--player-pink': palette.pink,
 }
 
 export const defaultLineColor = '#E2E2E2'

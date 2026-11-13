@@ -74,3 +74,8 @@
 .player-text--explaining.player-text--formula .sqrt svg { color: var(--player-coral); }
 
 .player-code-line.player-highlight { color: var(--player-yellow); }
+
+.player-text--terms [style*="color"] .frac-line,
+.player-text--terms [style*="color"] .overline-line,
+.player-text--terms [style*="color"] .underline-line { border-color: currentColor; }
+.player-text--terms [style*="color"] .sqrt svg { color: inherit; }

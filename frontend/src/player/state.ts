@@ -1,8 +1,10 @@
+import { formulaTermColors, parseFormulaTerms } from './formulaTerms.ts'
 export type Action = { line: number; do: string; target: string; args: string[] }
 export type Entity = {
   id: string; hidden?: boolean; slot?: string; content?: string
   cells?: string[][]; row?: number; col?: number; box?: number[]
   nodes?: Entity[]; edges?: Entity[]; pointers?: Entity[]
+  formulaTermColors?: Record<string, string>; formulaWhole?: boolean;
   explainedCells?: string[]; explainedLine?: number; explainedMarks?: number[][]; explaining?: boolean; highlighted?: boolean; highlightedCells?: string[]; markedLine?: number
   moveOrigin?: { row: number; col: number; progress: number }
   cellOrigins?: Record<string, { row: number; col: number; progress: number }>
@@ -61,7 +63,23 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
     case 'highlight':
     case 'unhighlight': {
       const enabled = action.do === 'highlight'
-      if (target.cells && args.length) {
+      if (target.style === 'formula' && (args.length || target.content?.includes('\\term'))) {
+        const ids = parseFormulaTerms(target.content ?? '').ids
+        for (const id of args) if (!ids.includes(id)) throw new Error(`수식 항을 찾을 수 없어요: ${id}`)
+        const colors = target.formulaTermColors ??= Object.create(null) as Record<string, string>
+        if (!args.length) {
+          target.formulaTermColors = Object.create(null) as Record<string, string>
+          target.formulaWhole = enabled
+        } else {
+          if (!enabled && target.formulaWhole) for (const id of ids) colors[id] = formulaTermColors[0]
+          target.formulaWhole = false
+          args.forEach((id, index) => {
+            if (enabled && !Object.hasOwn(colors, id)) colors[id] = formulaTermColors[index % formulaTermColors.length]
+            if (!enabled) delete colors[id]
+          })
+        }
+        target.highlighted = enabled && !args.length
+      } else if (target.cells && args.length) {
         const keys = args.flatMap((arg) => cellKeys(arg, target))
         const current = new Set(target.highlightedCells ?? [])
         for (const key of keys) { if (enabled) current.add(key); else current.delete(key) }
@@ -107,7 +125,14 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
       else delete target.moveOrigin
       break
     }
-    case 'setText': target.content = args[0]; break
+    case 'setText': {
+      target.content = args[0]
+      if (target.style === 'formula') {
+        const ids = parseFormulaTerms(target.content).ids
+        if (target.formulaTermColors) for (const id of Object.keys(target.formulaTermColors)) if (!ids.includes(id)) delete target.formulaTermColors[id]
+      }
+      break
+    }
     case 'markLine': target.markedLine = Number(args[0]); break
     case 'focus': {
       const destination = coordinates(args[0])
@@ -141,7 +166,13 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
     if (scene.clear) state.elements = []
     state.sceneId = scene.id
     state.sourcePages = [...scene.sourcePages]
-    state.elements.push(...structuredClone([...scene.texts, ...scene.slides, ...scene.diagrams, ...scene.grids, ...scene.codes]))
+    const added = structuredClone([...scene.texts, ...scene.slides, ...scene.diagrams, ...scene.grids, ...scene.codes])
+    for (const element of added) if (element.style === 'formula' && element.content?.includes('\\term')) {
+      parseFormulaTerms(element.content)
+      element.formulaTermColors = Object.create(null) as Record<string, string>
+      element.formulaWhole = element.highlighted === true
+    }
+    state.elements.push(...added)
     for (const action of scene.actions) {
       const caption = timings.get(`${scene.id}:${action.line}`)
       if (!caption) throw new Error(`동작의 자막 없음: ${scene.id}:${action.line}`)
