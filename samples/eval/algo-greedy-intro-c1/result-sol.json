@@ -1,0 +1,828 @@
+{
+ "resultId": "eval-algo-greedy-c1-sol",
+ "durationSec": 107.05,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "그리디는 언제 최적해를 찾을까?",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "가능한 답 중 가장 좋은 답을 찾는 게 최적화예요.",
+     "목표에 따라 가장 큰 값이나 작은 값을 찾아요.",
+     "그리디는 매 순간 가장 좋아 보이는 선택을 해요.",
+     "그 선택을 차곡차곡 모아 최종 답을 만들어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t1_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "현재의 최선을 고르기"
+     },
+     {
+      "id": "t1_label",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "keyword",
+      "content": "최적화 문제"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d1_flow",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n1_candidates",
+        "label": "가능한 선택",
+        "shape": "box"
+       },
+       {
+        "id": "n1_choice",
+        "label": "현재의 최선",
+        "shape": "box"
+       },
+       {
+        "id": "n1_answer",
+        "label": "최종 답",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e1_choose",
+        "from": "n1_candidates",
+        "to": "n1_choice"
+       },
+       {
+        "id": "e1_collect",
+        "from": "n1_choice",
+        "to": "n1_answer",
+        "label": "선택 누적",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [
+     {
+      "id": "g1_objective",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "최대화",
+        "최소화"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g1_objective",
+      "args": [
+       "0-1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g1_objective",
+      "args": [
+       "0-1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "g1_objective",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "d1_flow",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n1_choice",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n1_choice",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n1_answer",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "e1_collect",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     5,
+     6
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "중요한 특징은 한 번 고른 선택을 번복하지 않는 거예요.",
+     "앞의 선택을 바꾸지 않고 다음 선택으로 나아가요.",
+     "그런데 매번 잘 고르면 전체 답도 가장 좋을까요?",
+     "부분의 최선이 전체의 최선을 자동으로 보장하진 않아요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t2_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "되돌리지 않는 선택"
+     },
+     {
+      "id": "t2_question",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "keyword",
+      "content": "전체 최적성?"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d2_steps",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n2_fixed",
+        "label": "선택 확정",
+        "shape": "box"
+       },
+       {
+        "id": "n2_next",
+        "label": "다음 선택",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n2_result",
+        "label": "전체 최적해?",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e2_next",
+        "from": "n2_fixed",
+        "to": "n2_next",
+        "hidden": true
+       },
+       {
+        "id": "e2_result",
+        "from": "n2_next",
+        "to": "n2_result",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "n2_fixed",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "n2_fixed",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n2_next",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e2_next",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n2_next",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n2_next",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n2_result",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e2_result",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "t2_question",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     6,
+     9
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "먼저 탐욕적 선택이 안전한지 확인해야 해요.",
+     "지금의 선택이 전체 최적해로 이어질 수 있어야 해요.",
+     "회의실 배정에서는 가장 빨리 끝나는 회의를 골라요.",
+     "이 선택은 회의 개수를 최대로 만드는 답으로 이어져요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t3_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "탐욕적 선택 조건"
+     },
+     {
+      "id": "t3_example",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "keyword",
+      "content": "회의실 배정"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d3_safety",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n3_choice",
+        "label": "현재의 최선",
+        "shape": "box"
+       },
+       {
+        "id": "n3_optimum",
+        "label": "전체 최적해",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e3_safe",
+        "from": "n3_choice",
+        "to": "n3_optimum",
+        "label": "연결 가능",
+        "hidden": true
+       }
+      ]
+     },
+     {
+      "id": "d3_meeting",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n3_early",
+        "label": "가장 이른 종료",
+        "shape": "box"
+       },
+       {
+        "id": "n3_max",
+        "label": "최대 회의 개수",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e3_meeting",
+        "from": "n3_early",
+        "to": "n3_max",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "n3_choice",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "n3_choice",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n3_optimum",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e3_safe",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "d3_safety",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "d3_meeting",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "t3_example",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n3_early",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n3_early",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n3_max",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "e3_meeting",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     9
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "이번에는 출발점부터 목적지까지 최단 경로를 봐요.",
+     "그 경로에서 중간 지점까지도 최단이어야 해요.",
+     "중간 지점부터 목적지까지도 최단이어야 해요.",
+     "부문제의 최적해로 전체를 만드는 게 최적 부분 구조예요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t4_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "최적 부분 구조"
+     },
+     {
+      "id": "t4_label",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "keyword",
+      "content": "부문제에서 전체로"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d4_path",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n4_start",
+        "label": "출발점",
+        "shape": "circle"
+       },
+       {
+        "id": "n4_middle",
+        "label": "중간 지점",
+        "shape": "circle"
+       },
+       {
+        "id": "n4_goal",
+        "label": "목적지",
+        "shape": "circle"
+       }
+      ],
+      "edges": [
+       {
+        "id": "e4_first",
+        "from": "n4_start",
+        "to": "n4_middle",
+        "label": "최단 경로"
+       },
+       {
+        "id": "e4_second",
+        "from": "n4_middle",
+        "to": "n4_goal",
+        "label": "최단 경로"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "e4_first",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "e4_first",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "e4_second",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "e4_second",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "t4_label",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     10
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": true,
+    "lines": [
+     "탐욕적 선택 조건은 지금 골라도 안전한지를 물어요.",
+     "최적 부분 구조는 작은 최적해로 전체를 만들 수 있느냐예요.",
+     "그러니 그럴듯한 선택 기준만으로는 부족해요.",
+     "그 문제에서 최적해를 얻는다는 증명이 필요해요.",
+     "근사해로 쓸 때도 얼마나 좋은지 보장하려면 증명이 필요해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t5_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "직관에서 증명으로"
+     },
+     {
+      "id": "t5_proof",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "keyword",
+      "content": "문제별 최적성 증명"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g5_conditions",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "조건",
+        "확인할 것"
+       ],
+       [
+        "탐욕적 선택",
+        "선택의 안전성"
+       ],
+       [
+        "최적 부분 구조",
+        "부문제로 구성"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "g5_conditions",
+      "args": [
+       "1,1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "g5_conditions",
+      "args": [
+       "1,1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g5_conditions",
+      "args": [
+       "2,1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g5_conditions",
+      "args": [
+       "2,1"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "t5_proof",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t5_proof",
+      "args": [
+       "근사해의 품질 보장"
+      ]
+     }
+    ],
+    "sourcePages": [
+     9,
+     10
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "가능한 답 중 가장 좋은 답을 찾는 게 최적화예요.",
+   "startSec": 0.0,
+   "endSec": 4.9
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "목표에 따라 가장 큰 값이나 작은 값을 찾아요.",
+   "startSec": 5.2,
+   "endSec": 9.25
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "그리디는 매 순간 가장 좋아 보이는 선택을 해요.",
+   "startSec": 9.55,
+   "endSec": 14.4
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "그 선택을 차곡차곡 모아 최종 답을 만들어요.",
+   "startSec": 14.7,
+   "endSec": 19.75
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "중요한 특징은 한 번 고른 선택을 번복하지 않는 거예요.",
+   "startSec": 20.35,
+   "endSec": 25.35
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "앞의 선택을 바꾸지 않고 다음 선택으로 나아가요.",
+   "startSec": 25.65,
+   "endSec": 29.6
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "그런데 매번 잘 고르면 전체 답도 가장 좋을까요?",
+   "startSec": 29.9,
+   "endSec": 34.4
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "부분의 최선이 전체의 최선을 자동으로 보장하진 않아요.",
+   "startSec": 34.7,
+   "endSec": 40.1
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "먼저 탐욕적 선택이 안전한지 확인해야 해요.",
+   "startSec": 40.7,
+   "endSec": 44.9
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "지금의 선택이 전체 최적해로 이어질 수 있어야 해요.",
+   "startSec": 45.2,
+   "endSec": 50.0
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "회의실 배정에서는 가장 빨리 끝나는 회의를 골라요.",
+   "startSec": 50.3,
+   "endSec": 54.6
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "이 선택은 회의 개수를 최대로 만드는 답으로 이어져요.",
+   "startSec": 54.9,
+   "endSec": 59.8
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "이번에는 출발점부터 목적지까지 최단 경로를 봐요.",
+   "startSec": 60.4,
+   "endSec": 65.1
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "그 경로에서 중간 지점까지도 최단이어야 해요.",
+   "startSec": 65.4,
+   "endSec": 70.55
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "중간 지점부터 목적지까지도 최단이어야 해요.",
+   "startSec": 70.85,
+   "endSec": 74.8
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "부문제의 최적해로 전체를 만드는 게 최적 부분 구조예요.",
+   "startSec": 75.1,
+   "endSec": 80.8
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "탐욕적 선택 조건은 지금 골라도 안전한지를 물어요.",
+   "startSec": 81.4,
+   "endSec": 85.9
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "최적 부분 구조는 작은 최적해로 전체를 만들 수 있느냐예요.",
+   "startSec": 86.2,
+   "endSec": 92.3
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "그러니 그럴듯한 선택 기준만으로는 부족해요.",
+   "startSec": 92.6,
+   "endSec": 96.45
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "그 문제에서 최적해를 얻는다는 증명이 필요해요.",
+   "startSec": 96.75,
+   "endSec": 101.15
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 4,
+   "text": "근사해로 쓸 때도 얼마나 좋은지 보장하려면 증명이 필요해요.",
+   "startSec": 101.45,
+   "endSec": 107.05
+  }
+ ]
+}

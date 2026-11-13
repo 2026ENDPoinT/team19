@@ -3,3 +3,9 @@
 /* Deferred spacing for scroll snapping.
 .actual-clip-layout { padding-top: clamp(64px, 12vh, 140px); padding-bottom: clamp(80px, 16vh, 180px); }
 */
+
+.clip-transition-container { position: relative; overflow-anchor: none; }
+.clip-transition-frame { position: absolute; overflow: hidden; pointer-events: none; z-index: 2; border-radius: 20px; }
+.clip-transition-frame .player-shape-enter { animation: none; }
+
+.clip-transition-active { overflow: hidden; border-radius: 20px; }
