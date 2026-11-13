@@ -1,200 +1,45 @@
 {
  "resultId": "eval-algo-dc-c4-sol",
- "durationSec": 115.1,
+ "durationSec": 108.45,
  "audioUrl": "audio-sol/audio.mp3",
  "blueprint": {
   "version": 0,
-  "title": "합병 정렬의 재귀 흐름",
+  "title": "합병 정렬은 어떻게 재귀적으로 작동하나?",
   "theme": "dark",
   "scenes": [
    {
     "id": "s1",
     "clear": true,
     "lines": [
-     "합병 정렬은 나눈 구간을 정렬하고 다시 합쳐요.",
-     "시작 인덱스가 끝보다 작을 때만 안으로 들어가요.",
-     "중간 인덱스는 양 끝의 평균을 내림해서 구해요.",
-     "앞부분을 재귀 정렬한 뒤, 뒷부분도 정렬해요.",
-     "양쪽 호출이 끝나야 마지막 합병을 실행해요."
+     "합병 정렬은 나눈 뒤, 정렬된 구간을 합쳐요.",
+     "입력 구간은 p부터 q까지예요.",
+     "p가 q보다 작을 때만 아래 작업을 해요.",
+     "p가 q 이상이면 원소가 1개 이하여서 돌아가요.",
+     "이제 강의의 8개 원소로 재귀를 따라가요."
     ],
     "speech": [
      "",
-     "",
-     "",
-     "",
-     ""
+     "입력 구간은 피부터 큐까지예요.",
+     "피가 큐보다 작을 때만 아래 작업을 해요.",
+     "피가 큐 이상이면 원소가 한 개 이하여서 돌아가요.",
+     "이제 강의의 여덟 개 원소로 재귀를 따라가요."
     ],
     "texts": [
      {
-      "id": "t_intro",
+      "id": "t_title",
       "slot": "top",
       "hidden": false,
       "style": "title",
-      "content": "재귀 호출의 순서"
+      "content": "합병 정렬의 재귀"
      }
     ],
     "slides": [],
     "diagrams": [],
-    "grids": [],
-    "codes": [
-     {
-      "id": "c_sort",
-      "slot": "middle",
-      "hidden": false,
-      "language": "pseudo",
-      "lines": [
-       "MergeSort(A, p, q)",
-       "  if p < q:",
-       "    k = floor((p + q) / 2)",
-       "    MergeSort(A, p, k)",
-       "    MergeSort(A, k + 1, q)",
-       "    merge(A, p, k, q)"
-      ]
-     }
-    ],
-    "actions": [
-     {
-      "line": 0,
-      "do": "markLine",
-      "target": "c_sort",
-      "args": [
-       "1"
-      ]
-     },
-     {
-      "line": 1,
-      "do": "markLine",
-      "target": "c_sort",
-      "args": [
-       "2"
-      ]
-     },
-     {
-      "line": 2,
-      "do": "markLine",
-      "target": "c_sort",
-      "args": [
-       "3"
-      ]
-     },
-     {
-      "line": 3,
-      "do": "markLine",
-      "target": "c_sort",
-      "args": [
-       "4"
-      ]
-     },
-     {
-      "line": 4,
-      "do": "markLine",
-      "target": "c_sort",
-      "args": [
-       "6"
-      ]
-     }
-    ],
-    "sourcePages": [
-     16,
-     20
-    ]
-   },
-   {
-    "id": "s2",
-    "clear": true,
-    "lines": [
-     "강의의 8개 원소로 실제 흐름을 따라가 봐요.",
-     "중간에서 나누면 원소가 4개인 두 구간이에요.",
-     "먼저 왼쪽 구간을 원소 2개씩 다시 나눠요.",
-     "그중 37과 10을 각각 낱개로 나눠요."
-    ],
-    "speech": [
-     "강의의 여덟 개 원소로 실제 흐름을 따라가 봐요.",
-     "중간에서 나누면 원소가 네 개인 두 구간이에요.",
-     "먼저 왼쪽 구간을 원소 두 개씩 다시 나눠요.",
-     "그중 삼십칠과 십을 각각 낱개로 나눠요."
-    ],
-    "texts": [
-     {
-      "id": "t_divide",
-      "slot": "top",
-      "hidden": false,
-      "style": "title",
-      "content": "왼쪽부터 재귀 분할"
-     },
-     {
-      "id": "t_stage",
-      "slot": "bottom",
-      "hidden": false,
-      "style": "keyword",
-      "content": "분할"
-     }
-    ],
-    "slides": [],
-    "diagrams": [
-     {
-      "id": "d_halves",
-      "slot": "middle",
-      "hidden": true,
-      "layout": "row",
-      "nodes": [
-       {
-        "id": "n_half_left",
-        "label": "37 10 22 30",
-        "shape": "box"
-       },
-       {
-        "id": "n_half_right",
-        "label": "35 13 25 24",
-        "shape": "box"
-       }
-      ],
-      "edges": []
-     },
-     {
-      "id": "d_left_pairs",
-      "slot": "middle",
-      "hidden": true,
-      "layout": "row",
-      "nodes": [
-       {
-        "id": "n_pair_first",
-        "label": "37 10",
-        "shape": "box"
-       },
-       {
-        "id": "n_pair_second",
-        "label": "22 30",
-        "shape": "box"
-       }
-      ],
-      "edges": []
-     },
-     {
-      "id": "d_singletons",
-      "slot": "middle",
-      "hidden": true,
-      "layout": "row",
-      "nodes": [
-       {
-        "id": "n_single_37",
-        "label": "37",
-        "shape": "circle"
-       },
-       {
-        "id": "n_single_10",
-        "label": "10",
-        "shape": "circle"
-       }
-      ],
-      "edges": []
-     }
-    ],
     "grids": [
      {
-      "id": "g_input",
-      "slot": "middle",
-      "hidden": false,
+      "id": "g_array",
+      "slot": "bottom",
+      "hidden": true,
       "cells": [
        [
         "37",
@@ -211,50 +56,199 @@
       "pointers": []
      }
     ],
+    "codes": [
+     {
+      "id": "c_sort",
+      "slot": "middle",
+      "hidden": false,
+      "language": "pseudo",
+      "lines": [
+       "if (p < q) {",
+       "  k = floor((p + q) / 2)",
+       "  MergeSort(A, p, k)",
+       "  MergeSort(A, k + 1, q)",
+       "  merge(A, p, k, q)",
+       "}"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "line": 2,
+      "do": "markLine",
+      "target": "c_sort",
+      "args": [
+       "1"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "g_array",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     16,
+     20,
+     23
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "먼저 양 끝 인덱스의 평균을 내림해요.",
+     "인덱스가 0부터 7이면 중간 인덱스는 3이에요.",
+     "앞쪽은 p부터 중간까지 먼저 재귀 정렬해요.",
+     "앞쪽도 반씩 나누면 결국 낱개가 돼요."
+    ],
+    "speech": [
+     "",
+     "인덱스가 영부터 칠이면 중간 인덱스는 삼이에요.",
+     "앞쪽은 피부터 중간까지 먼저 재귀 정렬해요.",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_left",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "tree",
+      "nodes": [
+       {
+        "id": "n_left_root",
+        "label": "37 10 22 30",
+        "shape": "box"
+       },
+       {
+        "id": "n_left_pair",
+        "label": "37 10",
+        "shape": "box"
+       },
+       {
+        "id": "n_right_pair",
+        "label": "22 30",
+        "shape": "box"
+       },
+       {
+        "id": "n_37",
+        "label": "37",
+        "shape": "circle"
+       },
+       {
+        "id": "n_10",
+        "label": "10",
+        "shape": "circle"
+       },
+       {
+        "id": "n_22",
+        "label": "22",
+        "shape": "circle"
+       },
+       {
+        "id": "n_30",
+        "label": "30",
+        "shape": "circle"
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_left_pair",
+        "from": "n_left_root",
+        "to": "n_left_pair"
+       },
+       {
+        "id": "e_right_pair",
+        "from": "n_left_root",
+        "to": "n_right_pair"
+       },
+       {
+        "id": "e_to_37",
+        "from": "n_left_pair",
+        "to": "n_37"
+       },
+       {
+        "id": "e_to_10",
+        "from": "n_left_pair",
+        "to": "n_10"
+       },
+       {
+        "id": "e_to_22",
+        "from": "n_right_pair",
+        "to": "n_22"
+       },
+       {
+        "id": "e_to_30",
+        "from": "n_right_pair",
+        "to": "n_30"
+       }
+      ]
+     }
+    ],
+    "grids": [],
     "codes": [],
     "actions": [
      {
       "line": 0,
-      "do": "highlight",
-      "target": "g_input",
+      "do": "markLine",
+      "target": "c_sort",
       "args": [
-       "0-7"
+       "2"
       ]
      },
      {
       "line": 1,
-      "do": "hide",
-      "target": "g_input",
-      "args": []
-     },
-     {
-      "line": 1,
-      "do": "show",
-      "target": "d_halves",
-      "args": []
+      "do": "highlight",
+      "target": "g_array",
+      "args": [
+       "3"
+      ]
      },
      {
       "line": 2,
-      "do": "hide",
-      "target": "d_halves",
-      "args": []
+      "do": "markLine",
+      "target": "c_sort",
+      "args": [
+       "3"
+      ]
      },
      {
       "line": 2,
-      "do": "show",
-      "target": "d_left_pairs",
-      "args": []
+      "do": "unhighlight",
+      "target": "g_array",
+      "args": [
+       "3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_array",
+      "args": [
+       "0-3"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_array",
+      "args": [
+       "0-3"
+      ]
      },
      {
       "line": 3,
       "do": "hide",
-      "target": "d_left_pairs",
+      "target": "c_sort",
       "args": []
      },
      {
       "line": 3,
       "do": "show",
-      "target": "d_singletons",
+      "target": "d_left",
       "args": []
      }
     ],
@@ -267,111 +261,84 @@
     "id": "s3",
     "clear": false,
     "lines": [
-     "원소가 하나면 이미 정렬돼 있어서 바로 돌아가요.",
-     "빈 구간도 시작이 끝보다 뒤라서 바로 돌아가요.",
-     "돌아온 두 구간의 37과 10을 비교해요.",
-     "10이 먼저인 두 원소 구간으로 합병해요."
+     "낱개는 이미 정렬돼 있으니 재귀가 멈춰요.",
+     "처음 돌아오면 37과 10을 비교해요.",
+     "작은 10이 앞에 오도록 두 칸을 바꿔요.",
+     "이제 10, 37로 정렬된 첫 구간이 됐어요."
     ],
     "speech": [
      "",
-     "",
-     "돌아온 두 구간의 삼십칠과 십을 비교해요.",
-     "십이 먼저인 두 원소 구간으로 합병해요."
+     "처음 돌아오면 삼십칠과 십을 비교해요.",
+     "작은 십이 앞에 오도록 두 칸을 바꿔요.",
+     "이제 십, 삼십칠로 정렬된 첫 구간이 됐어요."
     ],
-    "texts": [],
-    "slides": [],
-    "diagrams": [],
-    "grids": [
+    "texts": [
      {
-      "id": "g_first_merge",
+      "id": "t_stage",
       "slot": "middle",
       "hidden": true,
-      "cells": [
-       [
-        "10",
-        "37"
-       ]
-      ],
-      "indexLabels": false,
-      "pointers": []
+      "style": "keyword",
+      "content": "낱개에서 복귀"
      }
     ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
     "codes": [],
     "actions": [
      {
       "line": 0,
-      "do": "setText",
-      "target": "t_divide",
-      "args": [
-       "재귀의 종료 조건"
-      ]
-     },
-     {
-      "line": 0,
-      "do": "setText",
-      "target": "t_stage",
-      "args": [
-       "p ≥ q: 즉시 반환"
-      ]
-     },
-     {
-      "line": 0,
-      "do": "highlight",
-      "target": "n_single_37",
+      "do": "hide",
+      "target": "d_left",
       "args": []
      },
      {
       "line": 0,
-      "do": "highlight",
-      "target": "n_single_10",
+      "do": "show",
+      "target": "t_stage",
       "args": []
      },
      {
       "line": 1,
-      "do": "highlight",
-      "target": "t_stage",
-      "args": []
-     },
-     {
-      "line": 2,
       "do": "setText",
-      "target": "t_divide",
+      "target": "t_stage",
       "args": [
        "첫 합병"
       ]
      },
      {
-      "line": 2,
-      "do": "setText",
-      "target": "t_stage",
+      "line": 1,
+      "do": "highlight",
+      "target": "g_array",
       "args": [
-       "정렬된 두 구간"
+       "0",
+       "1"
       ]
      },
      {
       "line": 2,
-      "do": "unhighlight",
-      "target": "t_stage",
-      "args": []
-     },
-     {
-      "line": 3,
-      "do": "hide",
-      "target": "d_singletons",
-      "args": []
-     },
-     {
-      "line": 3,
-      "do": "show",
-      "target": "g_first_merge",
-      "args": []
-     },
-     {
-      "line": 3,
-      "do": "setText",
-      "target": "t_stage",
+      "do": "swap",
+      "target": "g_array",
       "args": [
-       "두 원소 합병 완료"
+       "0",
+       "1"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_array",
+      "args": [
+       "0",
+       "1"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "g_array",
+      "args": [
+       "0-1"
       ]
      }
     ],
@@ -383,157 +350,131 @@
    },
    {
     "id": "s4",
-    "clear": true,
+    "clear": false,
     "lines": [
-     "22와 30도 합병하면 왼쪽의 두 쌍이 준비돼요.",
-     "두 쌍을 합치면 10, 22, 30, 37이에요.",
-     "오른쪽도 재귀 호출과 합병을 똑같이 반복해요.",
-     "오른쪽 결과는 13, 24, 25, 35예요."
+     "다음 두 낱개는 22와 30으로 합쳐져요.",
+     "두 구간을 합치면 왼쪽 4개가 정렬돼요.",
+     "이어서 중간 다음부터 q까지 재귀 정렬해요.",
+     "같은 방식으로 오른쪽도 정렬해요."
     ],
     "speech": [
-     "이십이와 삼십도 합병하면 왼쪽의 두 쌍이 준비돼요.",
-     "두 쌍을 합치면 십, 이십이, 삼십, 삼십칠이에요.",
-     "",
-     "오른쪽 결과는 십삼, 이십사, 이십오, 삼십오예요."
+     "다음 두 낱개는 이십이와 삼십으로 합쳐져요.",
+     "두 구간을 합치면 왼쪽 네 개가 정렬돼요.",
+     "이어서 중간 다음부터 큐까지 재귀 정렬해요.",
+     ""
     ],
-    "texts": [
-     {
-      "id": "t_subproblems",
-      "slot": "top",
-      "hidden": false,
-      "style": "title",
-      "content": "왼쪽 구간 정렬"
-     }
-    ],
+    "texts": [],
     "slides": [],
     "diagrams": [],
-    "grids": [
-     {
-      "id": "g_left_pairs",
-      "slot": "middle",
-      "hidden": false,
-      "cells": [
-       [
-        "10",
-        "37"
-       ],
-       [
-        "22",
-        "30"
-       ]
-      ],
-      "indexLabels": false,
-      "pointers": []
-     },
-     {
-      "id": "g_left_sorted",
-      "slot": "middle",
-      "hidden": true,
-      "cells": [
-       [
-        "10",
-        "22",
-        "30",
-        "37"
-       ]
-      ],
-      "indexLabels": false,
-      "pointers": []
-     },
-     {
-      "id": "g_right_work",
-      "slot": "bottom",
-      "hidden": true,
-      "cells": [
-       [
-        "35",
-        "13",
-        "25",
-        "24"
-       ]
-      ],
-      "indexLabels": false,
-      "pointers": []
-     }
-    ],
+    "grids": [],
     "codes": [],
     "actions": [
      {
       "line": 0,
-      "do": "highlight",
-      "target": "g_left_pairs",
+      "do": "unhighlight",
+      "target": "g_array",
       "args": [
-       "1,0-1"
+       "0-1"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "g_array",
+      "args": [
+       "2-3"
       ]
      },
      {
       "line": 1,
-      "do": "hide",
-      "target": "g_left_pairs",
-      "args": []
+      "do": "swap",
+      "target": "g_array",
+      "args": [
+       "1",
+       "2"
+      ]
      },
      {
       "line": 1,
-      "do": "show",
-      "target": "g_left_sorted",
-      "args": []
+      "do": "swap",
+      "target": "g_array",
+      "args": [
+       "2",
+       "3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "g_array",
+      "args": [
+       "2-3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_array",
+      "args": [
+       "0-3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_stage",
+      "args": [
+       "왼쪽 정렬 완료"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_array",
+      "args": [
+       "0-3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_array",
+      "args": [
+       "4-7"
+      ]
      },
      {
       "line": 2,
       "do": "setText",
-      "target": "t_subproblems",
+      "target": "t_stage",
       "args": [
-       "오른쪽 구간 정렬"
-      ]
-     },
-     {
-      "line": 2,
-      "do": "show",
-      "target": "g_right_work",
-      "args": []
-     },
-     {
-      "line": 3,
-      "do": "setValue",
-      "target": "g_right_work",
-      "args": [
-       "0",
-       "13"
+       "오른쪽 재귀 정렬"
       ]
      },
      {
       "line": 3,
-      "do": "setValue",
-      "target": "g_right_work",
+      "do": "swap",
+      "target": "g_array",
       "args": [
-       "1",
-       "24"
+       "4",
+       "5"
       ]
      },
      {
       "line": 3,
-      "do": "setValue",
-      "target": "g_right_work",
+      "do": "swap",
+      "target": "g_array",
       "args": [
-       "2",
-       "25"
+       "5",
+       "7"
       ]
      },
      {
       "line": 3,
-      "do": "setValue",
-      "target": "g_right_work",
+      "do": "setText",
+      "target": "t_stage",
       "args": [
-       "3",
-       "35"
-      ]
-     },
-     {
-      "line": 3,
-      "do": "highlight",
-      "target": "g_right_work",
-      "args": [
-       "0-3"
+       "두 구간 정렬 완료"
       ]
      }
     ],
@@ -544,71 +485,27 @@
    },
    {
     "id": "s5",
-    "clear": true,
+    "clear": false,
     "lines": [
-     "마지막에는 정렬된 네 원소 구간끼리 합병해요.",
-     "양쪽 맨 앞의 10과 13을 비교해요.",
-     "10을 먼저 쓰고, 다음은 22와 13을 비교해요.",
-     "13을 쓰고, 다음은 22와 24를 비교해요."
+     "이제 정렬된 두 구간의 맨 앞을 비교해요.",
+     "10을 쓰고, 다음은 22와 13을 비교해요.",
+     "13을 쓰고, 다음은 22와 24를 비교해요.",
+     "이어서 22와 24를 차례로 써요."
     ],
     "speech": [
      "",
-     "양쪽 맨 앞의 십과 십삼을 비교해요.",
-     "십을 먼저 쓰고, 다음은 이십이와 십삼을 비교해요.",
-     "십삼을 쓰고, 다음은 이십이와 이십사를 비교해요."
+     "십을 쓰고, 다음은 이십이와 십삼을 비교해요.",
+     "십삼을 쓰고, 다음은 이십이와 이십사를 비교해요.",
+     "이어서 이십이와 이십사를 차례로 써요."
     ],
-    "texts": [
-     {
-      "id": "t_final_merge",
-      "slot": "top",
-      "hidden": false,
-      "style": "title",
-      "content": "마지막 합병"
-     }
-    ],
+    "texts": [],
     "slides": [],
     "diagrams": [],
     "grids": [
      {
-      "id": "g_final_sources",
+      "id": "g_result",
       "slot": "middle",
-      "hidden": false,
-      "cells": [
-       [
-        "10",
-        "22",
-        "30",
-        "37"
-       ],
-       [
-        "13",
-        "24",
-        "25",
-        "35"
-       ]
-      ],
-      "indexLabels": false,
-      "pointers": [
-       {
-        "id": "p_left",
-        "label": "왼쪽",
-        "row": 0,
-        "col": 0,
-        "hidden": true
-       },
-       {
-        "id": "p_right",
-        "label": "오른쪽",
-        "row": 1,
-        "col": 0,
-        "hidden": true
-       }
-      ]
-     },
-     {
-      "id": "g_final_output",
-      "slot": "bottom",
-      "hidden": false,
+      "hidden": true,
       "cells": [
        [
         "",
@@ -628,123 +525,131 @@
     "codes": [],
     "actions": [
      {
-      "line": 1,
-      "do": "show",
-      "target": "p_left",
+      "line": 0,
+      "do": "hide",
+      "target": "t_stage",
       "args": []
      },
      {
-      "line": 1,
+      "line": 0,
       "do": "show",
-      "target": "p_right",
+      "target": "g_result",
       "args": []
      },
      {
-      "line": 1,
-      "do": "highlight",
-      "target": "g_final_sources",
+      "line": 0,
+      "do": "unhighlight",
+      "target": "g_array",
       "args": [
-       "0,0",
-       "1,0"
+       "4-7"
       ]
      },
      {
-      "line": 2,
+      "line": 0,
+      "do": "highlight",
+      "target": "g_array",
+      "args": [
+       "0",
+       "4"
+      ]
+     },
+     {
+      "line": 1,
       "do": "setValue",
-      "target": "g_final_output",
+      "target": "g_result",
       "args": [
        "0",
        "10"
       ]
      },
      {
-      "line": 2,
+      "line": 1,
       "do": "unhighlight",
-      "target": "g_final_sources",
+      "target": "g_array",
       "args": [
-       "0,0",
-       "1,0"
+       "0"
       ]
      },
      {
-      "line": 2,
-      "do": "move",
-      "target": "p_left",
-      "args": [
-       "0,1"
-      ]
-     },
-     {
-      "line": 2,
+      "line": 1,
       "do": "highlight",
-      "target": "g_final_sources",
+      "target": "g_array",
       "args": [
-       "0,1",
-       "1,0"
+       "1"
       ]
      },
      {
-      "line": 3,
+      "line": 2,
       "do": "setValue",
-      "target": "g_final_output",
+      "target": "g_result",
       "args": [
        "1",
        "13"
       ]
      },
      {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_array",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_array",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setValue",
+      "target": "g_result",
+      "args": [
+       "2",
+       "22"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setValue",
+      "target": "g_result",
+      "args": [
+       "3",
+       "24"
+      ]
+     },
+     {
       "line": 3,
       "do": "unhighlight",
-      "target": "g_final_sources",
+      "target": "g_array",
       "args": [
-       "0,1",
-       "1,0"
-      ]
-     },
-     {
-      "line": 3,
-      "do": "move",
-      "target": "p_right",
-      "args": [
-       "1,1"
-      ]
-     },
-     {
-      "line": 3,
-      "do": "highlight",
-      "target": "g_final_sources",
-      "args": [
-       "0,1",
-       "1,1"
+       "1",
+       "5"
       ]
      }
     ],
     "sourcePages": [
+     16,
      23
     ]
    },
    {
     "id": "s6",
-    "clear": true,
+    "clear": false,
     "lines": [
-     "같은 방식으로 끝까지 합치면 전체가 정렬돼요.",
-     "분할은 아래로, 합병은 되돌아오며 진행돼요.",
-     "재귀의 핵심은 종료 조건과 합병 순서예요."
+     "나머지도 합치면 전체가 오름차순이 돼요.",
+     "재귀는 낱개에서 멈추고, 합병하며 돌아와요.",
+     "각 호출에서 정렬을 완성하는 건 합병이에요."
     ],
     "speech": [
      "",
      "",
      ""
     ],
-    "texts": [
-     {
-      "id": "t_summary",
-      "slot": "top",
-      "hidden": false,
-      "style": "title",
-      "content": "재귀에서 돌아오는 길"
-     }
-    ],
+    "texts": [],
     "slides": [],
     "diagrams": [
      {
@@ -754,65 +659,79 @@
       "layout": "column",
       "nodes": [
        {
-        "id": "n_summary_divide",
-        "label": "작은 구간으로 분할",
+        "id": "n_divide",
+        "label": "중간에서 분할",
         "shape": "box"
        },
        {
-        "id": "n_summary_stop",
-        "label": "하나 이하에서 반환",
+        "id": "n_stop",
+        "label": "낱개에서 종료",
         "shape": "box"
        },
        {
-        "id": "n_summary_merge",
-        "label": "돌아오며 합병",
+        "id": "n_merge",
+        "label": "복귀하며 합병",
         "shape": "box"
        }
       ],
       "edges": [
        {
-        "id": "e_summary_first",
-        "from": "n_summary_divide",
-        "to": "n_summary_stop"
+        "id": "e_divide_stop",
+        "from": "n_divide",
+        "to": "n_stop"
        },
        {
-        "id": "e_summary_second",
-        "from": "n_summary_stop",
-        "to": "n_summary_merge"
+        "id": "e_stop_merge",
+        "from": "n_stop",
+        "to": "n_merge"
        }
       ]
      }
     ],
-    "grids": [
-     {
-      "id": "g_sorted_result",
-      "slot": "middle",
-      "hidden": false,
-      "cells": [
-       [
-        "10",
-        "13",
-        "22",
-        "24",
-        "25",
-        "30",
-        "35",
-        "37"
-       ]
-      ],
-      "indexLabels": false,
-      "pointers": []
-     }
-    ],
+    "grids": [],
     "codes": [],
     "actions": [
      {
       "line": 0,
-      "do": "highlight",
-      "target": "g_sorted_result",
+      "do": "setValue",
+      "target": "g_result",
       "args": [
-       "0-7"
+       "4",
+       "25"
       ]
+     },
+     {
+      "line": 0,
+      "do": "setValue",
+      "target": "g_result",
+      "args": [
+       "5",
+       "30"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "setValue",
+      "target": "g_result",
+      "args": [
+       "6",
+       "35"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "setValue",
+      "target": "g_result",
+      "args": [
+       "7",
+       "37"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "g_array",
+      "args": []
      },
      {
       "line": 1,
@@ -823,13 +742,7 @@
      {
       "line": 2,
       "do": "highlight",
-      "target": "n_summary_stop",
-      "args": []
-     },
-     {
-      "line": 2,
-      "do": "highlight",
-      "target": "n_summary_merge",
+      "target": "n_merge",
       "args": []
      }
     ],
@@ -845,170 +758,170 @@
   {
    "sceneId": "s1",
    "lineIndex": 0,
-   "text": "합병 정렬은 나눈 구간을 정렬하고 다시 합쳐요.",
+   "text": "합병 정렬은 나눈 뒤, 정렬된 구간을 합쳐요.",
    "startSec": 0.0,
-   "endSec": 4.3
+   "endSec": 4.4
   },
   {
    "sceneId": "s1",
    "lineIndex": 1,
-   "text": "시작 인덱스가 끝보다 작을 때만 안으로 들어가요.",
-   "startSec": 4.6,
-   "endSec": 8.55
+   "text": "입력 구간은 p부터 q까지예요.",
+   "startSec": 4.7,
+   "endSec": 8.75
   },
   {
    "sceneId": "s1",
    "lineIndex": 2,
-   "text": "중간 인덱스는 양 끝의 평균을 내림해서 구해요.",
-   "startSec": 8.85,
-   "endSec": 13.45
+   "text": "p가 q보다 작을 때만 아래 작업을 해요.",
+   "startSec": 9.05,
+   "endSec": 12.9
   },
   {
    "sceneId": "s1",
    "lineIndex": 3,
-   "text": "앞부분을 재귀 정렬한 뒤, 뒷부분도 정렬해요.",
-   "startSec": 13.75,
-   "endSec": 18.85
+   "text": "p가 q 이상이면 원소가 1개 이하여서 돌아가요.",
+   "startSec": 13.2,
+   "endSec": 18.1
   },
   {
    "sceneId": "s1",
    "lineIndex": 4,
-   "text": "양쪽 호출이 끝나야 마지막 합병을 실행해요.",
-   "startSec": 19.15,
-   "endSec": 23.85
+   "text": "이제 강의의 8개 원소로 재귀를 따라가요.",
+   "startSec": 18.4,
+   "endSec": 22.75
   },
   {
    "sceneId": "s2",
    "lineIndex": 0,
-   "text": "강의의 8개 원소로 실제 흐름을 따라가 봐요.",
-   "startSec": 24.45,
-   "endSec": 28.6
+   "text": "먼저 양 끝 인덱스의 평균을 내림해요.",
+   "startSec": 23.35,
+   "endSec": 27.15
   },
   {
    "sceneId": "s2",
    "lineIndex": 1,
-   "text": "중간에서 나누면 원소가 4개인 두 구간이에요.",
-   "startSec": 28.9,
-   "endSec": 32.55
+   "text": "인덱스가 0부터 7이면 중간 인덱스는 3이에요.",
+   "startSec": 27.45,
+   "endSec": 32.3
   },
   {
    "sceneId": "s2",
    "lineIndex": 2,
-   "text": "먼저 왼쪽 구간을 원소 2개씩 다시 나눠요.",
-   "startSec": 32.85,
-   "endSec": 37.45
+   "text": "앞쪽은 p부터 중간까지 먼저 재귀 정렬해요.",
+   "startSec": 32.6,
+   "endSec": 36.95
   },
   {
    "sceneId": "s2",
    "lineIndex": 3,
-   "text": "그중 37과 10을 각각 낱개로 나눠요.",
-   "startSec": 37.75,
-   "endSec": 41.9
+   "text": "앞쪽도 반씩 나누면 결국 낱개가 돼요.",
+   "startSec": 37.25,
+   "endSec": 41.25
   },
   {
    "sceneId": "s3",
    "lineIndex": 0,
-   "text": "원소가 하나면 이미 정렬돼 있어서 바로 돌아가요.",
-   "startSec": 42.5,
-   "endSec": 46.6
+   "text": "낱개는 이미 정렬돼 있으니 재귀가 멈춰요.",
+   "startSec": 41.85,
+   "endSec": 45.55
   },
   {
    "sceneId": "s3",
    "lineIndex": 1,
-   "text": "빈 구간도 시작이 끝보다 뒤라서 바로 돌아가요.",
-   "startSec": 46.9,
-   "endSec": 51.35
+   "text": "처음 돌아오면 37과 10을 비교해요.",
+   "startSec": 45.85,
+   "endSec": 49.9
   },
   {
    "sceneId": "s3",
    "lineIndex": 2,
-   "text": "돌아온 두 구간의 37과 10을 비교해요.",
-   "startSec": 51.65,
-   "endSec": 56.95
+   "text": "작은 10이 앞에 오도록 두 칸을 바꿔요.",
+   "startSec": 50.2,
+   "endSec": 54.05
   },
   {
    "sceneId": "s3",
    "lineIndex": 3,
-   "text": "10이 먼저인 두 원소 구간으로 합병해요.",
-   "startSec": 57.25,
-   "endSec": 61.15
+   "text": "이제 10, 37로 정렬된 첫 구간이 됐어요.",
+   "startSec": 54.35,
+   "endSec": 58.3
   },
   {
    "sceneId": "s4",
    "lineIndex": 0,
-   "text": "22와 30도 합병하면 왼쪽의 두 쌍이 준비돼요.",
-   "startSec": 61.75,
-   "endSec": 66.3
+   "text": "다음 두 낱개는 22와 30으로 합쳐져요.",
+   "startSec": 58.9,
+   "endSec": 63.4
   },
   {
    "sceneId": "s4",
    "lineIndex": 1,
-   "text": "두 쌍을 합치면 10, 22, 30, 37이에요.",
-   "startSec": 66.6,
-   "endSec": 71.7
+   "text": "두 구간을 합치면 왼쪽 4개가 정렬돼요.",
+   "startSec": 63.7,
+   "endSec": 67.8
   },
   {
    "sceneId": "s4",
    "lineIndex": 2,
-   "text": "오른쪽도 재귀 호출과 합병을 똑같이 반복해요.",
-   "startSec": 72.0,
-   "endSec": 76.2
+   "text": "이어서 중간 다음부터 q까지 재귀 정렬해요.",
+   "startSec": 68.1,
+   "endSec": 72.6
   },
   {
    "sceneId": "s4",
    "lineIndex": 3,
-   "text": "오른쪽 결과는 13, 24, 25, 35예요.",
-   "startSec": 76.5,
-   "endSec": 81.2
+   "text": "같은 방식으로 오른쪽도 정렬해요.",
+   "startSec": 72.9,
+   "endSec": 76.15
   },
   {
    "sceneId": "s5",
    "lineIndex": 0,
-   "text": "마지막에는 정렬된 네 원소 구간끼리 합병해요.",
-   "startSec": 81.8,
-   "endSec": 86.55
+   "text": "이제 정렬된 두 구간의 맨 앞을 비교해요.",
+   "startSec": 76.75,
+   "endSec": 80.6
   },
   {
    "sceneId": "s5",
    "lineIndex": 1,
-   "text": "양쪽 맨 앞의 10과 13을 비교해요.",
-   "startSec": 86.85,
-   "endSec": 90.1
+   "text": "10을 쓰고, 다음은 22와 13을 비교해요.",
+   "startSec": 80.9,
+   "endSec": 85.7
   },
   {
    "sceneId": "s5",
    "lineIndex": 2,
-   "text": "10을 먼저 쓰고, 다음은 22와 13을 비교해요.",
-   "startSec": 90.4,
-   "endSec": 95.15
-  },
-  {
-   "sceneId": "s5",
-   "lineIndex": 3,
    "text": "13을 쓰고, 다음은 22와 24를 비교해요.",
-   "startSec": 95.45,
-   "endSec": 100.25
+   "startSec": 86.0,
+   "endSec": 90.55
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "이어서 22와 24를 차례로 써요.",
+   "startSec": 90.85,
+   "endSec": 94.5
   },
   {
    "sceneId": "s6",
    "lineIndex": 0,
-   "text": "같은 방식으로 끝까지 합치면 전체가 정렬돼요.",
-   "startSec": 100.85,
-   "endSec": 105.7
+   "text": "나머지도 합치면 전체가 오름차순이 돼요.",
+   "startSec": 95.1,
+   "endSec": 99.75
   },
   {
    "sceneId": "s6",
    "lineIndex": 1,
-   "text": "분할은 아래로, 합병은 되돌아오며 진행돼요.",
-   "startSec": 106.0,
-   "endSec": 110.1
+   "text": "재귀는 낱개에서 멈추고, 합병하며 돌아와요.",
+   "startSec": 100.05,
+   "endSec": 104.2
   },
   {
    "sceneId": "s6",
    "lineIndex": 2,
-   "text": "재귀의 핵심은 종료 조건과 합병 순서예요.",
-   "startSec": 110.4,
-   "endSec": 115.1
+   "text": "각 호출에서 정렬을 완성하는 건 합병이에요.",
+   "startSec": 104.5,
+   "endSec": 108.45
   }
  ]
 }
