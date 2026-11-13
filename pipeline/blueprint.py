@@ -21,7 +21,7 @@ from pathlib import Path
 
 from pipeline import costlog
 from pipeline.errors import PipelineError, raise_if_no_credit
-from pipeline.validate import LIMITS, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_NEAR, SUPPORTED_SLOTS, screen_text_errors, validate_blueprint
+from pipeline.validate import LIMITS, SUPPORTED_DIVIDE, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_NEAR, SUPPORTED_SLOTS, screen_text_errors, validate_blueprint
 
 ROOT = Path(__file__).resolve().parents[1]
 # 수식 항 강조 규칙(D-46). 검사기의 SUPPORTED_FORMULA_TERMS가 True일 때만 프롬프트에 넣는다.
@@ -46,6 +46,16 @@ NEAR_RULE = {
            "To move a text to another owner, use `attach` (args [owner id, side] or [owner id, side, cell]); the text moves "
            "on screen, e.g. a formula shown in the bottom slot moves under the cell it belongs to once explained "
            "(`P(X=1)=p` under the success cell). place sends it back to a slot."),
+}
+# 격자 구분선 규칙(P-AI-13). 검사기의 SUPPORTED_DIVIDE가 True일 때만 넣는다.
+DIVIDE_RULE = {
+    "ko": ("\n- **격자 안의 묶음은 구분선으로 나눈다(divide).** 두 배열·입력과 결과처럼 줄이 다른 뜻이면 `divide` args [\"row:k\"](k번째 줄 아래에 가로선), "
+           "한 배열을 반으로 나누면 [\"col:k\"](k번째 칸 오른쪽에 세로선). \"반으로 나눠요\"처럼 나누는 순간을 말하는 문장에 붙여 선이 그때 생기게 한다. "
+           "합쳐지면 `undivide`로 지운다. 한 격자에 선은 3개 이하."),
+    "en": ("\n- **Separate groups inside a grid with dividers (divide).** When rows mean different things (two arrays, input vs result), use `divide` "
+           "args [\"row:k\"] (horizontal line below row k); when splitting one array in half, use [\"col:k\"] (vertical line right of column k). "
+           "Attach it to the sentence that says the split (\"반으로 나눠요\") so the line appears then. Remove it with `undivide` once merged. "
+           "At most 3 lines per grid."),
 }
 TERMS_RULE = {
     "ko": ("\n- 수식의 한 부분을 설명할 때는 content 안에서 그 부분을 `\\term{항id}{LaTeX}`로 감싸고, 설명하는 문장에서 "
@@ -142,7 +152,7 @@ def _fill(prompt_file: Path, limits: str, lang: str = "ko") -> str:
     example = json.dumps(json.loads(EXAMPLE_FILE.read_text(encoding="utf-8")), ensure_ascii=False, separators=(",", ":"))
     return (prompt_file.read_text(encoding="utf-8")
             .replace("<<TERMS>>", TERMS_RULE[lang] if SUPPORTED_FORMULA_TERMS else "")
-            .replace("<<NEAR>>", NEAR_RULE[lang] if SUPPORTED_NEAR else "")
+            .replace("<<NEAR>>", (NEAR_RULE[lang] if SUPPORTED_NEAR else "") + (DIVIDE_RULE[lang] if SUPPORTED_DIVIDE else ""))
             .replace("<<LAYOUTS>>", ", ".join(SUPPORTED_LAYOUTS))
             .replace("<<SLOTS>>", ", ".join(SUPPORTED_SLOTS))
             .replace("<<LIMITS>>", limits)
