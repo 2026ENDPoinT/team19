@@ -202,6 +202,50 @@ class ErrorTests(unittest.TestCase):
         self.assertEqual(c, before)
 
 
+class TermTests(unittest.TestCase):
+    """수식 항 강조 \\term{id}{LaTeX} (D-46)."""
+
+    FORMULA = r"$Q=\term{p}{\sum_{s'}P}\big[\term{r}{R^a_{ss'}}+\term{g}{\gamma\frac{\term{n}{a}}{b}}\big]$"
+
+    def clip(self, content=FORMULA, args=("r",), set_text=None):
+        c = base_clip()
+        s2 = c["scenes"][1]
+        s2["texts"][0]["content"] = content
+        acts = [{"line": 0, "do": "highlight", "target": "t2", "args": list(args)}]
+        if set_text:
+            acts = [{"line": 0, "do": "setText", "target": "t2", "args": [set_text]},
+                    {"line": 1, "do": "highlight", "target": "t2", "args": list(args)}]
+        s2["actions"] = [a for a in s2["actions"] if a["target"] != "t2"] + acts
+        s2["actions"].sort(key=lambda a: a["line"])
+        return c
+
+    def errs(self, c, on=True):
+        return validate_blueprint(c, 57, formula_terms=on)
+
+    def test_good_terms(self):
+        self.assertEqual(self.errs(self.clip(args=("r", "g"))), [])
+        self.assertEqual(self.errs(self.clip(args=("n",))), [])     # 분수 안의 항
+        self.assertEqual(self.errs(self.clip(args=())), [])         # args 없으면 수식 전체
+
+    def test_unknown_term_and_set_text(self):
+        self.assertTrue(any("항 x가 없음" in e for e in self.errs(self.clip(args=("x",)))))
+        # setText 뒤에는 새 내용의 항만 쓸 수 있다
+        new = r"$\term{r}{R}+1$"
+        self.assertEqual(self.errs(self.clip(set_text=new, args=("r",))), [])
+        self.assertTrue(self.errs(self.clip(set_text=new, args=("g",))))
+
+    def test_bad_shapes(self):
+        self.assertTrue(any("중복" in e for e in self.errs(self.clip(content=r"$\term{a}{x}+\term{a}{y}$", args=("a",)))))
+        self.assertTrue(any("모양" in e for e in self.errs(self.clip(content=r"$\term{a}{x+1$", args=()))))
+        self.assertTrue(any("소문자" in e for e in self.errs(self.clip(content=r"$\term{A}{x}$", args=()))))
+
+    def test_off_until_fe_ready(self):
+        self.assertTrue(any("지원하지 않음" in e for e in self.errs(self.clip(), on=False)))
+        c = base_clip()
+        c["scenes"][0]["texts"][0]["content"] = r"\term{a}{x}"
+        self.assertTrue(any("formula에만" in e for e in self.errs(c)))
+
+
 if __name__ == "__main__":
     unittest.main()
 

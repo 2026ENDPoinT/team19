@@ -21,9 +21,23 @@ from pathlib import Path
 
 from pipeline import costlog
 from pipeline.errors import PipelineError
-from pipeline.validate import LIMITS, SUPPORTED_LAYOUTS, SUPPORTED_SLOTS, validate_blueprint
+from pipeline.validate import LIMITS, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_SLOTS, validate_blueprint
 
 ROOT = Path(__file__).resolve().parents[1]
+# 수식 항 강조 규칙(D-46). 검사기의 SUPPORTED_FORMULA_TERMS가 True일 때만 프롬프트에 넣는다.
+TERMS_RULE = {
+    "ko": ("\n- 수식의 한 부분을 설명할 때는 content 안에서 그 부분을 `\\term{항id}{LaTeX}`로 감싸고, 설명하는 문장에서 "
+           "`highlight`의 args에 항id를 넣는다(예: target 수식id, args [\"r\"]). 설명이 끝나면 같은 args로 unhighlight한다. "
+           "비교하는 항들은 한 highlight에 같이 넣는다. args 없는 highlight는 수식 전체 강조다. 항id는 영문 소문자·숫자·_이고 "
+           "한 수식 안에서 겹치지 않는다. 같은 기호가 여러 번 나오면 설명할 자리만 감싼다. setText로 식을 바꾸면 새 내용에도 "
+           "필요한 \\term을 다시 쓴다. \\term은 formula의 content와 setText에만 쓰고 lines와 speech에는 쓰지 않는다."),
+    "en": ("\n- To explain one part of a formula, wrap that part inside content as `\\term{termId}{LaTeX}` and, in the sentence "
+           "that explains it, put the term id in `highlight` args (e.g. target formula id, args [\"r\"]). Unhighlight with the same "
+           "args when done. Put terms being compared in one highlight. highlight without args highlights the whole formula. "
+           "Term ids are lowercase letters, digits, and _, unique within one formula. If a symbol appears several times, wrap only "
+           "the occurrence you explain. After setText, write the needed \\term again in the new content. Use \\term only in "
+           "formula content and setText, never in lines or speech."),
+}
 PROMPT_FILE = Path(__file__).with_name("prompts") / "blueprint_system.md"
 # parts-test를 바탕으로 시점 규칙에 맞게 고친 프롬프트 전용 예시. parts-test는 FE 테스트가 쓰므로 따로 둔다.
 EXAMPLE_FILE = Path(__file__).with_name("prompts") / "blueprint_example.json"
@@ -82,7 +96,7 @@ def build_system_prompt(lang: str = "ko") -> str:
             f"- codes: {LIMITS['code_lines']} lines, {LIMITS['code_line_chars']} chars per line",
             f"- slides: mark label {LIMITS['mark_label']} chars, at most {LIMITS['marks_visible']} marks visible at once",
             f"- scene: {LIMITS['scene_lines']} sentences, {LIMITS['actions_per_line']} actions per sentence",
-        ]))
+        ]), "en")
     limits = "\n".join([
         f"- texts: title {LIMITS['text']['title']}자, body {LIMITS['text']['body']}자, keyword {LIMITS['text']['keyword']}자, formula 한 줄",
         f"- diagrams: 노드 {LIMITS['diagram_nodes']}개(tree는 {LIMITS['tree_nodes']}개, 깊이 {LIMITS['tree_levels']}단), 선 {LIMITS['diagram_edges']}개, 노드 라벨 {LIMITS['node_label']}자",
@@ -95,9 +109,10 @@ def build_system_prompt(lang: str = "ko") -> str:
     return _fill(PROMPT_FILE, limits)
 
 
-def _fill(prompt_file: Path, limits: str) -> str:
+def _fill(prompt_file: Path, limits: str, lang: str = "ko") -> str:
     example = json.dumps(json.loads(EXAMPLE_FILE.read_text(encoding="utf-8")), ensure_ascii=False, separators=(",", ":"))
     return (prompt_file.read_text(encoding="utf-8")
+            .replace("<<TERMS>>", TERMS_RULE[lang] if SUPPORTED_FORMULA_TERMS else "")
             .replace("<<LAYOUTS>>", ", ".join(SUPPORTED_LAYOUTS))
             .replace("<<SLOTS>>", ", ".join(SUPPORTED_SLOTS))
             .replace("<<LIMITS>>", limits)
