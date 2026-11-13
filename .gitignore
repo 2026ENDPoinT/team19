@@ -24,3 +24,6 @@ samples/**/lines/
 coordination/lecture-submissions/**/*.pdf
 coordination/lecture-submissions/**/*.ppt
 coordination/lecture-submissions/**/*.pptx
+
+# 실험 코드·기록은 git에 올리지 않는다(이전 것은 archive/experiments 브랜치)
+sandbox/

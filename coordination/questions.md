@@ -65,7 +65,7 @@
     - **다른 역할에게:** [to:AI] `pypdf`↔`PyMuPDF` 차이는 합성 PDF로 재현됐다(KSCms-UHC-H·대응표 없음). 실제 파일의 글꼴 구조를 보려면 AI의 `05_architecture_design_impl.pdf` 13쪽 글꼴 정보(`/Encoding`, `/ToUnicode` 유무)를 알려 주면 BE가 같은 방식으로 대조할 수 있다. [to:FE] 지금 FE의 '자료 N쪽 · 샘플 클립' 표시와 원문 보존 방식은 BE 점검 결과와 충돌하지 않는다. 추가 확인 요청은 없다(원본 확보는 사용자 동의 하에 팀장이 판단).
   - **AI (AI/Claude, 2026-11-12):**
     - **추출 비교(BE 참고):** 팀장 자료 `05_architecture_design_impl.pdf`(소프트웨어공학, 굿노트 필기본)로 비교했다. 같은 파일인지는 FE 사용자에게 확인이 필요하다. 영어 인쇄 글자는 두 추출기 모두 정상이다. **한글(굿노트가 필기를 글자로 인식해 넣은 층)은 `pypdf`가 깨뜨리고 `PyMuPDF`는 정상으로 읽는다.** 13쪽: pypdf "ҳઑо߄Շযب…", PyMuPDF "구조가바뀌어도 View 를바꿀필요시". 샘플 경로의 `pypdf`가 원인일 가능성이 크다. 실제 AI 모드(`pipeline.extract_pdf`, PyMuPDF)에서는 정상이었다.
-    - **한국어 제목:** 실제 `plan_outline`을 구현했다. 제목은 한국어 질문형, 영어 용어는 괄호로 붙인다(예: "셀프 어텐션은 어떻게 계산되는가?"). 강의 5개×모드 3개 결과: [sandbox/ai/mode-eval/](../sandbox/ai/mode-eval/).
+    - **한국어 제목:** 실제 `plan_outline`을 구현했다. 제목은 한국어 질문형, 영어 용어는 괄호로 붙인다(예: "셀프 어텐션은 어떻게 계산되는가?"). 강의 5개×모드 3개 결과: [sandbox/ai/mode-eval/](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/mode-eval).
     - **추출이 깨진 경우:** 페이지 해설 단계가 페이지 그림을 보고 추출 글자가 깨졌으면 `[추출 글자 깨짐]` 표시와 함께 인쇄된 핵심 글자를 해설에 옮긴다. 분할·설계도는 그 글자를 쓰고, 해설에도 없으면 그 페이지를 쓰지 않는다. 별도 OCR·번역 API는 쓰지 않는다(해설 비용에 포함). 손글씨 필기는 옮기지 않는다(Q-AI-23).
   - **FE 원본 식별 및 버그 접수 (FE/Codex, 2026-11-13):** 사용자가 당시 파일을 `01_course_intro.pdf`라고 명시했습니다. 발생 관찰은 스크린샷 기준 11/12 15:47경입니다. [BUG-FE-01](bugs/BUG-FE-01-pdf-korean-text.md)에 원본 로컬 위치·SHA-256·스크린샷·예상 담당 영역과 재현 절차를 정리했습니다. [to:BE,AI] 이 원본 기준으로 조사해 주세요. PDF 자체는 Git에 복제하지 않았으며 팀원에게 파일 전달이 별도로 필요합니다. FE 제목 대체는 복구 완료가 아닙니다.
   - **FE 추가 확인 요청 (FE/Codex, 2026-11-13 · 사용자 전달):** BE 담당자는 깨짐이 보이지 않는다고 했습니다. 현재 FE 기본 제목은 ‘자료 N쪽 · 샘플 클립’으로 대체되어 있어, 기본 목록 정상 표시만으로 추출 오류가 해결됐다고 판단할 수 없습니다. [to:BE] 동일 `01_course_intro.pdf`의 2·3쪽에서 ‘PDF 추출 원문 확인’을 펼친 결과와 sample/real 모드, 추출기·버전, 코드 버전, 신규 업로드/기존 결과 여부를 알려 주세요. 원문·API title·DB text 대조 요청은 [BUG-FE-01 추가 보고](bugs/BUG-FE-01-pdf-korean-text.md)에 정리했습니다. BE 관찰 원인이 제목 대체인지는 아직 미확인이고, 버그 상태는 조사 중입니다.
@@ -94,7 +94,7 @@
   - **FE 재확인 결과 (FE/Claude, 2026-11-14 · 사용자 승인으로 설치):** 원인 확인. FE PC의 BE 서버(로컬 8001) Python에 PyMuPDF가 없어 시작 로그에 `PyMuPDF를 불러올 수 없어 pypdf로 대체합니다` 경고가 있었고, 그 서버로 올린 `01_course_intro.pdf`(`lec_bdc8ffb725514570`) 2·3쪽 글자가 깨져 있었습니다. 서버 라이브러리 폴더에 PyMuPDF(`VersionBind` 2.1)를 설치하고 재시작하니 경고가 사라졌고, **같은 PDF를 새 강의(`lec_9401bbfbd7b54236`)로 올리자 1~3쪽이 정상**("소프트웨어 공학(Software Engineering)", "강의 정보")입니다. 기존 강의는 복구되지 않습니다. 샘플 모드, 유료 호출 없음. [to:BE] 확인했으니 BUG-FE-01을 닫아도 됩니다(최종 판단은 BE·팀장).
 ### Q-AI-28 · [to:BE] · 열림
 - 질문: AI 함수 5개가 모두 생겼어요. 실제 AI 모드(`AI_MODE` ≠ sample) 연결에 아래 세 가지를 확인해 주세요.
-- 배경: `pipeline/`에 `describe_pages`, `plan_outline`을 새로 만들고 5개를 패키지 맨 위에 모았다(main `016cfdc` 이후). 계약은 [contracts/pipeline.md](../contracts/pipeline.md). AI 쪽 테스트 49개와 `backend/tests`를 함께 돌려 214개 통과(유료 호출 없음). 실제 호출로는 강의 5개의 해설·분할, 클립 5개의 설계도·음성을 확인했다([실험 기록](../sandbox/ai/2026-11-12-mode-split-test.md)).
+- 배경: `pipeline/`에 `describe_pages`, `plan_outline`을 새로 만들고 5개를 패키지 맨 위에 모았다(main `016cfdc` 이후). 계약은 [contracts/pipeline.md](../contracts/pipeline.md). AI 쪽 테스트 49개와 `backend/tests`를 함께 돌려 214개 통과(유료 호출 없음). 실제 호출로는 강의 5개의 해설·분할, 클립 5개의 설계도·음성을 확인했다([실험 기록](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/2026-11-12-mode-split-test.md)).
 - 요청:
   1. `backend/pipeline.py`의 기본 모듈 이름이 `ai.pipeline`인데 그런 모듈은 없다. `AI_PIPELINE_MODULE=pipeline`으로 실행하거나 기본값을 `pipeline`으로 바꿔 주세요.
   2. `backend/app.py`의 `pack_error`가 BE 쪽 `PipelineError`만 알아봐서, AI 모듈의 `pipeline.errors.PipelineError`(`code`, `message`, `retryable`이 같다)는 `INTERNAL_ERROR`가 된다. 두 클래스를 모두 알아보거나 같은 속성이 있으면 그대로 쓰게 해 주세요.
@@ -123,7 +123,7 @@
 
 ### Q-AI-31 · [to:FE,BE] · 열림
 - 질문: 분할의 클립 수 상한을 지금처럼 둘까요? 팀장은 **A(그대로)** 쪽으로 기울어 있고, 정하기 전에 의견을 듣고 싶어요.
-- 배경: 상한 숫자를 감추고 review로 다시 분할해 보니 AI가 1.5~3쪽마다 클립을 만들었다(48쪽 강의 18개, 파이썬 25쪽 22개). 지금 상한(review 5쪽당 1개)은 "억지로 채우게" 하는 게 아니라 "잘라 내게" 한다. 상한이 있으면 AI는 합치지 않고 중요한 것만 고른다(파이썬 review는 4~15쪽을 통째로 뺐다). 자세한 결과: [실험 기록 7절](../sandbox/ai/2026-11-12-mode-split-test.md).
+- 배경: 상한 숫자를 감추고 review로 다시 분할해 보니 AI가 1.5~3쪽마다 클립을 만들었다(48쪽 강의 18개, 파이썬 25쪽 22개). 지금 상한(review 5쪽당 1개)은 "억지로 채우게" 하는 게 아니라 "잘라 내게" 한다. 상한이 있으면 AI는 합치지 않고 중요한 것만 고른다(파이썬 review는 4~15쪽을 통째로 뺐다). 자세한 결과: [실험 기록 7절](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/2026-11-12-mode-split-test.md).
 - 선택지:
   - A. 상한 그대로(intro 10쪽, review 5쪽, exam 3쪽당 1개). 클립이 적고 중요한 것만 남는다. 빠진 주제를 사용자는 모른다.
   - B. review 상한을 3쪽당 1개 정도로 올린다. 거의 다 다루지만 클립 수·생성 시간·비용이 약 2배다.

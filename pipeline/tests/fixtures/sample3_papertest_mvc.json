@@ -1,0 +1,102 @@
+{
+  "version": 0,
+  "title": "MVC 패턴: 클릭 한 번이 화면에 반영되기까지",
+  "theme": "dark",
+  "scenes": [
+    {
+      "id": "s1",
+      "clear": true,
+      "lines": [
+        "MVC는 프로그램을 모델, 뷰, 컨트롤러 세 부분으로 나누는 설계 방식이에요.",
+        "모델은 데이터와 상태를 가지고 있어요.",
+        "뷰는 그 상태를 화면에 보여줘요.",
+        "컨트롤러는 사용자의 입력을 받아서 모델에 전달해요."
+      ],
+      "texts": [
+        { "id": "t_title", "slot": "top", "style": "title", "content": "MVC 패턴", "hidden": false }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d_mvc", "slot": "middle", "layout": "cycle", "hidden": false,
+          "nodes": [
+            { "id": "user", "label": "사용자", "shape": "circle" },
+            { "id": "ctrl", "label": "Controller", "shape": "box" },
+            { "id": "view", "label": "View", "shape": "box" },
+            { "id": "model", "label": "Model", "shape": "box" }
+          ],
+          "edges": [
+            { "id": "e_input", "from": "user", "to": "ctrl", "label": "입력" },
+            { "id": "e_update", "from": "ctrl", "to": "model", "label": "상태 변경" },
+            { "id": "e_notify", "from": "model", "to": "view", "label": "변경 알림" },
+            { "id": "e_show", "from": "view", "to": "user", "label": "화면" }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        { "line": 0, "do": "hide", "target": "e_input", "args": [] },
+        { "line": 0, "do": "hide", "target": "e_update", "args": [] },
+        { "line": 0, "do": "hide", "target": "e_notify", "args": [] },
+        { "line": 0, "do": "hide", "target": "e_show", "args": [] },
+        { "line": 1, "do": "highlight", "target": "model", "args": [] },
+        { "line": 2, "do": "unhighlight", "target": "model", "args": [] },
+        { "line": 2, "do": "highlight", "target": "view", "args": [] },
+        { "line": 3, "do": "unhighlight", "target": "view", "args": [] },
+        { "line": 3, "do": "highlight", "target": "ctrl", "args": [] }
+      ],
+      "sourcePages": [13]
+    },
+    {
+      "id": "s2",
+      "clear": false,
+      "lines": [
+        "사용자가 할 일 추가 버튼을 눌렀다고 해 볼게요.",
+        "컨트롤러가 이 입력을 받아 모델의 상태를 바꿔요.",
+        "모델은 상태가 바뀌었다고 뷰에게 알려요.",
+        "뷰는 새 상태를 읽어서 화면을 다시 그려요.",
+        "컨트롤러는 화면을 직접 고치지 않아요. 그래서 뷰를 바꿔도 나머지는 그대로 둘 수 있어요."
+      ],
+      "texts": [
+        { "id": "t_point", "slot": "bottom", "style": "keyword", "content": "화면과 데이터를 분리", "hidden": true }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        { "line": 0, "do": "unhighlight", "target": "ctrl", "args": [] },
+        { "line": 0, "do": "show", "target": "e_input", "args": [] },
+        { "line": 1, "do": "show", "target": "e_update", "args": [] },
+        { "line": 1, "do": "highlight", "target": "model", "args": [] },
+        { "line": 2, "do": "show", "target": "e_notify", "args": [] },
+        { "line": 3, "do": "show", "target": "e_show", "args": [] },
+        { "line": 3, "do": "highlight", "target": "view", "args": [] },
+        { "line": 4, "do": "show", "target": "t_point", "args": [] }
+      ],
+      "sourcePages": [13, 14]
+    },
+    {
+      "id": "s3",
+      "clear": true,
+      "lines": [
+        "강의자료의 그림에서는 이 흐름이 이렇게 그려져 있어요.",
+        "웹 애플리케이션도 같은 구조예요. 브라우저의 요청을 컨트롤러가 받아요."
+      ],
+      "texts": [],
+      "slides": [
+        { "id": "sl_13", "slot": "top", "page": 13, "box": [0, 0.2, 1, 0.8], "hidden": false },
+        { "id": "sl_14", "slot": "bottom", "page": 14, "box": [0, 0.2, 1, 0.8], "hidden": true }
+      ],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        { "line": 1, "do": "show", "target": "sl_14", "args": [] },
+        { "line": 1, "do": "focus", "target": "sl_14", "args": ["0.3,0.25,0.4,0.3"] }
+      ],
+      "sourcePages": [13, 14]
+    }
+  ]
+}

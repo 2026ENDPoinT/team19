@@ -12,8 +12,8 @@ FE는 이 형식이 있어야 플레이어를 만들고, BE는 저장과 검사 
 
 ## 근거
 
-- 팀장 강의자료 11개(약 630쪽) 조사: [sandbox/ai/2026-11-07-material-survey.md](../../sandbox/ai/2026-11-07-material-survey.md)
-- 샘플 3개와 형식 검사기: [sandbox/ai/blueprint_v0/](../../sandbox/ai/blueprint_v0/)
+- 팀장 강의자료 11개(약 630쪽) 조사: [sandbox/ai/2026-11-07-material-survey.md](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/2026-11-07-material-survey.md)
+- 샘플 3개와 형식 검사기: [sandbox/ai/blueprint_v0/](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/blueprint_v0)
 
 ## 설계 원칙
 
@@ -73,11 +73,11 @@ FE는 이 형식이 있어야 플레이어를 만들고, BE는 저장과 검사 
 
 | 샘플 | 자료 | 쓴 부품 | 확인한 것 |
 |---|---|---|---|
-| [개념 클립](../../sandbox/ai/blueprint_v0/sample1_concept_quicksort.json) | 알고리즘 31~33, 52쪽 | 텍스트, 다이어그램, 원본 조각, 격자(표), 수식 | 글만 있는 개념도 "읽어주기"가 아니게 연출할 수 있다 |
-| [과정 클립](../../sandbox/ai/blueprint_v0/sample2_process_partition.json) | 알고리즘 34, 38~39쪽 | 격자, 포인터, 코드, 수식 | AI가 중간 상태를 안 적어도, 플레이어 계산 결과가 강의자료 39쪽과 같다 |
-| [종이 테스트](../../sandbox/ai/blueprint_v0/sample3_papertest_mvc.json) | 소프트웨어공학 13~14쪽 (MVC) | 다이어그램, 원본 조각 | 알고리즘이 아닌 과목도 표현된다 |
+| [개념 클립](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/blueprint_v0/sample1_concept_quicksort.json) | 알고리즘 31~33, 52쪽 | 텍스트, 다이어그램, 원본 조각, 격자(표), 수식 | 글만 있는 개념도 "읽어주기"가 아니게 연출할 수 있다 |
+| [과정 클립](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/blueprint_v0/sample2_process_partition.json) | 알고리즘 34, 38~39쪽 | 격자, 포인터, 코드, 수식 | AI가 중간 상태를 안 적어도, 플레이어 계산 결과가 강의자료 39쪽과 같다 |
+| [종이 테스트](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/blueprint_v0/sample3_papertest_mvc.json) | 소프트웨어공학 13~14쪽 (MVC) | 다이어그램, 원본 조각 | 알고리즘이 아닌 과목도 표현된다 |
 
-- [validate.js](../../sandbox/ai/blueprint_v0/validate.js): 형식 검사기. 세 샘플 통과, 일부러 넣은 오류 4개 모두 잡음. `node validate.js 파일.json`
+- [validate.js](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/blueprint_v0/validate.js): 형식 검사기. 세 샘플 통과, 일부러 넣은 오류 4개 모두 잡음. `node validate.js 파일.json`
 - **종이 테스트로 바뀐 것:** MVC처럼 한 바퀴 도는 구조는 트리로 안 그려져서 다이어그램 배치에 `cycle`을 추가했다.
 - 크기: 샘플 하나가 약 4~5KB다.
 

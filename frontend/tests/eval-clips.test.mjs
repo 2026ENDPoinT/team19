@@ -6,7 +6,7 @@ const root = new URL('../../samples/eval/', import.meta.url)
 const originalFetch = globalThis.fetch
 const signal = new AbortController().signal
 try {
-  const folders = readdirSync(root).filter(name => existsSync(new URL(`${name}/result-terra.json`, root)))
+  const folders = readdirSync(root, { withFileTypes: true }).filter(d => d.isDirectory() && readdirSync(new URL(`${d.name}/`, root)).some(file => /^result-.+\.json$/.test(file))).map(d => d.name)
   assert.ok(folders.length >= 5) // 평가 클립은 계속 늘어난다
   // 폴더마다 모든 결과(result-<이름>.json)를 확인한다. 이름은 모델·프롬프트 비교용(sol, terra-en 등)
   const results = folders.flatMap(folder => readdirSync(new URL(`${folder}/`, root)).flatMap(file => { const m = file.match(/^result-(.+)\.json$/); return m ? [[folder, m[1]]] : [] }))

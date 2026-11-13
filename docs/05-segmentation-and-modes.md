@@ -62,5 +62,5 @@ API 값은 그대로 `intro` / `review` / `exam`이다(D-29). 정의 과정은 [
 ## 품질 확인 방법
 
 - 프롬프트와 설계도 형식에 특정 자료의 내용이나 구성(예: 특정 박스 이름)을 넣지 않는다.
-- 여러 과목으로 확인했다: 알고리즘(분할정복, 그리디), 소프트웨어공학, 트랜스포머, 강화학습, 파이썬, 경제의 이해. 평가 결과는 [samples/eval/](../samples/eval/README.md)과 [sandbox/ai/](../sandbox/ai/)의 실험 기록에 있다.
+- 여러 과목으로 확인했다: 알고리즘(분할정복, 그리디), 소프트웨어공학, 트랜스포머, 강화학습, 파이썬, 경제의 이해. 평가 결과는 [samples/eval/](../samples/eval/README.md)과 [sandbox/ai/](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai)의 실험 기록에 있다.
 - 남은 과제: 사람이 만든 "이상적인 분할" 정답지와의 비교, 확인용 자료를 따로 떼어 둔 평가는 하지 못했다.

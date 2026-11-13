@@ -78,12 +78,13 @@ npm run dev        # http://localhost:5173
 frontend/      화면과 설계도 플레이어 (FE)
 backend/       API 서버, 작업 실행, 저장 (BE)
 pipeline/      추출·해설·분할·설계도·음성, 검사기, 프롬프트 (AI)
-samples/       실제로 생성한 결과 (학습 예시가 여기서 나온다)
+samples/       실제로 생성한 결과 (학습 예시, 샘플 모드)
 contracts/     파트 사이 약속: API, 데이터 모양, AI 파이프라인
 docs/          제품, 구조, 설계도 형식, 모드, 비용, 일정
 coordination/  결정 기록, 질문, 제안서, 역할별 현황
-sandbox/       역할별 실험 코드와 기록
 ```
+
+모델 비교, 음성 실험, 평가 클립 같은 실험 코드와 기록은 [`archive/experiments` 브랜치](https://github.com/2026ENDPoinT/team19/tree/archive/experiments)에 보관했다(11/14).
 
 ## 팀
 

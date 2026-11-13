@@ -63,7 +63,7 @@ flowchart LR
 |---|---|---|
 | 문서, 샘플 | `docs/`, `coordination/`, `samples/` | main에 바로 |
 | 기능 코드 | `frontend/`(FE), `backend/`(BE), `pipeline/`(AI) | `feature/짧은-이름` 브랜치에서 만들고(FE는 `frontend` 브랜치 하나, D-37), PR 없이 각자 AI와 확인해서 main에 merge |
-| 실험 코드 | `sandbox/내역할/` | main에 바로. 다른 역할이 의존하지 않는다 |
+| 실험 코드 | `sandbox/내역할/` | 11/14부터 git에 올리지 않는다. 이전 실험은 `archive/experiments` 브랜치 |
 
 - 개발은 각자 진행한다. 다른 역할에 영향이 있는 기능은 만들기 전에 제안서로 남긴다.
 - 충돌할 지점, 궁금한 점, 쟁점은 `questions.md`나 제안서에 남긴다. 같이 정할 것이 있으면 메신저로도 알린다.

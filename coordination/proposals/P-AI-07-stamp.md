@@ -11,7 +11,7 @@
 ## 왜 필요한가
 
 - Q-FE-15(사용자 평가): 부정이 핵심인 장면에서 화면만 봐서는 "아니다"가 드러나지 않는다.
-- 지금은 형식에 이 표현이 없어 AI가 라벨에 부정을 써서 우회한다. 예: [그리디 review c1 Sol](../../samples/eval/algo-greedy-review-c1/) s3 화살표 라벨 "항상 성립?", s4는 "최적성 미보장" 그림을 따로 만들어 바꿔 끼움.
+- 지금은 형식에 이 표현이 없어 AI가 라벨에 부정을 써서 우회한다. 예: [그리디 review c1 Sol](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/samples/eval/algo-greedy-review-c1) s3 화살표 라벨 "항상 성립?", s4는 "최적성 미보장" 그림을 따로 만들어 바꿔 끼움.
 - 도장이 있으면 긍정형 라벨("항상 보장")을 보여 준 뒤 X만 찍으면 된다. 그림 하나가 줄어 화면이 단순해진다.
 
 ## 형식 (12개 → 13개 동작)
