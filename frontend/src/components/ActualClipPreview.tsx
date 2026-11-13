@@ -2,6 +2,7 @@ import { useAudioClock } from '../player/useAudioClock'
 import { samplePageUrl } from '../services/samplePages'
 import PlayerStage from '../player/PlayerStage'
 import { startAutoplay } from '../player/autoplay'
+import { currentSourcePage } from '../player/currentSourcePage'
 import { captureClipTransition } from '../player/clipTransition'
 import { handlePlayerShortcut } from '../player/keyboardShortcuts'
 import PlayerControls from '../player/PlayerControls'
@@ -9,6 +10,8 @@ import { calculatePlayerState } from '../player/state'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 // import { attachFeedScroll } from '../player/feedScroll'
 import '../player/feed.css'
+import '../player/sourcePages.css'
+import type { CSSProperties } from 'react'
 import { loadClip } from '../services/clips'
 import { evalClips, evalPageUrl, isEvalClip, loadEvalClip } from '../services/evalClips'
 import type { ClipResult } from '../services/clips'
@@ -23,6 +26,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   const { audioRef, time, restart } = useAudioClock(result ? clipId + ':' + result.resultId : 'loading')
   const [retry, setRetry] = useState(0)
   const [sourceOpen, setSourceOpen] = useState(false)
+  const [sourceRatios, setSourceRatios] = useState<Record<string, number>>({})
   const [isPlaying, setIsPlaying] = useState(false)
   const [playbackError, setPlaybackError] = useState('')
   const surfaceRef = useRef<HTMLDivElement>(null)
@@ -163,8 +167,10 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
     return isEvalClip(clipId) ? evalPageUrl(clipId, page) : samplePageUrl(clipId, page)
   }
 
+  const source = currentSourcePage(stage)
+  const sourceRatio = source ? sourceRatios[pageUrl(source.page) ?? ''] ?? 1.414 : 1.414
   return (
-    <main className="mx-auto max-w-4xl px-5 py-3">
+    <main className={`clip-preview-page mx-auto w-full px-5 py-3 ${sourceOpen ? 'max-w-[1600px]' : 'max-w-4xl'}`} style={{ '--source-page-ratio': sourceRatio } as CSSProperties}>
       <button type="button" className="rounded-lg border px-4 py-2" onClick={onBack}>← {initialClipId ? '클립 목록' : '업로드 화면'}</button>
       <h1 className="mt-3 text-xl font-bold">{initialClipId ? '업로드 자료의 샘플 클립' : '실제 클립 연결 확인'}</h1>
       {initialClipId ? <p className="mt-3 text-sm text-slate-500">샘플 모드의 PDF 발췌·무음 음성 결과예요. 실제 AI 요약·TTS 생성 결과가 아니에요.</p> : <>
@@ -206,11 +212,12 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
           {isFullscreen && feedNav}
           </div>
           {sourceOpen && (
-            <aside id="source-page-panel" className="source-page-panel" aria-label="현재 장면의 원본 페이지">
-              <h3 className="font-semibold">현재 장면의 원본</h3>
+            <aside id="source-page-panel" className="source-page-panel" aria-label="현재 표시 중인 원본 페이지">
+              <h3 className="font-semibold">{source?.representative ? '장면 대표 원본' : '현재 표시 중인 원본'}</h3>
+              {source?.representative && <p className="mt-2 text-sm text-slate-500">설명 중인 쪽이 지정되지 않아 이 장면의 첫 참고 페이지를 표시해요.</p>}
               {stageError ? <p className="mt-3 text-sm">장면을 확인할 수 없어 원본을 표시하지 못했어요.</p>
-                : !stage?.sourcePages.length ? <p className="mt-3 text-sm">이 장면에는 연결된 원본 페이지가 없어요.</p>
-                : stage.sourcePages.map((page) => <SourcePage key={`${clipId}-${page}`} page={page} imageUrl={pageUrl(page)} />)}
+                : !source ? <p className="mt-3 text-sm">이 장면에는 연결된 원본 페이지가 없어요.</p>
+                : <SourcePage key={`${clipId}-${source.page}`} page={source.page} imageUrl={pageUrl(source.page)} onAspect={(url, ratio) => setSourceRatios(previous => previous[url] === ratio ? previous : { ...previous, [url]: ratio })} />}
             </aside>
           )}
           </div>
@@ -223,14 +230,14 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
 }
 
 
-function SourcePage({ page, imageUrl }: { page: number; imageUrl?: string }) {
+function SourcePage({ page, imageUrl, onAspect }: { page: number; imageUrl?: string; onAspect: (url: string, ratio: number) => void }) {
   const [failed, setFailed] = useState(false)
   return (
-    <figure className="mt-4">
+    <figure className="source-page-figure mt-4">
       <figcaption className="mb-2 text-sm text-slate-600">원본 {page}쪽</figcaption>
       {!imageUrl || failed
         ? <p className="rounded-lg bg-slate-100 p-3 text-sm">이 페이지의 그림을 불러올 수 없어요.</p>
-        : <img src={imageUrl} alt={`현재 장면의 근거 자료 ${page}쪽 전체`} className="w-full rounded-lg border" onError={() => setFailed(true)} />}
+        : <img src={imageUrl} alt={`현재 장면의 근거 자료 ${page}쪽 전체`} className="source-page-image rounded-lg border" onLoad={(event) => { const image = event.currentTarget; if (image.naturalHeight) onAspect(imageUrl, image.naturalWidth / image.naturalHeight) }} onError={() => setFailed(true)} />}
     </figure>
   )
 }
