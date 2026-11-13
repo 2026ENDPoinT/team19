@@ -401,7 +401,7 @@ export default function App() {
                 지금 나에게 맞는 학습 모드는?
               </h1>
               <p className="mt-4 text-[15px] leading-7 text-slate-500 sm:text-base">
-                {preparation.lecture?.aiMode === 'real' ? '모드를 선택하면 강의자료의 학습 클립을 바로 만들어요.' : '선택한 모드를 샘플 서버에 전달해 클립 준비 상태를 확인해요. 샘플 결과는 실제 AI 생성이 아니에요.'}
+                모드를 선택하면 강의자료의 학습 클립을 바로 만들어요.
               </p>
             </div>
 
