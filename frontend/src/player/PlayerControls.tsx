@@ -15,6 +15,8 @@ type Props = {
   onToggleCaptions: () => void
 }
 
+const RATES = [0.5, 0.75, 1, 1.25, 1.5, 1.7, 2]
+
 function clock(seconds: number) {
   const value = Math.max(0, Math.floor(seconds))
   return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}`
@@ -27,11 +29,11 @@ function Icon({ name }: { name: 'play' | 'pause' | 'sound' | 'mute' | 'fullscree
     mute: 'M11 4 5 9H2v6h3l6 5zM16 9l6 6M22 9l-6 6',
     fullscreen: 'M9 3H3v6M15 3h6v6M3 15v6h6M15 21h6v-6',
     'exit-fullscreen': 'M3 8h5V3M16 3v5h5M21 16h-5v5M8 21v-5H3',
-    more: 'M12 5v.01M12 12v.01M12 19v.01',
+    more: 'M20.5 9A9 9 0 1 1 15 3.5M12 12l4.5-4.5',
     cc: 'M5 4h14a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zM10.5 9.5h-1.5a2.5 2.5 0 0 0 0 5h1.5M17.5 9.5h-1.5a2.5 2.5 0 0 0 0 5h1.5',
     restart: 'M12 5V1L7 6l5 5V7a7 7 0 1 1-7 7H3a9 9 0 1 0 9-9z',
   }
-  return <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill={name === 'play' || name === 'restart' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={name === 'restart' ? 0 : name === 'more' ? 4 : 2} strokeLinecap="round" strokeLinejoin="round"><path d={paths[name]} /></svg>
+  return <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill={name === 'play' || name === 'restart' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={name === 'restart' ? 0 : 2} strokeLinecap="round" strokeLinejoin="round"><path d={paths[name]} /></svg>
 }
 
 export default function PlayerControls({ audioRef, time, duration, isPlaying, isFullscreen, onTogglePlayback, onRestart, onFullscreen, captionsOn, onToggleCaptions }: Props) {
@@ -82,6 +84,8 @@ export default function PlayerControls({ audioRef, time, duration, isPlaying, is
     document.addEventListener('pointerdown', outside)
     return () => document.removeEventListener('pointerdown', outside)
   }, [menuOpen])
+  // 목록 밖 속도(브라우저 기본 조작 등)는 가장 가까운 칸으로 표시한다.
+  const rateIndex = RATES.reduce((best, value, index) => Math.abs(value - rate) < Math.abs(RATES[best] - rate) ? index : best, 0)
   function changeRate(value: number) {
     const audio = audioRef.current
     if (audio) { audio.playbackRate = value; setRate(value) }
@@ -103,14 +107,19 @@ export default function PlayerControls({ audioRef, time, duration, isPlaying, is
         </div>
         <div className="player-control-group">
           <button type="button" className={`player-icon-button${captionsOn ? '' : ' player-icon-button--off'}`} aria-label={captionsOn ? '자막 끄기' : '자막 켜기'} aria-pressed={captionsOn} onClick={onToggleCaptions}><Icon name="cc" /></button>
-          <button ref={moreRef} type="button" className="player-icon-button" aria-label="더보기" aria-expanded={menuOpen} aria-controls="player-more-options" onClick={() => setMenuOpen((open) => !open)}><Icon name="more" /></button>
+          <button ref={moreRef} type="button" className="player-icon-button" aria-label="재생 속도·더보기" aria-expanded={menuOpen} aria-controls="player-more-options" onClick={() => setMenuOpen((open) => !open)}><Icon name="more" /></button>
           <button type="button" className="player-icon-button" aria-label={isFullscreen ? '전체화면 종료' : '전체화면'} onClick={onFullscreen}><Icon name={isFullscreen ? 'exit-fullscreen' : 'fullscreen'} /></button>
         </div>
       </div>
       {menuOpen && <div id="player-more-options" className="player-more-options">
-        <fieldset><legend>재생 속도</legend><div className="player-speed-options">
-          {[0.5, 0.75, 1, 1.25, 1.5, 2].map((value) => <label key={value}><input type="radio" name="playback-rate" value={value} checked={rate === value} onChange={() => changeRate(value)} />{value}×</label>)}
-        </div></fieldset>
+        <fieldset><legend>재생 속도</legend>
+          <p className="player-speed-value" aria-live="polite">{rate.toFixed(2)}x</p>
+          <div className="player-speed-slider">
+            <button type="button" aria-label="속도 낮추기" disabled={rateIndex === 0} onClick={() => changeRate(RATES[rateIndex - 1])}>−</button>
+            <input type="range" aria-label="재생 속도" aria-valuetext={`${rate}배`} min="0" max={RATES.length - 1} step="1" value={rateIndex} onChange={(event) => changeRate(RATES[Number(event.target.value)])} />
+            <button type="button" aria-label="속도 높이기" disabled={rateIndex === RATES.length - 1} onClick={() => changeRate(RATES[rateIndex + 1])}>+</button>
+          </div>
+        </fieldset>
         <button type="button" className="player-download-pending" disabled>영상 다운로드 · 준비 중</button>
         <p>MP4 내보내기는 팀 검토 중이에요.</p>
       </div>}
