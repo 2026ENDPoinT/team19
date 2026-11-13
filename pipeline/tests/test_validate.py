@@ -303,3 +303,15 @@ class SpeechTests(unittest.TestCase):
         self.assertEqual(sent[0], "배열을 반으로 갈라요.")
         self.assertEqual(sent[1], clip["scenes"][0]["lines"][1])
         self.assertEqual(r["captions"][0]["text"], clip["scenes"][0]["lines"][0])
+
+
+def test_stamp_action():
+    import copy
+    from pipeline.validate import validate_blueprint
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가", "나"], "speech": ["", ""],
+          "texts": [{"id": "t1", "slot": "top", "style": "title", "content": "제목", "hidden": False}], "slides": [], "diagrams": [], "grids": [], "codes": [],
+          "actions": [{"line": 0, "do": "stamp", "target": "t1", "args": ["x"]}, {"line": 1, "do": "unstamp", "target": "t1", "args": []}], "sourcePages": [1]}]}
+    assert validate_blueprint(bp, 1) == []
+    bad = copy.deepcopy(bp)
+    bad["scenes"][0]["actions"][0]["args"] = ["v"]
+    assert any("stamp" in e for e in validate_blueprint(bad, 1))

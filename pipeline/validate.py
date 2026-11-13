@@ -73,6 +73,8 @@ ACTIONS = {
     "mark": {"slide"},
     "unmark": {"slide"},
     "markLine": {"code"},
+    "stamp": {"text", "node", "edge"},      # D-53, FE 구현 11/14
+    "unstamp": {"text", "node", "edge"},
 }
 
 EPS = 1e-9
@@ -532,6 +534,12 @@ class _Checker:
                 info["terms"] = self.check_text_content(args[0], info["ref"].get("style"), w)
         elif do in ("focus", "mark", "unmark"):
             self.slide_action(do, info, args, w)
+        elif do == "stamp":
+            if args not in (["x"], ["o"]):
+                self.err(w, 'stamp의 args는 ["x"] 또는 ["o"]')
+        elif do == "unstamp":
+            if args:
+                self.err(w, "unstamp는 args가 없어야 함")
         elif do == "markLine":
             if len(args) != 1 or not args[0].isdigit() or not 1 <= int(args[0]) <= info["lines"]:
                 self.err(w, f"markLine 줄 번호는 1~{info['lines']}")
