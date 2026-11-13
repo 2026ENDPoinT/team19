@@ -1,8 +1,8 @@
-// API 모드 값과 현재 화면 문구. 이름 변경은 팀 합의 후 반영한다.
+// API 모드 값은 그대로 두고 화면 이름·설명만 바꾼다(D-57, P-AI-10).
 export const learningModes = [
-  { id: 'intro', name: '처음 보기', description: '큰 흐름과 직관을 중심으로 이해해요.' },
-  { id: 'review', name: '복습', description: '개념과 예시를 하나씩 다시 살펴봐요.' },
-  { id: 'exam', name: '시험 대비', description: '세부 조건과 헷갈리는 부분까지 확인해요.' },
+  { id: 'intro', name: '입문', description: '처음 보는 사람도 한눈에, 짧고 쉽게' },
+  { id: 'review', name: '기본', description: '핵심 개념과 대표 예시' },
+  { id: 'exam', name: '심화', description: '강의 내용을 빠짐없이' },
 ] as const
 
 export type LearningMode = (typeof learningModes)[number]['id']
