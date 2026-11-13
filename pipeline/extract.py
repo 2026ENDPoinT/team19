@@ -22,6 +22,7 @@ from pipeline.errors import PipelineError
 IMAGE_LONG_SIDE = 1600   # 페이지 그림의 긴 변(px). 원본 조각을 확대(focus)해도 읽히는 크기
 EMPTY_CHARS = 10         # 공백을 뺀 글자가 이보다 적고 그림도 없으면 빈 페이지
 GAP_RATIO = 0.2          # 글자 사이 간격이 글자 크기의 이 비율을 넘으면 띄어쓰기
+MAX_PAGES = 100          # 팀장 11/14: 모은 강의 49개 중 47개가 이 안. 넘으면 해설 비용·분할 품질·시간이 커진다
 
 
 def extract_pdf(pdf_path, out_dir) -> dict:
@@ -41,6 +42,12 @@ def extract_pdf(pdf_path, out_dir) -> dict:
         doc.close()
         msg = "암호가 걸린 PDF는 처리할 수 없습니다." if doc.needs_pass else "페이지가 없는 PDF입니다."
         raise PipelineError("PDF_INVALID", msg, retryable=False)
+    if doc.page_count > MAX_PAGES:
+        n = doc.page_count
+        doc.close()
+        # shortcut: 긴 PDF는 거절만 한다. 해커톤 뒤 장·절 단위 자동 분할을 검토한다.
+        raise PipelineError("PDF_TOO_LONG", f"PDF가 {n}쪽이에요. 지금은 {MAX_PAGES}쪽까지 만들 수 있어요. 필요한 부분만 나눠서 올려 주세요.",
+                            retryable=False)
 
     out.mkdir(parents=True, exist_ok=True)
     pages = []
