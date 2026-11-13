@@ -1,0 +1,660 @@
+{
+  "version": 0,
+  "title": "합병 정렬은 왜 n log n이 걸리나?",
+  "theme": "dark",
+  "scenes": [
+    {
+      "id": "s1",
+      "clear": true,
+      "lines": [
+        "합병 정렬의 시간은 비교 횟수로 살펴봐요.",
+        "한 호출에서 중간 인덱스를 구하는 분할은 상수 시간이에요.",
+        "이건 한 호출의 비용이지, 모든 분할의 합은 아니에요.",
+        "정렬된 두 구간을 합치는 비용은 전체 구간 크기에 비례해요."
+      ],
+      "speech": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t1_title",
+          "slot": "top",
+          "style": "title",
+          "content": "분할과 합병의 비용",
+          "hidden": false
+        },
+        {
+          "id": "t1_key",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "한 호출의 분할: O(1)",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d1",
+          "slot": "middle",
+          "layout": "column",
+          "hidden": true,
+          "nodes": [
+            {
+              "id": "d1_a",
+              "label": "정렬된 구간 A",
+              "shape": "box"
+            },
+            {
+              "id": "d1_b",
+              "label": "정렬된 구간 B",
+              "shape": "box"
+            },
+            {
+              "id": "d1_merge",
+              "label": "합병",
+              "shape": "box"
+            }
+          ],
+          "edges": [
+            {
+              "id": "d1_ea",
+              "from": "d1_a",
+              "to": "d1_merge"
+            },
+            {
+              "id": "d1_eb",
+              "from": "d1_b",
+              "to": "d1_merge"
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 1,
+          "do": "show",
+          "target": "t1_key",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "t1_key",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "d1",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "setText",
+          "target": "t1_key",
+          "args": [
+            "합병: 구간 크기에 비례"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "t1_key",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "d1_merge",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        24
+      ]
+    },
+    {
+      "id": "s2",
+      "clear": true,
+      "lines": [
+        "강의의 8개 숫자가 합병되는 과정을 볼게요.",
+        "각 쌍을 합치면 정렬된 2개짜리 구간 4개가 돼요.",
+        "각 구간에서 2개씩, 모두 8개가 합병에 참여해요.",
+        "첫 합병 층의 비용은 전체 8개에 비례해요."
+      ],
+      "speech": [
+        "강의의 여덟 개 숫자가 합병되는 과정을 볼게요.",
+        "각 쌍을 합치면 정렬된 두 개짜리 구간 네 개가 돼요.",
+        "각 구간에서 두 개씩, 모두 여덟 개가 합병에 참여해요.",
+        "첫 합병 층의 비용은 전체 여덟 개에 비례해요."
+      ],
+      "texts": [
+        {
+          "id": "t2_title",
+          "slot": "top",
+          "style": "title",
+          "content": "첫 번째 합병 층",
+          "hidden": false
+        },
+        {
+          "id": "t2_key",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "2개씩 4구간",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g2",
+          "slot": "middle",
+          "hidden": false,
+          "cells": [
+            [
+              "37",
+              "10",
+              "22",
+              "30",
+              "35",
+              "13",
+              "25",
+              "24"
+            ]
+          ],
+          "indexLabels": false,
+          "pointers": []
+        }
+      ],
+      "codes": [],
+      "actions": [
+        {
+          "line": 1,
+          "do": "swap",
+          "target": "g2",
+          "args": [
+            "0",
+            "1"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "swap",
+          "target": "g2",
+          "args": [
+            "4",
+            "5"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "swap",
+          "target": "g2",
+          "args": [
+            "6",
+            "7"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "t2_key",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "g2",
+          "args": [
+            "0-7"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setText",
+          "target": "t2_key",
+          "args": [
+            "합병 크기의 합: 8"
+          ]
+        }
+      ],
+      "sourcePages": [
+        25
+      ]
+    },
+    {
+      "id": "s3",
+      "clear": true,
+      "lines": [
+        "다음 층은 2개짜리 구간 둘씩 합쳐요.",
+        "합친 결과는 4개짜리 구간 2개예요.",
+        "마지막으로 두 구간을 합치면 8개가 정렬돼요.",
+        "각 합병 층에서 처리하는 크기의 합은 늘 8이에요.",
+        "일반적으로 층당 비용은 빅오 n이에요."
+      ],
+      "speech": [
+        "다음 층은 두 개짜리 구간 둘씩 합쳐요.",
+        "합친 결과는 네 개짜리 구간 두 개예요.",
+        "마지막으로 두 구간을 합치면 여덟 개가 정렬돼요.",
+        "각 합병 층에서 처리하는 크기의 합은 늘 여덟이에요.",
+        "일반적으로 층당 비용은 빅오 엔이에요."
+      ],
+      "texts": [
+        {
+          "id": "t3_title",
+          "slot": "top",
+          "style": "title",
+          "content": "나머지 합병 층",
+          "hidden": false
+        },
+        {
+          "id": "t3_key",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "4개씩 2구간",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g3_pairs",
+          "slot": "middle",
+          "hidden": false,
+          "cells": [
+            [
+              "10",
+              "37",
+              "22",
+              "30"
+            ],
+            [
+              "13",
+              "35",
+              "24",
+              "25"
+            ]
+          ],
+          "indexLabels": false,
+          "pointers": []
+        },
+        {
+          "id": "g3_fours",
+          "slot": "middle",
+          "hidden": true,
+          "cells": [
+            [
+              "10",
+              "22",
+              "30",
+              "37"
+            ],
+            [
+              "13",
+              "24",
+              "25",
+              "35"
+            ]
+          ],
+          "indexLabels": false,
+          "pointers": []
+        },
+        {
+          "id": "g3_final",
+          "slot": "middle",
+          "hidden": true,
+          "cells": [
+            [
+              "10",
+              "13",
+              "22",
+              "24",
+              "25",
+              "30",
+              "35",
+              "37"
+            ]
+          ],
+          "indexLabels": false,
+          "pointers": []
+        }
+      ],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "g3_pairs",
+          "args": [
+            "0,0-3",
+            "1,0-3"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "hide",
+          "target": "g3_pairs",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "g3_fours",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "t3_key",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "hide",
+          "target": "g3_fours",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "g3_final",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "setText",
+          "target": "t3_key",
+          "args": [
+            "8개씩 1구간"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "g3_final",
+          "args": [
+            "0-7"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setText",
+          "target": "t3_key",
+          "args": [
+            "층마다 크기의 합: 8"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "setText",
+          "target": "t3_key",
+          "args": [
+            "층당 비용: O(n)"
+          ]
+        }
+      ],
+      "sourcePages": [
+        24,
+        25
+      ]
+    },
+    {
+      "id": "s4",
+      "clear": true,
+      "lines": [
+        "크기가 8이면 분할을 따라가며 층수를 세요.",
+        "한 번 나누면 각 구간의 크기가 4예요.",
+        "두 번 나누면 각 구간의 크기가 2예요.",
+        "세 번 나누면 크기가 1이라 멈춰요.",
+        "따라서 합병도 거꾸로 3개 층을 거쳐요."
+      ],
+      "speech": [
+        "크기가 여덟이면 분할을 따라가며 층수를 세요.",
+        "한 번 나누면 각 구간의 크기가 사예요.",
+        "두 번 나누면 각 구간의 크기가 이예요.",
+        "세 번 나누면 크기가 일이라 멈춰요.",
+        "따라서 합병도 거꾸로 세 개 층을 거쳐요."
+      ],
+      "texts": [
+        {
+          "id": "t4_title",
+          "slot": "top",
+          "style": "title",
+          "content": "합병 층수 세기",
+          "hidden": false
+        },
+        {
+          "id": "t4_key",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "합병 층: 3개",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [
+        {
+          "id": "g4",
+          "slot": "middle",
+          "hidden": false,
+          "cells": [
+            [
+              "8",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "indexLabels": false,
+          "pointers": []
+        }
+      ],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "g4",
+          "args": [
+            "0"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "setValue",
+          "target": "g4",
+          "args": [
+            "1",
+            "4"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "g4",
+          "args": [
+            "0"
+          ]
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "g4",
+          "args": [
+            "1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "setValue",
+          "target": "g4",
+          "args": [
+            "2",
+            "2"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "g4",
+          "args": [
+            "1"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "g4",
+          "args": [
+            "2"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "setValue",
+          "target": "g4",
+          "args": [
+            "3",
+            "1"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "g4",
+          "args": [
+            "2"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "g4",
+          "args": [
+            "3"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "unhighlight",
+          "target": "g4",
+          "args": [
+            "3"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "highlight",
+          "target": "g4",
+          "args": [
+            "0-3"
+          ]
+        },
+        {
+          "line": 4,
+          "do": "show",
+          "target": "t4_key",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        26
+      ]
+    },
+    {
+      "id": "s5",
+      "clear": true,
+      "lines": [
+        "n이 2의 거듭제곱이면 층수는 로그 밑 2의 n이에요.",
+        "각 층의 비용은 빅오 n이니 층수에 곱해요.",
+        "그래서 전체 비용은 빅오 n 로그 n이에요.",
+        "입력 순서가 달라도 전체 시간은 같은 차수예요.",
+        "2의 거듭제곱이 아니어도 같은 차수가 돼요."
+      ],
+      "speech": [
+        "엔이 이의 거듭제곱이면 층수는 로그 밑 이의 엔이에요.",
+        "각 층의 비용은 빅오 엔이니 층수에 곱해요.",
+        "그래서 전체 비용은 빅오 엔 로그 엔이에요.",
+        "",
+        "이의 거듭제곱이 아니어도 같은 차수가 돼요."
+      ],
+      "texts": [
+        {
+          "id": "t5_title",
+          "slot": "top",
+          "style": "title",
+          "content": "층수 × 층당 비용",
+          "hidden": false
+        },
+        {
+          "id": "t5_formula",
+          "slot": "middle",
+          "style": "formula",
+          "content": "$\\log_2 n$",
+          "hidden": false
+        },
+        {
+          "id": "t5_key",
+          "slot": "bottom",
+          "style": "keyword",
+          "content": "입력 순서와 무관",
+          "hidden": true
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "t5_formula",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "setText",
+          "target": "t5_formula",
+          "args": [
+            "$\\log_2 n \\times O(n)$"
+          ]
+        },
+        {
+          "line": 2,
+          "do": "setText",
+          "target": "t5_formula",
+          "args": [
+            "$\\log_2 n \\times O(n) = O(n\\log n)$"
+          ]
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "t5_key",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "setText",
+          "target": "t5_key",
+          "args": [
+            "일반적인 n에도 적용"
+          ]
+        }
+      ],
+      "sourcePages": [
+        26,
+        27
+      ]
+    }
+  ]
+}

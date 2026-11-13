@@ -22,7 +22,7 @@ from pipeline.blueprint import make_blueprint  # noqa: E402
 from pipeline.errors import PipelineError  # noqa: E402
 from pipeline.validate import validate_blueprint  # noqa: E402
 
-SHORT = {"gpt-6.1-terra": "terra", "claude-haiku-5-5": "haiku", "claude-sonnet-5-5": "sonnet", "gpt-6-luna": "luna"}
+SHORT = {"gpt-6.1-sol": "sol", "gpt-6.1-terra": "terra", "claude-haiku-5-5": "haiku", "claude-sonnet-5-5": "sonnet", "gpt-6-luna": "luna"}
 
 
 def main() -> int:
@@ -31,7 +31,9 @@ def main() -> int:
     ap.add_argument("mode")
     ap.add_argument("clip_id")
     ap.add_argument("--models", nargs="+", default=["gpt-6.1-terra"])
-    ap.add_argument("--audio", help="이 모델 설계도로 음성까지 만든다")
+    ap.add_argument("--audio", nargs="*", default=[], help="이 모델들의 설계도로 음성까지 만든다")
+    ap.add_argument("--prompt-lang", default="ko", choices=["ko", "en"], help="en이면 결과 이름 뒤에 -en이 붙는다")
+    ap.add_argument("--reuse", action="store_true", help="설계도 파일이 이미 있으면 다시 만들지 않는다(음성만 추가할 때)")
     args = ap.parse_args()
 
     from dotenv import load_dotenv
@@ -56,22 +58,26 @@ def main() -> int:
     (out / "pages.json").write_text(json.dumps({"pageCount": extracted["pageCount"], "pages": pages}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
     for model in args.models:
-        tag = SHORT.get(model, model)
-        try:
-            r = make_blueprint(plan, pages, extracted["pageCount"], model=model)
-        except PipelineError as e:
-            print(f"{tag}: 실패 {e}")
-            continue
-        bp = r["blueprint"]
+        tag = SHORT.get(model, model) + ("-en" if args.prompt_lang == "en" else "")
         path = out / f"blueprint-{tag}.json"
+        if args.reuse and path.exists():
+            r = {"blueprint": json.loads(path.read_text(encoding="utf-8")), "usage": [], "attempts": 0}
+        else:
+            try:
+                r = make_blueprint(plan, pages, extracted["pageCount"], model=model, prompt_lang=args.prompt_lang)
+            except PipelineError as e:
+                print(f"{tag}: 실패 {e}", flush=True)
+                continue
+        bp = r["blueprint"]
         path.write_text(json.dumps(bp, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        costlog.append("blueprint", path.relative_to(ROOT).as_posix(), r["usage"], note=f"eval, attempts {r['attempts']}")
+        if r["usage"]:
+            costlog.append("blueprint", path.relative_to(ROOT).as_posix(), r["usage"], note=f"eval, prompt {args.prompt_lang}, attempts {r['attempts']}")
         lines = [l for s in bp["scenes"] for l in s["lines"]]
         speech = sum(1 for s in bp["scenes"] for x in s.get("speech", []) if x.strip())
         cost = sum(u["costUsd"] for u in r["usage"])
         print(f"{tag}: 통과(시도 {r['attempts']}) 장면 {len(bp['scenes'])} 문장 {len(lines)} speech {speech} "
-              f"글자 {sum(len(l) for l in lines)} ${cost:.4f} 검사 {validate_blueprint(bp, extracted['pageCount']) or 'OK'}")
-        if args.audio == model:
+              f"글자 {sum(len(l) for l in lines)} ${cost:.4f} {sum(u.get('seconds', 0) for u in r['usage']):.0f}초 검사 {validate_blueprint(bp, extracted['pageCount']) or 'OK'}", flush=True)
+        if model in args.audio:
             from pipeline.audio import make_audio
             a = make_audio(bp, out / f"audio-{tag}")
             res = {"resultId": f"eval-{args.lecture}-{args.clip_id}-{tag}", "durationSec": a["durationSec"],
@@ -79,7 +85,7 @@ def main() -> int:
             (out / f"result-{tag}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
             costlog.append("audio", (out / f"audio-{tag}").relative_to(ROOT).as_posix(), a["usage"], note="eval")
             shutil.rmtree(out / f"audio-{tag}" / "lines", ignore_errors=True)
-            print(f"  음성 {a['durationSec']}초")
+            print(f"  음성 {a['durationSec']}초", flush=True)
     return 0
 
 

@@ -46,11 +46,14 @@ EXAMPLE_FILE = Path(__file__).with_name("prompts") / "blueprint_example.json"
 PRICES = {
     "claude-sonnet-5-5": (2.00, 10.00),
     "claude-haiku-5-5": (0.10, 0.50),
+    "gpt-6.1-sol": (2.00, 10.00),
     "gpt-6.1-terra": (1.00, 5.00),
     "gpt-6-luna": (0.10, 0.50),
 }
 CLAUDE_CACHE_READ = {"claude-sonnet-5-5": 0.20, "claude-haiku-5-5": 0.01}
 MAX_TOKENS = 32000
+# Haiku는 high에서 생각에 출력 상한을 다 써 잘린다(11/12 실험). 모델 기본값인 medium으로 둔다.
+CLAUDE_EFFORT = {"claude-haiku-5-5": "medium"}
 # 기본 설계도 모델. 팀장 방향(Q-AI-07): 품질 차이가 크지 않으면 Terra. 환경변수 AI_BLUEPRINT_MODEL로 바꾼다.
 DEFAULT_MODEL = "gpt-6.1-terra"
 
@@ -174,7 +177,7 @@ def _call_claude(model: str, system: str, user: str) -> tuple[str, dict]:
             system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
             messages=[{"role": "user", "content": user}],
             thinking={"type": "adaptive"},
-            output_config={"effort": "high"},
+            output_config={"effort": CLAUDE_EFFORT.get(model, "high")},
             betas=["server-side-fallback-2026-07-01"],
             fallbacks="default",
         ) as stream:

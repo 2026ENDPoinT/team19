@@ -7,7 +7,7 @@ const originalFetch = globalThis.fetch
 const signal = new AbortController().signal
 try {
   const folders = readdirSync(root).filter(name => existsSync(new URL(`${name}/result-terra.json`, root)))
-  assert.equal(folders.length, 5)
+  assert.ok(folders.length >= 5) // 평가 클립은 계속 늘어난다
   for (const folder of folders) {
     const directory = new URL(`${folder}/`, root)
     const raw = JSON.parse(readFileSync(new URL('result-terra.json', directory), 'utf8'))
