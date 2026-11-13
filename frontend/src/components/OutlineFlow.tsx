@@ -3,48 +3,33 @@ import ProcessingStatus from './ProcessingStatus'
 import { jobStageLabel } from '../services/jobStages'
 import { useEffect, useRef, useState } from 'react'
 import ActualClipPreview from './ActualClipPreview'
-import { createOutline, watchOutline } from '../services/outlines'
+import { watchOrCreateOutline } from '../services/outlines'
 import type { LearningMode, OutlineSnapshot } from '../services/outlines'
-import { RealGenerationConfirmationRequired } from '../services/preparation'
 import type { PreparedLecture } from '../services/preparation'
 type Props = { lecture: PreparedLecture; mode: LearningMode; modeName: string; fileName?: string; onBack: () => void }
 export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack }: Props) {
   const [snapshot, setSnapshot] = useState<OutlineSnapshot | null>(null)
-  const [phase, setPhase] = useState<'loading'|'idle'|'confirm-generation'|'creating'|'watching'|'done'|'error'>('loading')
+  const [phase, setPhase] = useState<'loading'|'idle'|'creating'|'watching'|'done'|'error'>('loading')
   const [message, setMessage] = useState('')
   const [refresh, setRefresh] = useState(0)
   const [playingClip, setPlayingClip] = useState<string | null>(null)
-  const posting = useRef<AbortController | null>(null)
-  const polling = useRef<AbortController | null>(null)
-  useEffect(() => () => posting.current?.abort(), [])
+  const automaticAttempted = useRef(false)
   useEffect(() => {
     if (playingClip) return
     const controller = new AbortController()
-    polling.current = controller
     setPhase('loading'); setMessage('')
-    watchOutline(lecture.id, mode, (data) => { setSnapshot(data); setPhase('watching') }, controller.signal).then((result) => {
+    watchOrCreateOutline(lecture.id, mode, (data) => { setSnapshot(data); setPhase('watching') }, controller.signal, lecture.aiMode, () => {
+      if (refresh > 0 || automaticAttempted.current || snapshot) return false
+      automaticAttempted.current = true
+      setPhase('creating')
+      return true
+    }).then((result) => {
       if (!controller.signal.aborted) setPhase(result ? 'done' : 'idle')
     }).catch((cause: unknown) => {
-      if (!controller.signal.aborted) { setPhase('error'); setMessage(cause instanceof Error ? cause.message : '클립 목록 조회 오류') }
+      if (!controller.signal.aborted) { setPhase('error'); setMessage(cause instanceof Error ? cause.message : '클립 준비 오류') }
     })
-    return () => { controller.abort(); if (polling.current === controller) polling.current = null }
+    return () => controller.abort()
   }, [lecture.id, mode, refresh, playingClip])
-  async function start(allowReal = false) {
-    if (posting.current) return
-    polling.current?.abort()
-    const controller = new AbortController()
-    posting.current = controller
-    setPhase('creating'); setMessage('')
-    try {
-      await createOutline(lecture.id, mode, controller.signal, { allowReal, expectedMode:lecture.aiMode })
-      if (!controller.signal.aborted) setRefresh((value) => value + 1)
-    } catch (cause) {
-      if (!controller.signal.aborted) {
-        if (cause instanceof RealGenerationConfirmationRequired) setPhase('confirm-generation')
-        else { setPhase('error'); setMessage(cause instanceof Error ? cause.message : '클립 준비 요청 오류') }
-      }
-    } finally { if (posting.current === controller) posting.current = null }
-  }
   if (playingClip) return <ActualClipPreview key={playingClip} initialClipId={playingClip} pages={lecture.pages} onBack={() => setPlayingClip(null)} />
   const labels = {pending:'대기 중',running:'생성 중',completed:'준비 완료',failed:'생성 실패'}
   const statusStyles = { pending: 'bg-slate-100 text-slate-600', running: 'bg-blue-50 text-blue-700', completed: 'bg-emerald-50 text-emerald-700', failed: 'bg-red-50 text-red-700' }
@@ -55,17 +40,7 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
       <h1 id="clips-title" className="text-[30px] font-bold leading-tight tracking-[-0.04em] text-slate-950 sm:text-[38px]">학습 클립 목록</h1>
       <p className="mt-3 text-[15px] leading-7 text-slate-500">준비된 클립부터 바로 재생하고 학습할 수 있어요.</p>
       {fileName && <div className="mt-7"><FileSummary file={{name:fileName}} /></div>}
-      {phase === 'idle' && <div className="mt-8 rounded-3xl border border-slate-200 bg-slate-50/70 p-6 sm:p-8">
-        <div aria-hidden="true" className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-xl font-bold text-blue-600 shadow-sm">≡</div>
-        <h2 className="mt-5 text-xl font-bold tracking-[-0.03em] text-slate-900">이 모드의 클립 계획이 아직 없어요</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-500">선택한 모드로 강의자료의 클립 준비를 요청할 수 있어요.</p>
-        <button type="button" className="mt-6 h-12 w-full rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm shadow-blue-200 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:w-auto" onClick={() => void start()}>이 모드로 클립 준비 요청 →</button>
-      </div>}
-      {phase === 'confirm-generation' && <section aria-label="실제 AI 클립 생성 비용 확인" className="mt-6 rounded-3xl border border-amber-200 bg-amber-50/60 p-5 sm:p-6">
-        <h2 className="font-bold text-slate-900">실제 AI 클립 생성 · 비용 발생 가능</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">이 모드의 분할 계획과 클립들의 시각화·음성을 생성해요. 여러 클립이 자동으로 준비될 수 있으며 AI API 비용이 발생할 수 있어요. 아직 생성 요청은 보내지 않았어요.</p>
-        <div className="mt-5 flex flex-wrap gap-3"><button type="button" className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" onClick={() => void start(true)}>비용 안내 확인 · 클립 생성 시작</button><button type="button" className="rounded-xl border border-slate-300 px-4 py-3 text-sm" onClick={() => setPhase('idle')}>돌아가기</button></div>
-      </section>}
+      {phase === 'idle' && <p role="status" className="mt-7 text-sm text-slate-500">클립 계획을 확인하지 못했어요. 다시 조회하거나 학습 모드를 다시 선택해 주세요. 생성 요청은 자동으로 반복하지 않아요.</p>}
       {(phase === 'loading' || phase === 'creating' || phase === 'watching') && <div className="mt-7">
         <ProcessingStatus stage={snapshot?.stage} message={phase === 'creating' ? '클립 준비를 요청하는 중' : phase === 'loading' ? '기존 클립 상태를 조회하는 중' : snapshot?.outline.status === 'ready' ? '클립별 준비 상태를 확인하는 중' : undefined} />
         <p className="mt-3 text-sm leading-6 text-slate-500">완료된 클립은 나머지 작업 중에도 바로 재생할 수 있어요.</p>
