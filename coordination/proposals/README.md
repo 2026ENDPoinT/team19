@@ -71,6 +71,7 @@
 | [P-AI-06](P-AI-06-text-emphasis.md) | 화면 글 안의 핵심 단어 강조 | 의견 수집중 |
 | [P-AI-07](P-AI-07-stamp.md) | 화살표·노드·글 위에 X(O) 도장 | 결정됨(D-53) |
 | [P-AI-08](P-AI-08-plain-node.md) | 테두리 없는 다이어그램 노드 | 의견 수집중 |
+| [P-AI-09](P-AI-09-staging.md) | 보조 자리로 옮기기(place)와 강조 밖 흐리게 | 의견 수집중 |
 | [P-FE-12](P-FE-12-real-mode.md) | 실제 AI 서버 생성 요청 연결 | 의견 수집중 |
 | [P-FE-13](P-FE-13-highlight-density.md) | 강조 밀도 제한과 상단 상위 개념 제목 | 논의중 |
 | [P-FE-14](P-FE-14-sentence-source-page.md) | 설명 문장별 근거 PDF 페이지 전달 | 논의중 |
