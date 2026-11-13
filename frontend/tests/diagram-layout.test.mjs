@@ -14,7 +14,27 @@ for (const scene of result.blueprint.scenes) for (const diagram of scene.diagram
 }
 assert.throws(() => layoutDiagram([{id:'a'},{id:'b'}],[{from:'a',to:'b'},{from:'b',to:'a'}],'tree'))
 assert.throws(() => layoutDiagram([{id:'a'}],[{from:'a',to:'missing'}],'tree'))
-assert.throws(() => layoutDiagram([{id:'a'}],[],'cycle'))
+assert.throws(() => layoutDiagram([{id:'a'}],[],'full'))
+
+// cycle: 원 위에 겹치지 않게 순서대로, 첫 노드는 맨 위
+{
+  const nodes = ['a','b','c','d','e'].map(id => ({id, label: '긴 상태 이름'}))
+  const {positions, width, height} = layoutDiagram(nodes, [{from:'a',to:'b'},{from:'e',to:'a'}], 'cycle')
+  const ps = nodes.map(n => positions.get(n.id))
+  assert.ok(ps.every(p => p.y >= ps[0].y))
+  for (let i = 0; i < ps.length; i++) for (let j = i + 1; j < ps.length; j++) assert.ok(Math.hypot(ps[i].x - ps[j].x, ps[i].y - ps[j].y) >= 98)
+  assert.ok(ps.every(p => p.x > 0 && p.x < width && p.y > 0 && p.y < height))
+}
+// layers: from이 앞 층, 같은 층은 세로로 겹치지 않음, 순환은 오류
+{
+  const nodes = ['x1','x2','h1','h2','h3','y'].map(id => ({id, label: id}))
+  const edges = [{from:'x1',to:'h1'},{from:'x2',to:'h2'},{from:'x1',to:'h3'},{from:'h1',to:'y'},{from:'h3',to:'y'}]
+  const {positions} = layoutDiagram(nodes, edges, 'layers')
+  for (const e of edges) assert.ok(positions.get(e.from).x < positions.get(e.to).x)
+  assert.equal(positions.get('h1').x, positions.get('h2').x)
+  assert.notEqual(positions.get('h1').y, positions.get('h2').y)
+  assert.throws(() => layoutDiagram([{id:'a'},{id:'b'}],[{from:'a',to:'b'},{from:'b',to:'a'}],'layers'))
+}
 console.log('PASS diagram positions, tree depth, hidden stability, source immutability, invalid references/cycles/layouts')
 
 for (const count of [1, 3, 6]) {
