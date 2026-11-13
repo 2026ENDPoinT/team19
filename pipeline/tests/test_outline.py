@@ -165,3 +165,50 @@ class ExampleTitleTests(unittest.TestCase):
         p = lambda pid, kind, title: {"id": pid, "title": title, "kind": kind, "sourcePages": [1], "prerequisites": [], "brief": "가" * 40}
         r = outline.normalize({"clipPlans": [p("c1", "example", "피봇 8로 분할"), p("c2", "example", "예시: 합병"), p("c3", "concept", "분할정복")]}, "exam")
         self.assertEqual([c["title"] for c in r["clipPlans"]], ["예시: 피봇 8로 분할", "예시: 합병", "분할정복"])
+
+
+class FinalTitleLengthTest(unittest.TestCase):
+    def test_limit_includes_added_example_prefix(self):
+        for kind, title, valid in [
+            ("example", "가" * 26, True),
+            ("example", "가" * 27, False),
+            ("example", "가" * 30, False),
+            ("example", "예시: " + "가" * 26, True),
+            ("concept", "가" * 30, True),
+        ]:
+            with self.subTest(kind=kind, title=title):
+                data = {"clipPlans": [{**plan("c1", [2], kind=kind), "title": title}]}
+                errors = outline.validate_outline(data, "review", {2})
+                self.assertEqual(not errors, valid)
+                if valid:
+                    result = outline.normalize(data, "review")
+                    self.assertLessEqual(len(result["clipPlans"][0]["title"]), outline.TITLE_MAX)
+                    self.assertEqual(outline.validate_outline(result, "review", {2}), [])
+
+    def test_oversized_final_title_uses_existing_retry(self):
+        bad = {"clipPlans": [{**plan("c1", [2], kind="example"), "title": "가" * 30}]}
+        with mock.patch.object(outline.llm, "call_json", side_effect=[(bad, USAGE), (GOOD, USAGE)]) as call:
+            result = outline.plan_outline("review", PAGES, [])
+        self.assertEqual(call.call_count, 2)
+        self.assertIn("최종 title이 34자", call.call_args.args[2])
+        self.assertTrue(all(len(p["title"]) <= outline.TITLE_MAX for p in result["clipPlans"]))
+
+
+class ExactExamplePrefixTest(unittest.TestCase):
+    def test_example_word_is_not_the_prefix(self):
+        for title, expected in [
+            ("예시를 통한 합병 이해", "예시: 예시를 통한 합병 이해"),
+            ("예시 데이터 비교", "예시: 예시 데이터 비교"),
+            ("예시: 합병", "예시: 합병"),
+            ("  예시: 합병  ", "예시: 합병"),
+        ]:
+            with self.subTest(title=title):
+                data = {"clipPlans": [{**plan("c1", [2], kind="example"), "title": title}]}
+                self.assertEqual(outline.validate_outline(data, "review", {2}), [])
+                result = outline.normalize(data, "review")
+                self.assertEqual(result["clipPlans"][0]["title"], expected)
+                self.assertEqual(outline.normalize(result, "review")["clipPlans"][0]["title"], expected)
+
+    def test_prefix_check_still_respects_final_length(self):
+        data = {"clipPlans": [{**plan("c1", [2], kind="example"), "title": "예시" + "가" * 25}]}
+        self.assertTrue(outline.validate_outline(data, "review", {2}))
