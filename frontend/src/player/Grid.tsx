@@ -7,8 +7,8 @@ export default function Grid({ element }: { element: Entity }) {
   const cells = element.cells ?? []
   const pointers = element.pointers ?? []
   const layout = layoutGrid(cells, element.indexLabels === true, pointers.length)
-  const fontSize = Math.min(18, layout.cellHeight * .46)
-  return <svg className="player-grid-graphic" width="100%" height={layout.height} viewBox={`0 0 ${layout.width} ${layout.height}`} role="img" aria-label={`배열: ${cells.map((row) => row.join(', ')).join(' / ')}`}>
+  const fontSize = Math.min(22, layout.cellHeight * .52)
+  return <svg className="player-grid-graphic" width="100%" height={layout.height * Math.min(2, 380 / layout.width)} viewBox={`0 0 ${layout.width} ${layout.height}`} role="img" aria-label={`배열: ${cells.map((row) => row.join(', ')).join(' / ')}`}>
     {element.indexLabels === true && cells.flatMap((row, r) => row.map((_, c) => {
       const point = layout.positions.get(`${r},${c}`)!
       return <text key={`i${r},${c}`} x={point.x} y={point.y - layout.cellHeight / 2 - 4} textAnchor="middle" fill={defaultTextColor} fontSize="10">{cells.length === 1 ? c : `${r},${c}`}</text>
