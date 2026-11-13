@@ -121,19 +121,37 @@ def test_pdf_read_errors_are_not_hidden_by_switching_extractors(tmp_path, monkey
     reader.assert_not_called()
 
 
-@pytest.mark.parametrize("engine", ["pymupdf", "pypdf"])
-@pytest.mark.parametrize("fault", ["zero_pages", "encrypted", "malformed"])
-def test_invalid_pdf_still_fails_prepare_with_contract_error(client, monkeypatch, engine, fault):
-    if engine == "pypdf":
-        block_pymupdf(monkeypatch, ImportError("unavailable"))
+def invalid_pdf_bytes(fault):
     writer = PdfWriter()
     if fault == "encrypted":
         writer.add_blank_page(width=612, height=792)
         writer.encrypt("test-only-password")
     data = io.BytesIO()
     writer.write(data)
-    raw = b"%PDF-1.4\nnot a valid PDF" if fault == "malformed" else data.getvalue()
-    response = client.post("/lectures", files={"file": ("invalid.pdf", raw, "application/pdf")})
+    return b"%PDF-1.4\nnot a valid PDF" if fault == "malformed" else data.getvalue()
+
+
+@pytest.mark.parametrize("engine", ["pymupdf", "pypdf"])
+@pytest.mark.parametrize("fault", ["zero_pages", "encrypted", "malformed"])
+def test_invalid_pdf_is_rejected_at_upload_before_any_lecture_or_job(client, monkeypatch, engine, fault):
+    """Page-count policy: unreadable, encrypted and empty PDFs are refused in the upload request (422 INVALID_PDF)."""
+    if engine == "pypdf":
+        block_pymupdf(monkeypatch, ImportError("unavailable"))
+    response = client.post("/lectures", files={"file": ("invalid.pdf", invalid_pdf_bytes(fault), "application/pdf")})
+    assert response.status_code == 422 and response.json()["error"]["code"] == "INVALID_PDF"
+    assert response.json()["error"]["retryable"] is False
+    assert client.get("/lectures", headers={"X-Owner-Id": "device-fallback0000001"}).json() == []
+
+
+@pytest.mark.parametrize("engine", ["pymupdf", "pypdf"])
+@pytest.mark.parametrize("fault", ["zero_pages", "encrypted", "malformed"])
+def test_invalid_pdf_still_fails_prepare_with_contract_error(client, monkeypatch, engine, fault):
+    """Defence in depth: if such a PDF got past the upload page check, the prepare Job still fails cleanly."""
+    import sys as _sys
+    monkeypatch.setattr(_sys.modules["backend.app"], "count_pdf_pages", lambda path: 1)  # bypass only the upload check
+    if engine == "pypdf":
+        block_pymupdf(monkeypatch, ImportError("unavailable"))
+    response = client.post("/lectures", files={"file": ("invalid.pdf", invalid_pdf_bytes(fault), "application/pdf")})
     assert response.status_code == 202
     ticket = response.json()
     job = wait_job(client, ticket["jobId"])
