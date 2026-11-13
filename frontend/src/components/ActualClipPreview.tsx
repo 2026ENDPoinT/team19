@@ -13,6 +13,7 @@ type Props = { onBack: () => void; initialClipId?: string; pages?: Record<number
 
 export default function ActualClipPreview({ onBack, initialClipId, pages }: Props) {
   const [clipId, setClipId] = useState(initialClipId ?? 'clip-01')
+  const [captionsOn, setCaptionsOn] = useState(false)
   const [result, setResult] = useState<ClipResult | null>(null)
   const [error, setError] = useState('')
   const { audioRef, time, restart } = useAudioClock(result ? clipId + ':' + result.resultId : 'loading')
@@ -132,8 +133,8 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
           <audio src={result.audioUrl} hidden preload="metadata" loop ref={audioRef}
             onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}
             onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
-          {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={pageUrl} isPlaying={isPlaying} onTogglePlayback={togglePlayback}
-            controls={<PlayerControls audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
+          {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={pageUrl} isPlaying={isPlaying} onTogglePlayback={togglePlayback} captionsOn={captionsOn}
+            controls={<PlayerControls captionsOn={captionsOn} onToggleCaptions={() => setCaptionsOn((on) => !on)} audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
           {playbackError && <p role="alert" className="mt-2 text-sm text-red-700">{playbackError}</p>}
           {!initialClipId && <div className="clip-feed-nav">
             <button type="button" aria-label="이전 클립" disabled={position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
