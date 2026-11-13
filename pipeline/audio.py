@@ -44,7 +44,7 @@ Script: Read the text exactly as written. Do not change any numbers or words.
 English terms: Pronounce English words such as "merge" and "sort" the way a Korean lecturer would say them in class.
 Emphasis: Put slight stress on key numbers and on the conclusion of each explanation.
 Consistency: This is one sentence from a continuous lecture by the same speaker. Keep the same pitch, energy, volume, and pace as every other sentence; do not start fresh or sound like a new speaker."""
-# 장면 단위 생성(실험, AI_TTS_UNIT=scene)에서만 덧붙인다. 문장 사이를 확실히 쉬어야 무음으로 자를 수 있다.
+# 장면 단위 생성(기본, D-62)에서만 덧붙인다. 문장 사이를 확실히 쉬어야 무음으로 자를 수 있다.
 SCENE_STYLE = "\nSentence breaks: The text has several sentences, one per line. Pause clearly, about half a second, after each sentence."
 USD_PER_MINUTE = 0.015       # docs/06 추정 (gpt-4o-mini-tts)
 TTS_PARALLEL = 4             # 동시에 보내는 문장 수. BE 작업 3개가 겹쳐도 12개
@@ -60,11 +60,11 @@ def make_audio(blueprint: dict, out_dir, model: str = DEFAULT_MODEL, voice: str 
     """검증된 설계도의 문장마다 음성을 만들고 audio.mp3(또는 audio.wav) 하나로 잇는다.
 
     문장 음성은 out_dir/lines/에 저장하고, 같은 문장·목소리면 다시 부르지 않고 재사용한다.
-    unit="scene"(또는 AI_TTS_UNIT=scene)이면 장면을 한 번에 읽혀 문장 사이 무음으로 자른다(톤이 이어짐, 실험).
+    기본은 장면을 한 번에 읽혀 문장 사이 무음으로 자른다(톤이 이어짐, D-62). unit="line"(또는 AI_TTS_UNIT=line)이면 문장마다 만든다.
     자르기에 실패한 장면은 문장마다 다시 만든다.
     돌려주는 값: {"audioPath", "durationSec", "captions", "usage"}
     """
-    unit = unit or os.getenv("AI_TTS_UNIT", "line")
+    unit = unit or os.getenv("AI_TTS_UNIT", "scene")   # D-62: 장면 단위가 기본
     out = Path(out_dir)
     (out / "lines").mkdir(parents=True, exist_ok=True)
     client = None

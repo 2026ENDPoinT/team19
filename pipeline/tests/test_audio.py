@@ -23,7 +23,7 @@ class AudioTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp, \
                 mock.patch.object(audio, "_tts", side_effect=fake_tts) as tts, \
                 mock.patch.object(audio, "_client", return_value=object()):
-            r = audio.make_audio(BP, tmp, fmt="wav")
+            r = audio.make_audio(BP, tmp, fmt="wav", unit="line")
             c = r["captions"]
             self.assertEqual([(x["sceneId"], x["lineIndex"]) for x in c], [("s1", 0), ("s1", 1), ("s2", 0)])
             self.assertEqual((c[0]["startSec"], c[0]["endSec"]), (0.0, 1.0))
@@ -34,7 +34,7 @@ class AudioTests(unittest.TestCase):
                 self.assertAlmostEqual(w.getnframes() / w.getframerate(), 3.9, places=2)
             self.assertEqual(tts.call_count, 3)
 
-            r2 = audio.make_audio(BP, tmp)          # 두 번째는 저장된 문장 음성을 재사용, mp3로
+            r2 = audio.make_audio(BP, tmp, unit="line")          # 두 번째는 저장된 문장 음성을 재사용, mp3로
             self.assertEqual(tts.call_count, 3)
             self.assertTrue(r2["audioPath"].endswith("audio.mp3"))
             self.assertGreater(Path(r2["audioPath"]).stat().st_size, 1000)
@@ -46,7 +46,7 @@ class AudioTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp, \
                 mock.patch.object(audio, "_tts", side_effect=lambda c, m, v, t, s=None: b"\x01\x00" * (audio.RATE * len(t))) as tts, \
                 mock.patch.object(audio, "_client", return_value=object()):
-            c = audio.make_audio(bp, tmp, fmt="wav")["captions"]
+            c = audio.make_audio(bp, tmp, fmt="wav", unit="line")["captions"]
             self.assertEqual([(x["startSec"], x["endSec"]) for x in c], [(0.0, 1.0), (1.3, 4.3), (4.6, 5.6)])
             self.assertEqual(tts.call_count, 2)                         # 같은 문장은 한 번만
 
