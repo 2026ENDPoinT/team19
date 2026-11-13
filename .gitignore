@@ -19,3 +19,8 @@ materials/
 
 # 臾몄옣蹂??뚯꽦 罹먯떆 (?ㅼ떆 留뚮뱾 ???ъ궗?? ??μ냼?먮뒗 ?щ━吏 ?딆쓬)
 samples/**/lines/
+
+# 강의 원본 자료는 공개 저장소에 올리지 않는다(D-69 뒤 정리). 내 컴퓨터에만 둔다.
+coordination/lecture-submissions/**/*.pdf
+coordination/lecture-submissions/**/*.ppt
+coordination/lecture-submissions/**/*.pptx
