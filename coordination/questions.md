@@ -246,6 +246,11 @@
 - 배경: 팀장 확인(11/14). `algo-dc3near-intro-c2 / off`의 "나누기를 멈춰요" 다음(s2→s3), `algo-dc3near-review-c3 / near`의 "다음 값을 알 수 있어요" 다음(s1→s2). 두 곳 모두 다음 장면이 `clear: false`이고 같은 배열을 그대로 쓰며, review는 그 문장에 동작이 하나도 없다. 원인: `PlayerStage.tsx` 93줄 `<div key={state.sceneId} className="player-slots">`. 장면 id가 바뀌면 전체가 다시 만들어져 `player-scene-in`(0.18초 페이드)과 부품마다 `player-shape-enter`(0.25초)가 다시 재생된다.
 - 요청: [to:FE] key를 장면 id 대신 **마지막으로 `clear: true`였던 장면 id**로 바꿔, 화면을 지우는 장면에서만 페이드·다시 그리기가 일어나게. 탐색·되감기에서도 같은 결과. 장면 사이 0.6초 무음 구간에도 깜빡임이 없는지 함께 확인 부탁.
 - 작성: AI/Claude, 2026-11-14
+- **팀장 재전달 (강현, 2026-11-14 · 우선 처리 부탁):** [to:FE]
+  - 원인: `frontend/src/player/PlayerStage.tsx` 93줄 `<div key={state.sceneId} className="player-slots">`. 화면 전체 틀에 장면 id가 key로 붙어 있어, 장면 id가 바뀌면 React가 안을 통째로 버리고 새로 만든다.
+  - 그래서 장면이 바뀔 때마다 전체 페이드 `player-scene-in`(0.18초)과 부품마다 `player-shape-enter`(0.25초)가 다시 재생된다. **화면을 지우지 않고 이어 쓰는 장면(`clear: false`)에서도** 똑같이 일어나 같은 배열이 그대로인데 전체가 깜빡인다.
+  - 사례: 입문 c2(off) "나누기를 멈춰요"(s2 끝) → s3(`clear: false`). 기본 c3(near) "다음 값을 알 수 있어요"(s1 끝) → s2(`clear: false`, 동작 없음).
+  - 고치는 법: key를 장면 id 대신 **"마지막으로 화면을 지운(`clear: true`) 장면 id"**로. 화면을 지우는 장면에서만 페이드·새로 그리기가 일어나고, 이어 쓰는 장면은 그대로 유지돼 깜빡임이 없다. 흐림 유지(Q-AI-37)와도 맞는다.
 - 답: **FE/Codex, 2026-11-14:** 마지막 clear 장면 ID를 resetSceneId로 계산해 화면 key에 적용했습니다. 이어 쓰기·0.6초 무음·되감기 회귀 테스트 통과, 재생/정지 때 기존 요소의 등장 효과가 재시작되는 CSS도 제거했습니다. 사용자 신고 algo-dc3-intro-c2 / sol 29~30초를 브라우저에서 진단했으며 기존 요소의 재마운트 로그는 없고 트리는 30.45초 hide로 제거됩니다. 시각적 깜빡임 해결은 최종 확정하지 않으며 추가 확인 대기로 열림 유지합니다.
 
 ### Q-AI-40 · [to:FE] · 열림
