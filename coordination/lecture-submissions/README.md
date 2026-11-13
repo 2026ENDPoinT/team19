@@ -23,5 +23,6 @@
 |---|---|---|---|---|
 | UNIX 시스템 프로그래밍 | BE | 9개 강의 PDF (417쪽), [pdfs/](unix-system-programming/pdfs/)에 동봉 | [note.md](unix-system-programming/note.md) | 예시 관찰 노트, 검토 전 |
 | 교양 9과목(실용영어·한국사·현대문화론·현대중국·경제·호신술·뇌·미술치료·반도체) | FE | 8개 PDF + 1개 PPTX, [교양/](교양/)에 동봉, 목록은 [manifest.csv](교양/manifest.csv) | 없음 | 원본만 제출 |
+| CS 전공 22과목(1~3학년) | FE | 21개 PDF(1097쪽) + 1개 PPTX, [CS/](CS/)에 동봉, 목록은 [manifest.csv](CS/manifest.csv) | 없음 | 원본만 제출 |
 
 추가 과목은 위 표에 행을 추가하고 해당 폴더에 `note.md`를 만듭니다.
