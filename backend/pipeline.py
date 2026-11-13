@@ -23,6 +23,13 @@ _CODE_FORMAT = re.compile(r"[A-Z][A-Z0-9_]{1,63}")
 _MAX_MESSAGE = 300
 
 
+def get_ai_mode() -> str:
+    mode = os.getenv("AI_MODE", "sample")
+    if mode not in ("sample", "real"):
+        raise ValueError("AI_MODE must be 'sample' or 'real'.")
+    return mode
+
+
 def _ai_error_classes(module_name: str) -> tuple[type, ...]:
     """The AI package's own PipelineError class(es). Only these explicit classes are trusted."""
     found = []
@@ -48,7 +55,7 @@ def convert_ai_error(exc: Exception) -> PipelineError:
 class Pipeline:
     """Bridge to AI-owned functions. Real mode loads AI_PIPELINE_MODULE (default: `pipeline`)."""
     def __init__(self):
-        self.sample = os.getenv("AI_MODE", "sample").lower() == "sample"
+        self.sample = get_ai_mode() == "sample"
         if not self.sample:
             module_name = os.getenv("AI_PIPELINE_MODULE") or DEFAULT_AI_MODULE
             try:

@@ -143,7 +143,7 @@ def write_fake(tmp_path, monkeypatch, name=FAKE_NAME, omit=None):
 # ---------------------------------------------------------------- Q-AI-28-1: module path
 
 def test_default_module_is_the_real_pipeline_package(monkeypatch):
-    monkeypatch.setenv("AI_MODE", "live")
+    monkeypatch.setenv("AI_MODE", "real")
     monkeypatch.delenv("AI_PIPELINE_MODULE", raising=False)
     pipe = Pipeline()
     assert DEFAULT_AI_MODULE == "pipeline"
@@ -154,20 +154,20 @@ def test_default_module_is_the_real_pipeline_package(monkeypatch):
 
 
 def test_empty_env_value_uses_default(monkeypatch):
-    monkeypatch.setenv("AI_MODE", "live")
+    monkeypatch.setenv("AI_MODE", "real")
     monkeypatch.setenv("AI_PIPELINE_MODULE", "")
     assert Pipeline().module.__name__ == "pipeline"
 
 
 def test_explicit_env_module_wins_over_default(tmp_path, monkeypatch):
     name = write_fake(tmp_path, monkeypatch)
-    monkeypatch.setenv("AI_MODE", "live")
+    monkeypatch.setenv("AI_MODE", "real")
     monkeypatch.setenv("AI_PIPELINE_MODULE", name)
     assert Pipeline().module.__name__ == name
 
 
 def test_missing_module_is_a_clear_error(monkeypatch):
-    monkeypatch.setenv("AI_MODE", "live")
+    monkeypatch.setenv("AI_MODE", "real")
     monkeypatch.setenv("AI_PIPELINE_MODULE", "no_such_ai_module_q28")
     with pytest.raises(RuntimeError, match="AI 모듈을 불러오지 못했습니다: no_such_ai_module_q28"):
         Pipeline()
@@ -176,7 +176,7 @@ def test_missing_module_is_a_clear_error(monkeypatch):
 @pytest.mark.parametrize("missing", AI_FUNCTIONS)
 def test_each_missing_function_is_reported(tmp_path, monkeypatch, missing):
     name = write_fake(tmp_path, monkeypatch, omit=missing)
-    monkeypatch.setenv("AI_MODE", "live")
+    monkeypatch.setenv("AI_MODE", "real")
     monkeypatch.setenv("AI_PIPELINE_MODULE", name)
     with pytest.raises(RuntimeError, match=f"AI 함수 누락: {name}.{missing}"):
         Pipeline()
@@ -196,7 +196,7 @@ def test_sample_mode_is_unchanged_and_does_not_load_any_module(monkeypatch):
 def test_real_ai_error_class_is_recognized(tmp_path, monkeypatch):
     from pipeline.errors import PipelineError as AIError
     name = write_fake(tmp_path, monkeypatch)
-    monkeypatch.setenv("AI_MODE", "live")
+    monkeypatch.setenv("AI_MODE", "real")
     monkeypatch.setenv("AI_PIPELINE_MODULE", name)
     pipe = Pipeline()
     sys.modules[name].FAIL["plan_outline"] = AIError("OUTLINE_INVALID", "클립 목록을 만들지 못했습니다.", True)
@@ -226,7 +226,7 @@ def live(tmp_path, monkeypatch):
     """Real-mode (non-sample) server wired to the FAKE AI package and an empty temp data dir."""
     name = write_fake(tmp_path, monkeypatch)
     monkeypatch.setenv("TEAM19_DATA_DIR", str(tmp_path / "server"))
-    monkeypatch.setenv("AI_MODE", "live")
+    monkeypatch.setenv("AI_MODE", "real")
     monkeypatch.setenv("AI_PIPELINE_MODULE", name)
     monkeypatch.setenv("BE_WORKERS", "1")
     fake = importlib.import_module(name)

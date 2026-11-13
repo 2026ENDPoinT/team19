@@ -1,15 +1,18 @@
-"""Portable text-only PDF extraction for PCs blocking native MuPDF DLLs.
+"""Sample-mode PDF text: prefer PyMuPDF, fall back when its DLL cannot load.
 
-This is a TEMPORARY sample-mode fallback. The PNGs are visibly marked
+The PNGs are visibly marked
 placeholders, NOT true screenshots of PDF pages. No security policy is disabled.
 """
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 import struct
 import zlib
 
 from pypdf import PdfReader
+
+logger = logging.getLogger(__name__)
 
 # 5x7 bitmap glyphs needed by placeholder labels.
 _FONT = {
@@ -81,12 +84,22 @@ def _placeholder_png(destination: Path, number: int, text_length: int) -> None:
 
 def extract_pdf_text_only(pdf_path: Path, output_dir: Path) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
-    reader = PdfReader(str(pdf_path), strict=False)
-    if reader.is_encrypted or len(reader.pages) == 0:
-        raise ValueError('비어 있거나 암호화된 PDF입니다.')
+    try:
+        import pymupdf
+    except (ImportError, OSError):
+        logger.warning('PyMuPDF를 불러올 수 없어 pypdf로 대체합니다. 한글 텍스트와 줄바꿈 품질은 보장되지 않습니다.')
+        reader = PdfReader(str(pdf_path), strict=False)
+        if reader.is_encrypted or len(reader.pages) == 0:
+            raise ValueError('비어 있거나 암호화된 PDF입니다.')
+        texts = [(page.extract_text() or '').strip() for page in reader.pages]
+    else:
+        # Import lazily: stored sample playback must also work on DLL-blocked PCs.
+        with pymupdf.open(stream=pdf_path.read_bytes(), filetype='pdf') as document:
+            if document.needs_pass or document.page_count == 0:
+                raise ValueError('비어 있거나 암호화된 PDF입니다.')
+            texts = [page.get_text('text').strip() for page in document]
     pages = []
-    for i, page in enumerate(reader.pages, start=1):
-        text = (page.extract_text() or '').strip()
+    for i, text in enumerate(texts, start=1):
         img = output_dir / f'page-{i}.png'
         _placeholder_png(img, i, len(text))
         pages.append({'number': i, 'text': text, 'imagePath': str(img), 'empty': not bool(text)})

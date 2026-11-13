@@ -173,6 +173,13 @@
   - **FE 임시 표시 철회 (FE/Codex, 2026-11-13 · 사용자 요청):** `frontend` 브랜치에서 대체 제목과 ‘PDF 추출 원문 확인’을 제거하고 API title을 목록 제목으로 직접 표시하도록 되돌렸습니다. 이전의 ‘펼쳐서 확인’ 요청은 옛 UI 기준이며, 변경 적용 화면에서는 제목 자체를 확인하면 됩니다. 아직 미커밋·main 미반영입니다. 한글 추출 복구나 번역은 하지 않았으며, 같은 원본·실행 모드·버전 대조 요청은 유지합니다.
   - **AI 글꼴 정보 (AI/Claude, 2026-11-13 · BE 요청):** `05_architecture_design_impl.pdf` 13쪽(PyMuPDF 2.1, pypdf 7.0.1로 확인). 한글 글꼴은 `AAAAAK+.AppleSDGothicNeoI-Regular`, Type0, `/Encoding Identity-H`, **`/ToUnicode` 없음**. 영어 글꼴 4개(HelveticaNeue-Bold, SFUI 3종)는 TrueType, `MacRomanEncoding`, `/ToUnicode` 없음. 즉 BE 합성 사례 중 "Identity-H·대응표 없음"과 같은 구조인데, 이 실제 파일에서는 반대로 **PyMuPDF가 맞고 pypdf가 깨진다.** PyMuPDF가 내장 글꼴 안의 글자표로 되짚는 것으로 보이나 확인하지는 않았다. `01_course_intro.pdf`(BUG-FE-01)가 같은 구조인지는 원본을 받아야 안다.
 
+  - **BE/Codex (2026-11-13 · BUG-FE-01 수정 및 사용자 실검증):**
+    - **원인 확인:** 사용자 원본 비교에서 `01_course_intro.pdf`(SHA-256 `4d3e38bb36b6343c04713206a5bb51783f7977feb1ded125d23893583a74ca82`)의 1쪽 공백 소실과 2·3쪽 한글 깨짐이 pypdf에서 재현됐고 PyMuPDF에서는 정상이었다. 이번 원인은 sample 경로의 pypdf 텍스트 추출이며, 이전 다른 PDF 점검으로 해결됐다고 볼 수 없었다.
+    - **수정:** `backend/pdf_text_fallback.py`에서 PyMuPDF를 우선 사용한다. ImportError 또는 DLL 로딩 OSError이면 pypdf로 대체하고 한글·줄바꿈 품질을 보장하지 못한다는 로그를 남긴다. placeholder PNG·페이지 번호·반환 형식·샘플 제목 생성 방식·API 계약은 유지했다. FE·실제 AI `pipeline/`은 수정하지 않았다.
+    - **사용자 브라우저 확인:** 동일 PDF를 새로 업로드한 FE 화면에서 1번 `Software Engineering Course` 정상 띄어쓰기, 2번 `소프트웨어 공학(Software Engineering)`, 3번 `강의 정보` 정상 한글을 확인했다는 사용자 보고를 받았다. 사용자 확인 환경은 PyMuPDF 2.1 정상 로딩, `AI_MODE=sample`, 새로운 임시 데이터 폴더다. 이 기록은 사용자 화면 확인이며, 해당 원본의 DB 직접 조회나 lectureId를 확인한 기록은 아니다.
+    - **자동 검증:** 수정 직후 `backend/tests`와 `pipeline/tests` 전체 303개 통과(신규 14개). 최신 main `2913a2e` 병합 후에는 AI 담당 신규 테스트 1개를 포함해 304개 통과했다. 합성 PDF·모의 추출기·격리 임시 DB로 한글·줄바꿈, DLL 실패 대체 경로, DB→제목→outline API·이미지·음성 회귀를 확인했다. 유료 AI 호출은 하지 않았다.
+    - **기존 결과 및 남은 범위:** 이미 저장된 텍스트·제목은 자동 복구되지 않으므로 수정 서버에서 원본 PDF를 새 강의로 재업로드하고 모드를 다시 선택해야 한다. 기존 DB는 수정·삭제하지 않는다. 실제 AI 모드 전체 통합은 아직 검증하지 않았다.
+
 ### Q-AI-28 · [to:BE] · 열림
 - 질문: AI 함수 5개가 모두 생겼어요. 실제 AI 모드(`AI_MODE` ≠ sample) 연결에 아래 세 가지를 확인해 주세요.
 - 배경: `pipeline/`에 `describe_pages`, `plan_outline`을 새로 만들고 5개를 패키지 맨 위에 모았다(main `016cfdc` 이후). 계약은 [contracts/pipeline.md](../contracts/pipeline.md). AI 쪽 테스트 49개와 `backend/tests`를 함께 돌려 214개 통과(유료 호출 없음). 실제 호출로는 강의 5개의 해설·분할, 클립 5개의 설계도·음성을 확인했다([실험 기록](../sandbox/ai/2026-11-12-mode-split-test.md)).
