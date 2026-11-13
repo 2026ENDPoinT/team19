@@ -100,16 +100,16 @@
   to { opacity: 1; }
 }
 .player-shape-enter { animation: player-shape-enter 250ms ease-out; }
-.player-stage[data-playing="false"] .player-shape-enter { animation: none; }
+
 @media (prefers-reduced-motion: reduce) {
   .player-shape-enter { animation: none; }
 }
 
-.player-slots--titled { padding-top: 32px; }
-.player-slot--title { position: absolute; top: 40px; left: 20px; width: calc(100% - 40px); height: 42px; }
+.player-slots--titled { padding-top: 76px; }
+.player-slot--title { position: absolute; top: 66px; left: 20px; width: calc(100% - 40px); height: 60px; }
 .player-code-line.player-highlight { background: none; outline: none; }
 
-.player-slot--title .player-text--title { font-size: 26px; white-space: nowrap; text-wrap: nowrap; }
+.player-slot--title .player-text--title { font-size: 34px; white-space: nowrap; text-wrap: nowrap; }
 
 .player-icon-button--off { opacity: 0.55; }
 
@@ -132,12 +132,12 @@
 /* 위 보조 자리(place top): 제목 아래 작게. 옮겨질 때 위로 미끄러지며 나타난다. */
 @keyframes player-place-in { from { opacity: 0; transform: translateY(40px) scale(1.4); } to { opacity: 1; transform: none; } }
 .player-slot--aux { animation: player-place-in 320ms ease-out; }
-.player-stage[data-playing="false"] .player-slot--aux { animation: none; }
+
 @media (prefers-reduced-motion: reduce) { .player-slot--aux { animation: none; } }
 
 .player-status-line { flex-shrink: 0; padding: 4px 8px; border-left: 2px solid var(--player-mint); border-radius: 4px; background: #4fe3c112; }
 .player-status-line .player-text--keyword { font-size: 18px; line-height: 1.4; text-align: left; }
 @keyframes player-scene-in { from { opacity: 0; } to { opacity: 1; } }
 .player-slots { animation: player-scene-in 180ms ease-out; }
-.player-stage[data-playing="false"] .player-slots { animation: none; }
+
 @media (prefers-reduced-motion: reduce) { .player-slots { animation: none; } }

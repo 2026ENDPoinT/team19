@@ -76,7 +76,7 @@ function preferredHeight(element: Entity): number {
   }
   if (Array.isArray(element.lines)) return element.lines.length * 31 + 16
   if (typeof element.page === 'number') return 190
-  if (element.slot === 'top' && element.style === 'title') return 42
+  if (element.slot === 'top' && element.style === 'title') return 60
   const text = String(element.content ?? '')
   return Math.min(140, Math.max(48, Math.ceil(text.length / 20) * 30 + 12))
 }
@@ -90,7 +90,7 @@ function StageSlots({state,pageUrl}:{state:PlayerState;pageUrl:(page:number)=>st
   const anyLit = visible.some(isLit)
   if(invalid)return <p role="alert">현재 지원 범위와 맞지 않는 장면 배치입니다.</p>
   return (
-      <div key={state.sceneId} className={`player-slots${title ? ' player-slots--titled' : ''}`}>
+      <div key={state.resetSceneId} className={`player-slots${title ? ' player-slots--titled' : ''}`}>
         {status && <div className="player-status-line" aria-hidden={status.hidden || undefined} style={{ visibility: status.hidden ? 'hidden' : undefined, opacity: dimsElement(status, anyLit) ? DIM_OPACITY : undefined }}><ElementView element={status} pageUrl={pageUrl} caption={state.caption} /></div>}
         {topAux && <div className="player-slot player-slot--aux" key={`aux-${topAux.id}`} style={{ opacity: dimsElement(topAux, anyLit) ? DIM_OPACITY : undefined, flexBasis: Math.max(72, preferredHeight(topAux) * .78) }}>
           <FitContent key={topAux.id}><ElementView element={topAux} pageUrl={pageUrl} caption={state.caption} /></FitContent>
@@ -99,8 +99,8 @@ function StageSlots({state,pageUrl}:{state:PlayerState;pageUrl:(page:number)=>st
           const element = reserved.find((item) => item.slot === slot)
           if (!element || element.id === attached?.description.id) return null
           const description = element.id === attached?.figureId ? attached.description : null
-          return <div className={`player-slot${slot === 'top' && element.style === 'title' ? ' player-slot--title' : ''}`} key={slot} aria-hidden={element.hidden || undefined} style={{ visibility: element.hidden ? 'hidden' : undefined, opacity: dimsElement(element, anyLit) ? DIM_OPACITY : undefined, flexBasis: preferredHeight(element) + (description ? preferredHeight(description) + 10 : 0) }}>
-            <FitContent key={element.id}>{description && <div className="player-figure-description" aria-hidden={description.hidden || undefined} style={{ visibility: description.hidden ? 'hidden' : undefined }}><ElementView element={description} pageUrl={pageUrl} caption={state.caption} /></div>}<ElementView element={element} pageUrl={pageUrl} caption={state.caption} /></FitContent>
+          return <div className={`player-slot${slot === 'top' && element.style === 'title' ? ' player-slot--title' : ''}`} key={element.id} aria-hidden={element.hidden || undefined} style={{ visibility: element.hidden ? 'hidden' : undefined, opacity: dimsElement(element, anyLit) ? DIM_OPACITY : undefined, flexBasis: preferredHeight(element) + (description ? preferredHeight(description) + 10 : 0) }}>
+            <FitContent key={element.id}>{description && <div className="player-figure-description" aria-hidden={description.hidden || undefined} style={{ visibility: description.hidden ? 'hidden' : undefined }}><ElementView element={description} pageUrl={pageUrl} caption={state.caption} /></div>}<ElementView key={element.id} element={element} pageUrl={pageUrl} caption={state.caption} /></FitContent>
           </div>
         })}
       </div>
