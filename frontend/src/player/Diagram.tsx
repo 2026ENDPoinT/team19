@@ -1,6 +1,6 @@
 import { useId } from 'react'
 import type { Entity } from './state'
-import { layoutDiagram } from './diagramLayout'
+import { layoutDiagram, layoutNode } from './diagramLayout'
 
 type Edge = Entity & { from: string; to: string }
 
@@ -9,8 +9,6 @@ export default function Diagram({ element }: { element: Entity }) {
   const nodes = element.nodes ?? []
   const edges = (element.edges ?? []) as Edge[]
   const vertical = element.layout === 'column'
-  const nodeWidth = vertical ? 190 : 98
-  const nodeHeight = vertical ? 40 : 36
   let geometry
   try { geometry = layoutDiagram(nodes, edges, String(element.layout)) }
   catch (cause) { return <p role="alert" className="player-unsupported">{cause instanceof Error ? cause.message : '다이어그램 배치 오류'}</p> }
@@ -28,7 +26,8 @@ export default function Diagram({ element }: { element: Entity }) {
           const distance = Math.hypot(dx, dy)
           if (!distance) return null
           function boundary(node: Entity | undefined) {
-            return node?.shape === 'circle' ? 23 : Math.min(dx ? (nodeWidth / 2 + 1) * distance / Math.abs(dx) : Infinity, dy ? (nodeHeight / 2 + 1) * distance / Math.abs(dy) : Infinity)
+            const size = layoutNode(node!, String(element.layout))
+            return node?.shape === 'circle' ? size.radius + 1 : Math.min(dx ? (size.width / 2 + 1) * distance / Math.abs(dx) : Infinity, dy ? (size.height / 2 + 1) * distance / Math.abs(dy) : Infinity)
           }
           const a = boundary(fromNode), b = boundary(toNode) + 5
           return <g key={edge.id}>
@@ -38,11 +37,12 @@ export default function Diagram({ element }: { element: Entity }) {
         })}
         {nodes.filter((node) => !node.hidden).map((node) => {
           const point = geometry.positions.get(node.id)!
+          const size = layoutNode(node, String(element.layout))
           const fill = node.highlighted ? '#1e40af' : '#1e293b'
           const stroke = node.highlighted ? '#fbbf24' : '#94a3b8'
           return <g key={node.id} transform={`translate(${point.x},${point.y})`}>
-            {node.shape === 'circle' ? <circle r="22" fill={fill} stroke={stroke} strokeWidth="2" /> : <rect x={-nodeWidth / 2} y={-nodeHeight / 2} width={nodeWidth} height={nodeHeight} rx="7" fill={fill} stroke={stroke} strokeWidth="2" />}
-            <text textAnchor="middle" dominantBaseline="middle" fill="#f8fafc" fontSize={vertical && node.shape !== 'circle' ? 16 : 13}>{String(node.label ?? '')}</text>
+            {node.shape === 'circle' ? <circle r={size.radius} fill={fill} stroke={stroke} strokeWidth="2" /> : <rect x={-size.width / 2} y={-size.height / 2} width={size.width} height={size.height} rx="7" fill={fill} stroke={stroke} strokeWidth="2" />}
+            <text textAnchor="middle" dominantBaseline="middle" fill="#f8fafc" fontSize={size.fontSize}>{size.lines.map((line, index) => <tspan key={index} x={0} y={(index - (size.lines.length - 1) / 2) * size.lineHeight}>{line}</tspan>)}</text>
           </g>
         })}
       </svg>

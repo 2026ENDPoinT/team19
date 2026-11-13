@@ -1,5 +1,6 @@
 import { ApiRequestError, ensureSampleMode, preparationDelay, request } from './preparation.ts'
-export type LearningMode = 'intro' | 'review' | 'exam'
+import type { LearningMode } from '../data/learningModes.ts'
+export type { LearningMode } from '../data/learningModes.ts'
 export type OutlineClip = { id: string; order: number; title: string; sourcePages: number[]; status: 'pending' | 'running' | 'completed' | 'failed'; message: string }
 export type Outline = { id: string; mode: LearningMode; status: 'pending' | 'planning' | 'ready' | 'failed'; jobId: string | null; clips: OutlineClip[] }
 export type OutlineSnapshot = { outline: Outline; stage: string; message: string }
