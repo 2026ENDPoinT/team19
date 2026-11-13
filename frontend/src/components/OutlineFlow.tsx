@@ -3,8 +3,9 @@ import ProcessingStatus from './ProcessingStatus'
 import { clipsDone, jobStageLabel } from '../services/jobStages'
 import { useEffect, useRef, useState } from 'react'
 import ActualClipPreview from './ActualClipPreview'
-import { watchOrCreateOutline } from '../services/outlines'
-import type { LearningMode, OutlineSnapshot } from '../services/outlines'
+import { watchOrCreateOutline, canRetryClip, retryClip } from '../services/outlines'
+import type { LearningMode, OutlineSnapshot, OutlineClip } from '../services/outlines'
+import { ApiRequestError } from '../services/preparation'
 import type { PreparedLecture } from '../services/preparation'
 type Props = { lecture: PreparedLecture; mode: LearningMode; modeName: string; fileName?: string; onBack: () => void }
 export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack }: Props) {
@@ -13,6 +14,27 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
   const [message, setMessage] = useState('')
   const [refresh, setRefresh] = useState(0)
   const [playingClip, setPlayingClip] = useState<string | null>(null)
+  const [retrying, setRetrying] = useState<string | null>(null)
+  const [retryMessage, setRetryMessage] = useState('')
+  const retryController = useRef<AbortController | null>(null)
+  const attemptedJobs = useRef(new Set<string>())
+  useEffect(() => () => retryController.current?.abort(), [])
+  async function handleRetry(clip: OutlineClip) {
+    if (!canRetryClip(clip) || retryController.current || attemptedJobs.current.has(clip.jobId!)) return
+    const controller = new AbortController()
+    retryController.current = controller
+    attemptedJobs.current.add(clip.jobId!)
+    setRetrying(clip.id); setRetryMessage('')
+    try { await retryClip(clip, controller.signal, lecture.aiMode) }
+    catch (cause) {
+      if (controller.signal.aborted) return
+      if (cause instanceof ApiRequestError && cause.status !== 409) attemptedJobs.current.delete(clip.jobId!)
+      setRetryMessage(cause instanceof Error ? cause.message : '재생성 요청을 확인하지 못했어요.')
+    } finally {
+      if (retryController.current === controller) retryController.current = null
+      if (!controller.signal.aborted) { setRetrying(null); setRefresh(value=>value+1) }
+    }
+  }
   const automaticAttempted = useRef(false)
   useEffect(() => {
     if (playingClip) return
@@ -47,6 +69,7 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
         <ProcessingStatus progress={snapshot?.outline.status === 'ready' ? { completed: snapshot.outline.clips.filter(clip => clip.status === 'completed').length, total: snapshot.outline.clips.length, done: clipsDone(snapshot.outline.clips) } : undefined} stage={snapshot?.stage} message={phase === 'creating' ? '클립을 만드는 중' : phase === 'loading' ? '클립을 확인하는 중' : snapshot?.outline.status === 'ready' ? '클립별 준비 상태를 확인하는 중' : undefined} />
         <p className="mt-3 text-sm leading-6 text-slate-500">완료된 클립은 나머지 작업 중에도 바로 재생할 수 있어요.</p>
       </div>}
+      {retryMessage && <p role="alert" className="mt-5 text-sm text-red-700">{retryMessage}</p>}
       {message && <div role="alert" className="mt-8 rounded-3xl border border-amber-200 bg-amber-50/60 p-6">
         <p className="text-xs font-semibold text-amber-700">요청·상태 확인 오류</p>
         <h2 className="mt-2 text-xl font-bold tracking-[-0.03em] text-slate-900">기존 클립 계획과 상태를 확인해 주세요</h2>
@@ -66,7 +89,8 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
             </div>
             <p className="mt-2 text-xs font-medium text-slate-400">근거 {clip.sourcePages.join(', ')}쪽</p>
             {clip.message && <p className="mt-3 break-words text-sm leading-6 text-red-700">{clip.message}</p>}
-            <button type="button" className="mt-3 rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:text-slate-400 disabled:hover:bg-transparent" disabled={clip.status !== 'completed'} onClick={() => setPlayingClip(clip.id)}>{clip.status === 'completed' ? '눌러서 학습 시작 →' : '재생 준비 중'}</button>
+            {canRetryClip(clip) && <button type="button" disabled={retrying !== null || attemptedJobs.current.has(clip.jobId!)} onClick={()=>void handleRetry(clip)} className="mt-3 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{retrying === clip.id ? '요청 중…' : attemptedJobs.current.has(clip.jobId!) ? '재생성 상태 확인 중' : '다시 만들기'}</button>}
+            {clip.status !== 'failed' && <button type="button" className="mt-3 rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:text-slate-400 disabled:hover:bg-transparent" disabled={clip.status !== 'completed'} onClick={() => setPlayingClip(clip.id)}>{clip.status === 'completed' ? '눌러서 학습 시작 →' : '재생 준비 중'}</button>}
           </div>
         </div>
       </article>)}</div>

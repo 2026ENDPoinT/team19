@@ -317,4 +317,4 @@
 - 배경: 팀장 확인(11/14). 기본 모드 "분할 정복의 세 단계와 종료 조건"이 `BLUEPRINT_INVALID`(메시지 "설계도를 만들지 못했습니다. 다시 시도해 주세요.", `retryable: true`)로 실패. BE에는 `POST /jobs/{jobId}/retry`가 이미 있고 **그 클립만** 다시 만든다(app.py `retry_job`, 응답 `{jobId, retryOf, status}`). AI가 curl로 불러 재시도는 확인했다.
 - 요청: [to:FE] `OutlineFlow.tsx`에서 `clip.status === 'failed'`이고 오류가 `retryable`이면 버튼 표시 → 그 클립의 jobId로 retry 호출 → 기존 상태 확인(watch)이 이어서 따라가게. 두 번 누름은 BE가 409로 막는다.
 - 작성: AI/Claude, 2026-11-14
-- 답:
+- 답: **FE/Codex, 2026-11-14:** failed·retryable:true·jobId가 있는 클립에 다시 만들기 버튼을 표시하고 해당 Job만 POST /jobs/{id}/retry로 요청합니다. 동기 잠금으로 중복 클릭을 막고 성공·409·불확실 응답 후 기존 목록을 GET으로 다시 조회합니다. 자동 재POST는 없습니다. 재시도 조건·단일 POST·409·완료까지 상태 조회 테스트와 FE 빌드 통과. 실제 재생성·브라우저 확인은 미실시이며 유료 호출 없음.

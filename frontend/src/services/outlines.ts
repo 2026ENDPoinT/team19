@@ -2,7 +2,7 @@ import { ApiRequestError, authorizeGeneration, preparationDelay, request } from 
 import type { ServerMode } from './preparation.ts'
 import type { LearningMode } from '../data/learningModes.ts'
 export type { LearningMode } from '../data/learningModes.ts'
-export type OutlineClip = { id: string; order: number; title: string; sourcePages: number[]; status: 'pending' | 'running' | 'completed' | 'failed'; message: string; jobId: string | null; stage: string }
+export type OutlineClip = { id: string; order: number; title: string; sourcePages: number[]; status: 'pending' | 'running' | 'completed' | 'failed'; message: string; retryable?: boolean; jobId: string | null; stage: string }
 export type Outline = { id: string; mode: LearningMode; status: 'pending' | 'planning' | 'ready' | 'failed'; jobId: string | null; clips: OutlineClip[] }
 export type OutlineSnapshot = { outline: Outline; stage: string; message: string }
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
@@ -18,7 +18,7 @@ export async function loadOutline(lectureId: string, mode: LearningMode, signal:
   if (!record(data) || typeof data.id !== 'string' || data.mode !== mode || !['pending','planning','ready','failed'].includes(String(data.status)) || !Array.isArray(data.clips)) throw new Error('클립 목록 응답 형식을 확인해 주세요.')
   const clips = data.clips.map((clip): OutlineClip => {
     if (!record(clip) || typeof clip.id !== 'string' || typeof clip.title !== 'string' || !Number.isInteger(clip.order) || Number(clip.order) < 0 || !Array.isArray(clip.sourcePages) || clip.sourcePages.some((page) => !Number.isInteger(page) || Number(page) < 1) || !['pending','running','completed','failed'].includes(String(clip.status))) throw new Error('클립 항목 형식을 확인해 주세요.')
-    return { id: clip.id, order: Number(clip.order), title: clip.title, sourcePages: clip.sourcePages as number[], status: clip.status as OutlineClip['status'], message: errorText(clip.error), jobId: typeof clip.jobId === 'string' ? clip.jobId : null, stage: clip.status === 'pending' ? 'queued' : '' }
+    return { id: clip.id, order: Number(clip.order), title: clip.title, sourcePages: clip.sourcePages as number[], status: clip.status as OutlineClip['status'], message: errorText(clip.error), retryable: record(clip.error) && clip.error.retryable === true, jobId: typeof clip.jobId === 'string' ? clip.jobId : null, stage: clip.status === 'pending' ? 'queued' : '' }
   })
   if (new Set(clips.map((clip) => clip.id)).size !== clips.length) throw new Error('클립 ID가 중복됐어요.')
   return { id: data.id, mode, status: data.status as Outline['status'], jobId: typeof data.jobId === 'string' ? data.jobId : null, clips: clips.sort((a,b) => a.order - b.order) }
@@ -48,7 +48,7 @@ export async function watchOutline(lectureId: string, mode: LearningMode, onUpda
       const job = await request(`/jobs/${encodeURIComponent(clip.jobId)}`, signal)
       if (!record(job) || job.id !== clip.jobId || !['pending','running','completed','failed'].includes(String(job.status))) throw new Error('클립 작업 응답을 확인해 주세요.')
       clip.stage = job.status === 'completed' ? '' : typeof job.stage === 'string' ? job.stage : ''
-      if (job.status === 'failed') { clip.status = 'failed'; clip.message = errorText(job.error) || '클립 준비에 실패했어요.' }
+      if (job.status === 'failed') { clip.status = 'failed'; clip.message = errorText(job.error) || '클립 준비에 실패했어요.'; clip.retryable = record(job.error) && job.error.retryable === true }
     }
     signal.throwIfAborted()
     onUpdate({ outline, stage, message })
@@ -65,4 +65,15 @@ export async function watchOrCreateOutline(lectureId: string, mode: LearningMode
   await createOutline(lectureId, mode, signal, { allowReal: true, expectedMode })
   signal.throwIfAborted()
   return watchOutline(lectureId, mode, onUpdate, signal, wait)
+}
+
+export function canRetryClip(clip: OutlineClip) {
+  return clip.status === 'failed' && clip.retryable === true && Boolean(clip.jobId)
+}
+export async function retryClip(clip: OutlineClip, signal: AbortSignal, expectedMode: ServerMode) {
+  if (!canRetryClip(clip)) throw new Error('다시 만들 수 있는 실패 클립이 아니에요.')
+  await authorizeGeneration(signal, true, expectedMode)
+  const data = await request(`/jobs/${encodeURIComponent(clip.jobId!)}/retry`, signal, {method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})
+  if (!record(data) || typeof data.jobId !== 'string' || !data.jobId || data.retryOf !== clip.jobId || !['pending','running'].includes(String(data.status))) throw new Error('재생성 접수 여부를 확인하지 못했어요. 상태를 다시 확인해 주세요.')
+  return data.jobId
 }
