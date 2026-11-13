@@ -77,6 +77,16 @@ assert.deepEqual(layoutDiagram(tree.nodes.map(node=>({...node,hidden:true})),tre
 for (const layout of ['row','column','tree']) {
   const size=layoutNode({id:'long',shape:'circle',label:'아주 긴 상태와 행동의 라벨입니다'},layout)
   assert.ok(size.lines.length > 1)
-  assert.equal(size.lines.join(''),'아주 긴 상태와 행동의 라벨입니다')
+  assert.equal(size.lines.join(' '),'아주 긴 상태와 행동의 라벨입니다')
 }
 console.log('PASS RL labels wrap inside circles, nodes do not overlap or clip, hidden positions stay stable')
+
+// 노드 글자는 띄어쓰기 자리에서 줄을 바꾸고, 긴 한 단어만 글자 단위로 자른다.
+{
+  const box = layoutNode({id:'a',label:'상태 가치 함수'}, 'row')
+  assert.ok(box.lines.every(line => ['상태','가치','함수','상태 가치','가치 함수'].includes(line)), box.lines.join('|'))
+  const long = layoutNode({id:'b',label:'가나다라마바사아자차'}, 'row')
+  assert.ok(long.lines.length > 1 && long.lines.join('') === '가나다라마바사아자차')
+  assert.deepEqual(layoutNode({id:'c',label:'뷰'}, 'row').lines, ['뷰'])
+  assert.deepEqual(layoutNode({id:'d',label:''}, 'row').lines, [''])
+}
