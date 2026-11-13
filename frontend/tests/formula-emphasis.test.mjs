@@ -4,7 +4,7 @@ import katex from 'katex'
 import { emphasizeFormula } from '../src/player/formulaEmphasis.ts'
 import { palette } from '../src/player/colors.ts'
 import { calculatePlayerState } from '../src/player/state.ts'
-assert.deepEqual(Object.values(palette), ['#4fe3c1','#ffdf00','#fb6b6e','#f52e7f'])
+assert.deepEqual(Object.values(palette), ['#ace6f3','#fcd871','#79b562','#ff6b4f'])
 const source = String.raw`V(s)=1+10+\gamma V(s')`
 assert.equal(emphasizeFormula(source,'설명',false),source)
 const part=emphasizeFormula(source,'$1$과 $\\gamma$를 설명해요',true)

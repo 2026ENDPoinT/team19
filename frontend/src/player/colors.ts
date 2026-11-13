@@ -1,4 +1,4 @@
-export const palette = { mint: '#4fe3c1', yellow: '#ffdf00', coral: '#fb6b6e', pink: '#f52e7f' } as const
+export const palette = { mint: '#ace6f3', yellow: '#fcd871', coral: '#79b562', pink: '#ff6b4f' } as const
 export const playerColorVariables = {
   '--player-mint': palette.mint, '--player-yellow': palette.yellow,
   '--player-coral': palette.coral, '--player-pink': palette.pink,
