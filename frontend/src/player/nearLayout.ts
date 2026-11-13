@@ -37,3 +37,18 @@ export function interpolateRect(from:Rect,to:Rect,progress:number):Rect {
   const t=Math.max(0,Math.min(1,progress)),eased=t*t*(3-2*t)
   return {x:from.x+(to.x-from.x)*eased,y:from.y+(to.y-from.y)*eased,width:to.width,height:to.height}
 }
+
+export function nearSpace(elements: Entity[], sizes: Record<string, {height:number}>) {
+  const result: Record<string,{above:number;below:number}> = {}
+  for (const label of elements) {
+    if (label.hidden || !label.near || !['above','below'].includes(label.near.side)) continue
+    let owner = elements.find(e=>e.id===label.near!.target || e.nodes?.some(n=>n.id===label.near!.target))
+    const visited = new Set<string>()
+    while (owner?.near && !visited.has(owner.id)) { visited.add(owner.id); const target=owner.near.target; owner=elements.find(e=>e.id===target || e.nodes?.some(n=>n.id===target)) }
+    if (!owner || owner.hidden) continue
+    const space=result[owner.id]??={above:0,below:0}
+    const side=label.near.side as 'above'|'below'
+    space[side] += (sizes[label.id]?.height ?? 36) + 8
+  }
+  return result
+}

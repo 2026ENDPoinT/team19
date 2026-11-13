@@ -15,7 +15,7 @@ try {
  const plain=draw([node])
  assert.ok(plain.includes('최대화'));assert.equal((plain.match(/<rect/g)||[]).length,0);assert.equal((plain.match(/<circle/g)||[]).length,0)
  assert.ok(plain.includes('fill="#ffffff"'))
- const active=draw([{...node,explaining:true}]);assert.ok(active.includes('fill="#4fe3c1"'));assert.ok(!active.includes('<rect'))
+ const active=draw([{...node,explaining:true}]);assert.ok(active.includes('fill="#ace6f3"'));assert.ok(!active.includes('<rect'))
  const mixed=draw([node,{id:'box',label:'구성 요소',shape:'box'},{id:'circle',label:'상태',shape:'circle'}])
  assert.equal((mixed.match(/<rect/g)||[]).length,1);assert.equal((mixed.match(/<circle/g)||[]).length,1)
  assert.ok(draw([{...node,stamp:'x'}]).includes('아님 표시'))

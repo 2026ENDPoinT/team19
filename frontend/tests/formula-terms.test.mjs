@@ -5,7 +5,7 @@ import { palette } from '../src/player/colors.ts'
 import { calculatePlayerState } from '../src/player/state.ts'
 const repeated=String.raw`x+\term{middle}{x}+x`
 assert.equal(renderFormulaTerms(repeated),'x+{x}+x')
-assert.equal(renderFormulaTerms(repeated,{middle:palette.coral}),String.raw`x+\textcolor{#fb6b6e}{x}+x`)
+assert.equal(renderFormulaTerms(repeated,{middle:palette.coral}),String.raw`x+\textcolor{#79b562}{x}+x`)
 for(const source of [
  String.raw`\frac{\term{n}{a_{1}+b^{2}}}{\term{d}{c}}`,
  String.raw`\term{outer}{\frac{\term{inner}{x}}{y}}`,

@@ -15,7 +15,7 @@ const base = () => import.meta.env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 export async function request(path: string, signal: AbortSignal, options: RequestInit = {}): Promise<unknown> {
   const response = await fetch(new URL(path, base()), { ...options, signal }).catch((cause: unknown) => {
     if (signal.aborted || (cause instanceof Error && cause.name === 'AbortError')) throw cause
-    throw new Error('서버에 연결하지 못했어요. 백엔드 실행 상태와 연결 주소를 확인해 주세요.')
+    throw new Error('서버에 연결하지 못했어요. 백엔드 실행 상태와 API 주소를 확인해 주세요. 개발 화면은 http://localhost:5173에서 열어 주세요. 다른 포트에서는 서버의 연결 허용 설정이 필요할 수 있어요.')
   })
   const data: unknown = await response.json().catch(() => null)
   signal.throwIfAborted()

@@ -135,7 +135,7 @@
 
 @media (prefers-reduced-motion: reduce) { .player-slot--aux { animation: none; } }
 
-.player-status-line { flex-shrink: 0; padding: 4px 8px; border-left: 2px solid var(--player-mint); border-radius: 4px; background: #4fe3c112; }
+.player-status-line { flex-shrink: 0; padding: 4px 8px; border-left: 2px solid var(--player-mint); border-radius: 4px; background: color-mix(in srgb, var(--player-mint) 7%, transparent); }
 .player-status-line .player-text--keyword { font-size: 18px; line-height: 1.4; text-align: left; }
 @keyframes player-scene-in { from { opacity: 0; } to { opacity: 1; } }
 .player-slots { animation: player-scene-in 180ms ease-out; }

@@ -7,7 +7,7 @@ import { dimsElement, DIM_OPACITY, isLit } from './focusDim'
 import './near.css'
 
 type Placement = Rect & { scale: number }
-type Props = { elements: Entity[]; stageRef: RefObject<HTMLDivElement | null>; renderElement: (element: Entity) => ReactNode; renderSnapshot: (elements: Entity[]) => ReactNode }
+type Props = { elements: Entity[]; stageRef: RefObject<HTMLDivElement | null>; renderElement: (element: Entity) => ReactNode; renderSnapshot: (elements: Entity[]) => ReactNode; onSizes: (sizes: Record<string,{height:number}>) => void }
 function collectAnchors(root: HTMLElement, stage: HTMLElement) {
   const rect=stage.getBoundingClientRect(),scale=rect.width/420||1,result=new Map<string,Rect>()
   root.querySelectorAll('[data-near-anchor], [data-near-cell]').forEach(node=>{
@@ -20,7 +20,7 @@ function collectAnchors(root: HTMLElement, stage: HTMLElement) {
   })
   return result
 }
-export default function NearLayer({elements,stageRef,renderElement,renderSnapshot}:Props) {
+export default function NearLayer({elements,stageRef,renderElement,renderSnapshot,onSizes}:Props) {
   const labels=useRef(new Map<string,HTMLDivElement>()),snapshots=useRef(new Map<string,HTMLDivElement>())
   const [placements,setPlacements]=useState<Record<string,Placement>>({})
   const attached=elements.filter(element=>element.near&&!element.hidden)
@@ -30,7 +30,9 @@ export default function NearLayer({elements,stageRef,renderElement,renderSnapsho
     if(!stage)return
     const anchors=collectAnchors(stage,stage),stageRect=stage.getBoundingClientRect(),stageScale=stageRect.width/420||1
     const caption=stage.querySelector(':scope > .player-caption')?.getBoundingClientRect()
-    const bounds:Rect={x:12,y:54,width:396,height:Math.max(100,(caption?(caption.top-stageRect.top)/stageScale:630)-62)}
+    const obstacles=[...stage.querySelectorAll('.player-slot--title, .player-status-line')].filter(node=>!node.closest('.player-stage-measure')).map(node=>node.getBoundingClientRect())
+    const top=Math.max(54,...obstacles.map(box=>(box.bottom-stageRect.top)/stageScale+8))
+    const bounds:Rect={x:12,y:top,width:396,height:Math.max(1,(caption?(caption.top-stageRect.top)/stageScale:630)-8-top)}
     const sizes=new Map<string,{width:number;height:number}>(),scales=new Map<string,number>()
     for(const element of attached){
       const label=labels.current.get(element.id)
@@ -39,6 +41,7 @@ export default function NearLayer({elements,stageRef,renderElement,renderSnapsho
       const scale=Math.min(1,260/Math.max(1,width),bounds.height/Math.max(1,height))
       sizes.set(element.id,{width:width*scale,height:height*scale});scales.set(element.id,scale)
     }
+    onSizes(Object.fromEntries([...sizes].map(([id,size])=>[id,{height:size.height}])))
     const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const boxes=layoutNearLabels(elements,anchors,sizes,bounds,(element,to)=>{
       const snapshot=snapshots.current.get(element.id),motion=element.attachMotion
