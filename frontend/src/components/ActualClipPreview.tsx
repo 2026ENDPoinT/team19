@@ -5,7 +5,7 @@ import { handlePlayerShortcut } from '../player/keyboardShortcuts'
 import PlayerControls from '../player/PlayerControls'
 import { calculatePlayerState } from '../player/state'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { attachFeedScroll } from '../player/feedScroll'
+// import { attachFeedScroll } from '../player/feedScroll'
 import '../player/feed.css'
 import { loadClip } from '../services/clips'
 import { evalClips, evalPageUrl, isEvalClip, loadEvalClip } from '../services/evalClips'
@@ -35,7 +35,8 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
     setClipId(next)
   }
 
-  useEffect(() => attachFeedScroll(() => surfaceRef.current?.querySelector<HTMLElement>('.player-viewport') ?? null), [])
+  // Scroll snapping is deferred; uncomment with the import to try it again.
+  // useEffect(() => attachFeedScroll(() => surfaceRef.current?.querySelector<HTMLElement>('.player-viewport') ?? null), [])
   useLayoutEffect(() => {
     if (!result || !alignAfterLoad.current) return
     setLoadingHeight(undefined)
