@@ -40,7 +40,7 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
-- **(11/14 · BE/Claude) D-50 최소 구현(`feature/be-personal-library`, 미병합·미Push).** `lectures.owner_id` 열 추가(기존 DB 보존), 업로드가 `X-Owner-Id` 저장, `GET /lectures`는 그 주인 것만(헤더 없으면 `[]`, 형식 오류는 422). 다른 API·`/assets` 접근 통제는 없음. 신규 테스트 14개 포함 BE·AI 342개 통과(유료 호출 없음). 계약은 [api.md](../../contracts/api.md)에 한계와 함께 기록. 병합은 팀장 확인 후.
+- **(11/14 · BE/Claude) D-50 최소 구현(`feature/be-personal-library`, main 병합 `64fadd4`).** `lectures.owner_id` 열 추가(기존 DB 보존), 업로드가 `X-Owner-Id` 저장, `GET /lectures`는 그 주인 것만(헤더 없으면 `[]`, 형식 오류는 422). 다른 API·`/assets` 접근 통제는 없음. 신규 테스트 14개 포함 BE·AI 342개 통과(유료 호출 없음). 계약은 [api.md](../../contracts/api.md)에 한계와 함께 기록. 팀장이 1안을 확정해 병합했다. FE 연동(목록 헤더·강의함 화면)은 FE 확인 전까지 미완료([Q-BE-07](../questions.md)).
 
 - **(11/14 · BE/Claude) Q-FE-14 BE 판단·D-50 설계.** 문장별 근거 페이지는 BE가 이미 보존함을 가짜 AI 테스트로 확인(`feature/be-line-source-check`, 미병합)하고 [P-FE-14](../proposals/P-FE-14-sentence-source-page.md)에 BE 의견을 남겼다. D-50은 사전 구현 허가 기록이 없어 코드 없이 설계·위험 분석만 [P-AI-05](../proposals/P-AI-05-personal-library.md) BE 의견에 적고 [Q-BE-06](../questions.md)으로 팀장 결정을 요청했다. 유료 호출 없음.
 
