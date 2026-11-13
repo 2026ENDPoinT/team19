@@ -65,12 +65,13 @@ function preferredHeight(element: Entity): number {
   return Math.min(140, Math.max(48, Math.ceil(text.length / 20) * 30 + 12))
 }
 
-export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlayback, controls }: {
+export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlayback, controls, captionsOn = true }: {
   state: PlayerState
   pageUrl: (page: number) => string | undefined
   isPlaying: boolean
   onTogglePlayback: () => void
   controls: ReactNode
+  captionsOn?: boolean
 }) {
   const frameRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
@@ -115,7 +116,7 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
           </div>
         })}
       </div>
-      <p className="player-caption" aria-label="현재 자막">{state.caption || '\u00a0'}</p>
+      <p className="player-caption" aria-label="현재 자막" style={captionsOn ? undefined : { visibility: 'hidden' }}>{state.caption || '\u00a0'}</p>
     </div>
     {controls}
     </div>

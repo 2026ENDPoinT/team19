@@ -11,6 +11,8 @@ type Props = {
   onTogglePlayback: () => void
   onRestart: () => void
   onFullscreen: () => void
+  captionsOn: boolean
+  onToggleCaptions: () => void
 }
 
 function clock(seconds: number) {
@@ -18,7 +20,7 @@ function clock(seconds: number) {
   return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}`
 }
 
-function Icon({ name }: { name: 'play' | 'pause' | 'sound' | 'mute' | 'fullscreen' | 'exit-fullscreen' | 'more' }) {
+function Icon({ name }: { name: 'play' | 'pause' | 'sound' | 'mute' | 'fullscreen' | 'exit-fullscreen' | 'more' | 'cc' }) {
   const paths = {
     play: 'M8 5v14l11-7z', pause: 'M7 5v14M17 5v14',
     sound: 'M11 4 5 9H2v6h3l6 5zM15 8c3 2 3 6 0 8M18 5c5 4 5 10 0 14',
@@ -26,11 +28,12 @@ function Icon({ name }: { name: 'play' | 'pause' | 'sound' | 'mute' | 'fullscree
     fullscreen: 'M9 3H3v6M15 3h6v6M3 15v6h6M15 21h6v-6',
     'exit-fullscreen': 'M3 8h5V3M16 3v5h5M21 16h-5v5M8 21v-5H3',
     more: 'M12 5v.01M12 12v.01M12 19v.01',
+    cc: 'M5 4h14a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zM10.5 9.5h-1.5a2.5 2.5 0 0 0 0 5h1.5M17.5 9.5h-1.5a2.5 2.5 0 0 0 0 5h1.5',
   }
   return <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill={name === 'play' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={name === 'more' ? 4 : 2} strokeLinecap="round" strokeLinejoin="round"><path d={paths[name]} /></svg>
 }
 
-export default function PlayerControls({ audioRef, time, duration, isPlaying, isFullscreen, onTogglePlayback, onRestart, onFullscreen }: Props) {
+export default function PlayerControls({ audioRef, time, duration, isPlaying, isFullscreen, onTogglePlayback, onRestart, onFullscreen, captionsOn, onToggleCaptions }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const moreRef = useRef<HTMLButtonElement>(null)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -98,6 +101,7 @@ export default function PlayerControls({ audioRef, time, duration, isPlaying, is
           </div>
         </div>
         <div className="player-control-group">
+          <button type="button" className={`player-icon-button${captionsOn ? '' : ' player-icon-button--off'}`} aria-label={captionsOn ? '자막 끄기' : '자막 켜기'} aria-pressed={captionsOn} onClick={onToggleCaptions}><Icon name="cc" /></button>
           <button ref={moreRef} type="button" className="player-icon-button" aria-label="더보기" aria-expanded={menuOpen} aria-controls="player-more-options" onClick={() => setMenuOpen((open) => !open)}><Icon name="more" /></button>
           <button type="button" className="player-icon-button" aria-label={isFullscreen ? '전체화면 종료' : '전체화면'} onClick={onFullscreen}><Icon name={isFullscreen ? 'exit-fullscreen' : 'fullscreen'} /></button>
         </div>

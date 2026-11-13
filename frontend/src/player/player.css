@@ -101,3 +101,5 @@
 .player-code-line.player-highlight { background: none; outline: none; }
 
 .player-slot--title .player-text--title { font-size: 40.5px; }
+
+.player-icon-button--off { opacity: 0.55; }
