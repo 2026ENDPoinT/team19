@@ -291,7 +291,7 @@ class SpeechTests(unittest.TestCase):
         clip["scenes"][0]["speech"] = ["배열을 반으로 갈라요.", ""]
         sent = []
 
-        def fake_tts(client, model, voice, text):
+        def fake_tts(client, model, voice, text, style=None):
             sent.append(text)
             return b"\x00\x00" * 2400
 
