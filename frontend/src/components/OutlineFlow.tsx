@@ -5,11 +5,12 @@ import { useEffect, useRef, useState } from 'react'
 import ActualClipPreview from './ActualClipPreview'
 import { createOutline, watchOutline } from '../services/outlines'
 import type { LearningMode, OutlineSnapshot } from '../services/outlines'
+import { RealGenerationConfirmationRequired } from '../services/preparation'
 import type { PreparedLecture } from '../services/preparation'
 type Props = { lecture: PreparedLecture; mode: LearningMode; modeName: string; fileName?: string; onBack: () => void }
 export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack }: Props) {
   const [snapshot, setSnapshot] = useState<OutlineSnapshot | null>(null)
-  const [phase, setPhase] = useState<'loading'|'idle'|'creating'|'watching'|'done'|'error'>('loading')
+  const [phase, setPhase] = useState<'loading'|'idle'|'confirm-generation'|'creating'|'watching'|'done'|'error'>('loading')
   const [message, setMessage] = useState('')
   const [refresh, setRefresh] = useState(0)
   const [playingClip, setPlayingClip] = useState<string | null>(null)
@@ -28,17 +29,20 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
     })
     return () => { controller.abort(); if (polling.current === controller) polling.current = null }
   }, [lecture.id, mode, refresh, playingClip])
-  async function start() {
+  async function start(allowReal = false) {
     if (posting.current) return
     polling.current?.abort()
     const controller = new AbortController()
     posting.current = controller
     setPhase('creating'); setMessage('')
     try {
-      await createOutline(lecture.id, mode, controller.signal)
+      await createOutline(lecture.id, mode, controller.signal, { allowReal, expectedMode:lecture.aiMode })
       if (!controller.signal.aborted) setRefresh((value) => value + 1)
     } catch (cause) {
-      if (!controller.signal.aborted) { setPhase('error'); setMessage(cause instanceof Error ? cause.message : '클립 준비 요청 오류') }
+      if (!controller.signal.aborted) {
+        if (cause instanceof RealGenerationConfirmationRequired) setPhase('confirm-generation')
+        else { setPhase('error'); setMessage(cause instanceof Error ? cause.message : '클립 준비 요청 오류') }
+      }
     } finally { if (posting.current === controller) posting.current = null }
   }
   if (playingClip) return <ActualClipPreview key={playingClip} initialClipId={playingClip} pages={lecture.pages} onBack={() => setPlayingClip(null)} />
@@ -55,8 +59,13 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
         <div aria-hidden="true" className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-xl font-bold text-blue-600 shadow-sm">≡</div>
         <h2 className="mt-5 text-xl font-bold tracking-[-0.03em] text-slate-900">이 모드의 클립 계획이 아직 없어요</h2>
         <p className="mt-2 text-sm leading-6 text-slate-500">선택한 모드로 강의자료의 클립 준비를 요청할 수 있어요.</p>
-        <button type="button" className="mt-6 h-12 w-full rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm shadow-blue-200 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:w-auto" onClick={start}>이 모드로 클립 준비 요청 →</button>
+        <button type="button" className="mt-6 h-12 w-full rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm shadow-blue-200 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:w-auto" onClick={() => void start()}>이 모드로 클립 준비 요청 →</button>
       </div>}
+      {phase === 'confirm-generation' && <section aria-label="실제 AI 클립 생성 비용 확인" className="mt-6 rounded-3xl border border-amber-200 bg-amber-50/60 p-5 sm:p-6">
+        <h2 className="font-bold text-slate-900">실제 AI 클립 생성 · 비용 발생 가능</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-600">이 모드의 분할 계획과 클립들의 시각화·음성을 생성해요. 여러 클립이 자동으로 준비될 수 있으며 AI API 비용이 발생할 수 있어요. 아직 생성 요청은 보내지 않았어요.</p>
+        <div className="mt-5 flex flex-wrap gap-3"><button type="button" className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" onClick={() => void start(true)}>비용 안내 확인 · 클립 생성 시작</button><button type="button" className="rounded-xl border border-slate-300 px-4 py-3 text-sm" onClick={() => setPhase('idle')}>돌아가기</button></div>
+      </section>}
       {(phase === 'loading' || phase === 'creating' || phase === 'watching') && <div className="mt-7">
         <ProcessingStatus stage={snapshot?.stage} message={phase === 'creating' ? '클립 준비를 요청하는 중' : phase === 'loading' ? '기존 클립 상태를 조회하는 중' : snapshot?.outline.status === 'ready' ? '클립별 준비 상태를 확인하는 중' : undefined} />
         <p className="mt-3 text-sm leading-6 text-slate-500">완료된 클립은 나머지 작업 중에도 바로 재생할 수 있어요.</p>
@@ -86,7 +95,7 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
         </div>
       </article>)}</div>
       {phase === 'done' && snapshot?.outline.status === 'ready' && <p className="mt-5 text-sm leading-6 text-slate-500">클립 {snapshot.outline.clips.length}개의 상태 확인을 마쳤어요. 실패한 클립의 재생성은 자동 요청하지 않아요.</p>}
-      <div className="mt-5 rounded-xl bg-slate-50 px-4 py-3 text-xs leading-5 text-slate-500"><strong className="text-slate-600">개발용 안내</strong> · PDF 발췌·대체 페이지 이미지·무음 음성을 사용하는 샘플 모드예요. 실제 AI 요약·TTS와 모드별 설명 품질은 연결 전이에요.</div>
+      <div className="mt-5 rounded-xl bg-slate-50 px-4 py-3 text-xs leading-5 text-slate-500"><strong className="text-slate-600">{lecture.aiMode === 'real' ? '실제 AI 모드' : '샘플 모드'}</strong> · {lecture.aiMode === 'real' ? 'AI가 생성한 설명과 음성을 제공해요. 학습 내용은 원본 자료와 함께 확인해 주세요.' : 'PDF 발췌·대체 페이지 이미지·무음 음성을 사용하는 개발용 결과예요.'}</div>
       <p className="mt-5 text-center text-xs leading-5 text-slate-400">화면을 나가면 조회는 멈추고 이미 접수한 서버 작업은 계속될 수 있어요.</p>
     </section>
   </main>

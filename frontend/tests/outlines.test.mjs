@@ -20,7 +20,7 @@ try {
   }
   let count = 0
   globalThis.fetch = async () => { count++; return Response.json({aiMode:'real'}) }
-  await assert.rejects(createOutline('lec_01','review',signal),/샘플 모드/)
+  await assert.rejects(createOutline('lec_01','review',signal),/비용/)
   assert.equal(count,1)
   globalThis.fetch = async url => url.pathname === '/health' ? Response.json({aiMode:'sample'}) : Response.json(body('outline.review.reused.ready'),{status:200})
   assert.equal((await createOutline('lec_01','review',signal)).reused,true)

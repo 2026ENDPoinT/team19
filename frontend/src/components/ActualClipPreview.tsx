@@ -1,6 +1,7 @@
 import { useAudioClock } from '../player/useAudioClock'
 import { samplePageUrl } from '../services/samplePages'
 import PlayerStage from '../player/PlayerStage'
+import { handlePlayerShortcut } from '../player/keyboardShortcuts'
 import PlayerControls from '../player/PlayerControls'
 import { calculatePlayerState } from '../player/state'
 import { useEffect, useRef, useState } from 'react'
@@ -12,6 +13,7 @@ type Props = { onBack: () => void; initialClipId?: string; pages?: Record<number
 
 export default function ActualClipPreview({ onBack, initialClipId, pages }: Props) {
   const [clipId, setClipId] = useState(initialClipId ?? 'clip-01')
+  const [captionsOn, setCaptionsOn] = useState(false)
   const [result, setResult] = useState<ClipResult | null>(null)
   const [error, setError] = useState('')
   const { audioRef, time, restart } = useAudioClock(result ? clipId + ':' + result.resultId : 'loading')
@@ -73,6 +75,17 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
     }
   }
 
+  useEffect(() => {
+    if (!result || error) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target instanceof Element ? event.target : null
+      const editing = Boolean(target?.closest('input:not([type="range"]), textarea, [role="textbox"], [contenteditable]:not([contenteditable="false"])'))
+      handlePlayerShortcut(event, audioRef.current, result.durationSec, () => { void togglePlayback() }, editing)
+    }
+    document.addEventListener('keydown', onKeyDown, true)
+    return () => document.removeEventListener('keydown', onKeyDown, true)
+  }, [result, error])
+
   let stage = null
   let stageError = ''
   if (result) {
@@ -116,19 +129,12 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
             {sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}
           </button>
           <div className={`actual-clip-layout${sourceOpen ? ' actual-clip-layout--with-source' : ''}`}>
-          <div className="actual-player" ref={surfaceRef} onKeyDown={(event) => {
-            // 화면(슬라이드)에 포커스가 있을 때만: 슬라이더의 기본 방향키 동작은 건드리지 않는다.
-            const step = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0
-            const audio = audioRef.current
-            if (!step || !audio || !(event.target instanceof Element) || !event.target.classList.contains('player-stage')) return
-            event.preventDefault()
-            audio.currentTime = Math.min(Math.max(0, audio.currentTime + step), result.durationSec)
-          }}>
+          <div className="actual-player" ref={surfaceRef}>
           <audio src={result.audioUrl} hidden preload="metadata" loop ref={audioRef}
             onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}
             onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
-          {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={pageUrl} isPlaying={isPlaying} onTogglePlayback={togglePlayback}
-            controls={<PlayerControls audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
+          {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={pageUrl} isPlaying={isPlaying} onTogglePlayback={togglePlayback} captionsOn={captionsOn}
+            controls={<PlayerControls captionsOn={captionsOn} onToggleCaptions={() => setCaptionsOn((on) => !on)} audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
           {playbackError && <p role="alert" className="mt-2 text-sm text-red-700">{playbackError}</p>}
           {!initialClipId && <div className="clip-feed-nav">
             <button type="button" aria-label="이전 클립" disabled={position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>

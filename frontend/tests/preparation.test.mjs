@@ -18,12 +18,12 @@ try {
     return Response.json(body('upload.accepted'), { status: 202 })
   }
   const ticket = await uploadPdf(new File(['%PDF-test'], 'test.pdf', { type: 'application/pdf' }), signal)
-  assert.deepEqual(ticket, { lectureId: 'lec_01', jobId: 'job_01' })
+  assert.deepEqual(ticket, { lectureId: 'lec_01', jobId: 'job_01', aiMode: 'sample' })
   assert.deepEqual(calls, [['/health','GET'],['/lectures','POST']])
   // A non-sample server must never receive the file.
   let realCalls = 0
   globalThis.fetch = async () => { realCalls++; return Response.json({ aiMode: 'real' }) }
-  await assert.rejects(uploadPdf(new File(['test'], 'test.pdf'), signal), /샘플 모드/)
+  await assert.rejects(uploadPdf(new File(['test'], 'test.pdf'), signal), /비용/)
   assert.equal(realCalls, 1)
   const sequence = ['prepare.pending', 'prepare.running', 'prepare.completed', 'lecture.ready']
   const seen = [], waits = [], paths = []
