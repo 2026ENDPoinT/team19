@@ -1,3 +1,4 @@
+import { nearSpace } from './nearLayout'
 import Grid from './Grid'
 import NearLayer from './NearLayer'
 import { figureDescription } from './figureDescription'
@@ -81,8 +82,9 @@ function preferredHeight(element: Entity): number {
   return Math.min(140, Math.max(48, Math.ceil(text.length / 20) * 30 + 12))
 }
 
-function StageSlots({state,pageUrl}:{state:PlayerState;pageUrl:(page:number)=>string|undefined}) {
+function StageSlots({state,pageUrl,sizes={}}:{state:PlayerState;pageUrl:(page:number)=>string|undefined;sizes?:Record<string,{height:number}>}) {
   const elements = state.elements
+  const spaces = nearSpace(elements,sizes)
   const visible = elements.filter((element) => !element.hidden)
   const { title, topAux, status, reserved, invalid } = stageComposition(elements)
   const attached = figureDescription(reserved, true)
@@ -92,14 +94,14 @@ function StageSlots({state,pageUrl}:{state:PlayerState;pageUrl:(page:number)=>st
   return (
       <div key={state.resetSceneId} className={`player-slots${title ? ' player-slots--titled' : ''}`}>
         {status && <div className="player-status-line" aria-hidden={status.hidden || undefined} style={{ visibility: status.hidden ? 'hidden' : undefined }}><ElementView element={status} pageUrl={pageUrl} caption={state.caption} /></div>}
-        {topAux && <div className="player-slot player-slot--aux" key={`aux-${topAux.id}`} style={{ opacity: dimsElement(topAux, anyLit) ? DIM_OPACITY : undefined, flexBasis: Math.max(72, preferredHeight(topAux) * .78) }}>
+        {topAux && <div className="player-slot player-slot--aux" key={`aux-${topAux.id}`} style={{ opacity: dimsElement(topAux, anyLit) ? DIM_OPACITY : undefined, paddingTop: spaces[topAux.id]?.above, paddingBottom: spaces[topAux.id]?.below, boxSizing: 'border-box', flexBasis: Math.max(72, preferredHeight(topAux) * .78) + (spaces[topAux.id]?.above??0) + (spaces[topAux.id]?.below??0) }}>
           <FitContent key={topAux.id}><ElementView element={topAux} pageUrl={pageUrl} caption={state.caption} /></FitContent>
         </div>}
         {slots.map((slot) => {
           const element = reserved.find((item) => item.slot === slot)
           if (!element || element.id === attached?.description.id) return null
           const description = element.id === attached?.figureId ? attached.description : null
-          return <div className={`player-slot${slot === 'top' && element.style === 'title' ? ' player-slot--title' : ''}`} key={element.id} aria-hidden={element.hidden || undefined} style={{ visibility: element.hidden ? 'hidden' : undefined, opacity: dimsElement(element, anyLit) ? DIM_OPACITY : undefined, flexBasis: preferredHeight(element) + (description ? preferredHeight(description) + 10 : 0) }}>
+          return <div className={`player-slot${slot === 'top' && element.style === 'title' ? ' player-slot--title' : ''}`} key={element.id} aria-hidden={element.hidden || undefined} style={{ visibility: element.hidden ? 'hidden' : undefined, opacity: dimsElement(element, anyLit) ? DIM_OPACITY : undefined, paddingTop: spaces[element.id]?.above, paddingBottom: spaces[element.id]?.below, boxSizing: 'border-box', flexBasis: preferredHeight(element) + (description ? preferredHeight(description) + 10 : 0) + (spaces[element.id]?.above??0) + (spaces[element.id]?.below??0) }}>
             <FitContent key={element.id}>{description && <div className="player-figure-description" aria-hidden={description.hidden || undefined} style={{ visibility: description.hidden ? 'hidden' : undefined }}><ElementView element={description} pageUrl={pageUrl} caption={state.caption} /></div>}<ElementView key={element.id} element={element} pageUrl={pageUrl} caption={state.caption} /></FitContent>
           </div>
         })}
@@ -115,6 +117,8 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
   controls: ReactNode
   captionsOn?: boolean
 }) {
+  const [nearSizes,setNearSizes] = useState<Record<string,{height:number}>>({})
+  const updateNearSizes=(next:Record<string,{height:number}>)=>setNearSizes(previous=>JSON.stringify(previous)===JSON.stringify(next)?previous:next)
   const frameRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
@@ -146,8 +150,8 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
           onTogglePlayback()
         }
       }}>
-      <StageSlots state={state} pageUrl={pageUrl} />
-      {state.elements.some(element=>element.near) && <NearLayer elements={state.elements} stageRef={stageRef} renderElement={element=><ElementView element={element} pageUrl={pageUrl} caption={state.caption} />} renderSnapshot={elements=><><StageSlots state={{...state,elements}} pageUrl={pageUrl} /><p className="player-caption">{breakAtCommas(state.caption)||'\u00a0'}</p></>} />}
+      <StageSlots state={state} pageUrl={pageUrl} sizes={nearSizes} />
+      {state.elements.some(element=>element.near) && <NearLayer onSizes={updateNearSizes} elements={state.elements} stageRef={stageRef} renderElement={element=><ElementView element={element} pageUrl={pageUrl} caption={state.caption} />} renderSnapshot={elements=><><StageSlots state={{...state,elements}} pageUrl={pageUrl} sizes={nearSizes} /><p className="player-caption">{breakAtCommas(state.caption)||'\u00a0'}</p></>} />}
       <p className="player-caption" aria-label="현재 자막" style={captionsOn ? undefined : { visibility: 'hidden' }}>{breakAtCommas(state.caption) || '\u00a0'}</p>
     </div>
     {controls}

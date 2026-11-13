@@ -19,7 +19,7 @@ export default function PreparationPanel({ fileName, preparation: data, onBack, 
         <h2 className="mt-2 text-xl font-bold tracking-[-0.03em] text-slate-900">{queryError ? '작업 상태를 불러오지 못했어요' : 'PDF 준비 상태를 확인해 주세요'}</h2>
         <p className="mt-2 break-words text-sm leading-6 text-slate-600">{data.message}</p>
         {queryError && <button type="button" className="mt-5 rounded-xl border border-amber-300 bg-white px-4 py-2.5 text-sm font-semibold text-amber-800 hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500" onClick={data.resume}>같은 작업 상태 다시 확인</button>}
-        {data.phase === 'failed' && <button type="button" className="mt-5 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" onClick={onBack}>파일 선택으로 돌아가기</button>}
+        {(data.phase === 'failed' || data.phase === 'upload-error') && <button type="button" className="mt-5 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" onClick={onBack}>파일 선택으로 돌아가기</button>}
       </div>}
       {data.lecture && <div className="mt-4 rounded-3xl border border-emerald-100 bg-emerald-50/60 p-5 sm:p-6">
         <p className="text-xs font-semibold text-emerald-700">준비 완료</p>

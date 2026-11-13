@@ -315,7 +315,7 @@ export default function App() {
                 >
                   PDF 파일 선택
                 </button>
-                <p className="mt-4 text-xs text-slate-400">PDF 형식</p>
+                <p className="mt-4 text-xs text-slate-400">PDF 형식 · 최대 100쪽 · 파일 크기 제한 없음</p>
               </div>
               )}
 
@@ -349,7 +349,7 @@ export default function App() {
                 </div>
               )}
 
-              {file && <FileSummary file={file} onReplace={openFilePicker} />}
+              {file && <><FileSummary file={file} onReplace={openFilePicker} /><p className="mt-3 text-xs text-slate-500">PDF 형식 · 최대 100쪽 · 파일 크기 제한 없음</p></>}
 
               <button
                 className="mt-5 flex h-13 w-full items-center justify-center rounded-xl bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
