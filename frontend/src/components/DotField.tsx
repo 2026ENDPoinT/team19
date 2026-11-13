@@ -17,8 +17,8 @@ export default function DotField({ spacing = 14, radius = 110, className = '' }:
     let frame = 0
 
     function resize() {
-      const rect = canvas!.getBoundingClientRect(), ratio = Math.min(2, globalThis.devicePixelRatio || 1)
-      width = rect.width; height = rect.height
+      const ratio = Math.min(2, globalThis.devicePixelRatio || 1)
+      width = canvas!.clientWidth; height = canvas!.clientHeight
       canvas!.width = Math.round(width * ratio); canvas!.height = Math.round(height * ratio)
       context!.setTransform(ratio, 0, 0, ratio, 0, 0)
       columns = Math.ceil(width / spacing); rows = Math.ceil(height / spacing)
@@ -37,7 +37,7 @@ export default function DotField({ spacing = 14, radius = 110, className = '' }:
         heat[index] += (target - heat[index]) * (target > heat[index] ? 0.35 : 0.06)
         const h = heat[index]
         if (h > 0.01) active = true
-        const size = 2 + h * 3.5
+        const size = Math.min(spacing * .8, 2 + h * 3.5)
         context!.fillStyle = h > 0.02 ? `rgba(37, 99, 235, ${0.25 + h * 0.75})` : 'rgba(148, 163, 184, 0.35)'
         context!.fillRect(x - size / 2, y - size / 2, size, size)
       }
@@ -46,12 +46,13 @@ export default function DotField({ spacing = 14, radius = 110, className = '' }:
 
     function loop() {
       frame = 0
-      if (draw() || pointer) frame = requestAnimationFrame(loop)
+      const active = draw()
+      if (!still && (active || pointer)) frame = requestAnimationFrame(loop)
     }
 
     function move(event: PointerEvent) {
       const rect = canvas!.getBoundingClientRect()
-      const x = event.clientX - rect.left, y = event.clientY - rect.top
+      const x = (event.clientX - rect.left) * width / rect.width, y = (event.clientY - rect.top) * height / rect.height
       pointer = x > -radius && y > -radius && x < width + radius && y < height + radius ? { x, y } : null
       if (!frame) frame = requestAnimationFrame(loop)
     }

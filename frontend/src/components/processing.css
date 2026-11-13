@@ -69,3 +69,12 @@
 @media (prefers-reduced-motion: reduce) { .reveal-text > span, .reveal-text--loop > span { animation: none; opacity: 1; } }
 
 .dot-field--art { inset: 0; z-index: -1; }
+.processing-dot-word { display: block; width: 100%; max-width: 340px; height: auto; overflow: hidden; letter-spacing: normal; }
+
+.processing-dot-letter { opacity: 0; animation: processing-letter-rise 7s cubic-bezier(.2, .7, .2, 1) both infinite; }
+@keyframes processing-letter-rise {
+  0% { opacity: 0; filter: blur(8px); transform: translateY(22px); }
+  14%, 78% { opacity: 1; filter: blur(0); transform: translateY(0); }
+  92%, 100% { opacity: 0; filter: blur(8px); transform: translateY(-22px); }
+}
+@media (prefers-reduced-motion: reduce) { .processing-dot-letter { animation: none; opacity: 1; } }
