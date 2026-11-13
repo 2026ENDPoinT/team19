@@ -32,29 +32,31 @@ PDF 하나를 넣으면 분할 계획과 클립 1개 이상의 설계도와 음�
 
 ## 현황 (세션마다 갱신)
 
-> 최종 갱신: 2026-11-12 · AI/Claude
+> 최종 갱신: 2026-11-13 · AI/Claude (해커톤 직전 인계)
 
-### 최근 한 일 (11/12)
-- **11/11 피드백 정리**([정리](../meetings/2026-11-11-feedback.md)): D-41(클립 1~2분, 상한 120초), D-42(문제 생성 미룸) 기록, Q-AI-25~27.
-- **AI 함수 5개 완성:** `describe_pages`(페이지 해설, 6쪽씩 동시 호출), `plan_outline`(분할 계획, 클립 수 상한은 내용 페이지에 비례)을 새로 만들고 `import pipeline`에 5개를 모았다. 기본 모델은 모두 Terra(환경변수로 변경). 설계도 프롬프트에 D-41 문장 수를 넣었다. 테스트 49개 + BE 테스트 포함 214개 통과.
-- **모드 분할 시험:** 강의 5개 × 모드 3개. 모델이 상한을 항상 꽉 채워서 클립 수는 상한이 정한다. 제목은 한국어 질문형, brief 품질 좋음([실험 기록](../../sandbox/ai/2026-11-12-mode-split-test.md)).
-- **평가 세트 첫 실행:** 다른 과목 클립 5개 설계도 + 음성([samples/eval/](../../samples/eval/README.md)). Terra 88~107초로 D-41 안. Haiku는 effort high 설정에서 출력이 잘려 비교 보류.
-- **speech 분리 시험 반영**(P-AI-04, 팀장 지시): 프롬프트, 검사기, 음성 생성, docs/04.
-- FE용 다른 과목 화면 샘플 [se-pipe-filter](../../samples/se-pipe-filter/README.md)(Q-FE-07). Q-FE-08: pypdf가 굿노트 한글 층을 깨뜨리는 것을 확인해 BE에 전달.
-- 오늘 API 비용: 약 $1.2(해설 $0.60, 분할 $0.29, 설계도·음성 약 $0.3).
+### 최근 한 일 (11/13)
+- **D-43 column 공식 지원:** 검사기 `SUPPORTED_LAYOUTS`에 column, 설계도 프롬프트에 배치 선택 규칙(3개 이상 흐름·라벨 붙은 관계도는 column, 되돌아가는 선은 한 번에 3개 이하). MVC 평가 클립 재생성.
+- **수식 단계별 제시:** 프롬프트에 "항 3개 이상·겹친 식은 setText로 안쪽부터 한 부분씩" 규칙. 강화학습 평가 클립 재생성(벨만 식이 문장마다 쌓임).
+- **D-46 수식 항 강조:** `\term{id}{LaTeX}` + highlight args. 검사기·프롬프트는 준비했고 **스위치 `SUPPORTED_FORMULA_TERMS = False`** 다. FE 구현 알림(Q-FE-10)이 오면 True로 바꾸고 강화학습 클립을 다시 만든다.
+- **클립 수 상한 실험:** 숫자를 숨기면 AI가 1.5~3쪽마다 클립을 만든다. 상한은 "잘라 내는" 역할이다([실험 기록 7절](../../sandbox/ai/2026-11-12-mode-split-test.md)). 팀원 의견 요청 Q-AI-31(팀장은 A: 그대로).
+- 결정 기록 D-43~D-46. 질문 Q-AI-29(시연: 검증된 자료로 실제 생성), Q-AI-30(FE 꺾인 선), Q-AI-31. Q-FE-08에 05번 PDF 글꼴 정보 답.
+- 오늘 API 비용 약 $0.2(재생성 2개, 상한 실험).
 
 ### 다음 할 일
-- **팀장 검증(11/13):** 분할 계획의 클립 수("몇 쪽당 1개" 값), eval 음성 5개 청취(speech), 선수 클립 유지 여부, Haiku를 effort 낮춰 다시 비교할지.
-- **팀장 결정 대기:** P-AI-04 확정, P-FE-06 column(승인되면 `SUPPORTED_LAYOUTS`에 추가), P-FE-05/07/08 AI 의견, Q-AI-25 서버 구조, Q-AI-26 모드 이름(FE는 입문/기본/심화 선호).
-- **API 비용 줄이기:** 설계도 입력의 절반 이상이 프롬프트 예시(16KB)다. 예시 줄이기·캐싱 효과를 잰다.
-- **평가 세트 나머지:** A(지금)·B(예시 없음)·E(기법 조각 예시) 비교, Sol ↔ Sonnet, Terra ↔ Haiku 비교(Q-AI-07). holdout 3개는 마지막에.
-- **의미 검사를 `pipeline/validate.py`에 넣기:** "문장마다 새로 보이는 값이 그 문장에 나오는지".
-- 음성 자동 검사(받아써서 비교), TTS 비교는 후순위.
+- **[해커톤 체크리스트](../hackathon-checklist.md)를 따른다.** AI 몫 최우선: BE와 실제 모드 첫 통합(짧은 PDF, 팀장 확인 후) → 나온 AI 오류 고치기.
+- 그다음: D-46 스위치 켜기(FE 완료 후), 프롬프트 예시 줄여 비용 낮추기, 의미 검사(D-40).
+- 팀장 결정 대기: Q-AI-29·25(시연·서버), Q-AI-31(상한), Q-AI-26(모드 이름), P-AI-04(speech), 선수 클립, 오류 코드 이름, 예산 상한.
+
+### 새 세션 참고 (작업 요령)
+- 파이썬은 `.venv/Scripts/python.exe`, 한글 출력은 `PYTHONIOENCODING=utf-8`. 테스트: `.venv/Scripts/python.exe -m pytest pipeline/tests backend/tests -q`(254개, 약 1분).
+- 평가 클립 다시 만들기: `sandbox/ai/eval_run.py <강의> <모드> <클립id> --models gpt-6.1-terra --audio gpt-6.1-terra` (유료, 약 $0.05). 강의 추출 결과는 `materials/extract/`(git 제외).
+- FE 확인: `cd frontend && npm run dev` → http://localhost:5173 → "실제 클립 A/B 연결 확인" → 평가 클립 선택.
+- 코드 변경은 `feature/ai-…` 브랜치에서 커밋 → main에 `--no-ff` merge → push(D-31). 문서·샘플은 main 바로.
 
 ### 막힌 것
-- 없음. 참고: `gpt-4o-mini-tts`가 2027-01-06 종료 예정이다.
+- 없음. 참고: `gpt-4o-mini-tts`가 2027-01-06 종료 예정.
 
 ### 다른 역할에게 요청
-- [to:BE] Q-AI-28: 실제 AI 모드 연결(`AI_PIPELINE_MODULE=pipeline`, AI 오류 클래스 인식, plan id).
-- [to:FE] Q-FE-07: [samples/eval/](../../samples/eval/README.md) 5개 클립(음성 포함)을 그려 보고 어려운 장면을 알려 주세요. `speech` 칸은 무시해도 됩니다.
-- [to:FE] 실제 모드에서는 클립 제목이 한국어로 나옵니다(Q-FE-08). 분할 계획 결과 예시는 `sandbox/ai/mode-eval/`에 있어요(제품 코드가 의존하지 않게 참고만).
+- [to:BE] D-44·D-45 구현, 실제 모드 첫 통합을 AI와 같이(Q-AI-28).
+- [to:FE] D-46 `\term` 변환(Q-FE-10), 꺾인 선(Q-AI-30), 업로드 흐름의 실제 모드 허용.
+- [to:FE,BE] Q-AI-29(시연 방식), Q-AI-31(클립 수 상한) 의견.

@@ -7,11 +7,11 @@
       "id": "s1",
       "clear": true,
       "lines": [
-        "가치함수의 핵심은 미래 수익의 재귀 관계예요.",
-        "현재 수익은 즉시 보상과 이후 수익으로 나눠요.",
-        "이후 수익에는 할인율을 곱해서 더해요.",
-        "현재 상태의 가치는 이 수익을 평균한 값이에요.",
-        "이 관계를 이용해 다음 상태의 가치로 연결해요."
+        "벨만 방정식은 수익의 재귀 관계에서 출발해요.",
+        "먼저 지금 받는 보상을 생각해요.",
+        "여기에 할인한 이후의 수익을 더해요.",
+        "이 합이 현재 시점의 수익이에요.",
+        "가치는 이런 수익의 기댓값이에요."
       ],
       "speech": [
         "",
@@ -22,24 +22,24 @@
       ],
       "texts": [
         {
-          "id": "t1_title",
+          "id": "t_intro",
           "slot": "top",
           "style": "title",
           "content": "수익의 재귀 관계",
           "hidden": false
         },
         {
-          "id": "t1_formula",
+          "id": "f_return",
           "slot": "middle",
           "style": "formula",
-          "content": "$R_t=r_{t+1}+\\gamma R_{t+1}$",
+          "content": "$r_{t+1}$",
           "hidden": true
         },
         {
-          "id": "t1_note",
+          "id": "t_value",
           "slot": "bottom",
           "style": "keyword",
-          "content": "즉시 보상 + 이후 수익",
+          "content": "가치 = 수익의 기댓값",
           "hidden": true
         }
       ],
@@ -51,62 +51,45 @@
         {
           "line": 1,
           "do": "show",
-          "target": "t1_formula",
-          "args": []
-        },
-        {
-          "line": 1,
-          "do": "show",
-          "target": "t1_note",
+          "target": "f_return",
           "args": []
         },
         {
           "line": 2,
           "do": "setText",
-          "target": "t1_note",
+          "target": "f_return",
           "args": [
-            "이후 수익에 할인율 적용"
+            "$r_{t+1}+\\gamma R_{t+1}$"
           ]
         },
         {
           "line": 3,
           "do": "setText",
-          "target": "t1_formula",
+          "target": "f_return",
           "args": [
-            "$V^\\pi(s)=\\mathbb{E}_\\pi[R_t\\mid s_t=s]$"
-          ]
-        },
-        {
-          "line": 3,
-          "do": "setText",
-          "target": "t1_note",
-          "args": [
-            "상태가치 = 수익의 기댓값"
+            "$R_t=r_{t+1}+\\gamma R_{t+1}$"
           ]
         },
         {
           "line": 4,
-          "do": "setText",
-          "target": "t1_note",
-          "args": [
-            "현재 가치와 다음 가치"
-          ]
+          "do": "show",
+          "target": "t_value",
+          "args": []
         }
       ],
       "sourcePages": [
-        17,
-        21
+        17
       ]
     },
     {
       "id": "s2",
       "clear": true,
       "lines": [
-        "벨만 방정식은 현재 가치를 다음 가치로 연결해요.",
-        "각 경우에 즉시 보상과 할인된 다음 가치를 더해요.",
-        "행동은 현재 상태의 정책에 따라 확률로 평균해요.",
-        "각 행동에서 다음 상태도 전이확률로 평균해요.",
-        "가능한 경로마다 확률을 곱해서 모두 더하는 거예요."
+        "상태가치 식에서 먼저 즉시 보상을 봐요.",
+        "여기에 할인된 다음 상태의 가치를 더해요.",
+        "전이확률로 가능한 다음 상태들을 평균해요.",
+        "정책에 따라 선택할 행동들도 평균해요.",
+        "현재 상태가치는 이 두 평균으로 표현돼요."
       ],
       "speech": [
         "",
@@ -117,25 +100,18 @@
       ],
       "texts": [
         {
-          "id": "t2_title",
+          "id": "t_v",
           "slot": "top",
           "style": "title",
           "content": "상태가치의 벨만 방정식",
           "hidden": false
         },
         {
-          "id": "t2_formula",
+          "id": "f_v",
           "slot": "middle",
           "style": "formula",
-          "content": "$V^\\pi(s)=\\sum_a\\pi(s,a)\\sum_{s'}P^a_{ss'}[R^a_{ss'}+\\gamma V^\\pi(s')]$",
+          "content": "$R_{ss'}^a$",
           "hidden": false
-        },
-        {
-          "id": "t2_note",
-          "slot": "bottom",
-          "style": "keyword",
-          "content": "보상 + 할인된 다음 가치",
-          "hidden": true
         }
       ],
       "slides": [],
@@ -146,37 +122,39 @@
         {
           "line": 0,
           "do": "highlight",
-          "target": "t2_formula",
+          "target": "f_v",
           "args": []
         },
         {
           "line": 1,
-          "do": "show",
-          "target": "t2_note",
-          "args": []
+          "do": "setText",
+          "target": "f_v",
+          "args": [
+            "$R_{ss'}^a+\\gamma V^\\pi(s')$"
+          ]
         },
         {
           "line": 2,
           "do": "setText",
-          "target": "t2_note",
+          "target": "f_v",
           "args": [
-            "정책으로 행동을 평균"
+            "$\\sum_{s'}P_{ss'}^a\\left[R_{ss'}^a+\\gamma V^\\pi(s')\\right]$"
           ]
         },
         {
           "line": 3,
           "do": "setText",
-          "target": "t2_note",
+          "target": "f_v",
           "args": [
-            "전이확률로 다음 상태 평균"
+            "$\\sum_a\\pi(s,a)\\sum_{s'}P_{ss'}^a\\left[R_{ss'}^a+\\gamma V^\\pi(s')\\right]$"
           ]
         },
         {
           "line": 4,
           "do": "setText",
-          "target": "t2_note",
+          "target": "f_v",
           "args": [
-            "가능한 경로의 확률 가중합"
+            "$V^\\pi(s)=\\sum_a\\pi(s,a)\\sum_{s'}P_{ss'}^a\\left[R_{ss'}^a+\\gamma V^\\pi(s')\\right]$"
           ]
         }
       ],
@@ -188,14 +166,14 @@
       "id": "s3",
       "clear": true,
       "lines": [
-        "트리의 맨 위 상태에서 3개 행동 가지가 뻗어요.",
-        "각 행동 가지의 확률은 정책이 정해요.",
-        "한 행동에서 가능한 다음 상태들이 다시 갈라져요.",
-        "각 전이의 보상과 다음 상태의 가치를 함께 봐요.",
-        "다른 행동도 같은 방식으로 확률을 가중해요."
+        "이 평균을 나무의 가지로 살펴볼게요.",
+        "현재 상태에서 정책에 따라 행동이 갈라져요.",
+        "그중 한 행동의 가지를 따라가 볼게요.",
+        "환경은 확률에 따라 다음 상태와 보상을 내놓아요.",
+        "각 가지의 가능성을 반영해 가치를 평균해요."
       ],
       "speech": [
-        "트리의 맨 위 상태에서 세 개 행동 가지가 뻗어요.",
+        "",
         "",
         "",
         "",
@@ -203,92 +181,85 @@
       ],
       "texts": [
         {
-          "id": "t3_title",
+          "id": "t_tree",
           "slot": "top",
           "style": "title",
-          "content": "트리로 보는 평균",
+          "content": "가지로 보는 상태가치",
           "hidden": false
         },
         {
-          "id": "t3_note",
+          "id": "t_tree_note",
           "slot": "bottom",
-          "style": "keyword",
-          "content": "정책 → 전이 → 다음 가치",
+          "style": "body",
+          "content": "행동을 평균하고, 다음 상태도 평균",
           "hidden": true
         }
       ],
       "slides": [],
       "diagrams": [
         {
-          "id": "d3_tree",
+          "id": "d_tree",
           "slot": "middle",
           "layout": "tree",
           "hidden": false,
           "nodes": [
             {
-              "id": "n3_state",
-              "label": "상태 s",
+              "id": "n_state",
+              "label": "현재 상태 s",
               "shape": "circle"
             },
             {
-              "id": "n3_act1",
+              "id": "n_action",
               "label": "상태·행동 a",
-              "shape": "circle"
+              "shape": "box",
+              "hidden": true
             },
             {
-              "id": "n3_act2",
+              "id": "n_other",
               "label": "다른 행동",
-              "shape": "circle"
+              "shape": "box",
+              "hidden": true
             },
             {
-              "id": "n3_act3",
-              "label": "다른 행동",
-              "shape": "circle"
-            },
-            {
-              "id": "n3_next1",
+              "id": "n_next1",
               "label": "다음 상태",
               "shape": "circle",
               "hidden": true
             },
             {
-              "id": "n3_next2",
-              "label": "다음 상태",
+              "id": "n_next2",
+              "label": "다른 다음 상태",
               "shape": "circle",
               "hidden": true
             }
           ],
           "edges": [
             {
-              "id": "e3_act1",
-              "from": "n3_state",
-              "to": "n3_act1",
-              "label": "정책"
-            },
-            {
-              "id": "e3_act2",
-              "from": "n3_state",
-              "to": "n3_act2",
-              "label": "정책"
-            },
-            {
-              "id": "e3_act3",
-              "from": "n3_state",
-              "to": "n3_act3",
-              "label": "정책"
-            },
-            {
-              "id": "e3_next1",
-              "from": "n3_act1",
-              "to": "n3_next1",
-              "label": "전이·보상",
+              "id": "e_policy1",
+              "from": "n_state",
+              "to": "n_action",
+              "label": "정책",
               "hidden": true
             },
             {
-              "id": "e3_next2",
-              "from": "n3_act1",
-              "to": "n3_next2",
-              "label": "전이·보상",
+              "id": "e_policy2",
+              "from": "n_state",
+              "to": "n_other",
+              "label": "정책",
+              "hidden": true
+            },
+            {
+              "id": "e_next1",
+              "from": "n_action",
+              "to": "n_next1",
+              "label": "확률·보상",
+              "hidden": true
+            },
+            {
+              "id": "e_next2",
+              "from": "n_action",
+              "to": "n_next2",
+              "label": "확률·보상",
               "hidden": true
             }
           ]
@@ -300,109 +271,85 @@
         {
           "line": 0,
           "do": "highlight",
-          "target": "n3_state",
-          "args": []
-        },
-        {
-          "line": 1,
-          "do": "unhighlight",
-          "target": "n3_state",
-          "args": []
-        },
-        {
-          "line": 1,
-          "do": "highlight",
-          "target": "e3_act1",
+          "target": "n_state",
           "args": []
         },
         {
           "line": 1,
           "do": "show",
-          "target": "t3_note",
+          "target": "n_action",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "n_other",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e_policy1",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e_policy2",
           "args": []
         },
         {
           "line": 2,
           "do": "unhighlight",
-          "target": "e3_act1",
+          "target": "n_state",
           "args": []
         },
         {
           "line": 2,
-          "do": "show",
-          "target": "n3_next1",
-          "args": []
-        },
-        {
-          "line": 2,
-          "do": "show",
-          "target": "n3_next2",
-          "args": []
-        },
-        {
-          "line": 2,
-          "do": "show",
-          "target": "e3_next1",
-          "args": []
-        },
-        {
-          "line": 2,
-          "do": "show",
-          "target": "e3_next2",
+          "do": "highlight",
+          "target": "n_action",
           "args": []
         },
         {
           "line": 3,
-          "do": "highlight",
-          "target": "e3_next1",
+          "do": "show",
+          "target": "n_next1",
           "args": []
         },
         {
           "line": 3,
-          "do": "highlight",
-          "target": "e3_next2",
+          "do": "show",
+          "target": "n_next2",
           "args": []
         },
         {
           "line": 3,
-          "do": "highlight",
-          "target": "n3_next1",
+          "do": "show",
+          "target": "e_next1",
           "args": []
         },
         {
           "line": 3,
-          "do": "highlight",
-          "target": "n3_next2",
-          "args": []
-        },
-        {
-          "line": 4,
-          "do": "unhighlight",
-          "target": "e3_next1",
-          "args": []
-        },
-        {
-          "line": 4,
-          "do": "unhighlight",
-          "target": "e3_next2",
-          "args": []
-        },
-        {
-          "line": 4,
-          "do": "unhighlight",
-          "target": "n3_next1",
-          "args": []
-        },
-        {
-          "line": 4,
-          "do": "unhighlight",
-          "target": "n3_next2",
+          "do": "show",
+          "target": "e_next2",
           "args": []
         },
         {
           "line": 4,
           "do": "highlight",
-          "target": "n3_act2",
+          "target": "e_next1",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "highlight",
+          "target": "e_next2",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "show",
+          "target": "t_tree_note",
           "args": []
         }
       ],
@@ -414,11 +361,11 @@
       "id": "s4",
       "clear": true,
       "lines": [
-        "행동가치는 현재 상태와 첫 행동을 함께 정해요.",
-        "그래서 첫 행동을 정책으로 다시 평균하지 않아요.",
-        "가능한 다음 상태는 전이확률로 평균해요.",
-        "다음 상태의 행동은 정책에 따라 평균해요.",
-        "이렇게 보상과 할인된 다음 행동가치를 연결해요."
+        "행동가치 식은 다음 행동의 가치부터 볼게요.",
+        "다음 상태에서 정책에 따라 행동들을 평균해요.",
+        "그 평균을 할인하고 즉시 보상을 더해요.",
+        "이제 전이확률로 다음 상태들을 평균해요.",
+        "이렇게 현재 상태와 행동의 가치를 구해요."
       ],
       "speech": [
         "",
@@ -429,25 +376,18 @@
       ],
       "texts": [
         {
-          "id": "t4_title",
+          "id": "t_q",
           "slot": "top",
           "style": "title",
           "content": "행동가치의 벨만 방정식",
           "hidden": false
         },
         {
-          "id": "t4_formula",
+          "id": "f_q",
           "slot": "middle",
           "style": "formula",
-          "content": "$Q^\\pi(s,a)=\\sum_{s'}P^a_{ss'}[R^a_{ss'}+\\gamma\\sum_{a'}\\pi(s',a')Q^\\pi(s',a')]$",
+          "content": "$Q^\\pi(s',a')$",
           "hidden": false
-        },
-        {
-          "id": "t4_note",
-          "slot": "bottom",
-          "style": "keyword",
-          "content": "첫 행동은 이미 정해짐",
-          "hidden": true
         }
       ],
       "slides": [],
@@ -458,41 +398,100 @@
         {
           "line": 0,
           "do": "highlight",
-          "target": "t4_formula",
+          "target": "f_q",
           "args": []
         },
         {
           "line": 1,
-          "do": "show",
-          "target": "t4_note",
-          "args": []
+          "do": "setText",
+          "target": "f_q",
+          "args": [
+            "$\\sum_{a'}\\pi(s',a')Q^\\pi(s',a')$"
+          ]
         },
         {
           "line": 2,
           "do": "setText",
-          "target": "t4_note",
+          "target": "f_q",
           "args": [
-            "전이로 다음 상태를 평균"
+            "$R_{ss'}^a+\\gamma\\sum_{a'}\\pi(s',a')Q^\\pi(s',a')$"
           ]
         },
         {
           "line": 3,
           "do": "setText",
-          "target": "t4_note",
+          "target": "f_q",
           "args": [
-            "정책으로 다음 행동을 평균"
+            "$\\sum_{s'}P_{ss'}^a\\left[R_{ss'}^a+\\gamma\\sum_{a'}\\pi(s',a')Q^\\pi(s',a')\\right]$"
           ]
         },
         {
           "line": 4,
           "do": "setText",
-          "target": "t4_note",
+          "target": "f_q",
           "args": [
-            "보상 + 할인된 행동가치"
+            "$Q^\\pi(s,a)=\\sum_{s'}P_{ss'}^a\\left[R_{ss'}^a+\\gamma\\sum_{a'}\\pi(s',a')Q^\\pi(s',a')\\right]$"
           ]
         }
       ],
       "sourcePages": [
+        25
+      ]
+    },
+    {
+      "id": "s5",
+      "clear": true,
+      "lines": [
+        "행동가치에서는 첫 행동이 이미 정해져 있어요.",
+        "그래서 다음 상태의 행동부터 정책으로 평균해요."
+      ],
+      "speech": [
+        "",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t_compare",
+          "slot": "top",
+          "style": "title",
+          "content": "두 가치의 차이",
+          "hidden": false
+        },
+        {
+          "id": "t_first",
+          "slot": "middle",
+          "style": "body",
+          "content": "상태가치: 현재 행동부터 평균",
+          "hidden": false
+        },
+        {
+          "id": "t_second",
+          "slot": "bottom",
+          "style": "body",
+          "content": "행동가치: 첫 행동은 고정, 다음 행동부터 평균",
+          "hidden": false
+        }
+      ],
+      "slides": [],
+      "diagrams": [],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "t_second",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "t_first",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        21,
         25
       ]
     }

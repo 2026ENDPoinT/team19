@@ -7,7 +7,7 @@
 
 - 팀원 3명이 각자 자기 에이전트와 함께 일한다. 에이전트끼리는 직접 대화할 수 없다.
 - 그래서 **이 저장소의 파일이 에이전트 사이의 대화 채널이다.** 다른 역할에게 할 말은 반드시 파일에 남긴다.
-- 지금은 **개발 단계**다(2026-11-09부터). 계약 v0(`contracts/`, `docs/04`)은 확정됐고, 만들어 보며 고친다. 지금 목표는 `coordination/plan-first-clip.md`(D-34)다.
+- 지금은 **개발 단계**다(2026-11-09부터). 계약 v0(`contracts/`, `docs/04`)은 확정됐고, 만들어 보며 고친다. 지금 목표는 해커톤 당일 마무리 `coordination/hackathon-checklist.md`다.
 
 ## 2. 사실로 믿어도 되는 것
 
@@ -113,6 +113,7 @@
 | `coordination/questions.md` | 열린 질문 |
 | `coordination/questions-archive.md` | 끝난 질문 |
 | `coordination/plan-first-clip.md` | 11/11 목표와 역할별 필수 작업 (D-34) |
+| `coordination/hackathon-checklist.md` | 해커톤 당일 체크리스트 (11/13~14) |
 | `coordination/first-session.md` | 첫 세션 안내 순서 |
 | `coordination/proposals/` | 변경 제안서 |
 | `coordination/roles/` | 역할별 책임과 현황 |
