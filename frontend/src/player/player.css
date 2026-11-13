@@ -141,3 +141,12 @@
 .player-slots { animation: player-scene-in 180ms ease-out; }
 
 @media (prefers-reduced-motion: reduce) { .player-slots { animation: none; } }
+
+/* 배열 칸 착지: 12px 위에서 살짝 튀며 내려와 앉는다(차례는 animation-delay). */
+@keyframes grid-cell-drop { from { opacity: 0; transform: translateY(-12px); } 70% { opacity: 1; transform: translateY(1.5px); } to { opacity: 1; transform: none; } }
+.grid-cell-drop { animation: grid-cell-drop 420ms cubic-bezier(.2, .8, .3, 1) both; }
+/* 글자 쓰기: 왼쪽부터 한 글자씩 또렷해진다. 줄바꿈을 지키려고 inline 그대로 둔다. */
+@keyframes type-char { from { opacity: 0; } to { opacity: 1; } }
+.type-char { animation: type-char 220ms ease-out both; }
+/* 정지 중에 끄지 않는다: 끄면 재생을 누를 때마다 화면의 모든 칸·글자가 다시 떨어지고 써진다. */
+@media (prefers-reduced-motion: reduce) { :is(.grid-cell-drop, .type-char) { animation: none; } }

@@ -18,9 +18,9 @@ export default function Grid({ element }: { element: Entity }) {
       const point = layout.positions.get(`${r},${c}`)!
       return <text key={`i${r},${c}`} x={point.x} y={point.y - layout.cellHeight / 2 - 4} textAnchor="middle" fill={defaultTextColor} fontSize="10">{cells.length === 1 ? c : `${r},${c}`}</text>
     }))}
-    {cells.flatMap((row, r) => row.map((value, c) => ({ value, key: `${r},${c}` })))
+    {cells.flatMap((row, r) => row.map((value, c) => ({ value, key: `${r},${c}`, order: r * (cells[0]?.length ?? 0) + c })))
       // 순서를 바꾸지 않는다: swap이 끝날 때 칸이 빠졌다 다시 들어가며 깜빡이던 문제(Q-AI-42). 엇갈리는 칸은 위·아래로 휘어 겹치지 않는다.
-      .map(({ value, key }) => {
+      .map(({ value, key, order }) => {
       const to = layout.positions.get(key)!
       const motion = element.cellOrigins?.[key]
       const from = motion && layout.positions.get(`${motion.row},${motion.col}`)
@@ -35,8 +35,11 @@ export default function Grid({ element }: { element: Entity }) {
       const lines = layout.table ? gridTextLines(value, layout.cellWidth - 16) : [value]
       const tooLong = !layout.table && value.length * fontSize * .65 > layout.cellWidth - 8
       return <g key={key} opacity={dimsParts(element) && !cellLit(element, key) ? DIM_OPACITY : undefined} transform={`translate(${x},${y})`}>
-        <rect x={-layout.cellWidth / 2} y={-layout.cellHeight / 2} width={layout.cellWidth} height={layout.cellHeight} rx="5" fill={selected ? palette.mint : '#111d32'} fillOpacity={selected ? .18 : 1} stroke={selected ? palette.mint : defaultLineColor} strokeWidth={selected ? 2 : 1} />
-        <text x={0} y={0} dominantBaseline="central" textAnchor="middle" fill={selected ? palette.mint : defaultTextColor} fontSize={fontSize} fontWeight="600" textLength={tooLong ? layout.cellWidth - 8 : undefined} lengthAdjust="spacingAndGlyphs">{lines.map((line, index) => <tspan key={index} x={0} y={(index - (lines.length - 1) / 2) * 20}>{line}</tspan>)}</text>
+        {/* 처음 나타날 때 제자리 조금 위에서 왼쪽 칸부터 차례로 내려와 앉는다. */}
+        <g className="grid-cell-drop" style={{ animationDelay: `${Math.min(order * 0.05, 1.2)}s` }}>
+          <rect x={-layout.cellWidth / 2} y={-layout.cellHeight / 2} width={layout.cellWidth} height={layout.cellHeight} rx="5" fill={selected ? palette.mint : '#111d32'} fillOpacity={selected ? .18 : 1} stroke={selected ? palette.mint : defaultLineColor} strokeWidth={selected ? 2 : 1} />
+          <text x={0} y={0} dominantBaseline="central" textAnchor="middle" fill={selected ? palette.mint : defaultTextColor} fontSize={fontSize} fontWeight="600" textLength={tooLong ? layout.cellWidth - 8 : undefined} lengthAdjust="spacingAndGlyphs">{lines.map((line, index) => <tspan key={index} x={0} y={(index - (lines.length - 1) / 2) * 20}>{line}</tspan>)}</text>
+        </g>
       </g>
     })}
     {/* 구분선(P-AI-13): 줄 사이 가로선, 칸 사이 세로선. 분홍 점선(노랑은 강조 선·포인터 i와 겹쳐 4색 중 분홍). */}

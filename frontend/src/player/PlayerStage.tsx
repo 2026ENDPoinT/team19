@@ -31,13 +31,24 @@ function Formula({ source }: { source: string }) {
   return <span ref={ref} />
 }
 
-function RichText({ content, formula, caption, active, termColors, whole, emphasize = false }: { content: string; formula: boolean; caption: string; active: boolean; termColors?: Record<string, string>; whole?: boolean; emphasize?: boolean }) {
+function RichText({ content, formula, caption, active, termColors, whole, emphasize = false, typing = false }: { content: string; formula: boolean; caption: string; active: boolean; termColors?: Record<string, string>; whole?: boolean; emphasize?: boolean; typing?: boolean }) {
   const annotated = formula && content.includes('\\term')
   const render = (source: string) => annotated ? renderFormulaTerms(source, termColors, whole) : emphasizeFormula(source, caption, active)
+  // 글자 쓰기: 왼쪽부터 한 글자씩 나타난다. 긴 글도 전체 1.2초 안에 끝나게 간격을 줄인다. 수식은 덩어리째 그 차례에 나타난다.
+  let order = 0
+  const step = Math.min(0.03, 1.2 / Math.max(1, Array.from(content).length))
+  const typed = (text: string) => typing
+    ? Array.from(text).map((char, i) => <span key={i} className="type-char" style={{ animationDelay: `${(order++) * step}s` }}>{char}</span>)
+    : text
+  const formulaAt = (node: ReactNode, key: number) => {
+    if (!typing) return node
+    const delay = order * step; order += 3
+    return <span key={key} className="type-char" style={{ animationDelay: `${delay}s` }}>{node}</span>
+  }
   if (formula && !content.includes('$')) return <Formula source={render(content)} />
   return <>{content.split(/(\$[^$]+\$)/g).map((part, index) => part.startsWith('$') && part.endsWith('$')
-    ? <Formula key={index} source={render(part.slice(1, -1))} />
-    : <span key={index}>{emphasize ? splitEmphasis(part).map((piece, i) => piece.strong ? <strong key={i} className="player-text-emphasis">{piece.text}</strong> : breakAtCommas(piece.text)) : breakAtCommas(part)}</span>)}</>
+    ? formulaAt(<Formula key={index} source={render(part.slice(1, -1))} />, index)
+    : <span key={index}>{emphasize ? splitEmphasis(part).map((piece, i) => piece.strong ? <strong key={i} className="player-text-emphasis">{typed(piece.text)}</strong> : <span key={i}>{typed(breakAtCommas(piece.text))}</span>) : typed(breakAtCommas(part))}</span>)}</>
 }
 
 function ElementContent({ element, pageUrl, caption }: { element: Entity; caption: string; pageUrl: (page: number) => string | undefined }) {
@@ -55,7 +66,7 @@ function ElementContent({ element, pageUrl, caption }: { element: Entity; captio
     const style = ['title', 'body', 'keyword', 'formula'].includes(String(element.style)) ? String(element.style) : 'body'
     // **단어** 강조는 body·keyword에만(P-AI-06). 강조가 있으면 글 전체 강조색은 끈다.
     const emphasize = (style === 'body' || style === 'keyword') && hasEmphasis(element.content)
-    return <div className={`player-text player-text--${style}${style === 'formula' && element.content.includes('\\term') ? ' player-text--terms' : element.explaining && !emphasize ? ' player-text--explaining' : ''}`}><RichText content={element.content} formula={style === 'formula'} emphasize={emphasize} caption={caption} active={element.explaining === true} termColors={element.formulaTermColors} whole={element.formulaWhole} />{element.stamp && <span className="player-stamp-overlay" aria-hidden="true"><svg viewBox="-50 -50 100 100"><StampMark kind={element.stamp} size={84} /></svg></span>}</div>
+    return <div className={`player-text player-text--${style}${style === 'formula' && element.content.includes('\\term') ? ' player-text--terms' : element.explaining && !emphasize ? ' player-text--explaining' : ''}`}><RichText key={element.content} typing={style !== 'formula'} content={element.content} formula={style === 'formula'} emphasize={emphasize} caption={caption} active={element.explaining === true} termColors={element.formulaTermColors} whole={element.formulaWhole} />{element.stamp && <span className="player-stamp-overlay" aria-hidden="true"><svg viewBox="-50 -50 100 100"><StampMark kind={element.stamp} size={84} /></svg></span>}</div>
   }
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }
