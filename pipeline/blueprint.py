@@ -21,10 +21,23 @@ from pathlib import Path
 
 from pipeline import costlog
 from pipeline.errors import PipelineError, raise_if_no_credit
-from pipeline.validate import LIMITS, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_SLOTS, screen_text_errors, validate_blueprint
+from pipeline.validate import LIMITS, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_NEAR, SUPPORTED_SLOTS, screen_text_errors, validate_blueprint
 
 ROOT = Path(__file__).resolve().parents[1]
 # 수식 항 강조 규칙(D-46). 검사기의 SUPPORTED_FORMULA_TERMS가 True일 때만 프롬프트에 넣는다.
+# 글을 부품·노드·칸 옆에 붙이는 규칙(D-60). 검사기의 SUPPORTED_NEAR가 True일 때만 넣는다.
+NEAR_RULE = {
+    "ko": ("\n- **이름표·값·상태는 주인 옆에 붙인다(near).** body, keyword, formula 글에 slot 대신 "
+           "`\"near\": {\"target\": 주인 id, \"side\": \"above\"/\"below\"/\"left\"/\"right\"}`를 쓰면 그 부품·노드 옆에 붙는다. "
+           "격자의 한 칸 밑에 붙이려면 `\"cell\": \"3\"`을 더한다(예: 성공 칸 밑의 `P(X=1)=p`, 배열 옆의 \"피봇 8\"). "
+           "붙은 글은 자리를 차지하지 않고, 주인이 화면에 있는 동안만 보일 수 있다(주인을 hide하기 전에 글도 hide). "
+           "주인 하나에 붙은 글은 2개 이하, 짧게(15자 안팎)."),
+    "en": ("\n- **Attach labels, values, and states next to their owner (near).** For a body, keyword, or formula text, write "
+           "`\"near\": {\"target\": owner id, \"side\": \"above\"/\"below\"/\"left\"/\"right\"}` instead of slot to attach it beside that "
+           "component or node. To attach under one grid cell, add `\"cell\": \"3\"` (e.g. `P(X=1)=p` under the success cell, "
+           "\"피봇 8\" beside the array). An attached text takes no slot and may be visible only while its owner is on screen "
+           "(hide the text before hiding the owner). At most 2 texts per owner, short (about 15 chars)."),
+}
 TERMS_RULE = {
     "ko": ("\n- 수식의 한 부분을 설명할 때는 content 안에서 그 부분을 `\\term{항id}{LaTeX}`로 감싸고, 설명하는 문장에서 "
            "`highlight`의 args에 항id를 넣는다(예: target 수식id, args [\"r\"]). 설명이 끝나면 같은 args로 unhighlight한다. "
@@ -120,6 +133,7 @@ def _fill(prompt_file: Path, limits: str, lang: str = "ko") -> str:
     example = json.dumps(json.loads(EXAMPLE_FILE.read_text(encoding="utf-8")), ensure_ascii=False, separators=(",", ":"))
     return (prompt_file.read_text(encoding="utf-8")
             .replace("<<TERMS>>", TERMS_RULE[lang] if SUPPORTED_FORMULA_TERMS else "")
+            .replace("<<NEAR>>", NEAR_RULE[lang] if SUPPORTED_NEAR else "")
             .replace("<<LAYOUTS>>", ", ".join(SUPPORTED_LAYOUTS))
             .replace("<<SLOTS>>", ", ".join(SUPPORTED_SLOTS))
             .replace("<<LIMITS>>", limits)
