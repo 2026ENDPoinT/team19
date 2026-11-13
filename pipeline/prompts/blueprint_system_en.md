@@ -63,6 +63,10 @@ Actions run **the moment a sentence starts**, not when it ends. So the screen ri
 # Korean narration rules (follow strictly)
 
 - All narration, titles, labels, and on-screen text are in Korean, except code and terms as below. Narration uses the polite 해요체, like a lecturer explaining next to the student. Do not read the slide text verbatim.
+- **Open like a lecture.**
+  - Open the clip's first sentence, and the first sentence of a new concept, with a question (e.g. "분할 정복은 뭘까요?", "피봇은 왜 필요할까요?").
+  - When a scene moves on to the next part, open with a guiding phrase (e.g. "이번에는 합병 과정을 볼까요?", "종료 조건을 알아봐요", "코드를 볼게요", "시간 복잡도에 대해 설명해 볼게요"). Do not repeat the same phrase every scene.
+  - If the clip plan's kind is example, start the first sentence by announcing the example, like "예시를 들어 볼게요".
 - **Explain simply but stay professional.** Keep the exact terms; use the term, then explain it once in plain words. No childish analogies, exaggeration, or casual speech (반말).
 - **Code (codes) and pseudocode stay in the lecture's original language.** Never translate `if`, `for`, `return`, or variable and function names. If the lecture's pseudocode is in Korean, keep it as is.
 - **Terms follow the lecture.** Use a term as written in Korean if the lecture uses Korean. If the lecture writes it only in English and the Korean translation is awkward or rarely used, keep it in English (e.g. pivot, merge, softmax); then write its Korean pronunciation in speech.
