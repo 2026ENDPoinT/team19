@@ -75,7 +75,7 @@
 | [P-AI-10](P-AI-10-modes.md) | 학습 모드를 입문 · 기본 · 심화로 다시 정의 | 결정됨(D-57) |
 | [P-AI-11](P-AI-11-bars-done-headline.md) | 막대 격자, 완료 표시, 큰 글(headline) | 의견 수집중 |
 | [P-AI-12](P-AI-12-near.md) | 글을 다른 부품·노드·칸 옆에 붙이기(near) | 결정됨(D-60) |
-| [P-AI-13](P-AI-13-divide.md) | 격자 구분선(divide) | 의견 수집중 |
+| [P-AI-13](P-AI-13-divide.md) | 격자 구분선(divide) | 결정됨(D-68) |
 | [P-FE-12](P-FE-12-real-mode.md) | 실제 AI 서버 생성 요청 연결 | 결정됨, 적용 완료 |
 | [P-FE-13](P-FE-13-highlight-density.md) | 강조 밀도 제한과 상단 상위 개념 제목 | 결정됨, 적용 완료 |
 | [P-FE-14](P-FE-14-sentence-source-page.md) | 설명 문장별 근거 PDF 페이지 전달 | 보류 |
