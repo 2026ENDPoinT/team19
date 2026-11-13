@@ -315,3 +315,24 @@ def test_stamp_action():
     bad = copy.deepcopy(bp)
     bad["scenes"][0]["actions"][0]["args"] = ["v"]
     assert any("stamp" in e for e in validate_blueprint(bad, 1))
+
+
+def test_place_action_and_top_slot():
+    import copy
+    from pipeline.validate import validate_blueprint
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가", "나"], "speech": ["", ""],
+          "texts": [{"id": "t1", "slot": "top", "style": "title", "content": "제목", "hidden": False},
+                    {"id": "k1", "slot": "middle", "style": "keyword", "content": "핵심", "hidden": False},
+                    {"id": "k2", "slot": "middle", "style": "keyword", "content": "다음", "hidden": True}],
+          "slides": [], "diagrams": [], "grids": [], "codes": [],
+          "actions": [{"line": 1, "do": "place", "target": "k1", "args": ["top"]}, {"line": 1, "do": "show", "target": "k2", "args": []}],
+          "sourcePages": [1]}]}
+    assert validate_blueprint(bp, 1) == []                       # 위 자리: 제목 + 부품 1개
+    bad = copy.deepcopy(bp)
+    bad["scenes"][0]["texts"][2]["slot"] = "top"
+    bad["scenes"][0]["actions"][1]["target"] = "k2"
+    bad["scenes"][0]["actions"].append({"line": 1, "do": "place", "target": "k2", "args": ["top"]})
+    assert validate_blueprint(bad, 1)                            # 위 자리에 부품 2개 + 제목은 안 됨
+    bad2 = copy.deepcopy(bp)
+    bad2["scenes"][0]["actions"][0]["args"] = ["full"]
+    assert any("place" in e for e in validate_blueprint(bad2, 1))

@@ -75,6 +75,7 @@ ACTIONS = {
     "markLine": {"code"},
     "stamp": {"text", "node", "edge"},      # D-53, FE 구현 11/14
     "unstamp": {"text", "node", "edge"},
+    "place": {"text", "slide", "diagram", "grid", "code"},  # D-56, FE 구현 11/14
 }
 
 EPS = 1e-9
@@ -537,6 +538,11 @@ class _Checker:
         elif do == "stamp":
             if args not in (["x"], ["o"]):
                 self.err(w, 'stamp의 args는 ["x"] 또는 ["o"]')
+        elif do == "place":
+            if len(args) != 1 or args[0] not in self.slots or args[0] == "full":
+                self.err(w, f"place의 args는 자리 1개: {', '.join(s for s in self.slots if s != 'full')}")
+            else:
+                info["slot"], info["placed"] = args[0], True
         elif do == "unstamp":
             if args:
                 self.err(w, "unstamp는 args가 없어야 함")
@@ -573,6 +579,10 @@ class _Checker:
                 if info["kind"] == "slide" and len(info["marks"]) > LIMITS["marks_visible"]:
                     self.err(where, f"{ident}에 mark {len(info['marks'])}개 (상한 {LIMITS['marks_visible']}개)")
         for slot, ids in by_slot.items():
+            # 위 자리는 제목과, place로 올린 보조 부품 하나를 함께 둘 수 있다(D-56, 보조는 작게 그려짐).
+            titles = [i for i in ids if self.items[i]["kind"] == "text" and self.items[i]["ref"].get("style") == "title"]
+            if slot == "top" and len(ids) == 2 and len(titles) == 1 and any(self.items[i].get("placed") for i in ids):
+                continue
             if len(ids) > 1:
                 self.err(where, f"{slot} 자리에 부품 {len(ids)}개가 동시에 보임: {', '.join(ids)}")
         if by_slot.get("full") and len(by_slot) > 1:
