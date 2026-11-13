@@ -40,7 +40,7 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
-- **(11/14 · BE/Claude) 목록 대표 선정 수정(`feature/be-lecture-representative`, 미병합).** FE 검증에서 깨진 옛 강의가 정상 새 강의를 가리는 문제가 발견돼 `GET /lectures` 대표를 `ready → 최신 업로드`로 바꿨다(완성 클립 수 제외). API·DB·삭제 없음, 영구 삭제 브랜치(`feature/be-delete-lecture`)와 분리. 무과금 테스트 갱신. FE 브라우저 확인은 병합 뒤([Q-FE-19](../questions.md)).
+- **(11/14 · BE/Claude) 목록 대표 선정 수정(`feature/be-lecture-representative`, main 병합 `3135f0c`).** FE 검증에서 깨진 옛 강의가 정상 새 강의를 가리는 문제가 발견돼 `GET /lectures` 대표를 `ready → 최신 업로드`로 바꿨다(완성 클립 수 제외). API·DB·삭제 없음, 영구 삭제 브랜치(`feature/be-delete-lecture`)와 분리. 무과금 테스트 갱신. FE 브라우저 확인은 아직(요청함)([Q-FE-19](../questions.md)).
 
 - **(11/14 · BE/Claude) P-AI-11·P-AI-12 BE 영향 검토(코드 변경 없음).** 설계도는 AI 검사기를 통과한 뒤 `result_json`에 통째로 저장돼 그대로 반환되므로 `bars`·`done`·`headline`·`near`·`attach` 모두 BE 코드·API·DB 변경이 필요 없다고 두 제안서 BE 칸에 기록했다. 현재 AI 검사기는 `bars`만 통과시키고 나머지는 FE 구현 전이라 거부(`SUPPORTED_NEAR=False` 등)한다. 켜진 뒤 실제 통합 검증은 미완료.
 
