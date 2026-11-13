@@ -1,6 +1,6 @@
 # 04. 영상 설계도 형식 v0
 
-> 상태: 확정 v0 (D-26, D-27) · 담당: AI (형식), FE (재생) · 최종 수정: 2026-11-12 · AI/Claude
+> 상태: 확정 v0 (D-26, D-27) · 담당: AI (형식), FE (재생) · 최종 수정: 2026-11-13 · AI/Claude
 
 AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**를 쓰고, 브라우저가 그 설계도대로 화면을 그린다(D-05). 이 문서가 AI와 FE 사이의 기준이다. 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 결정 과정과 근거는 [P-AI-02](../coordination/proposals/P-AI-02-blueprint-v0.md), 샘플은 [sandbox/ai/blueprint_v0/](../sandbox/ai/blueprint_v0/)에 있다.
@@ -48,7 +48,7 @@ AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**�
 
 | 부품 | 필드 | 쓰임 |
 |---|---|---|
-| **texts** | `style`: title / body / keyword / formula, `content` | 제목, 핵심 문장, 키워드, 수식. `$...$` 안은 LaTeX이고 KaTeX로 그린다 |
+| **texts** | `style`: title / body / keyword / formula, `content` | 제목, 핵심 문장, 키워드, 수식. `$...$` 안은 LaTeX이고 KaTeX로 그린다. 수식 안의 항은 `\term{항id}{LaTeX}`로 감쌀 수 있다(D-46) |
 | **slides** (원본 조각) | `page`, `box`: [x, y, w, h] | 차트, 사진처럼 다시 그릴 수 없는 것. `page`는 그 장면의 `sourcePages`에 있어야 한다 |
 | **diagrams** | `layout`: row / column / tree / layers / cycle, `nodes`: [{id, label, shape: box / circle, hidden?}], `edges`: [{id, from, to, label?, hidden?}] | 흐름도, 계층, 구조도, 신경망, 상태 그래프 |
 | **grids** | `cells`: [[문자열]], `indexLabels`: true / false, `pointers`: [{id, label, row, col, hidden}] | 배열(한 줄), 행렬, 표. 줄마다 칸 수가 달라도 된다 |
@@ -69,7 +69,7 @@ AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**�
 | 동작 | 대상 | args | 뜻 |
 |---|---|---|---|
 | show / hide | 모든 부품, 노드, 선, 포인터 | 없음 | 나타나기, 사라지기 |
-| highlight / unhighlight | 텍스트, 노드, 선, 포인터, 격자, 코드 | 격자면 칸 위치 | 강조 켜기, 끄기 |
+| highlight / unhighlight | 텍스트, 노드, 선, 포인터, 격자, 코드 | 격자면 칸 위치, 수식이면 항id(생략하면 전체) | 강조 켜기, 끄기 |
 | move | 포인터 | 칸 위치 | 포인터 이동 |
 | swap | 격자 | 칸 위치 2개 | 두 칸 값 교환 |
 | setValue | 격자 | 칸 위치, 새 값 | 칸 값 바꾸기 |
@@ -77,6 +77,8 @@ AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**�
 | focus | 원본 조각 | `"x,y,w,h"` | 그림의 한 부분 확대 |
 | mark / unmark | 원본 조각 | `"x,y,w,h"`, 라벨(생략 가능) | 강조 상자와 짧은 라벨 표시, 지우기 |
 | markLine | 코드 | 줄 번호 | 지금 설명하는 줄 표시 |
+
+- **수식 항 강조 (D-46):** 수식 `content` 안에서 강조할 부분을 `\term{항id}{LaTeX}`로 감싸고, `highlight`의 args에 항id를 넣는다. 감싼 자리 하나만 가리키므로 같은 기호가 여러 번 나와도 정확하다. 분수·첨자 안도 감쌀 수 있다. 색은 FE가 한 highlight의 args 순서로 정하고(분홍 → 파랑 → 노랑 → 초록), unhighlight할 때까지 유지한다. args 없는 highlight는 수식 전체다. FE는 그리기 전에 `\term{id}{X}`를 강조 중이면 `\textcolor{색}{X}`, 아니면 `{X}`로 바꾼다. `\term`은 `lines`와 `speech`에 쓰지 않는다. 예시는 [P-FE-11](../coordination/proposals/P-FE-11-player-colors.md#ai).
 
 - 칸 위치: 한 줄 배열은 `"4"`, 2차원은 `"1,3"`, 범위는 `"0-3"`.
 - 강조는 **자리(칸)**에 붙는다. 두 칸을 교환해도 강조는 그 칸에 남는다.

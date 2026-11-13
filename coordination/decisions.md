@@ -186,3 +186,7 @@
 **실제 AI 모드의 동시 실행 수는 3개다.** 클립 생성 대기 시간을 줄이기 위해서다(review 10개 기준 약 10분 → 4분 안팎 예상). 예산 상한과 자동 생성 전 동의는 아직 정하지 않았다.
 근거: Q-AI-28 BE 결정 요청 ③, 강현
 
+### D-46 · 확정 · 2026-11-13
+**수식의 항별 색 강조는 수식 `content` 안에 `\term{항id}{LaTeX}`로 항을 감싸고, 기존 `highlight`/`unhighlight`의 args에 항id를 넣어 표현한다(P-FE-11 B안).** 새 필드는 없다. 색은 FE가 args 순서로 정한다(AI는 색을 정하지 않는다). 시점은 문장 단위(captions)다. **FE가 `\term` 변환을 먼저 구현하고 알리면** AI가 검사기 스위치(`SUPPORTED_FORMULA_TERMS`)를 켜고 프롬프트에 넣는다. 형식은 [docs/04](../docs/04-video-blueprint.md#동작-12개).
+근거: P-FE-11, Q-FE-10, 강현
+
