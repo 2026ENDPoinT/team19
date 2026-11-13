@@ -299,7 +299,7 @@ class SpeechTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d, \
                 mock.patch.object(audio, "_tts", side_effect=fake_tts), \
                 mock.patch.object(audio, "_client", return_value=object()):
-            r = audio.make_audio(clip, d, fmt="wav")
+            r = audio.make_audio(clip, d, fmt="wav", unit="line")  # 문장별 원고를 본다
         self.assertEqual(sent[0], "배열을 반으로 갈라요.")
         self.assertEqual(sent[1], clip["scenes"][0]["lines"][1])
         self.assertEqual(r["captions"][0]["text"], clip["scenes"][0]["lines"][0])
