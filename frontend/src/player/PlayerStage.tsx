@@ -2,6 +2,7 @@ import Grid from './Grid'
 import { limitHighlights } from './highlightDisplay'
 import { playerColorVariables } from './colors'
 import { emphasizeFormula } from './formulaEmphasis'
+import { breakAtCommas } from './lineBreaks'
 import { renderFormulaTerms } from './formulaTerms'
 import FitContent from './FitContent'
 import { layoutGrid } from './gridLayout'
@@ -29,7 +30,7 @@ function RichText({ content, formula, caption, active, termColors, whole }: { co
   if (formula && !content.includes('$')) return <Formula source={render(content)} />
   return <>{content.split(/(\$[^$]+\$)/g).map((part, index) => part.startsWith('$') && part.endsWith('$')
     ? <Formula key={index} source={render(part.slice(1, -1))} />
-    : <span key={index}>{part}</span>)}</>
+    : <span key={index}>{breakAtCommas(part)}</span>)}</>
 }
 
 function ElementView({ element, pageUrl, caption }: { element: Entity; caption: string; pageUrl: (page: number) => string | undefined }) {
@@ -116,7 +117,7 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
           </div>
         })}
       </div>
-      <p className="player-caption" aria-label="현재 자막" style={captionsOn ? undefined : { visibility: 'hidden' }}>{state.caption || '\u00a0'}</p>
+      <p className="player-caption" aria-label="현재 자막" style={captionsOn ? undefined : { visibility: 'hidden' }}>{breakAtCommas(state.caption) || '\u00a0'}</p>
     </div>
     {controls}
     </div>

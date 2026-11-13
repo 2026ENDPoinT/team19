@@ -4,12 +4,12 @@
 .player-fit-frame { position: relative; width: 100%; height: 100%; overflow: hidden; }
 .player-fit-content { position: absolute; left: 50%; top: 50%; width: 360px; transform-origin: center; }
 .player-highlight { background: color-mix(in srgb, var(--player-yellow) 14%, #020617); outline: 2px solid var(--player-yellow); outline-offset: -2px; }
-.player-text { width: 100%; text-align: center; overflow-wrap: anywhere; line-height: 1.5; padding: 4px; }
+.player-text { width: 100%; text-align: center; overflow-wrap: anywhere; word-break: keep-all; text-wrap: balance; white-space: pre-line; line-height: 1.5; padding: 4px; }
 .player-text--title { font-size: 27px; font-weight: 700; }
 .player-text--body { font-size: 21px; }
 .player-text--keyword { color: #fff; font-size: 24px; font-weight: 700; }
 .player-text--formula { font-size: 22px; }
-.player-caption { display: flex; align-items: center; justify-content: center; flex-shrink: 0; min-height: 100px; margin-top: 16px; padding: 8px 6px 0; font-size: 19px; line-height: 1.55; text-align: center; overflow-wrap: anywhere; }
+.player-caption { display: flex; align-items: center; justify-content: center; flex-shrink: 0; min-height: 100px; margin-top: 16px; padding: 8px 6px 0; font-size: 19px; line-height: 1.55; text-align: center; overflow-wrap: anywhere; word-break: keep-all; text-wrap: balance; white-space: pre-line; }
 .player-grid-graphic { display: block; overflow: visible; }
 .player-code { width: 100%; margin: 0; padding: 4px; font-size: 14px; line-height: 1.7; }
 .player-code-line { display: block; white-space: pre-wrap; overflow-wrap: anywhere; padding: 0 4px; }
