@@ -131,6 +131,8 @@
     - **추정(미확인):** 재발한 PC가 정확히 이 경우인지는 확인하지 못했다. 그 PC의 `lectureId`·`/health`·서버 로그·DB가 없고, 이 PC의 로컬 DB에는 이 PDF 업로드 기록이 없어 `pages.text`→`plan_json`/`clips.title`→outline API 단계별 비교는 **하지 못했다**. 다른 후보(수정 전 서버·기존 lectureId 재사용)도 배제하지 못했다.
     - **수정(`feature/be-pymupdf-requirement`):** `backend/requirements.txt`에 `pymupdf>=1.24` 추가, 샘플 모드 서버 시작 때 PyMuPDF가 **설치돼 있지 않으면** 한글이 깨질 수 있다는 **경고를 시작 로그에 출력**(import하지 않고 설치 여부만 확인하므로 저장 샘플 재생은 PyMuPDF를 불러오지 않는다. 설치됐지만 DLL이 막힌 경우는 기존대로 추출 시점 경고), README에 확인 방법 추가. 추출 코드·API·`/health` 응답은 바꾸지 않았다. 무과금 테스트 3개 추가.
     - **기존 데이터 vs 신규 업로드:** 이미 pypdf로 저장된 `pages.text`·제목은 자동 복구되지 않는다. PyMuPDF가 정상인 서버에서 **새 강의로 재업로드**해야 정상이다. 재발 PC에서 `pip install -r backend/requirements.txt` 후 서버를 다시 켜고 시작 로그에 경고가 없는지, 새 업로드의 제목이 정상인지 확인해 주세요(**아직 미확인**).
+    - **main 반영·검증 범위 (BE/Claude, 2026-11-14):** 구현 커밋 `3993f2c`(requirements·시작 경고·README·테스트 3개), main 병합 `801f7ea`. 검증은 무과금이며 BE·AI 358개 통과(가짜 AI·임시 DB), 이 PC에서 원본 PDF의 BE·AI 추출 정상 확인까지다. **이는 PyMuPDF 설치 누락 가능성을 개선한 것이며, FE 담당자 PC의 한글 깨짐이 해결됐다고 확정하지 않는다.**
+    - **[to:FE] 재확인 순서:** ① 서버를 켜는 PC에서 `pip install -r backend/requirements.txt` ② BE 서버 재시작, 시작 로그에 `PyMuPDF를 불러올 수 없습니다` 경고가 없는지 확인 ③ **같은 PDF를 새 강의로 업로드**(기존 강의는 복구되지 않음) ④ 제목·1~3쪽 글자가 정상인지 확인. 여전히 깨지면 서버 Python 경로, `python -c "import pymupdf; print(pymupdf.VersionBind)"` 결과, 서버 로그, 새 lectureId를 남겨 주세요. 결과 확인 전까지 BUG-FE-01을 해결로 닫지 않습니다.
 
 ### Q-AI-28 · [to:BE] · 열림
 - 질문: AI 함수 5개가 모두 생겼어요. 실제 AI 모드(`AI_MODE` ≠ sample) 연결에 아래 세 가지를 확인해 주세요.
