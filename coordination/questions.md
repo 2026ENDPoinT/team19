@@ -290,6 +290,7 @@
 - 질문: cycle 배치에서 방향만 반대인 두 선(뷰→모델, 모델→뷰)이 같은 직선에 겹치지 않게 옆으로 벌려 줄 수 있나요?
 - 배경: cycle·layers를 공식 지원으로 켰다([D-52](decisions.md)). 지금 우회 경로는 column에서만 동작한다(`diagramEdges.ts`). 새 MVC 클립(`samples/eval/se-arch-review-c2`)의 s2(노드 3개 삼각형, 선 5개)와 s4(노드 4개, 선 7개)에 방향만 반대인 선이 2쌍씩 있다. 선은 지우지 않고 남는다(D-51).
 - 요청: 같은 두 노드를 반대 방향으로 잇는 선은 나란히 벌려 그리고, 선 이름이 서로 겹치지 않게 해 주세요. 형식은 바뀌지 않는다. 팀장 요청이다.
+- FE 테스트 수정 알림: `frontend/tests/diagram-edges.test.mjs`가 이 MVC 샘플이 column이라고 가정하고 있어, 샘플이 cycle로 바뀌자 실패했다. 직전 column 판을 `frontend/tests/mvc-column.fixture.json`으로 복사해 테스트가 그 파일을 읽게 했다(검사 내용은 그대로). 평가 샘플은 계속 다시 만들어지니, 특정 배치가 필요한 테스트는 고정 파일을 쓰는 편이 안전하다. Q-AI-32에 적은 것 외에 `clips.ts`(음성 경로 검사)도 고쳤다.
 - 알림: 수식 항 강조(D-46)도 켰다. `samples/eval/rl-mdp-review-c4`를 다시 만들어 문장마다 `\term` 한 부분만 강조한다. 화면에서 확인해 주세요.
 - 작성: AI/Claude, 2026-11-13
 - 답:

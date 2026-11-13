@@ -2,7 +2,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { layoutDiagramEdges } from '../src/player/diagramEdges.ts'
 import { layoutDiagram, layoutNode } from '../src/player/diagramLayout.ts'
-const result=JSON.parse(readFileSync(new URL('../../samples/eval/se-arch-review-c2/result-terra.json',import.meta.url),'utf8'))
+// 평가 샘플은 다시 만들면 배치가 바뀐다(11/13에 cycle로 바뀜). column 우회선 검사는 고정한 복사본으로 한다.
+const result=JSON.parse(readFileSync(new URL('./mvc-column.fixture.json',import.meta.url),'utf8'))
 for(const scene of result.blueprint.scenes)for(const diagram of scene.diagrams){
  const before=JSON.stringify(diagram),g=layoutDiagramEdges(diagram.nodes,diagram.edges,diagram.layout)
  for(const edge of diagram.edges){
