@@ -31,7 +31,7 @@
         {
           "id": "d_steps",
           "slot": "middle",
-          "layout": "row",
+          "layout": "column",
           "hidden": true,
           "nodes": [
             {
