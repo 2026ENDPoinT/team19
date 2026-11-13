@@ -42,7 +42,7 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
       {fileName && <div className="mt-7"><FileSummary file={{name:fileName}} /></div>}
       {phase === 'idle' && <p role="status" className="mt-7 text-sm text-slate-500">클립을 찾지 못했어요. 학습 모드를 다시 선택해 주세요.</p>}
       {(phase === 'loading' || phase === 'creating' || phase === 'watching') && <div className="mt-7">
-        <ProcessingStatus stage={snapshot?.stage} message={phase === 'creating' ? '클립을 만드는 중' : phase === 'loading' ? '클립을 확인하는 중' : snapshot?.outline.status === 'ready' ? '클립별 준비 상태를 확인하는 중' : undefined} />
+        <ProcessingStatus progress={snapshot?.outline.status === 'ready' ? { completed: snapshot.outline.clips.filter(clip => clip.status === 'completed').length, total: snapshot.outline.clips.length } : undefined} stage={snapshot?.stage} message={phase === 'creating' ? '클립을 만드는 중' : phase === 'loading' ? '클립을 확인하는 중' : snapshot?.outline.status === 'ready' ? '클립별 준비 상태를 확인하는 중' : undefined} />
         <p className="mt-3 text-sm leading-6 text-slate-500">완료된 클립은 나머지 작업 중에도 바로 재생할 수 있어요.</p>
       </div>}
       {message && <div role="alert" className="mt-8 rounded-3xl border border-amber-200 bg-amber-50/60 p-6">
