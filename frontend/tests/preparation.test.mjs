@@ -14,7 +14,9 @@ try {
     assert.equal(url.pathname, '/lectures')
     assert.ok(options.body instanceof FormData)
     assert.equal(options.body.get('file').name, 'test.pdf')
-    assert.equal(options.headers, undefined)
+    // Content-Type은 브라우저가 multipart 경계와 함께 넣으므로 직접 넣지 않는다. 기기 ID 헤더만 보낸다(Q-BE-07).
+    assert.deepEqual(Object.keys(options.headers), ['X-Owner-Id'])
+    assert.match(options.headers['X-Owner-Id'], /^[A-Za-z0-9_-]{16,64}$/)
     return Response.json(body('upload.accepted'), { status: 202 })
   }
   const ticket = await uploadPdf(new File(['%PDF-test'], 'test.pdf', { type: 'application/pdf' }), signal)

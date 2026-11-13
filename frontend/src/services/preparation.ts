@@ -1,3 +1,4 @@
+import { ownerHeaders } from './ownerId.ts'
 export type ServerMode = 'sample' | 'real'
 export type UploadTicket = { lectureId: string; jobId: string; aiMode: ServerMode }
 export type PreparationJob = { id: string; status: 'pending' | 'running' | 'completed' | 'failed'; stage: string | null; error: { message: string } | null }
@@ -40,7 +41,7 @@ export async function uploadPdf(file: File, signal: AbortSignal, allowReal = fal
   const aiMode = await authorizeGeneration(signal, allowReal)
   const form = new FormData()
   form.append('file', file)
-  const data = await request('/lectures', signal, { method: 'POST', body: form })
+  const data = await request('/lectures', signal, { method: 'POST', body: form, headers: ownerHeaders() })
   if (!record(data) || typeof data.lectureId !== 'string' || !data.lectureId || typeof data.jobId !== 'string' || !data.jobId) throw new Error('업로드 응답을 확인하지 못했어요. 서버에 접수됐을 수 있으므로 자동으로 재전송하지 않아요.')
   return { lectureId: data.lectureId, jobId: data.jobId, aiMode }
 }
