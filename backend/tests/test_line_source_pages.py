@@ -44,12 +44,16 @@ def test_line_source_pages_survive_validators_storage_and_clip_api(live, monkeyp
         assert stored["blueprint"]["scenes"] == scenes  # API returns exactly what SQLite holds
 
 
-def test_ai_validator_ignores_but_does_not_check_line_source_pages(live):
-    """Current AI validator has no key whitelist: it accepts the field and also accepts a wrong one."""
+def test_ai_validator_accepts_well_formed_line_source_pages(live):
+    """A well-formed field (same length as lines, in-range page or null) must not break validation.
+
+    Deliberately silent about malformed values: whether the AI validator rejects them is the AI role's
+    decision, so this test neither requires nor forbids it.
+    """
     from pipeline.validate import validate_blueprint
     blueprint = live.fake.make_blueprint({"id": "c1", "title": "t", "sourcePages": [1], "prerequisites": [], "brief": "b"}, [{"number": 1, "text": "x"}], 2)
     blueprint = blueprint.get("blueprint", blueprint)
     assert validate_blueprint(blueprint, 2) == []
     for scene in blueprint["scenes"]:
-        scene["lineSourcePages"] = [99] * len(scene["lines"])  # out of range / wrong length not detected today
+        scene["lineSourcePages"] = [None] + [1] * (len(scene["lines"]) - 1)
     assert validate_blueprint(blueprint, 2) == []
