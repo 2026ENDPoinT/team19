@@ -416,18 +416,18 @@ def lectures(x_owner_id: str | None = Header(None)):
         return []  # no device ID, no list (D-50); old lectures without an owner are never listed
     with conn() as db:
         fill_missing_hashes(db, owner)
-        rows = db.execute("""SELECT l.*, (SELECT COUNT(*) FROM clips c JOIN outlines o ON c.outline_id=o.id
-                                          WHERE o.lecture_id=l.id AND c.status='completed') AS done
-                             FROM lectures l WHERE l.owner_id=? ORDER BY l.created_at DESC, l.rowid DESC""", (owner,)).fetchall()
+        rows = db.execute("SELECT * FROM lectures WHERE owner_id=? ORDER BY created_at DESC, rowid DESC", (owner,)).fetchall()
     # List view only: one representative per identical PDF. Nothing is deleted or merged; the other lectures stay
-    # openable by ID. Prefer a ready lecture, then one with finished clips, then the newest. Which AI mode an old
-    # row came from is not guessed, and this grouping never makes an old result reusable for uploads.
+    # openable by ID. Prefer a ready lecture, then the most recently uploaded one. Finished clips are deliberately
+    # not considered: an old lecture made before PyMuPDF was installed (garbled Korean) must not hide a newer, correctly
+    # extracted one. Which AI mode an old row came from is not guessed, and this grouping never makes an old result
+    # reusable for uploads.
     rank = {"ready": 0, "pending": 1, "running": 1}
     best: dict[str, sqlite3.Row] = {}
-    for r in rows:  # rows are newest first, so earlier means newer on ties
+    for r in rows:  # rows are newest first, so an equal rank keeps the newer lecture
         group = r["pdf_sha256"] or r["id"]
         current = best.get(group)
-        if current is None or (rank.get(r["status"], 2), -r["done"]) < (rank.get(current["status"], 2), -current["done"]):
+        if current is None or rank.get(r["status"], 2) < rank.get(current["status"], 2):
             best[group] = r
     chosen = {r["id"] for r in best.values()}
     return [{"id": r["id"], "title": r["title"], "status": r["status"], "pageCount": r["page_count"]} for r in rows if r["id"] in chosen]
