@@ -490,6 +490,7 @@ def test_mp3_decoder_failure_is_contained(client, monkeypatch, fault):
         raise subprocess.TimeoutExpired('C:/private/ffmpeg.exe', 15)
 
     monkeypatch.setattr(stored_sample, 'get_ffmpeg_exe', failed_decoder)
+    monkeypatch.setattr(stored_sample, '_checked', {})  # a sample checked by an earlier test is not rechecked
     response = client.get('/clips/clip-01')
     assert response.status_code == 500
     assert response.json()['error']['code'] == 'SAMPLE_INVALID'
@@ -508,6 +509,21 @@ def test_sample_result_id_and_duration_come_from_file(client, editable_sample, s
     assert response.status_code == 200, response.text
     assert response.json()['id'] == sample.clip_id
     assert response.json()['result'] == {**source, 'audioUrl': f'/assets/{sample.audio_id}'}
+
+
+def test_sample_is_decoded_once_until_its_files_change(client, editable_sample, sample, monkeypatch):
+    from backend import stored_sample
+    calls = []
+    real = stored_sample.StoredSample._audio_duration
+    monkeypatch.setattr(stored_sample.StoredSample, '_audio_duration', lambda self, path: calls.append(1) or real(self, path))
+    for _ in range(3):  # clip info, then the audio twice (play and seek)
+        assert client.get(f'/clips/{sample.clip_id}').status_code == 200
+        assert client.get(f'/assets/{sample.audio_id}', headers={'Range': 'bytes=0-99'}).status_code == 206
+    assert len(calls) == 1
+    audio = editable_sample / sample.audio_name
+    audio.write_bytes(audio.read_bytes()[:1000])  # a changed file is checked again and rejected
+    assert client.get(f'/assets/{sample.audio_id}').json()['error']['code'] == 'SAMPLE_INVALID'
+    assert len(calls) == 2
 
 
 @pytest.mark.parametrize('result_id', ['', '   ', None, 123, []])

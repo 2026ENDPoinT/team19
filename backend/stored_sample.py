@@ -1,6 +1,7 @@
 """Serve registered AI-owned results without modifying them or calling AI APIs."""
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 import json
 import os
@@ -69,7 +70,26 @@ class StoredSample:
             raise PipelineError("SAMPLE_INVALID", "샘플 음성과 결과의 길이가 다릅니다.")
         return path
 
+    def _file_stamp(self) -> tuple | None:
+        try:
+            return tuple((s.st_mtime_ns, s.st_size) for s in
+                         ((self.directory / name).stat() for name in ("result.json", self.audio_name)))
+        except OSError:
+            return None
+
     def load_clip(self) -> dict:
+        """Full check (MP3 decode) only when result.json or the audio file changed; the browser asks for the
+        audio again on every play and seek. The stamp is taken before checking, so a change mid-check is rechecked."""
+        stamp = self._file_stamp()
+        hit = _checked.get(self)
+        if stamp is None or hit is None or hit[0] != stamp:
+            clip = self._load_clip_uncached()
+            if stamp is not None:
+                _checked[self] = (stamp, clip)
+            hit = (stamp, clip)
+        return copy.deepcopy(hit[1])
+
+    def _load_clip_uncached(self) -> dict:
         try:
             result = json.loads((self.directory / "result.json").read_text(encoding="utf-8"))
         except (OSError, ValueError, RecursionError) as exc:
@@ -91,6 +111,7 @@ class StoredSample:
                 "error": None, "result": result}
 
 
+_checked: dict[StoredSample, tuple[tuple, dict]] = {}  # last result that passed load_clip, with its file stamp
 _ROOT = Path(__file__).resolve().parents[1] / "samples"
 
 
