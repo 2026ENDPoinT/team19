@@ -4,17 +4,21 @@ import type { Entity } from './state.ts'
 export const DIM_OPACITY = 0.7
 
 export function isLit(element: Entity): boolean {
-  return element.highlighted === true || Boolean(element.highlightedCells?.length) || element.formulaWhole === true
+  return element.highlighted === true || element.heldLit === true || Boolean(element.highlightedCells?.length) || Boolean(element.heldCells?.length) || element.formulaWhole === true
     || Object.keys(element.formulaTermColors ?? {}).length > 0
-    || Boolean(element.nodes?.some(node => node.highlighted && !node.hidden)) || Boolean(element.edges?.some(edge => edge.highlighted && !edge.hidden))
+    || Boolean(element.nodes?.some(node => (node.highlighted || node.heldLit) && !node.hidden)) || Boolean(element.edges?.some(edge => (edge.highlighted || edge.heldLit) && !edge.hidden))
 }
 
 // 부품 안에서 일부만 강조됐으면 나머지 노드·선·칸을 흐린다. 부품 전체 강조면 흐리지 않는다.
 export function dimsParts(element: Entity): boolean {
-  return element.highlighted !== true && isLit(element)
+  return element.highlighted !== true && element.heldLit !== true && isLit(element)
 }
 
 // 제목은 흐리지 않는다.
 export function dimsElement(element: Entity, anyLit: boolean): boolean {
   return anyLit && element.style !== 'title' && !isLit(element)
 }
+
+// 노드·선·칸 하나가 (유지 포함) 강조 상태인지
+export const partLit = (part: { highlighted?: boolean; heldLit?: boolean }) => part.highlighted === true || part.heldLit === true
+export const cellLit = (element: Entity, key: string) => Boolean(element.highlightedCells?.includes(key) || element.heldCells?.includes(key))

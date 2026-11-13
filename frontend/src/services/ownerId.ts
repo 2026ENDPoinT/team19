@@ -6,7 +6,13 @@ let memory: string | null = null
 
 type Store = Pick<Storage, 'getItem' | 'setItem'>
 
-export function ownerId(store: Store | null = globalThis.localStorage ?? null, make = () => crypto.randomUUID().replace(/-/g, '')): string {
+// randomUUID는 https·localhost에서만 있다. 시연 때 http://<IP>로 열면 없으므로 getRandomValues로 같은 32자 hex를 만든다(Q-BE-08).
+export function randomOwnerId(source: Pick<Crypto, 'getRandomValues'> & Partial<Pick<Crypto, 'randomUUID'>> = crypto): string {
+  if (typeof source.randomUUID === 'function') return source.randomUUID().replace(/-/g, '')
+  return Array.from(source.getRandomValues(new Uint8Array(16)), (byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
+export function ownerId(store: Store | null = globalThis.localStorage ?? null, make = () => randomOwnerId()): string {
   try {
     const saved = store?.getItem(KEY)
     if (saved && VALID.test(saved)) return saved
