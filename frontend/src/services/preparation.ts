@@ -67,20 +67,40 @@ export async function watchPreparation(ticket: UploadTicket, onJob: (job: Prepar
     onJob(job)
     if (job.status === 'failed') throw new PreparationFailed(job.error?.message || '자료 준비에 실패했어요. PDF를 확인해 주세요.')
     if (job.status === 'completed') {
-      const lecture = await request(`/lectures/${encodeURIComponent(ticket.lectureId)}`, signal)
-      if (!record(lecture) || lecture.id !== ticket.lectureId || lecture.preparationJobId !== ticket.jobId || lecture.status !== 'ready' || !Number.isInteger(lecture.pageCount) || Number(lecture.pageCount) <= 0) throw new Error('준비 완료 자료를 아직 확인하지 못했어요. 같은 작업의 결과를 다시 조회해 주세요.')
-      if (!Array.isArray(lecture.pages)) throw new Error('자료의 원본 페이지 목록을 확인해 주세요.')
-      const pages: Record<number, string> = {}
-      for (const page of lecture.pages) {
-        if (!record(page) || !Number.isInteger(page.number) || Number(page.number) < 1) throw new Error('원본 페이지 번호를 확인해 주세요.')
-        if (typeof page.imageUrl === 'string') {
-          const url = new URL(page.imageUrl, base())
-          if (!['http:', 'https:'].includes(url.protocol)) throw new Error('원본 페이지 주소를 확인해 주세요.')
-          pages[Number(page.number)] = url.href
-        }
-      }
-      return { id: ticket.lectureId, pageCount: Number(lecture.pageCount), pages, aiMode: ticket.aiMode }
+      return loadLecture(ticket.lectureId, ticket.aiMode, signal, ticket.jobId)
     }
     await wait(3000, signal)
   }
+}
+
+// 준비가 끝난 강의의 페이지 목록을 불러온다. 업로드 직후(jobId 확인)와 내 강의함에서 고를 때 함께 쓴다.
+export async function loadLecture(lectureId: string, aiMode: ServerMode, signal: AbortSignal, jobId?: string): Promise<PreparedLecture> {
+  const lecture = await request(`/lectures/${encodeURIComponent(lectureId)}`, signal)
+  if (!record(lecture) || lecture.id !== lectureId || (jobId !== undefined && lecture.preparationJobId !== jobId) || lecture.status !== 'ready' || !Number.isInteger(lecture.pageCount) || Number(lecture.pageCount) <= 0) throw new Error('준비 완료 자료를 아직 확인하지 못했어요. 같은 작업의 결과를 다시 조회해 주세요.')
+  if (!Array.isArray(lecture.pages)) throw new Error('자료의 원본 페이지 목록을 확인해 주세요.')
+  const pages: Record<number, string> = {}
+  for (const page of lecture.pages) {
+    if (!record(page) || !Number.isInteger(page.number) || Number(page.number) < 1) throw new Error('원본 페이지 번호를 확인해 주세요.')
+    if (typeof page.imageUrl === 'string') {
+      const url = new URL(page.imageUrl, base())
+      if (!['http:', 'https:'].includes(url.protocol)) throw new Error('원본 페이지 주소를 확인해 주세요.')
+      pages[Number(page.number)] = url.href
+    }
+  }
+  return { id: lectureId, pageCount: Number(lecture.pageCount), pages, aiMode }
+}
+
+export type LibraryLecture = { id: string; title: string; status: string; pageCount: number }
+
+// 내 강의함(D-50): 이 브라우저의 기기 ID로 올린 강의만 돌려받는다.
+export async function listLectures(signal: AbortSignal): Promise<LibraryLecture[]> {
+  const data = await request('/lectures', signal, { headers: ownerHeaders() })
+  if (!Array.isArray(data)) throw new Error('강의 목록 응답을 확인하지 못했어요.')
+  return data.flatMap((item) => record(item) && typeof item.id === 'string' && item.id
+    ? [{ id: item.id, title: typeof item.title === 'string' && item.title ? item.title : '제목 없는 강의', status: String(item.status ?? ''), pageCount: Number(item.pageCount) || 0 }]
+    : [])
+}
+
+export async function serverMode(signal: AbortSignal): Promise<ServerMode> {
+  return authorizeGeneration(signal, true)
 }

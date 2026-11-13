@@ -50,9 +50,14 @@ export function usePreparation(active: boolean) {
       }
     } finally { if (uploading.current === controller) uploading.current = null }
   }
+  // 내 강의함에서 이미 준비된 강의를 고르면 업로드·조회 없이 바로 준비 완료로 둔다.
+  function open(existing: PreparedLecture) {
+    uploading.current?.abort(); uploading.current = null; polling.current?.abort()
+    setTicket(null); setJob(null); setLecture(existing); setPhase('ready'); setMessage('')
+  }
   function reset() {
     uploading.current?.abort(); uploading.current = null; polling.current?.abort()
     setTicket(null); setJob(null); setLecture(null); setPhase('idle'); setMessage('')
   }
-  return { ticket, job, lecture, phase, message, start, reset, resume: () => setAttempt((value) => value + 1) }
+  return { ticket, job, lecture, phase, message, start, reset, open, resume: () => setAttempt((value) => value + 1) }
 }

@@ -1,3 +1,4 @@
+import LibraryPanel from "./components/LibraryPanel"
 import FileSummary from './components/FileSummary'
 import OutlineFlow from './components/OutlineFlow'
 import PreparationPanel from './components/PreparationPanel'
@@ -73,7 +74,7 @@ const modeIcons: Record<LearningMode, ReactNode> = {
     ),
 }
 
-type Screen = "upload" | "preparing" | "mode" | "outline"
+type Screen = "upload" | "preparing" | "mode" | "outline" | "library"
 
 function UploadIcon() {
   return (
@@ -186,6 +187,9 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("upload")
   const preparation = usePreparation(screen === "preparing" && !showActualClip)
   const [selectedMode, setSelectedMode] = useState<LearningMode | null>(null)
+  // 내 강의함에서 연 강의의 제목. 새 파일을 고르면 지운다.
+  const [libraryTitle, setLibraryTitle] = useState<string | null>(null)
+  const sourceFile = file ?? (libraryTitle ? { name: libraryTitle } : null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const selectedModeData = learningModes.find(
     (mode) => mode.id === selectedMode,
@@ -205,6 +209,7 @@ export default function App() {
     preparation.reset()
     setScreen("upload")
     setSelectedMode(null)
+    setLibraryTitle(null)
     setFile(selectedFile)
     setError("")
   }
@@ -253,7 +258,7 @@ export default function App() {
         type="file"
       />
 
-      <div className="mx-auto max-w-7xl px-5 pt-4"><button type="button" className="rounded-lg border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700" onClick={() => setShowActualClip(true)}>실제 클립 A/B 연결 확인</button></div>
+      <div className="mx-auto max-w-7xl px-5 pt-4"><button type="button" className="rounded-lg border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700" onClick={() => setShowActualClip(true)}>실제 클립 A/B 연결 확인</button><button type="button" className="ml-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700" onClick={() => setScreen("library")}>내 강의함</button></div>
       {screen === "upload" && (
         <main className="mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-16 sm:px-8 sm:pt-24 lg:pt-28">
           <section className="w-full text-center" aria-labelledby="page-title">
@@ -375,7 +380,11 @@ export default function App() {
 
       {screen === "preparing" && file && <PreparationPanel fileName={file.name} preparation={preparation} onBack={() => setScreen("upload")} onContinue={() => setScreen("mode")} />}
 
-      {screen === "mode" && file && (
+      {screen === "library" && <LibraryPanel onBack={() => setScreen("upload")} onOpen={(lecture, title) => {
+        preparation.open(lecture); setFile(null); setLibraryTitle(title); setSelectedMode(null); setScreen("mode")
+      }} />}
+
+      {screen === "mode" && sourceFile && (
         <main className="mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-12 sm:px-8 sm:pt-18">
           <section
             aria-labelledby="mode-title"
@@ -406,7 +415,7 @@ export default function App() {
             </div>
 
             <div className="mt-8">
-              <FileSummary file={file} onReplace={openFilePicker} />
+              <FileSummary file={sourceFile} onReplace={openFilePicker} />
             </div>
 
             {error && (
@@ -471,7 +480,7 @@ export default function App() {
         </main>
       )}
 
-      {screen === "outline" && preparation.lecture && selectedModeData && <OutlineFlow key={`${preparation.lecture.id}:${selectedMode}`} lecture={preparation.lecture} mode={selectedModeData.id} modeName={selectedModeData.name} fileName={file?.name} onBack={() => setScreen("mode")} />}
+      {screen === "outline" && preparation.lecture && selectedModeData && <OutlineFlow key={`${preparation.lecture.id}:${selectedMode}`} lecture={preparation.lecture} mode={selectedModeData.id} modeName={selectedModeData.name} fileName={sourceFile?.name} onBack={() => setScreen("mode")} />}
 
     </div>
   )
