@@ -18,6 +18,7 @@ import hashlib
 import json
 import sys
 import wave
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from pipeline import costlog
@@ -40,6 +41,7 @@ Script: Read the text exactly as written. Do not change any numbers or words.
 English terms: Pronounce English words such as "merge" and "sort" the way a Korean lecturer would say them in class.
 Emphasis: Put slight stress on key numbers and on the conclusion of each explanation."""
 USD_PER_MINUTE = 0.015       # docs/06 추정 (gpt-4o-mini-tts)
+TTS_PARALLEL = 4             # 동시에 보내는 문장 수. BE 작업 3개가 겹쳐도 12개
 
 
 def make_audio(blueprint: dict, out_dir, model: str = DEFAULT_MODEL, voice: str = DEFAULT_VOICE,
@@ -51,33 +53,42 @@ def make_audio(blueprint: dict, out_dir, model: str = DEFAULT_MODEL, voice: str 
     """
     out = Path(out_dir)
     (out / "lines").mkdir(parents=True, exist_ok=True)
-    client = None
     pcm = bytearray()
-    captions, new_seconds, reused = [], 0.0, 0
+    captions, new_seconds = [], 0.0
 
-    for si, scene in enumerate(blueprint["scenes"]):
+    items = []  # (scene, 문장 번호, 자막, 캐시 파일)
+    todo: dict[Path, str] = {}  # 새로 만들 캐시 파일 → 음성 원고 (같은 문장은 한 번만)
+    for scene in blueprint["scenes"]:
         for li, text in enumerate(scene["lines"]):
-            if pcm:
-                pcm += _silence(SCENE_GAP if li == 0 else LINE_GAP)
             # 자막은 lines 그대로. 음성은 설계도의 speech(P-AI-04)를 쓰고, 없거나 ""이면 숫자를 한글 읽기로 바꿔 보낸다.
             script = scene.get("speech") or []
             raw = script[li] if li < len(script) and isinstance(script[li], str) and script[li].strip() else text
             speech = spoken_text(raw)
             key = hashlib.sha256(f"{model}|{voice}|{VOICE_STYLE}|{speech}".encode()).hexdigest()[:16]
             cached = out / "lines" / f"{key}.pcm"
-            if cached.is_file():
-                data = cached.read_bytes()
-                reused += 1
-            else:
-                if client is None:
-                    client = _client()
-                data = _tts(client, model, voice, speech)
-                cached.write_bytes(data)
-                new_seconds += len(data) / 2 / RATE
-            start = len(pcm) / 2 / RATE
-            pcm += data
-            captions.append({"sceneId": scene["id"], "lineIndex": li, "text": text,
-                             "startSec": round(start, 2), "endSec": round(len(pcm) / 2 / RATE, 2)})
+            items.append((scene, li, text, cached))
+            if not cached.is_file():
+                todo[cached] = speech
+    reused = len(items) - len(todo)
+
+    if todo:
+        client = _client()
+
+        def fetch(path: Path) -> None:
+            path.write_bytes(_tts(client, model, voice, todo[path]))
+
+        # 문장을 차례로 부르면 클립당 30~40초라 동시에 부른다. 하나라도 실패하면 그 오류를 그대로 올린다.
+        with ThreadPoolExecutor(max_workers=TTS_PARALLEL) as pool:
+            list(pool.map(fetch, todo))
+        new_seconds = sum(p.stat().st_size for p in todo) / 2 / RATE
+
+    for scene, li, text, cached in items:
+        if pcm:
+            pcm += _silence(SCENE_GAP if li == 0 else LINE_GAP)
+        start = len(pcm) / 2 / RATE
+        pcm += cached.read_bytes()
+        captions.append({"sceneId": scene["id"], "lineIndex": li, "text": text,
+                         "startSec": round(start, 2), "endSec": round(len(pcm) / 2 / RATE, 2)})
 
     path = _write_audio(out, bytes(pcm), fmt)
     duration = round(len(pcm) / 2 / RATE, 2)
