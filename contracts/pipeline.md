@@ -29,7 +29,7 @@ BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정
 - `make_audio`는 문장마다 음성을 만들고 길이를 재서 파일 하나(`audio.mp3`, 64kbps)로 잇는다. 쉼은 [docs/04 시간 규칙](../docs/04-video-blueprint.md#시간-규칙)을 따른다. 지금은 OpenAI `gpt-4o-mini-tts`, 목소리 `cedar`(Q-AI-10). 숫자는 자막에는 그대로 두고, 음성에는 한글 읽기로 바꿔 보낸다(`pipeline/korean_numbers.py`. 값은 한자어 "십사", 개수·순서는 고유어 "열한 개", "아홉 번째"). 문장 음성은 출력 폴더의 `lines/`에 저장해 같은 문장이면 다시 부르지 않는다.
 - `describe_pages`는 페이지 그림을 6쪽씩 묶어 동시에 4묶음까지 보낸다(57쪽 약 30초대, 약 $0.14). `description`은 글 하나이고, 표지·목차 등은 앞에 `[표지]`, `[목차]`, `[행정 안내]`, `[빈 페이지]`를, 추출 글자가 깨진 페이지는 `[추출 글자 깨짐…]`을 붙인다. BE는 `description` 글만 저장하면 분할 단계에 그대로 전달된다.
 - `plan_outline`의 클립 수 상한은 자료 분량에 비례한다(내용 페이지 intro 10쪽, review 5쪽, exam 3쪽당 1개, 최대 5/12/20개). 클립 계획의 `mode`는 설계도 단계가 모드별 말투·길이를 고르는 데 쓴다. BE는 계획을 그대로 `make_blueprint`에 넘기면 된다(P-AI-10). exam은 내용 페이지의 90% 이상을 근거 페이지로 쓴다. 제목은 한국어(영어 용어는 괄호)다. `kind`는 `concept` / `process` / `example` / `compare`. `id`와 `prerequisites`는 이 결과 안에서만 쓰는 이름(`c1`…)이다. 검사에 실패하면 한 번 다시 만들고, 또 실패하면 `OUTLINE_INVALID`.
-- 모델은 환경변수로 바꾼다: `AI_DESCRIBE_MODEL`, `AI_OUTLINE_MODEL`, `AI_BLUEPRINT_MODEL`. 기본값은 모두 `gpt-6.1-sol`(D-55). 지원 모델은 `pipeline/blueprint.py`의 `PRICES`.
+- 모델은 환경변수로 바꾼다: `AI_DESCRIBE_MODEL`, `AI_OUTLINE_MODEL`, `AI_BLUEPRINT_MODEL`. 기본값은 모두 `gpt-6.1-sol`(D-55). 설계도 시스템 프롬프트는 영어판이 기본(D-58). 지원 모델은 `pipeline/blueprint.py`의 `PRICES`.
 - `make_audio`는 장면에 `speech`(P-AI-04)가 있으면 그 글을 읽고, 없거나 `""`이면 `lines`를 숫자 한글 변환해 읽는다. 자막(`captions.text`)은 언제나 `lines`다.
 
 ## 샘플 모드
