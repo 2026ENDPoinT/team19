@@ -20,7 +20,6 @@
 .brand-page > section > div.rounded-full { border: 1px solid var(--b-line); background: var(--b-surface); color: var(--b-muted); font-size: 11px; letter-spacing: .025em; box-shadow: none; }
 .brand-upload { padding-top: 88px; padding-bottom: 64px; isolation: isolate; }
 .brand-upload::before { position: absolute; z-index: -1; inset: 24px 0 50px; background-image: radial-gradient(var(--b-dot) 1px, transparent 1px); background-size: 15px 15px; opacity: .24; mask-image: radial-gradient(ellipse at 50% 24%, transparent 12%, #000 40%, transparent 72%); content: ''; pointer-events: none; animation: brand-dot-drift 24s linear infinite; }
-.brand-upload::after { position: absolute; z-index: -1; top: 52px; right: 18px; bottom: 44px; left: 18px; border: 1px solid var(--b-line); content: ''; pointer-events: none; }
 .brand-hero { position: relative; padding: 0 12px; }
 .brand-hero > div:first-child { border: 1px solid var(--b-line); border-radius: 999px; background: var(--b-surface); color: var(--b-muted); font-size: 11px; font-weight: 500; letter-spacing: .03em; }
 .brand-hero #page-title { max-width: 740px; color: var(--b-text); font-size: clamp(34px, 5.3vw, 60px); font-weight: 600; letter-spacing: -.065em; line-height: 1.18; }
@@ -75,8 +74,7 @@
  .brand-navigation button { font-size: 11px; }
  .brand-header-action { display: none; }
  .brand-upload { padding-top: 60px; padding-bottom: 48px; }
- .brand-upload::after { top: 24px; left: 12px; right: 12px; bottom: 24px; }
- .brand-steps { grid-template-columns: minmax(0,1fr); margin-bottom: 40px; }
+  .brand-steps { grid-template-columns: minmax(0,1fr); margin-bottom: 40px; }
  .brand-steps > div { padding: 20px; }
  .brand-steps > div + div { border-left: 0; border-top: 1px solid var(--b-line); }
  .brand-mode-card { padding: 20px; }
