@@ -85,7 +85,7 @@ class SampleTests(unittest.TestCase):
     def test_sample3_passes_with_all_layouts(self):
         clip = json.loads((SAMPLES / "sample3_papertest_mvc.json").read_text(encoding="utf-8"))
         self.assertEqual(errors_of(clip, supported_layouts=ALL_LAYOUTS, supported_slots=ALL_SLOTS), [])
-        self.assertTrue(any("layout cycle" in e for e in errors_of(clip)))
+        self.assertTrue(any("layout cycle" in e for e in errors_of(clip, supported_layouts=("row", "column", "tree"))))
 
 
 class ErrorTests(unittest.TestCase):
@@ -128,7 +128,8 @@ class ErrorTests(unittest.TestCase):
     def test_unsupported_layout(self):
         c = base_clip()
         c["scenes"][0]["diagrams"][0]["layout"] = "cycle"
-        self.assertError(c, "아직 플레이어가 지원하지 않음")
+        self.assertError(c, "아직 플레이어가 지원하지 않음", supported_layouts=("row", "column", "tree"))
+        self.assertEqual(errors_of(c), [])  # cycle, layers는 D-52부터 기본 지원
 
     def test_title_too_long(self):
         c = base_clip()

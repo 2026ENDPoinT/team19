@@ -20,11 +20,11 @@ from collections import defaultdict
 from pathlib import Path
 
 # FE가 구현한 것만 넣는다. 11/11 범위는 D-34, column은 D-43.
-SUPPORTED_LAYOUTS = ("row", "column", "tree")
+SUPPORTED_LAYOUTS = ("row", "column", "tree", "layers", "cycle")
 SUPPORTED_SLOTS = ("top", "middle", "bottom")
 SUPPORTED_THEMES = ("dark",)
-# 수식 항 표시 \term{id}{LaTeX} (D-46). FE가 변환을 구현하면 True로 바꾼다. 그 전에는 쓰면 오류다.
-SUPPORTED_FORMULA_TERMS = False
+# 수식 항 표시 \term{id}{LaTeX} (D-46). FE가 변환을 구현해 11/13에 켰다.
+SUPPORTED_FORMULA_TERMS = True
 TERM = "\\term"
 TERM_ID = re.compile(r"[a-z0-9_]+")
 # 화면 글(body, keyword)이 자막처럼 문장으로 끝나는지 본다. 개요·필요처럼 '요'로 끝나는 명사는 뺀다.
