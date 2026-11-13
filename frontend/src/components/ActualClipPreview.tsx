@@ -92,7 +92,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
         <option value="clip-01">A · Sonnet / Cedar</option>
         <option value="clip-01-b">B · Terra / Cedar</option>
         <option value="parts-test">부품 검사 · 신호음 샘플 (실제 TTS 아님)</option>
-        {evalClips.map((clip) => <option key={clip.id} value={clip.id}>평가 · {clip.label} / Terra</option>)}
+        {evalClips.map((clip) => <option key={clip.id} value={clip.id}>평가 · {clip.label}</option>)}
       </select>
       </>}
       {error ? (
