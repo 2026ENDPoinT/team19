@@ -1,0 +1,736 @@
+{
+ "resultId": "eval-algo-greedy-c1-terra",
+ "durationSec": 105.95,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "그리디는 언제 최적해를 찾을까?",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "최적화 문제는 가능한 답 중 가장 좋은 답을 찾아요.",
+     "목표에 따라 가장 크거나 작은 값을 고르는 거예요.",
+     "그리디는 문제를 단계적으로 풀어 가요.",
+     "매 단계에서 지금 가장 좋아 보이는 선택을 해요.",
+     "한번 고른 선택은 나중에 번복하지 않아요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t1",
+      "slot": "top",
+      "style": "title",
+      "content": "그리디의 전략",
+      "hidden": false
+     },
+     {
+      "id": "k1",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "선택을 번복하지 않음",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d1",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": true,
+      "nodes": [
+       {
+        "id": "d1n1",
+        "label": "현재 선택",
+        "shape": "box"
+       },
+       {
+        "id": "d1n2",
+        "label": "다음 선택",
+        "shape": "box"
+       },
+       {
+        "id": "d1n3",
+        "label": "최종 결과",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "d1e1",
+        "from": "d1n1",
+        "to": "d1n2"
+       },
+       {
+        "id": "d1e2",
+        "from": "d1n2",
+        "to": "d1n3"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 2,
+      "do": "show",
+      "target": "d1",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "d1n1",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "d1n1",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "k1",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     5,
+     6
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "그런데 눈앞의 최선이 전체의 최선이 될까요?",
+     "지금의 선택이 나중의 가능성을 제한할 수 있어요.",
+     "예를 들어 0-1 배낭에서 가치 대 무게가 높은 것만 골라 볼게요.",
+     "이 기준만으로는 전체 가치가 최대라고 보장할 수 없어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "예를 들어 영 일 배낭에서 가치 대 무게가 높은 것만 골라 볼게요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t2",
+      "slot": "top",
+      "style": "title",
+      "content": "부분의 최선과 전체",
+      "hidden": false
+     },
+     {
+      "id": "k2",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "0-1 배낭",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d2",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "d2n1",
+        "label": "현재의 최선",
+        "shape": "box"
+       },
+       {
+        "id": "d2n2",
+        "label": "남은 선택",
+        "shape": "box"
+       },
+       {
+        "id": "d2n3",
+        "label": "전체 결과",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "d2e1",
+        "from": "d2n1",
+        "to": "d2n2"
+       },
+       {
+        "id": "d2e2",
+        "from": "d2n2",
+        "to": "d2n3"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "d2n1",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "d2n3",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "d2n1",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "d2n3",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "d2n2",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "d2n2",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "k2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "d2n3",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     5,
+     9
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "첫 번째로 살펴볼 것은 탐욕적 선택 조건이에요.",
+     "지금의 탐욕적 선택을 포함하는 최적해가 있어야 해요.",
+     "회의실 배정에서는 가능한 회의 중 가장 빨리 끝나는 것을 골라요.",
+     "이 선택은 회의 개수가 최대인 해로 이어질 수 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t3",
+      "slot": "top",
+      "style": "title",
+      "content": "탐욕적 선택 조건",
+      "hidden": false
+     },
+     {
+      "id": "k3",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "회의실 배정",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d3",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "d3n1",
+        "label": "탐욕적 선택",
+        "shape": "box"
+       },
+       {
+        "id": "d3n2",
+        "label": "남은 문제",
+        "shape": "box"
+       },
+       {
+        "id": "d3n3",
+        "label": "전체 최적해",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "d3e1",
+        "from": "d3n1",
+        "to": "d3n2"
+       },
+       {
+        "id": "d3e2",
+        "from": "d3n2",
+        "to": "d3n3"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "d3n1",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "d3n3",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "d3n1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "d3n3",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "k3",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "d3n1",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "d3n1",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "d3n3",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     9
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "두 번째는 최적 부분 구조 조건이에요.",
+     "전체 최적해를 부문제의 최적해로 구성할 수 있어야 해요.",
+     "최단 경로가 중간 지점을 지난다고 해 볼게요.",
+     "출발점에서 중간까지도 최단 경로여야 해요.",
+     "중간에서 도착점까지도 최단 경로여야 해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t4",
+      "slot": "top",
+      "style": "title",
+      "content": "최적 부분 구조",
+      "hidden": false
+     },
+     {
+      "id": "k4",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "최단 경로",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d4",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": true,
+      "nodes": [
+       {
+        "id": "d4n1",
+        "label": "출발",
+        "shape": "circle"
+       },
+       {
+        "id": "d4n2",
+        "label": "중간",
+        "shape": "circle"
+       },
+       {
+        "id": "d4n3",
+        "label": "도착",
+        "shape": "circle"
+       }
+      ],
+      "edges": [
+       {
+        "id": "d4e1",
+        "from": "d4n1",
+        "to": "d4n2"
+       },
+       {
+        "id": "d4e2",
+        "from": "d4n2",
+        "to": "d4n3"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 2,
+      "do": "show",
+      "target": "d4",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "k4",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "d4n2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "d4n2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "d4e1",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "d4e1",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "d4e2",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     10
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": true,
+    "lines": [
+     "두 조건은 서로 다른 질문을 던져요.",
+     "탐욕적 선택 조건은 지금 선택해도 안전한지 묻고요.",
+     "최적 부분 구조는 작은 최적해로 전체를 만들 수 있는지 물어요.",
+     "따라서 특정 문제에서 그리디가 최적인지는 따로 증명해야 해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t5",
+      "slot": "top",
+      "style": "title",
+      "content": "그리디 적용의 핵심",
+      "hidden": false
+     },
+     {
+      "id": "k5",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "문제별 최적성 증명",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d5",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "d5n1",
+        "label": "선택의 안전성",
+        "shape": "box"
+       },
+       {
+        "id": "d5n2",
+        "label": "최적해의 구조",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "d5n1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "d5n1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "d5n2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "d5n2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "k5",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     9,
+     10
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "최적화 문제는 가능한 답 중 가장 좋은 답을 찾아요.",
+   "startSec": 0.0,
+   "endSec": 4.95
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "목표에 따라 가장 크거나 작은 값을 고르는 거예요.",
+   "startSec": 5.25,
+   "endSec": 9.7
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "그리디는 문제를 단계적으로 풀어 가요.",
+   "startSec": 10.0,
+   "endSec": 13.35
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "매 단계에서 지금 가장 좋아 보이는 선택을 해요.",
+   "startSec": 13.65,
+   "endSec": 17.8
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 4,
+   "text": "한번 고른 선택은 나중에 번복하지 않아요.",
+   "startSec": 18.1,
+   "endSec": 21.85
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "그런데 눈앞의 최선이 전체의 최선이 될까요?",
+   "startSec": 22.45,
+   "endSec": 26.9
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "지금의 선택이 나중의 가능성을 제한할 수 있어요.",
+   "startSec": 27.2,
+   "endSec": 31.05
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "예를 들어 0-1 배낭에서 가치 대 무게가 높은 것만 골라 볼게요.",
+   "startSec": 31.35,
+   "endSec": 37.1
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "이 기준만으로는 전체 가치가 최대라고 보장할 수 없어요.",
+   "startSec": 37.4,
+   "endSec": 42.25
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "첫 번째로 살펴볼 것은 탐욕적 선택 조건이에요.",
+   "startSec": 42.85,
+   "endSec": 47.05
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "지금의 탐욕적 선택을 포함하는 최적해가 있어야 해요.",
+   "startSec": 47.35,
+   "endSec": 52.35
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "회의실 배정에서는 가능한 회의 중 가장 빨리 끝나는 것을 골라요.",
+   "startSec": 52.65,
+   "endSec": 57.6
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "이 선택은 회의 개수가 최대인 해로 이어질 수 있어요.",
+   "startSec": 57.9,
+   "endSec": 62.65
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "두 번째는 최적 부분 구조 조건이에요.",
+   "startSec": 63.25,
+   "endSec": 66.6
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "전체 최적해를 부문제의 최적해로 구성할 수 있어야 해요.",
+   "startSec": 66.9,
+   "endSec": 71.55
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "최단 경로가 중간 지점을 지난다고 해 볼게요.",
+   "startSec": 71.85,
+   "endSec": 75.8
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "출발점에서 중간까지도 최단 경로여야 해요.",
+   "startSec": 76.1,
+   "endSec": 80.45
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 4,
+   "text": "중간에서 도착점까지도 최단 경로여야 해요.",
+   "startSec": 80.75,
+   "endSec": 84.7
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "두 조건은 서로 다른 질문을 던져요.",
+   "startSec": 85.3,
+   "endSec": 88.7
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "탐욕적 선택 조건은 지금 선택해도 안전한지 묻고요.",
+   "startSec": 89.0,
+   "endSec": 93.35
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "최적 부분 구조는 작은 최적해로 전체를 만들 수 있는지 물어요.",
+   "startSec": 93.65,
+   "endSec": 100.05
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "따라서 특정 문제에서 그리디가 최적인지는 따로 증명해야 해요.",
+   "startSec": 100.35,
+   "endSec": 105.95
+  }
+ ]
+}

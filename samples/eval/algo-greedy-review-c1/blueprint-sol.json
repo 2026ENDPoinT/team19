@@ -1,0 +1,621 @@
+{
+  "version": 0,
+  "title": "그리디는 무엇을 선택하나?",
+  "theme": "dark",
+  "scenes": [
+    {
+      "id": "s1",
+      "clear": true,
+      "lines": [
+        "가능한 답이 여럿이면 무엇을 골라야 할까요?",
+        "최적화 문제는 그중 가장 좋은 해를 찾는 문제예요.",
+        "목표에 따라 최댓값이나 최솟값을 찾아요.",
+        "물론 주어진 제약조건을 만족하는 해 중에서 골라요."
+      ],
+      "speech": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t1_title",
+          "slot": "top",
+          "hidden": false,
+          "style": "title",
+          "content": "최적화 문제"
+        },
+        {
+          "id": "t1_goal",
+          "slot": "bottom",
+          "hidden": true,
+          "style": "keyword",
+          "content": "최댓값 또는 최솟값"
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d1_candidates",
+          "slot": "middle",
+          "hidden": false,
+          "layout": "column",
+          "nodes": [
+            {
+              "id": "n1_candidates",
+              "label": "조건을 만족하는 해들",
+              "shape": "box"
+            },
+            {
+              "id": "n1_best",
+              "label": "가장 좋은 해",
+              "shape": "box",
+              "hidden": true
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1_compare",
+              "from": "n1_candidates",
+              "to": "n1_best",
+              "label": "목표에 따른 비교",
+              "hidden": true
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 1,
+          "do": "show",
+          "target": "n1_best",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e1_compare",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n1_best",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n1_best",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "t1_goal",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "n1_candidates",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        5
+      ]
+    },
+    {
+      "id": "s2",
+      "clear": true,
+      "lines": [
+        "그리디는 매 단계에서 지금 가장 좋아 보이는 것을 골라요.",
+        "첫 선택으로 만든 부분해에 다음 선택을 더해요.",
+        "이어서 또 현재의 최선을 골라 부분해를 늘려요.",
+        "같은 방식으로 부분해를 모아 최종 해를 만들어요.",
+        "중요한 특징은 한 번 고른 선택을 번복하지 않는다는 거예요."
+      ],
+      "speech": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t2_title",
+          "slot": "top",
+          "hidden": false,
+          "style": "title",
+          "content": "선택을 쌓는 방법"
+        },
+        {
+          "id": "t2_rule",
+          "slot": "bottom",
+          "hidden": true,
+          "style": "keyword",
+          "content": "선택 번복 없음"
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d2_steps",
+          "slot": "middle",
+          "hidden": false,
+          "layout": "column",
+          "nodes": [
+            {
+              "id": "n2_first",
+              "label": "1단계 부분해",
+              "shape": "box"
+            },
+            {
+              "id": "n2_second",
+              "label": "2단계 부분해",
+              "shape": "box",
+              "hidden": true
+            },
+            {
+              "id": "n2_third",
+              "label": "3단계 부분해",
+              "shape": "box",
+              "hidden": true
+            },
+            {
+              "id": "n2_final",
+              "label": "최종 해",
+              "shape": "box",
+              "hidden": true
+            }
+          ],
+          "edges": [
+            {
+              "id": "e2_first",
+              "from": "n2_first",
+              "to": "n2_second",
+              "label": "다음 선택",
+              "hidden": true
+            },
+            {
+              "id": "e2_second",
+              "from": "n2_second",
+              "to": "n2_third",
+              "label": "다음 선택",
+              "hidden": true
+            },
+            {
+              "id": "e2_rest",
+              "from": "n2_third",
+              "to": "n2_final",
+              "label": "같은 방식 반복",
+              "hidden": true
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n2_first",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "n2_first",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "n2_second",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e2_first",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n2_second",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n2_second",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "n2_third",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "e2_second",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n2_third",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "n2_third",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "n2_final",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "e2_rest",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "n2_final",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "unhighlight",
+          "target": "n2_final",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "show",
+          "target": "t2_rule",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        5,
+        6
+      ]
+    },
+    {
+      "id": "s3",
+      "clear": true,
+      "lines": [
+        "어떤 단계에서 보이는 최선은 국소최적해라고 해요.",
+        "전체 문제에서 가장 좋은 답은 전역최적해예요.",
+        "그리디가 매번 고르는 것은 국소최적해예요.",
+        "하지만 현재의 최선이 전체의 최선은 아닐 수 있어요.",
+        "강의 도식의 최적해도 항상 보장되는 건 아니에요."
+      ],
+      "speech": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t3_title",
+          "slot": "top",
+          "hidden": false,
+          "style": "title",
+          "content": "국소 최적과 전역 최적"
+        },
+        {
+          "id": "t3_condition",
+          "slot": "bottom",
+          "hidden": true,
+          "style": "keyword",
+          "content": "최적성 보장 조건"
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d3_compare",
+          "slot": "middle",
+          "hidden": false,
+          "layout": "row",
+          "nodes": [
+            {
+              "id": "n3_local",
+              "label": "국소최적해",
+              "shape": "box"
+            },
+            {
+              "id": "n3_global",
+              "label": "전역최적해",
+              "shape": "box",
+              "hidden": true
+            }
+          ],
+          "edges": [
+            {
+              "id": "e3_question",
+              "from": "n3_local",
+              "to": "n3_global",
+              "label": "항상 성립?",
+              "hidden": true
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n3_local",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "n3_local",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "n3_global",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n3_global",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n3_global",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n3_local",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "n3_local",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "e3_question",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "highlight",
+          "target": "e3_question",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "unhighlight",
+          "target": "e3_question",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "show",
+          "target": "t3_condition",
+          "args": []
+        }
+      ],
+      "sourcePages": [
+        6,
+        8
+      ]
+    },
+    {
+      "id": "s4",
+      "clear": true,
+      "lines": [
+        "항상 전역최적해를 얻는다는 주장은 증명이 필요해요.",
+        "선택 기준의 정당성이 증명돼야 최적해를 보장해요.",
+        "증명하지 못했다면 최적이 아닌 해를 얻을 수도 있어요.",
+        "이 경우에는 휴리스틱 알고리즘으로 볼 수 있어요.",
+        "기억해요, 지금의 최선과 전체의 최선은 달라요."
+      ],
+      "speech": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "texts": [
+        {
+          "id": "t4_title",
+          "slot": "top",
+          "hidden": false,
+          "style": "title",
+          "content": "선택만큼 중요한 증명"
+        },
+        {
+          "id": "t4_keyword",
+          "slot": "bottom",
+          "hidden": true,
+          "style": "keyword",
+          "content": "휴리스틱"
+        }
+      ],
+      "slides": [],
+      "diagrams": [
+        {
+          "id": "d4_proof",
+          "slot": "middle",
+          "hidden": false,
+          "layout": "column",
+          "nodes": [
+            {
+              "id": "n4_choice",
+              "label": "그리디 선택",
+              "shape": "box"
+            },
+            {
+              "id": "n4_proof",
+              "label": "최적성 증명",
+              "shape": "box"
+            },
+            {
+              "id": "n4_guarantee",
+              "label": "전역최적해 보장",
+              "shape": "box",
+              "hidden": true
+            }
+          ],
+          "edges": [
+            {
+              "id": "e4_need",
+              "from": "n4_choice",
+              "to": "n4_proof"
+            },
+            {
+              "id": "e4_guarantee",
+              "from": "n4_proof",
+              "to": "n4_guarantee",
+              "hidden": true
+            }
+          ]
+        },
+        {
+          "id": "d4_uncertain",
+          "slot": "middle",
+          "hidden": true,
+          "layout": "column",
+          "nodes": [
+            {
+              "id": "n4_unproven",
+              "label": "증명 없음",
+              "shape": "box"
+            },
+            {
+              "id": "n4_uncertain",
+              "label": "최적성 미보장",
+              "shape": "box"
+            }
+          ],
+          "edges": [
+            {
+              "id": "e4_uncertain",
+              "from": "n4_unproven",
+              "to": "n4_uncertain"
+            }
+          ]
+        }
+      ],
+      "grids": [],
+      "codes": [],
+      "actions": [
+        {
+          "line": 0,
+          "do": "highlight",
+          "target": "n4_proof",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "unhighlight",
+          "target": "n4_proof",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "n4_guarantee",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "show",
+          "target": "e4_guarantee",
+          "args": []
+        },
+        {
+          "line": 1,
+          "do": "highlight",
+          "target": "n4_guarantee",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "unhighlight",
+          "target": "n4_guarantee",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "hide",
+          "target": "d4_proof",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "show",
+          "target": "d4_uncertain",
+          "args": []
+        },
+        {
+          "line": 2,
+          "do": "highlight",
+          "target": "n4_uncertain",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "unhighlight",
+          "target": "n4_uncertain",
+          "args": []
+        },
+        {
+          "line": 3,
+          "do": "show",
+          "target": "t4_keyword",
+          "args": []
+        },
+        {
+          "line": 4,
+          "do": "setText",
+          "target": "t4_keyword",
+          "args": [
+            "국소와 전역의 구분"
+          ]
+        }
+      ],
+      "sourcePages": [
+        8
+      ]
+    }
+  ]
+}
