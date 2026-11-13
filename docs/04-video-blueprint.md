@@ -50,7 +50,7 @@ AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**�
 |---|---|---|
 | **texts** | `style`: title / body / keyword / formula, `content` | 제목, 핵심 문장, 키워드, 수식. `$...$` 안은 LaTeX이고 KaTeX로 그린다. 수식 안의 항은 `\term{항id}{LaTeX}`로 감쌀 수 있다(D-46) |
 | **slides** (원본 조각) | `page`, `box`: [x, y, w, h] | 차트, 사진처럼 다시 그릴 수 없는 것. `page`는 그 장면의 `sourcePages`에 있어야 한다 |
-| **diagrams** | `layout`: row / column / tree / layers / cycle, `nodes`: [{id, label, shape: box / circle, hidden?}], `edges`: [{id, from, to, label?, hidden?}] | 흐름도, 계층, 구조도, 신경망, 상태 그래프 |
+| **diagrams** | `layout`: row / column / tree / layers / cycle, `nodes`: [{id, label, shape: box / circle / text(테두리 없이 글자만, D-54), hidden?}], `edges`: [{id, from, to, label?, hidden?}] | 흐름도, 계층, 구조도, 신경망, 상태 그래프 |
 | **grids** | `cells`: [[문자열]], `indexLabels`: true / false, `pointers`: [{id, label, row, col, hidden}] | 배열(한 줄), 행렬, 표. 줄마다 칸 수가 달라도 된다 |
 | **codes** | `language`, `lines`: [문자열] | 코드, 의사코드 |
 

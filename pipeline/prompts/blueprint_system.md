@@ -78,7 +78,7 @@
 |---|---|
 | texts | "style": title / body / keyword / formula, "content". formula는 `$...$` 안에 LaTeX |
 | slides | "page": 쪽 번호(그 장면의 sourcePages 안), "box": [x, y, w, h] 원본 페이지 기준 0~1 비율 |
-| diagrams | "layout", "nodes": [{"id", "label", "shape": box / circle, "hidden"(생략 가능)}], "edges": [{"id", "from", "to", "label"(생략 가능), "hidden"(생략 가능)}] |
+| diagrams | "layout", "nodes": [{"id", "label", "shape": box / circle / text, "hidden"(생략 가능)}], "edges": [{"id", "from", "to", "label"(생략 가능), "hidden"(생략 가능)}] |
 | grids | "cells": [[문자열]] (줄마다 칸 수가 달라도 됨, 빈 칸은 ""), "indexLabels": true / false, "pointers": [{"id", "label", "row", "col", "hidden"}] |
 | codes | "language", "lines": [문자열] |
 
@@ -86,6 +86,7 @@
   - 세로 화면이라 가로 폭이 좁다. **한 방향으로 이어지는 흐름·단계(노드 3개 이상)는 column**을 쓴다. row는 노드 2~3개, 라벨이 짧을(6자 이하) 때만 쓴다. 선이 있으면 앞→뒤 한 방향이어야 한다. **개념 2~3개를 나란히 놓고 대비할 때(선 없어도 됨)는 row**를 쓴다(예: 최대화 · 최소화, 국소 · 전역).
   - **서너 개가 서로 주고받는 관계(되돌아가는 선이 있는 구조)는 cycle**을 쓴다. 신경망처럼 층과 층이 이어지는 구조는 layers를 쓴다(3층, 층당 4개 이하).
   - 서로 주고받는 관계(되돌아가는 선)는 선을 처음부터 다 보여 주지 않는다. 숨겨 두고 설명하는 문장에서 하나씩 보여 준다. **한 번 보여 준 선은 지우지 않고 남긴다.** 지금 설명하는 선만 highlight하고, 다음 선으로 넘어갈 때 unhighlight한다.
+- 노드 모양: 비교·나열하는 낱말·개념은 text(테두리 없이 글자만), 단계·구성 요소처럼 "물건" 같은 것은 box, 순환 구조의 상태는 circle.
 - **grids는 칸에 값이 들어가는 자료(배열, 행렬, DP 표, 숫자·짧은 기호)에만 쓴다.** 낱말이나 개념을 나열·비교하는 표(조건과 뜻, 장점과 단점, 최대화·최소화)는 격자로 만들지 않는다. 화면에 배열처럼 칸이 그려져 어색하다. 개념 2~4개는 diagram(column, 짝이면 선으로 이음)으로, 하나면 keyword로 보인다.
 - slides는 다시 그릴 수 없는 그림(그래프, 사진, 복잡한 표)을 보여 줄 때만 쓴다. 페이지 그림이 어떻게 생겼는지 모르면 box는 페이지 전체에 가깝게 잡는다.
 

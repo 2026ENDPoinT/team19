@@ -41,6 +41,15 @@ class AudioTests(unittest.TestCase):
             self.assertEqual(r2["usage"][0]["reusedLines"], 3)
             self.assertEqual(r2["usage"][0]["costUsd"], 0)
 
+    def test_parallel_keeps_order_and_dedupes(self):
+        bp = {"scenes": [{"id": "s1", "lines": ["가", "가나다", "가"]}]}   # 길이가 다른 음성이 동시에 와도 순서대로 이어야 한다
+        with tempfile.TemporaryDirectory() as tmp, \
+                mock.patch.object(audio, "_tts", side_effect=lambda c, m, v, t: b"\x01\x00" * (audio.RATE * len(t))) as tts, \
+                mock.patch.object(audio, "_client", return_value=object()):
+            c = audio.make_audio(bp, tmp, fmt="wav")["captions"]
+            self.assertEqual([(x["startSec"], x["endSec"]) for x in c], [(0.0, 1.0), (1.3, 4.3), (4.6, 5.6)])
+            self.assertEqual(tts.call_count, 2)                         # 같은 문장은 한 번만
+
     def test_check_captions_mismatch(self):
         errs = audio.check_captions(BP, [{"sceneId": "s1", "lineIndex": 0, "startSec": 0, "endSec": 1}], 1)
         self.assertTrue(errs)
