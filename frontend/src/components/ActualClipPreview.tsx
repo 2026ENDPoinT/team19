@@ -21,7 +21,7 @@ type Props = { onBack: () => void; initialClipId?: string; pages?: Record<number
 
 export default function ActualClipPreview({ onBack, initialClipId, pages }: Props) {
   const [clipId, setClipId] = useState(initialClipId ?? 'clip-01')
-  const [captionsOn, setCaptionsOn] = useState(false)
+  const [captionsOn, setCaptionsOn] = useState(true)
   const [result, setResult] = useState<ClipResult | null>(null)
   const [error, setError] = useState('')
   const { audioRef, time, restart } = useAudioClock(result ? clipId + ':' + result.resultId : 'loading')
@@ -177,31 +177,26 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   return (
     <main className={`clip-preview-page mx-auto w-full px-5 py-3 ${sourceOpen ? 'max-w-[1600px]' : 'max-w-4xl'}`} style={{ '--source-page-ratio': sourceRatio } as CSSProperties}>
       <button type="button" className="rounded-lg border px-4 py-2" onClick={onBack}>← {initialClipId ? '클립 목록' : '업로드 화면'}</button>
-      <h1 className="mt-3 text-xl font-bold">{initialClipId ? '업로드 자료의 샘플 클립' : '실제 클립 연결 확인'}</h1>
-      {initialClipId ? <p className="mt-3 text-sm text-slate-500">샘플 모드의 PDF 발췌·무음 음성 결과예요. 실제 AI 요약·TTS 생성 결과가 아니에요.</p> : <>
-      <details className="mt-2 text-sm text-slate-600">
-        <summary className="cursor-pointer">샘플 안내</summary>
-      <p className="mt-2 text-sm text-slate-600">저장된 실제 결과와 음성을 확인하는 개발 화면이에요. 텍스트·수식·격자·코드를 시간에 맞춰 표시해요. 가로 다이어그램·재귀 트리도 표시해요. 원본 그림의 확대·강조도 표시해요. 원본 확대·배열 교환·포인터는 음성 시간에 맞춰 이동해요. 나머지 동작은 즉시 적용됩니다.</p>
-      <p className="mt-2 text-xs text-slate-500">A/B·부품 검사 원본은 BE API에서, 다른 과목 평가 원본은 정식 저장 파일에서 불러옵니다. parts-test는 실제 설명 음성 대신 신호음을 사용합니다.</p>
-      </details>
-      <label className="mt-3 block font-semibold" htmlFor="actual-clip">비교할 클립</label>
+      <h1 className="mt-3 text-xl font-bold">학습 영상</h1>
+      {!initialClipId && <>
+      <label className="mt-3 block font-semibold" htmlFor="actual-clip">학습 클립</label>
       <select id="actual-clip" disabled={transitionBusy} value={clipId} onChange={(event) => chooseClip(event.target.value)} className="mt-2 w-full rounded-lg border bg-white p-2">
         <option value="clip-01">A · Sonnet / Cedar</option>
         <option value="clip-01-b">B · Terra / Cedar</option>
-        <option value="parts-test">부품 검사 · 신호음 샘플 (실제 TTS 아님)</option>
-        {evalClips.map((clip) => <option key={clip.id} value={clip.id}>평가 · {clip.label}</option>)}
+        <option value="parts-test">시각화 예시</option>
+        {evalClips.map((clip) => <option key={clip.id} value={clip.id}>{clip.label}</option>)}
       </select>
       </>}
       <div ref={contentRef} className="clip-transition-container" aria-busy={transitionBusy} style={{ minHeight: loadingHeight }}>
       {error ? (
         <div className="mt-6 rounded-xl bg-red-50 p-4" role="alert">
-          <p>{error}</p><p className="mt-2 text-sm">다른 클립을 선택하거나 서버 상태를 확인해 주세요. 다시 불러오기는 결과 조회만 하며, 새 생성이나 생성 재시도를 요청하지 않습니다.</p>
+          <p>{error}</p><p className="mt-2 text-sm">다른 클립을 선택하거나 다시 불러와 주세요.</p>
           <button className="mt-3 rounded-lg border px-4 py-2" type="button" onClick={() => setRetry((value) => value + 1)}>다시 불러오기</button>
         </div>
       ) : !result ? <p role="status" className="mt-6">실제 클립을 불러오고 있어요…</p> : (
         <section className="mt-3">
           <h2 className="text-xl font-bold">{result.blueprint.title}</h2>
-          <p className="mt-2 break-all text-xs text-slate-500">{result.resultId} · {result.durationSec.toFixed(1)}초</p>
+          <p className="mt-2 break-all text-xs text-slate-500">{Math.ceil(result.durationSec)}초</p>
           <button type="button" className="source-page-toggle mt-2 rounded-lg border px-4 py-2" aria-expanded={sourceOpen} aria-controls="source-page-panel" onClick={() => setSourceOpen((open) => !open)}>
             {sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}
           </button>
