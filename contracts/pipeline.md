@@ -1,6 +1,6 @@
 # AI 파이프라인 v0 (BE → AI)
 
-> 상태: 확정 v0 (D-27, D-28) · 담당: AI (검토 BE) · 최종 수정: 2026-11-12 · AI/Claude
+> 상태: 확정 v0 (D-27, D-28) · 담당: AI (검토 BE) · 최종 수정: 2026-11-13 · AI/Claude
 
 BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정 과정은 [P-BE-02 AI 의견](../coordination/proposals/P-BE-02-api-and-pipeline-v0.md#ai). 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 
@@ -39,7 +39,7 @@ BE 서버가 AI 파이프라인(Python 모듈)을 부르는 방법이다. 결정
 ## 검사기 (D-27)
 
 - `pipeline/validate.py`의 `validate_blueprint(blueprint, page_count)`: 오류 문장 목록을 돌려준다. 비어 있으면 통과다. 입력은 바꾸지 않는다. 검사 항목은 [docs/04 검사기](../docs/04-video-blueprint.md#검사기).
-- 지원 배치와 자리는 파일 맨 위 `SUPPORTED_LAYOUTS`, `SUPPORTED_SLOTS`에 있다. 지금은 tree, row와 top, middle, bottom이다(D-34). FE가 더 구현하면 AI가 늘린다.
+- 지원 배치와 자리는 파일 맨 위 `SUPPORTED_LAYOUTS`, `SUPPORTED_SLOTS`에 있다. 지금은 tree, row, column(D-43)과 top, middle, bottom이다(D-34). FE가 더 구현하면 AI가 늘린다.
 - 명령줄: `py -m pipeline.validate --pages 57 파일.json` (Windows는 `py`, 다른 곳은 `python`). 테스트: `py -m unittest discover -s pipeline/tests -t .`
 - `make_blueprint`는 안에서 검사하고, 실패하면 오류 내용을 붙여 **한 번** 다시 만든다. 또 실패하면 `BLUEPRINT_INVALID`를 던진다. BE는 자동으로 다시 부르지 않는다(사용자가 재시도할 때만).
 - `make_audio`도 넘기기 전에 captions를 검사한다(문장 수, 시간 순서, 마지막 끝 시간 ≤ durationSec).

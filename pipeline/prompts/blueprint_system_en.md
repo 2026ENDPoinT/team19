@@ -67,7 +67,9 @@ action { "line": sentence index (from 0), "do": action name, "target": target id
 | grids | "cells": [[string]] (rows may differ in length, empty cell is ""), "indexLabels": true / false, "pointers": [{"id", "label", "row", "col", "hidden"}] |
 | codes | "language", "lines": [string] |
 
-- Diagram layouts: row places nodes left to right in order; tree places nodes by edges (from = parent). Allowed layouts: <<LAYOUTS>>
+- Diagram layouts: row places nodes left to right in order, column top to bottom; tree places nodes by edges (from = parent). Allowed layouts: <<LAYOUTS>>
+  - The screen is vertical and narrow. **Use column for flows or steps with 3+ nodes and for relation diagrams with edge labels.** Use row only for 2–3 nodes with short labels (6 characters or fewer) and edges going one way, front to back.
+  - For two-way relations (edges going back), keep at most 3 edges visible at once. Keep the rest hidden and show them one at a time in the sentence that explains them.
 - Use slides only for figures that cannot be redrawn (graphs, photos, complex tables). If you do not know what the page image looks like, make the box close to the whole page.
 
 ## Slots

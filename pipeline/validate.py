@@ -19,8 +19,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-# FE가 구현한 것만 넣는다. 11/11 범위는 D-34.
-SUPPORTED_LAYOUTS = ("row", "tree")
+# FE가 구현한 것만 넣는다. 11/11 범위는 D-34, column은 D-43.
+SUPPORTED_LAYOUTS = ("row", "column", "tree")
 SUPPORTED_SLOTS = ("top", "middle", "bottom")
 SUPPORTED_THEMES = ("dark",)
 

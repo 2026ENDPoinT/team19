@@ -1,6 +1,6 @@
 # 11/11 목표: 실제 클립 1개를 플레이어로 재생
 
-> 상태: 확정 (D-34) · 담당: AI (팀장) · 최종 수정: 2026-11-09 · AI/Claude
+> 상태: 확정 (D-34) · 담당: AI (팀장) · 최종 수정: 2026-11-13 · AI/Claude
 
 ## 목표
 
@@ -11,7 +11,7 @@
 | 구분 | 11/11 필수 | 11/11 이후 |
 |---|---|---|
 | 부품 | texts(수식 포함), grids, codes, slides, diagrams | |
-| 다이어그램 배치 | tree, row | column, cycle, layers |
+| 다이어그램 배치 | tree, row, column(D-43) | cycle, layers |
 | 자리 | top, middle, bottom | full |
 | 동작 | 12개 모두 | |
 
@@ -67,7 +67,7 @@ FE는 실제 결과를 기다리지 않는다. 기존 샘플 1, 2(퀵 정렬, �
 | 9 | 데이터 불러오기: `samples/clip-01/result.json`(또는 BE의 `GET /clips/{id}`)을 ClipResult 모양으로 읽기 |
 
 - 선택: 원본 페이지 옆 패널(D-30). 단순 작업이라 다른 일이 끝나면 넣는다.
-- 11/11 이후: 다이어그램 column, cycle, layers 배치, full 자리.
+- 11/11 이후: 다이어그램 cycle, layers 배치, full 자리. (column은 D-43으로 지원)
 - 막히면 AI에게 지원을 요청한다(D-22).
 
 ## BE 필수
