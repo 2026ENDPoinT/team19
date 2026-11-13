@@ -1,6 +1,7 @@
 """FastAPI service for team19: durable lecture/outline/clip jobs and AI module calls."""
 from __future__ import annotations
 
+import gc
 import hashlib
 import json
 import logging
@@ -8,15 +9,17 @@ import os
 import re
 import shutil
 import sqlite3
+import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, File, Header, HTTPException, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel
 
 from .pipeline import Pipeline, PipelineError, check_blueprint, get_ai_mode, validate_result
@@ -25,7 +28,7 @@ from . import pdf_text_fallback, stored_sample
 AI_MODE = get_ai_mode()  # Reject typos before creating a data directory, DB or executor.
 ROOT = Path(os.getenv("TEAM19_DATA_DIR", "./backend/local-data")).resolve()
 DB = ROOT / "team19.sqlite3"
-MAX_BYTES = int(os.getenv("MAX_PDF_MB", "0")) * 1024 * 1024  # 0이면 크기 제한 없음(D-67 수정, 쪽수 100쪽 제한이 대신함)
+MAX_PDF_PAGES = 100  # upload policy: no file-size limit, at most this many pages (101+ is rejected)
 WORKERS = max(1, min(3 if AI_MODE == "real" else 4,
                      int(os.getenv("BE_WORKERS", "3" if AI_MODE == "real" else "1"))))
 ROOT.mkdir(parents=True, exist_ok=True)
@@ -184,6 +187,142 @@ def add_asset(db: sqlite3.Connection, path: Path, mime: str) -> str:
     return f"/assets/{aid}"
 
 
+# ---- Permanent lecture deletion (X-Owner-Id is a device label, not authentication) ----
+TRASH = ROOT / ".trash"
+SAFE_ID = re.compile(r"[A-Za-z0-9_-]{1,64}")
+
+
+def _move(src: Path, dst: Path) -> None:
+    os.replace(src, dst)
+
+
+def _remove_tree(path: Path) -> None:
+    shutil.rmtree(path)
+
+
+def owned_dir(parent: str, name: str) -> Path | None:
+    """ROOT/<parent>/<name> only if it is a real directory directly inside ROOT/<parent> (never a symlink)."""
+    if not SAFE_ID.fullmatch(name):
+        return None
+    base = (ROOT / parent).resolve()
+    path = base / name
+    if path.is_symlink() or not path.is_dir() or path.resolve().parent != base:
+        return None
+    return path
+
+
+def _restore(moves: list[tuple[Path, Path]]) -> None:
+    for trashed, original in reversed(moves):
+        if trashed.exists() and not original.exists():
+            _move(trashed, original)
+
+
+def recover_trash() -> None:
+    """After a crash between 'moved to trash' and 'database commit': put folders of still-existing lectures back,
+    and finish removing the ones whose lectures are gone. Folders without a readable manifest are left alone."""
+    if not TRASH.is_dir():
+        return
+    log = logging.getLogger("backend")
+    for entry in TRASH.iterdir():
+        try:
+            manifest = json.loads((entry / "manifest.json").read_text(encoding="utf-8"))
+            ids = [i for i in manifest["lectureIds"] if SAFE_ID.fullmatch(i)]
+            with conn() as db:
+                alive = any(db.execute("SELECT 1 FROM lectures WHERE id=?", (i,)).fetchone() for i in ids)
+            if alive:
+                _restore([(entry / m["name"], Path(m["original"])) for m in manifest["moves"]
+                          if Path(m["original"]).resolve().is_relative_to(ROOT)])
+                if not [c for c in entry.iterdir() if c.name != "manifest.json"]:
+                    _remove_tree(entry)  # everything is back; only the manifest is left
+            else:
+                _remove_tree(entry)
+        except Exception:
+            log.warning("삭제 임시 폴더를 정리하지 못했습니다: %s", entry.name, exc_info=True)
+
+
+def in_chunks(items: list[str], size: int = 400):
+    for i in range(0, len(items), size):
+        yield items[i:i + size]
+
+
+def select_in(db: sqlite3.Connection, sql: str, items: list[str]) -> list[sqlite3.Row]:
+    """`sql` has one {} where the placeholders go."""
+    found: list[sqlite3.Row] = []
+    for chunk in in_chunks(items):
+        found += db.execute(sql.format(",".join("?" * len(chunk))), chunk).fetchall()
+    return found
+
+
+def delete_in(db: sqlite3.Connection, sql: str, items: list[str]) -> None:
+    for chunk in in_chunks(items):
+        db.execute(sql.format(",".join("?" * len(chunk))), chunk)
+
+
+def delete_rows(db: sqlite3.Connection, lectures: list[str], outlines: list[str], clips: list[str], jobs: list[str], assets: list[str]) -> None:
+    """Child rows first so the foreign keys (job_usage to jobs, clips to outlines, outlines/pages to lectures) hold."""
+    delete_in(db, "DELETE FROM job_usage WHERE job_id IN ({})", jobs)
+    delete_in(db, "DELETE FROM jobs WHERE id IN ({})", jobs)
+    delete_in(db, "DELETE FROM clips WHERE id IN ({})", clips)
+    delete_in(db, "DELETE FROM outlines WHERE id IN ({})", outlines)
+    delete_in(db, "DELETE FROM pages WHERE lecture_id IN ({})", lectures)
+    delete_in(db, "DELETE FROM assets WHERE id IN ({})", assets)
+    delete_in(db, "DELETE FROM lectures WHERE id IN ({})", lectures)
+
+
+def delete_lecture_data(owner: str, lecture_id: str) -> None:
+    """Delete this owner's lecture and every lecture of the same owner with the same PDF bytes (one list entry),
+    with their pages, outlines, clips, jobs, usage rows, assets and folders. Nothing else is touched."""
+    with conn() as db:
+        fill_missing_hashes(db, owner)  # own transaction; reads PDFs only
+    token = uuid.uuid4().hex
+    moves: list[tuple[Path, Path]] = []
+    try:
+        with conn() as db:
+            db.execute("BEGIN IMMEDIATE")  # no job can be claimed, created or finished while we check and delete
+            lecture = db.execute("SELECT * FROM lectures WHERE id=? AND owner_id=?", (lecture_id, owner)).fetchone()
+            if lecture is None:  # also the answer for other owners' and ownerless lectures
+                fail("LECTURE_NOT_FOUND", "강의를 찾을 수 없습니다.", 404)
+            group = [lecture_id]
+            if lecture["pdf_sha256"]:
+                group = [r["id"] for r in db.execute("SELECT id FROM lectures WHERE owner_id=? AND pdf_sha256=?", (owner, lecture["pdf_sha256"]))]
+            outlines = [r["id"] for r in select_in(db, "SELECT id FROM outlines WHERE lecture_id IN ({})", group)]
+            clips = [r["id"] for r in select_in(db, "SELECT id FROM clips WHERE outline_id IN ({})", outlines)]
+            targets = group + outlines + clips
+            jobs = [r["id"] for r in select_in(db, "SELECT id FROM jobs WHERE target_id IN ({})", targets)]
+            if select_in(db, "SELECT 1 FROM jobs WHERE status='running' AND target_id IN ({})", targets):
+                fail("LECTURE_BUSY", "이 자료로 만드는 작업이 실행 중이라 지금은 삭제할 수 없습니다. 끝난 뒤 다시 시도해 주세요.", 409, True)
+            # Folders: only real directories directly under ROOT/lectures/<id> and ROOT/clips/<id>.
+            folders = [d for d in (owned_dir("lectures", i) for i in group) if d] + [d for d in (owned_dir("clips", i) for i in clips) if d]
+            prefixes = [os.path.normcase(str(d)) + os.sep for d in folders]
+            assets = [r["id"] for r in db.execute("SELECT id,path FROM assets").fetchall()
+                      if any(os.path.normcase(str(Path(r["path"]).resolve())).startswith(p) for p in prefixes)]
+            trash = TRASH / token
+            if folders:
+                trash.mkdir(parents=True)
+                names = {str(i): d for i, d in enumerate(folders)}
+                manifest = {"lectureIds": group, "moves": [{"name": n, "original": str(d)} for n, d in names.items()]}
+                (trash / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+                try:
+                    for name, folder in names.items():
+                        _move(folder, trash / name)
+                        moves.append((trash / name, folder))
+                except OSError:
+                    fail("STORAGE_UNAVAILABLE", "파일이 사용 중이라 삭제하지 못했습니다. 잠시 뒤 다시 시도해 주세요. 아무것도 삭제되지 않았습니다.", 503, True)
+            delete_rows(db, group, outlines, clips, jobs, assets)
+    except BaseException:
+        # The database rolled back, so the folders must be back where its rows say they are.
+        _restore(moves)
+        if not any(t.exists() for t, _ in moves):
+            shutil.rmtree(TRASH / token, ignore_errors=True)
+        raise
+    if moves:
+        try:
+            _remove_tree(TRASH / token)
+        except OSError:
+            logging.getLogger("backend").warning("삭제 임시 폴더 정리가 끝나지 않았습니다: %s", token, exc_info=True)
+            fail("STORAGE_CLEANUP_PENDING", "자료는 목록에서 삭제됐지만 파일 정리가 끝나지 않았습니다. 서버를 다시 켜면 자동으로 정리합니다.", 500, True)
+
+
 def dispatch(jid: str):
     _executor.submit(execute, jid)
 
@@ -308,13 +447,14 @@ def do_clip(job: dict, pipe: Pipeline):
 
 
 setup()
+recover_trash()
 if AI_MODE == "sample" and not pdf_text_fallback.pymupdf_available():
     # BUG-FE-01: without PyMuPDF the sample extractor uses pypdf, which can garble Korean text.
     logging.getLogger("backend").warning("PyMuPDF를 불러올 수 없습니다. 샘플 업로드는 pypdf로 대체되어 한글이 깨질 수 있습니다. "
                                          "`pip install -r backend/requirements.txt`로 PyMuPDF를 설치하세요.")
 resume_pending()
 app = FastAPI(title="team19 BE", version="0.1.0")
-app.add_middleware(CORSMiddleware, allow_origins=os.getenv("FRONTEND_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(","), allow_credentials=False, allow_methods=["GET", "HEAD", "POST"], allow_headers=["*"], expose_headers=["Accept-Ranges", "Content-Range", "Content-Length", "ETag", "Last-Modified"])
+app.add_middleware(CORSMiddleware, allow_origins=os.getenv("FRONTEND_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(","), allow_credentials=False, allow_methods=["GET", "HEAD", "POST", "DELETE"], allow_headers=["*"], expose_headers=["Accept-Ranges", "Content-Range", "Content-Length", "ETag", "Last-Modified"])
 
 
 @app.exception_handler(HTTPException)
@@ -361,6 +501,40 @@ def claim_lecture(owner: str | None, sha256: str, title: str, path: Path, lid: s
         return lid, job_create(db, "prepare", lid), "pending", True
 
 
+def remove_upload_folder(directory: Path) -> None:
+    """Remove the folder this upload request created. On Windows a PDF library can keep a corrupt file open for a
+    moment after failing, so retry a few times (after a garbage collection) before giving up quietly."""
+    for attempt in range(6):
+        shutil.rmtree(directory, ignore_errors=True)
+        if not directory.exists():
+            return
+        gc.collect()
+        time.sleep(0.05 * (attempt + 1))
+    logging.getLogger("backend").warning("업로드 임시 폴더를 지우지 못했습니다: %s", directory.name)
+
+
+def count_pdf_pages(path: Path) -> int:
+    """Page count from the PDF structure only (no rendering, no text extraction, no AI). Returns 0 for PDFs that
+    cannot be read, are encrypted or have no pages. It never raises: a failed PDF library call would keep the
+    file open (on Windows) through the exception's traceback, and the rejected upload folder could not be removed.
+    PyMuPDF is preferred, like the extractor; pypdf is used when PyMuPDF is not installed or its DLL cannot load."""
+    pages = 0
+    try:
+        try:
+            import pymupdf
+        except (ImportError, OSError):
+            from pypdf import PdfReader
+            reader = PdfReader(str(path), strict=False)
+            pages = 0 if reader.is_encrypted else len(reader.pages)
+        else:
+            with pymupdf.open(str(path)) as document:
+                pages = 0 if document.needs_pass else document.page_count
+    except Exception:
+        pages = 0
+    gc.collect()  # release a handle a failed open may still hold
+    return max(pages, 0)
+
+
 @app.post("/lectures", status_code=202)
 async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(None)):
     owner = owner_of(x_owner_id)
@@ -368,29 +542,37 @@ async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(N
         fail("UNSUPPORTED_FILE_TYPE", "PDF 파일만 업로드할 수 있습니다.", 415)
     lid = ident("lec")
     directory = ROOT / "lectures" / lid
-    directory.mkdir(parents=True, exist_ok=True)
     path = directory / "original.pdf"
-    amount = 0
     digest = hashlib.sha256()
+    claimed = False  # once the lecture row exists, the folder belongs to it and must not be cleaned up here
     try:
-        with path.open("wb") as dst:
-            while chunk := await file.read(1024 * 1024):
-                amount += len(chunk)
-                if MAX_BYTES and amount > MAX_BYTES:
-                    fail("FILE_TOO_LARGE", "PDF 파일이 크기 제한을 초과했습니다.", 413)
-                digest.update(chunk)
-                dst.write(chunk)
+        try:
+            directory.mkdir(parents=True, exist_ok=True)
+            with path.open("wb") as dst:  # no file-size limit: the file is streamed to disk in 1 MiB pieces
+                while chunk := await file.read(1024 * 1024):
+                    digest.update(chunk)
+                    dst.write(chunk)
+        except OSError:
+            fail("STORAGE_UNAVAILABLE", "파일을 저장하지 못했습니다. 저장 공간을 확인한 뒤 다시 시도해 주세요.", 503, True)
         with path.open("rb") as src:
             if src.read(5) != b"%PDF-":
                 fail("INVALID_PDF", "올바른 PDF 파일이 아닙니다.", 422)
+        # The real page count is read before any lecture or Job exists, so a rejected PDF costs nothing.
+        pages = await run_in_threadpool(count_pdf_pages, path)
+        if pages < 1:  # corrupt, encrypted or empty: never show library errors or paths
+            fail("INVALID_PDF", "올바른 PDF 파일이 아니거나 읽을 수 없습니다.", 422)
+        if pages > MAX_PDF_PAGES:
+            fail("PDF_TOO_LONG", f"PDF가 {pages}쪽이에요. 최대 {MAX_PDF_PAGES}쪽까지 올릴 수 있어요. 필요한 부분만 나눠서 올려 주세요.", 422)
         lecture_id, jid, status, created = claim_lecture(owner, digest.hexdigest(), Path(file.filename).name, path, lid)
+        claimed = created
         if not created:
-            shutil.rmtree(directory, ignore_errors=True)  # only the copy this request just wrote
+            remove_upload_folder(directory)  # only the copy this request just wrote
             return {"lectureId": lecture_id, "jobId": jid, "status": status}
         dispatch(jid)
         return {"lectureId": lid, "jobId": jid, "status": "pending"}
-    except Exception:
-        path.unlink(missing_ok=True)
+    except BaseException:
+        if not claimed:
+            remove_upload_folder(directory)  # only this request's own new folder
         raise
     finally:
         await file.close()
@@ -431,6 +613,20 @@ def lectures(x_owner_id: str | None = Header(None)):
             best[group] = r
     chosen = {r["id"] for r in best.values()}
     return [{"id": r["id"], "title": r["title"], "status": r["status"], "pageCount": r["page_count"]} for r in rows if r["id"] in chosen]
+
+
+@app.delete("/lectures/{lecture_id}", status_code=204)
+def delete_lecture(lecture_id: str, x_owner_id: str | None = Header(None)):
+    owner = owner_of(x_owner_id)
+    if owner is None:
+        fail("INVALID_REQUEST", "X-Owner-Id 헤더가 필요합니다.", 422)
+    try:
+        delete_lecture_data(owner, lecture_id)
+    except sqlite3.Error:
+        # Database busy/broken: rows were rolled back and folders restored; answer in the API's error shape.
+        logging.getLogger("backend").warning("강의 삭제 중 저장소 오류", exc_info=True)
+        fail("STORAGE_UNAVAILABLE", "저장소 오류로 삭제하지 못했습니다. 아무것도 삭제되지 않았습니다. 잠시 뒤 다시 시도해 주세요.", 503, True)
+    return Response(status_code=204)
 
 
 @app.get("/lectures/{lecture_id}")

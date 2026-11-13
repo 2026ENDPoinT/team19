@@ -166,7 +166,10 @@ def test_rejected_upload_is_not_listed(client):
     assert client.get("/lectures").json() == []
 
 
-def test_header_only_pdf_fails_as_job_error(client):
+def test_header_only_pdf_fails_as_job_error(client, monkeypatch):
+    # The upload page-count check now refuses this PDF with 422 INVALID_PDF (test_pdf_page_limit.py). Bypass only that
+    # check here so the Job-level failure path (defence in depth) keeps being tested.
+    monkeypatch.setattr(sys.modules["backend.app"], "count_pdf_pages", lambda path: 1)
     ticket = upload(client, b"%PDF-1.4\ngarbage that pypdf cannot read\n", "broken.pdf")
     failed = wait_job(client, ticket["jobId"])
     assert (failed["status"], failed["stage"]) == ("failed", "failed")

@@ -134,8 +134,7 @@ def test_reused_upload_leaves_no_extra_copy_and_keeps_limits(client, monkeypatch
     assert r.status_code == 415
     r = up(client, b"not a pdf", name="x.pdf")
     assert r.status_code == 422 and r.json()["error"]["code"] == "INVALID_PDF"
-    monkeypatch.setattr(module(), "MAX_BYTES", 10)
-    assert up(client, SAME + b"x").status_code == 413
+    assert up(client, SAME + b"x" * (3 * 1024 * 1024)).status_code == 202  # no file-size limit any more
 
 
 def test_sample_and_real_results_do_not_mix(client, monkeypatch):

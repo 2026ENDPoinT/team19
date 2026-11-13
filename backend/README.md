@@ -22,6 +22,10 @@ $env:AI_MODE = 'sample'
 - 다른 노트북에서 접속하는 시연은 [DEMO-NETWORK.md](DEMO-NETWORK.md)를 본다(`--host 127.0.0.1`은 자기 노트북 전용).
 - FE 기본 허용 주소: `http://localhost:5173`, `http://127.0.0.1:5173`. 바꾸려면 `FRONTEND_ORIGINS`에 쉼표로 구분해 지정한다.
 
+## PDF 업로드 정책
+
+파일 크기 제한은 없고(`MAX_PDF_MB` 설정도 없다) **최대 100페이지**다. 101페이지 이상은 업로드 요청에서 `422 PDF_TOO_LONG`로 거부하며 강의·Job을 만들지 않고 AI를 호출하지 않는다. 페이지 수는 PyMuPDF(없으면 pypdf)로 구조만 읽어 확인한다. 자세한 오류 계약은 [API 계약](../contracts/api.md)의 "PDF 업로드 정책".
+
 ## 기존 업로드 흐름
 
 1. `POST /lectures`에 PDF 파일(`file`)을 올린다.
