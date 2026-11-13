@@ -103,7 +103,7 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
     }
     case 'attach': {
       if (!elements.includes(target) || typeof target.content !== 'string' || !['body','keyword','formula'].includes(String(target.style)) || ![2,3].includes(args.length) || !['above','below','left','right'].includes(args[1])) throw new Error('attach 대상·방향이 올바르지 않아요.')
-      const origin = target.attachMotion?.origin ?? structuredClone(elements).map(element => { delete element.attachMotion; return element })
+      const origin = progress < 1 ? target.attachMotion?.origin ?? structuredClone(elements).map(element => { delete element.attachMotion; return element }) : []
       target.near = { target: args[0], side: args[1] as Near['side'], ...(args.length === 3 ? { cell: args[2] } : {}) }
       validateNear(elements)
       if (progress < 1) target.attachMotion = { origin, progress }

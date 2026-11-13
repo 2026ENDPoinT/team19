@@ -30,3 +30,13 @@ const chain=make([staticNear,{id:'t2',style:'body',content:'값',near:{target:'t
 assert.equal(calculatePlayerState(chain,captions,.5).elements.length,3)
 assert.equal(text(calculatePlayerState(make([label],[{line:0,do:'attach',target:'t',args:['g','left']}]),captions,.1)).near.side,'left')
 console.log('PASS near/attach state, slot return, active origin/progress, hide, seek/repeat, immutable blueprint, target/style/cell errors and cycles')
+
+const originalClone=globalThis.structuredClone
+try {
+ let copies=0
+ globalThis.structuredClone=(...args)=>{copies++;return originalClone(...args)}
+ at(2.1);const movingCopies=copies
+ copies=0;at(2.5);const finishedCopies=copies
+ assert.equal(movingCopies,finishedCopies+1,'only an active attach clones the origin snapshot')
+ copies=0;at(3);assert.equal(copies,finishedCopies,'finished attach never clones an origin snapshot')
+} finally {globalThis.structuredClone=originalClone}
