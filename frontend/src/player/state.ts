@@ -1,5 +1,6 @@
 import { validateNear } from './nearState.ts'
 import { formulaTermColors, parseFormulaTerms } from './formulaTerms.ts'
+import { isLit } from './focusDim.ts'
 export type Action = { line: number; do: string; target: string; args: string[] }
 export type Near = { target: string; side: 'above' | 'below' | 'left' | 'right'; cell?: string }
 export type Entity = {
@@ -12,6 +13,7 @@ export type Entity = {
   cellOrigins?: Record<string, { row: number; col: number; progress: number }>
   focusBox?: number[]; marks?: { box: number[]; label: string }[]
   stamp?: 'x' | 'o'
+  heldLit?: boolean; heldCells?: string[]
   near?: Near
   attachMotion?: { origin: Entity[]; progress: number }
   [key: string]: unknown
@@ -252,6 +254,45 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
     if (action.do === 'mark') target.explainedMarks = [...(target.explainedMarks ?? []), coordinates(action.args[0])]
   }
   validateNear(state.elements)
+  holdFocus(state, blueprint, captions, time)
   state.caption = captions.find((caption) => time >= caption.startSec && time < caption.endSec)?.text ?? ''
   return state
+}
+
+// 강조가 잠깐 꺼진 문장에서 흐림이 풀렸다가 다시 흐려지는 깜빡임을 막는다(Q-AI-37).
+// 지금 문장에 강조가 하나도 없으면, 같은 장면의 직전 1~2문장 중 가장 가까운 문장의 강조 대상을 '유지'로 표시한다.
+// 강조 없는 문장이 3개째 이어지거나 장면이 바뀌면 원래 밝기로 돌아간다. 문장 순서로 계산하므로 탐색·되감기에도 같다.
+function holdFocus(state: PlayerState, blueprint: Blueprint, captions: Timing[], time: number) {
+  const visible = state.elements.filter(element => !element.hidden)
+  if (visible.some(isLit)) return
+  const scene = blueprint.scenes.find(item => item.id === state.sceneId)
+  const started = captions.filter(caption => caption.sceneId === state.sceneId && caption.startSec <= time)
+  if (!scene || !started.length) return
+  const line = Math.max(...started.map(caption => caption.lineIndex))
+  const all = state.elements.flatMap(element => [element, ...(element.nodes ?? []), ...(element.edges ?? [])])
+  for (const previous of [line - 1, line - 2]) {
+    if (previous < 0) return
+    // 그 문장이 끝났을 때 켜져 있던 강조: 대상 id → 전체(true) 또는 칸 목록
+    const lit = new Map<string, true | Set<string>>()
+    for (const action of scene.actions) {
+      if (action.line > previous || (action.do !== 'highlight' && action.do !== 'unhighlight')) continue
+      const target = all.find(element => element.id === action.target)
+      if (!target) continue
+      const cells = target.cells && action.args.length ? action.args.flatMap(arg => cellKeys(arg, target)) : null
+      if (action.do === 'highlight') {
+        const current = lit.get(target.id)
+        if (!cells) lit.set(target.id, true)
+        else if (current !== true) lit.set(target.id, new Set([...(current ?? []), ...cells]))
+      } else if (!cells) lit.delete(target.id)
+      else { const current = lit.get(target.id); if (current instanceof Set) cells.forEach(key => current.delete(key)) }
+    }
+    const held = [...lit].filter(([, value]) => value === true || value.size > 0)
+    if (!held.length) continue
+    for (const [id, value] of held) {
+      const target = all.find(element => element.id === id)!
+      if (value === true) target.heldLit = true
+      else target.heldCells = [...value]
+    }
+    return
+  }
 }

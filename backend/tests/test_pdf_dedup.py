@@ -163,16 +163,51 @@ def make_old_duplicates(client, with_clips_on_first):
     return ids
 
 
-def test_old_duplicates_show_one_representative_and_everything_is_kept(client):
+def test_newest_ready_lecture_is_the_representative_even_if_an_older_one_has_clips(client):
+    """Q-FE-19 fix: an old (possibly garbled) lecture with finished clips must not hide a newer ready one."""
     ids = make_old_duplicates(client, with_clips_on_first=True)
+    assert count("SELECT COUNT(*) FROM clips WHERE status='completed'") >= 2  # the old lecture has clips
     shown = listing(client)
-    assert [l["id"] for l in shown] == [ids[0]]  # ready + finished clips wins over newer empty copies
+    assert [l["id"] for l in shown] == [ids[-1]]  # newest ready lecture, which has 0 clips
     assert set(shown[0]) == {"id", "title", "status", "pageCount"}
-    for lid in ids:  # nothing deleted, every ID still opens, PDFs intact
+    clips_before = count("SELECT COUNT(*) FROM clips")
+    for lid in ids:  # nothing deleted: every ID still opens, PDFs, jobs and clips intact
         assert client.get(f"/lectures/{lid}").status_code == 200
         assert (module().ROOT / "lectures" / lid / "original.pdf").read_bytes() == SAME
-    assert count("SELECT COUNT(*) FROM lectures") == 3
-    assert client.get(f"/lectures/{ids[0]}/outlines/intro").json()["clips"]
+    assert count("SELECT COUNT(*) FROM lectures") == 3 and count("SELECT COUNT(*) FROM clips") == clips_before
+    old_clips = client.get(f"/lectures/{ids[0]}/outlines/intro").json()["clips"]
+    assert old_clips and all(c["status"] == "completed" for c in old_clips)  # still reachable by ID
+    assert client.get(f"/clips/{old_clips[0]['id']}").json()["result"] is not None
+
+
+def test_pending_newer_lecture_does_not_replace_a_ready_one(client, monkeypatch):
+    ids = make_old_duplicates(client, with_clips_on_first=False)
+    monkeypatch.setattr(module(), "dispatch", lambda jid: None)  # the new upload stays pending
+    fresh = up(client, name="newest.pdf").json()
+    assert fresh["lectureId"] not in ids
+    assert client.get(f"/lectures/{fresh['lectureId']}").json()["status"] == "pending"
+    assert [l["id"] for l in listing(client)] == [ids[-1]]  # ready stays until the new one is ready
+    with module().conn() as db:
+        db.execute("UPDATE lectures SET status='ready' WHERE id=?", (fresh["lectureId"],))
+    assert [l["id"] for l in listing(client)] == [fresh["lectureId"]]
+
+
+def test_failed_newest_lecture_falls_back_to_the_previous_ready_one(client):
+    ids = make_old_duplicates(client, with_clips_on_first=True)
+    with module().conn() as db:
+        db.execute("UPDATE lectures SET status='failed' WHERE id=?", (ids[-1],))
+    assert [l["id"] for l in listing(client)] == [ids[1]]  # next newest ready, not the failed one
+    with module().conn() as db:
+        db.execute("UPDATE lectures SET status='failed' WHERE id=?", (ids[1],))
+    assert [l["id"] for l in listing(client)] == [ids[0]]  # the older ready lecture (with clips) when it is the only ready
+
+
+def test_other_owner_and_other_pdf_are_not_affected_by_the_rule(client):
+    ids = make_old_duplicates(client, with_clips_on_first=True)
+    other_owner = up(client, SAME, owner=B).json()["lectureId"]
+    other_pdf = up(client, OTHER, name="different.pdf").json()["lectureId"]
+    assert [l["id"] for l in listing(client)] == [other_pdf, ids[-1]]
+    assert [l["id"] for l in listing(client, B)] == [other_owner]
 
 
 def test_old_duplicates_without_clips_pick_newest_ready_and_other_pdfs_stay(client):

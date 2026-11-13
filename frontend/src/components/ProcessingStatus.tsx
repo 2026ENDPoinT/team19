@@ -21,14 +21,15 @@ function RevealText({ text, step, loop = false }: { text: string; step: number; 
     <span key={index} style={{ animationDelay: `${index * step}s` } as CSSProperties}>{char === ' ' ? ' ' : char}</span>)}</span>
 }
 
-type Props = { stage?: string | null; message?: string; progress?: { completed: number; total: number } }
+// done은 단계별 부분 점수까지 더한 값(없으면 completed). 퍼센트는 done으로, 'N개 완성' 문구는 completed로 쓴다.
+type Props = { stage?: string | null; message?: string; progress?: { completed: number; total: number; done?: number } }
 export default function ProcessingStatus({ stage, message, progress }: Props) {
   const [tip, setTip] = useState(0)
   useEffect(() => {
     const timer = setInterval(() => setTip((index) => (index + 1) % STUDY_TIPS.length), 7000)
     return () => clearInterval(timer)
   }, [])
-  const percent = progress && progress.total > 0 ? Math.min(100, Math.max(0, Math.floor(progress.completed / progress.total * 100))) : null
+  const percent = progress && progress.total > 0 ? Math.min(100, Math.max(0, Math.floor((progress.done ?? progress.completed) / progress.total * 100))) : null
   return <section className="processing-experience" aria-label="학습 영상 준비">
     <div className="processing-layout">
       <div className="processing-copy" role="status">
