@@ -26,7 +26,7 @@ from pipeline.errors import PipelineError
 
 ROOT = Path(__file__).resolve().parents[1]
 PROMPT_FILE = Path(__file__).with_name("prompts") / "describe_system.md"
-DEFAULT_MODEL = "gpt-6.1-terra"   # 환경변수 AI_DESCRIBE_MODEL로 바꾼다. 모델 비교는 Q-AI-07
+DEFAULT_MODEL = "gpt-6.1-sol"   # 환경변수 AI_DESCRIBE_MODEL로 바꾼다. 모델 비교는 Q-AI-07
 BATCH = 6                          # 한 번에 보내는 페이지 수
 PARALLEL = 4                       # 동시에 보내는 묶음 수 (요청 한도를 넘지 않게 작게)
 TEXT_HINT = 300                    # 깨짐 판단용으로 함께 보내는 추출 글자 수

@@ -23,7 +23,7 @@ from pipeline.errors import PipelineError
 
 ROOT = Path(__file__).resolve().parents[1]
 PROMPT_FILE = Path(__file__).with_name("prompts") / "outline_system.md"
-DEFAULT_MODEL = "gpt-6.1-terra"    # 환경변수 AI_OUTLINE_MODEL로 바꾼다. 모델 비교는 Q-AI-07
+DEFAULT_MODEL = "gpt-6.1-sol"    # 환경변수 AI_OUTLINE_MODEL로 바꾼다. 모델 비교는 Q-AI-07
 MODES = ("intro", "review", "exam")
 # 모드별 클립 수 상한(D-29: 상한만 두고 숫자는 실험 후). 초기값이다.
 # 자료 분량에 비례한다: 내용 페이지 PAGES_PER_CLIP쪽당 1개를 [최소, 최대] 안으로 자른다.
