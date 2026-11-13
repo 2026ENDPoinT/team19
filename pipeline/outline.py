@@ -140,8 +140,8 @@ def validate_outline(data: dict, mode: str, page_numbers: set[int], cap: int | N
         title = p.get("title")
         if not isinstance(title, str) or not title.strip():
             errs.append(f"{where}: title이 없다")
-        elif len(title) > TITLE_MAX:
-            errs.append(f"{where}: title이 {len(title)}자다. 최대 {TITLE_MAX}자")
+        elif len(_titled(p)) > TITLE_MAX:
+            errs.append(f"{where}: 최종 title이 {len(_titled(p))}자다. 최대 {TITLE_MAX}자 (예시 접두사 포함)")
         if p.get("kind") not in CLIP_KINDS:
             errs.append(f"{where}: kind는 {', '.join(CLIP_KINDS)} 중 하나")
         src = p.get("sourcePages")
@@ -179,7 +179,7 @@ def validate_outline(data: dict, mode: str, page_numbers: set[int], cap: int | N
 def _titled(p: dict) -> str:
     """예시 클립은 제목이 "예시: "로 시작한다(팀장 11/14). 모델이 빠뜨리면 붙인다."""
     title = p["title"].strip()
-    return f"예시: {title}" if p["kind"] == "example" and not title.startswith("예시") else title
+    return f"예시: {title}" if p.get("kind") == "example" and not title.startswith("예시: ") else title
 
 
 def normalize(data: dict, mode: str) -> dict:
