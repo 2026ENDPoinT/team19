@@ -175,7 +175,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   const sourceNavigation = sourcePageNavigation(stage?.sourcePages ?? [], source?.page, manualPage)
   const sourceRatio = sourceNavigation.page ? sourceRatios[pageUrl(sourceNavigation.page) ?? ''] ?? 1.414 : 1.414
   return (
-    <main className={`clip-preview-page mx-auto w-full px-5 py-3 ${sourceOpen ? 'max-w-[1600px]' : 'max-w-4xl'}`} style={{ '--source-page-ratio': sourceRatio } as CSSProperties}>
+    <main className={`brand-page brand-player clip-preview-page mx-auto w-full px-5 py-3 ${sourceOpen ? 'max-w-[1600px]' : 'max-w-4xl'}`} style={{ '--source-page-ratio': sourceRatio } as CSSProperties}>
       <button type="button" className="rounded-lg border px-4 py-2" onClick={onBack}>← {initialClipId ? '클립 목록' : '업로드 화면'}</button>
       <h1 className="mt-3 text-xl font-bold">학습 영상</h1>
       {!initialClipId && <>
