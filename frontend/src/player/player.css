@@ -121,3 +121,13 @@
 
 /* 화면 글 안 **단어** 강조(P-AI-06): 한 가지 강조색. */
 .player-text-emphasis { color: var(--player-yellow); font-weight: 800; }
+
+/* 강조 밖 흐리게(P-AI-09): 켜고 꺼질 때 부드럽게. */
+.player-slot, .player-diagram g, .player-grid-graphic g { transition: opacity 200ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .player-slot, .player-diagram g, .player-grid-graphic g { transition: none; } }
+
+/* 위 보조 자리(place top): 제목 아래 작게. 옮겨질 때 위로 미끄러지며 나타난다. */
+@keyframes player-place-in { from { opacity: 0; transform: translateY(40px) scale(1.4); } to { opacity: 1; transform: none; } }
+.player-slot--aux { animation: player-place-in 320ms ease-out; }
+.player-stage[data-playing="false"] .player-slot--aux { animation: none; }
+@media (prefers-reduced-motion: reduce) { .player-slot--aux { animation: none; } }

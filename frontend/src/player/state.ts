@@ -70,6 +70,13 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
       break
     }
     case 'unstamp': delete target.stamp; break
+    // 부품을 다른 자리로 옮긴다(P-AI-09, D-56). 안의 노드·칸·강조·도장 상태는 그대로 따라간다.
+    case 'place': {
+      if (!['top', 'middle', 'bottom'].includes(args[0])) throw new Error(`옮길 수 없는 자리: ${args[0]}`)
+      if (!elements.includes(target)) throw new Error(`자리를 옮길 수 없는 대상: ${target.id}`)
+      target.slot = args[0]
+      break
+    }
     case 'highlight':
     case 'unhighlight': {
       const enabled = action.do === 'highlight'

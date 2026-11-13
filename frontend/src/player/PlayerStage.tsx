@@ -12,6 +12,7 @@ import { layoutDiagramEdges } from './diagramEdges'
 import Slide from './Slide'
 import Diagram from './Diagram'
 import { StampMark } from './Stamp'
+import { DIM_OPACITY, dimsElement, isLit } from './focusDim'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
@@ -101,10 +102,14 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
   }, [])
   const elements = state.elements
   const visible = elements.filter((element) => !element.hidden)
-  const reserved = reserveTextSlots(elements)
+  // 위 자리는 제목과 보조 부품 하나를 함께 둔다(P-AI-09). 보조 부품은 제목 아래에 작게 그린다.
+  const topVisible = visible.filter((element) => element.slot === 'top')
+  const topAux = topVisible.length === 2 && topVisible.some((element) => element.style === 'title') ? topVisible.find((element) => element.style !== 'title') : undefined
+  const reserved = reserveTextSlots(elements.filter((element) => element !== topAux))
   const attached = figureDescription(reserved, true)
   const slots = ['top', 'middle', 'bottom']
-  const invalid = visible.some((element) => !slots.includes(element.slot ?? '')) || slots.some((slot) => visible.filter((element) => element.slot === slot).length > 1)
+  const anyLit = visible.some(isLit)
+  const invalid = visible.some((element) => !slots.includes(element.slot ?? '')) || slots.some((slot) => visible.filter((element) => element.slot === slot && element !== topAux).length > 1)
   if (invalid) return <p role="alert">현재 지원 범위와 맞지 않는 장면 배치입니다.</p>
   return (
     <div ref={frameRef} className="player-viewport" style={{ ...playerColorVariables, width: 420 * scale, height: 420 * 16 / 9 * scale }}>
@@ -117,11 +122,14 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
         }
       }}>
       <div className={`player-slots${reserved.some(element => element.slot === 'top' && element.style === 'title') ? ' player-slots--titled' : ''}`}>
+        {topAux && <div className="player-slot player-slot--aux" key={`aux-${topAux.id}`} style={{ opacity: dimsElement(topAux, anyLit) ? DIM_OPACITY : undefined, flexBasis: preferredHeight(topAux) * .6 }}>
+          <FitContent key={topAux.id}><ElementView element={topAux} pageUrl={pageUrl} caption={state.caption} /></FitContent>
+        </div>}
         {slots.map((slot) => {
           const element = reserved.find((item) => item.slot === slot)
           if (!element || element.id === attached?.description.id) return null
           const description = element.id === attached?.figureId ? attached.description : null
-          return <div className={`player-slot${slot === 'top' && element.style === 'title' ? ' player-slot--title' : ''}`} key={slot} aria-hidden={element.hidden || undefined} style={{ visibility: element.hidden ? 'hidden' : undefined, flexBasis: preferredHeight(element) + (description ? preferredHeight(description) + 10 : 0) }}>
+          return <div className={`player-slot${slot === 'top' && element.style === 'title' ? ' player-slot--title' : ''}`} key={slot} aria-hidden={element.hidden || undefined} style={{ visibility: element.hidden ? 'hidden' : undefined, opacity: dimsElement(element, anyLit) ? DIM_OPACITY : undefined, flexBasis: preferredHeight(element) + (description ? preferredHeight(description) + 10 : 0) }}>
             <FitContent key={element.id}>{description && <div className="player-figure-description" aria-hidden={description.hidden || undefined} style={{ visibility: description.hidden ? 'hidden' : undefined }}><ElementView element={description} pageUrl={pageUrl} caption={state.caption} /></div>}<ElementView element={element} pageUrl={pageUrl} caption={state.caption} /></FitContent>
           </div>
         })}

@@ -4,6 +4,7 @@ import type { Entity } from './state'
 import { layoutNode } from './diagramLayout'
 import { layoutDiagramEdges, midpoint } from './diagramEdges'
 import { StampMark } from './Stamp'
+import { DIM_OPACITY, dimsParts } from './focusDim'
 
 type Edge = Entity & { from: string; to: string }
 
@@ -16,6 +17,7 @@ export default function Diagram({ element }: { element: Entity }) {
   try { geometry = layoutDiagramEdges(nodes, edges, String(element.layout)) }
   catch (cause) { return <p role="alert" className="player-unsupported">{cause instanceof Error ? cause.message : '다이어그램 배치 오류'}</p> }
   // 선 위 도장은 노드보다 위에 보이도록 마지막에 그린다.
+  const dimParts = dimsParts(element)
   const edgeStamps: { id: string; kind: 'x' | 'o'; at: { x: number; y: number } }[] = []
   return (
     <div className="player-diagram-frame" style={{ width: 380, marginLeft: -10, height: geometry.height * 380 / geometry.width }}>
@@ -41,7 +43,7 @@ export default function Diagram({ element }: { element: Entity }) {
           if (edge.stamp) edgeStamps.push({ id: edge.id, kind: edge.stamp, at: midpoint(points) })
           const label = route?.label ?? {x:(from.x + to.x)/2,y:(from.y + to.y)/2-8}
           const labelLines = route?.lines ?? (edge.label ? [String(edge.label)] : [])
-          return <g key={edge.id} className="player-shape-enter">
+          return <g key={edge.id} className="player-shape-enter" opacity={dimParts && !edge.highlighted ? DIM_OPACITY : undefined}>
             <path d={path} fill="none" stroke={edge.explaining || element.explaining ? palette.yellow : defaultLineColor} strokeWidth={edge.explaining || element.explaining ? 3 : 2} markerEnd={`url(#${arrowId})`} />
             {labelLines.length > 0 && <text x={label.x} y={label.y} textAnchor={route?.anchor ?? 'middle'} fill={edge.explaining || element.explaining ? palette.yellow : defaultTextColor} fontSize="11" paintOrder="stroke" stroke="#020617" strokeWidth="4">{labelLines.map((line,index)=><tspan key={index} x={label.x} y={label.y+(index-(labelLines.length-1)/2)*14}>{line}</tspan>)}</text>}
           </g>
@@ -52,7 +54,7 @@ export default function Diagram({ element }: { element: Entity }) {
           const active = node.explaining || element.explaining
           const fill = active ? palette.mint : '#1e293b'
           const stroke = active ? palette.mint : defaultLineColor
-          return <g key={node.id} className="player-shape-enter" transform={`translate(${point.x},${point.y})`}>
+          return <g key={node.id} className="player-shape-enter" opacity={dimParts && !node.highlighted ? DIM_OPACITY : undefined} transform={`translate(${point.x},${point.y})`}>
             {node.shape === 'text' ? null : node.shape === 'circle' ? <circle r={size.radius} fill={fill} fillOpacity={active ? .18 : 1} stroke={stroke} strokeWidth={active ? 3 : 2} /> : <rect x={-size.width / 2} y={-size.height / 2} width={size.width} height={size.height} rx="7" fill={fill} fillOpacity={active ? .18 : 1} stroke={stroke} strokeWidth={active ? 3 : 2} />}
             <text textAnchor="middle" dominantBaseline="middle" fill={active ? palette.mint : defaultTextColor} fontSize={size.fontSize}>{size.lines.map((line, index) => <tspan key={index} x={0} y={(index - (size.lines.length - 1) / 2) * size.lineHeight}>{line}</tspan>)}</text>
             {node.stamp && <StampMark kind={node.stamp} size={Math.min(size.width, size.height) * .94} />}
