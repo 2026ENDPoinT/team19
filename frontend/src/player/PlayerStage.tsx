@@ -1,4 +1,6 @@
 import Grid from './Grid'
+import { figureDescription, reserveTextSlots } from './figureDescription'
+import './figureDescription.css'
 import { limitHighlights } from './highlightDisplay'
 import { playerColorVariables } from './colors'
 import { emphasizeFormula } from './formulaEmphasis'
@@ -56,7 +58,7 @@ function preferredHeight(element: Entity): number {
   if (element.nodes) {
     try {
       const diagram = layoutDiagramEdges(element.nodes, (element.edges ?? []).map((edge) => ({ id:edge.id, from: String(edge.from), to: String(edge.to), label:edge.label })), String(element.layout))
-      return Math.max(70, diagram.height * Math.min(1, 360 / diagram.width)) + 8
+      return Math.max(70, diagram.height * 380 / diagram.width) + 8
     } catch { return 90 }
   }
   if (Array.isArray(element.lines)) return Math.min(260, element.lines.length * 24 + 16)
@@ -94,7 +96,10 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
     document.addEventListener('fullscreenchange', fit)
     return () => { observer.disconnect(); window.removeEventListener('resize', fit); document.removeEventListener('fullscreenchange', fit) }
   }, [])
-  const visible = limitHighlights(state.elements).filter((element) => !element.hidden)
+  const elements = limitHighlights(state.elements)
+  const visible = elements.filter((element) => !element.hidden)
+  const reserved = reserveTextSlots(elements)
+  const attached = figureDescription(reserved, true)
   const slots = ['top', 'middle', 'bottom']
   const invalid = visible.some((element) => !slots.includes(element.slot ?? '')) || slots.some((slot) => visible.filter((element) => element.slot === slot).length > 1)
   if (invalid) return <p role="alert">현재 지원 범위와 맞지 않는 장면 배치입니다.</p>
@@ -108,12 +113,13 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
           onTogglePlayback()
         }
       }}>
-      <div className={`player-slots${visible.some(element => element.slot === 'top' && element.style === 'title') ? ' player-slots--titled' : ''}`}>
+      <div className={`player-slots${reserved.some(element => element.slot === 'top' && element.style === 'title') ? ' player-slots--titled' : ''}`}>
         {slots.map((slot) => {
-          const element = visible.find((item) => item.slot === slot)
-          if (!element) return null
-          return <div className={`player-slot${slot === 'top' && element.style === 'title' ? ' player-slot--title' : ''}`} key={slot} style={{ flexBasis: preferredHeight(element) }}>
-            <FitContent key={element.id}><ElementView element={element} pageUrl={pageUrl} caption={state.caption} /></FitContent>
+          const element = reserved.find((item) => item.slot === slot)
+          if (!element || element.id === attached?.description.id) return null
+          const description = element.id === attached?.figureId ? attached.description : null
+          return <div className={`player-slot${slot === 'top' && element.style === 'title' ? ' player-slot--title' : ''}`} key={slot} aria-hidden={element.hidden || undefined} style={{ visibility: element.hidden ? 'hidden' : undefined, flexBasis: preferredHeight(element) + (description ? preferredHeight(description) + 10 : 0) }}>
+            <FitContent key={element.id}>{description && <div className="player-figure-description" aria-hidden={description.hidden || undefined} style={{ visibility: description.hidden ? 'hidden' : undefined }}><ElementView element={description} pageUrl={pageUrl} caption={state.caption} /></div>}<ElementView element={element} pageUrl={pageUrl} caption={state.caption} /></FitContent>
           </div>
         })}
       </div>

@@ -15,9 +15,9 @@ export default function Diagram({ element }: { element: Entity }) {
   try { geometry = layoutDiagramEdges(nodes, edges, String(element.layout)) }
   catch (cause) { return <p role="alert" className="player-unsupported">{cause instanceof Error ? cause.message : '다이어그램 배치 오류'}</p> }
   return (
-    <div className="player-diagram-frame" style={{ height: geometry.height * Math.min(1, 360 / geometry.width) }}>
+    <div className="player-diagram-frame" style={{ width: 380, marginLeft: -10, height: geometry.height * 380 / geometry.width }}>
       <svg className="player-diagram" width="100%" height="100%" viewBox={`0 0 ${geometry.width} ${geometry.height}`} role="img" aria-label={element.layout === 'tree' ? '재귀 트리' : element.layout === 'cycle' ? '순환 다이어그램' : element.layout === 'layers' ? '층 다이어그램' : vertical ? '세로 단계 다이어그램' : '가로 다이어그램'}>
-        <defs><marker id={arrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
+        <defs><marker id={arrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
         {edges.map((edge) => {
           const fromNode = nodes.find((node) => node.id === edge.from)
           const toNode = nodes.find((node) => node.id === edge.to)
