@@ -388,3 +388,21 @@ def test_speech_check_skips_notation_lines():
     assert c.errors == []
     c.check_speech(["전혀 다른 이야기를 해요."], ["배열을 반으로 나눠요."], "s3")    # 기호 없는 문장은 그대로 검사
     assert any("s3" in e for e in c.errors)
+
+
+def test_near_overlap_rules():
+    import copy
+    from pipeline.validate import validate_blueprint
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가"], "speech": [""],
+          "texts": [{"id": "k1", "style": "keyword", "content": "위", "hidden": False, "near": {"target": "g1", "side": "above"}},
+                    {"id": "k2", "style": "keyword", "content": "아래", "hidden": False, "near": {"target": "g1", "side": "below"}}],
+          "slides": [], "diagrams": [],
+          "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["5", "3", "8"]], "indexLabels": False, "pointers": []}], "codes": [],
+          "actions": [], "sourcePages": [1]}]}
+    assert validate_blueprint(bp, 1, near=True) == []
+    same = copy.deepcopy(bp)
+    same["scenes"][0]["texts"][1]["near"]["side"] = "above"
+    assert any("한 방향에 하나" in e for e in validate_blueprint(same, 1, near=True))
+    side = copy.deepcopy(bp)
+    side["scenes"][0]["texts"][1]["near"]["side"] = "right"
+    assert any("왼쪽·오른쪽" in e for e in validate_blueprint(side, 1, near=True))
