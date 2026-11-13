@@ -423,6 +423,7 @@ def test_near_above_conflicts_with_status_line():
 
 def test_divide_action(monkeypatch):
     from pipeline import validate
+    monkeypatch.setattr(validate, "SUPPORTED_DIVIDE", False)
     bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가"], "speech": [""],
           "texts": [], "slides": [], "diagrams": [],
           "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["6", "14", "18"], ["1", "2", "15"], ["", "", ""]],
@@ -433,3 +434,16 @@ def test_divide_action(monkeypatch):
     assert validate.validate_blueprint(bp, 1) == []
     bp["scenes"][0]["actions"][0]["args"] = ["row:2"]                               # 마지막 줄 아래는 안 됨
     assert validate.validate_blueprint(bp, 1)
+
+
+def test_emphasis_markers():
+    from pipeline.validate import screen_text_errors, validate_blueprint
+    def bp(content):
+        return {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가"], "speech": [""],
+                "texts": [{"id": "k1", "slot": "middle", "style": "keyword", "content": content, "hidden": False}],
+                "slides": [], "diagrams": [], "grids": [], "codes": [], "actions": [], "sourcePages": [1]}]}
+    assert validate_blueprint(bp("두 구간 **합병** 단계 이름"), 1) == []        # 기호를 빼고 센다(19자 → 15자)
+    assert screen_text_errors(bp("두 구간을 **합병**")) == []
+    assert screen_text_errors(bp("**전체를 감싼 글**"))
+    assert screen_text_errors(bp("**가** **나** **다**"))
+    assert screen_text_errors(bp("2 ** 4 = 16")) == []                              # 짝 아닌 기호는 글자 그대로

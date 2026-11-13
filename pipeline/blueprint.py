@@ -21,7 +21,7 @@ from pathlib import Path
 
 from pipeline import costlog
 from pipeline.errors import PipelineError, raise_if_no_credit
-from pipeline.validate import LIMITS, SUPPORTED_DIVIDE, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_NEAR, SUPPORTED_SLOTS, screen_text_errors, validate_blueprint
+from pipeline.validate import LIMITS, SUPPORTED_DIVIDE, SUPPORTED_EMPHASIS, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_NEAR, SUPPORTED_SLOTS, screen_text_errors, validate_blueprint
 
 ROOT = Path(__file__).resolve().parents[1]
 # 수식 항 강조 규칙(D-46). 검사기의 SUPPORTED_FORMULA_TERMS가 True일 때만 프롬프트에 넣는다.
@@ -51,11 +51,18 @@ NEAR_RULE = {
 DIVIDE_RULE = {
     "ko": ("\n- **격자 안의 묶음은 구분선으로 나눈다(divide).** 두 배열·입력과 결과처럼 줄이 다른 뜻이면 `divide` args [\"row:k\"](k번째 줄 아래에 가로선), "
            "한 배열을 반으로 나누면 [\"col:k\"](k번째 칸 오른쪽에 세로선). \"반으로 나눠요\"처럼 나누는 순간을 말하는 문장에 붙여 선이 그때 생기게 한다. "
-           "합쳐지면 `undivide`로 지운다. 한 격자에 선은 3개 이하."),
+           "합쳐지면 `undivide`로 지운다. 한 격자에 선은 3개 이하. 세로선은 줄마다 칸 수가 같은 격자에만 쓴다."),
     "en": ("\n- **Separate groups inside a grid with dividers (divide).** When rows mean different things (two arrays, input vs result), use `divide` "
            "args [\"row:k\"] (horizontal line below row k); when splitting one array in half, use [\"col:k\"] (vertical line right of column k). "
            "Attach it to the sentence that says the split (\"반으로 나눠요\") so the line appears then. Remove it with `undivide` once merged. "
-           "At most 3 lines per grid."),
+           "At most 3 lines per grid. Use vertical lines only when every row has the same number of cells."),
+}
+# 화면 글 안의 단어 강조(D-63). SUPPORTED_EMPHASIS가 True일 때만 넣는다.
+EMPHASIS_RULE = {
+    "ko": ("\n- **화면 글(body, keyword)에서 핵심 단어 하나만 `**단어**`로 감싸 강조색을 줄 수 있다.** 예: \"정렬된 두 구간을 **합병**\". "
+           "글 하나에 2곳 이하, 한 곳 12자 이하, 글 전체를 감싸지 않는다. 기호 바로 안쪽에 공백을 두지 않는다. title, formula, 자막, 노드 라벨, 격자, 코드에는 쓰지 않는다."),
+    "en": ("\n- **In on-screen text (body, keyword) you may wrap one key word as `**word**` to color it.** E.g. \"정렬된 두 구간을 **합병**\". "
+           "At most 2 per text, 12 chars each, never the whole text, no space just inside the markers. Not in title, formula, subtitles, node labels, grids, or code."),
 }
 TERMS_RULE = {
     "ko": ("\n- 수식의 한 부분을 설명할 때는 content 안에서 그 부분을 `\\term{항id}{LaTeX}`로 감싸고, 설명하는 문장에서 "
@@ -152,7 +159,7 @@ def _fill(prompt_file: Path, limits: str, lang: str = "ko") -> str:
     example = json.dumps(json.loads(EXAMPLE_FILE.read_text(encoding="utf-8")), ensure_ascii=False, separators=(",", ":"))
     return (prompt_file.read_text(encoding="utf-8")
             .replace("<<TERMS>>", TERMS_RULE[lang] if SUPPORTED_FORMULA_TERMS else "")
-            .replace("<<NEAR>>", (NEAR_RULE[lang] if SUPPORTED_NEAR else "") + (DIVIDE_RULE[lang] if SUPPORTED_DIVIDE else ""))
+            .replace("<<NEAR>>", (NEAR_RULE[lang] if SUPPORTED_NEAR else "") + (DIVIDE_RULE[lang] if SUPPORTED_DIVIDE else "") + (EMPHASIS_RULE[lang] if SUPPORTED_EMPHASIS else ""))
             .replace("<<LAYOUTS>>", ", ".join(SUPPORTED_LAYOUTS))
             .replace("<<SLOTS>>", ", ".join(SUPPORTED_SLOTS))
             .replace("<<LIMITS>>", limits)

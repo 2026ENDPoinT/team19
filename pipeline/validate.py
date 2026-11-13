@@ -26,9 +26,12 @@ SUPPORTED_THEMES = ("dark",)
 # 수식 항 표시 \term{id}{LaTeX} (D-46). FE가 변환을 구현해 11/13에 켰다.
 SUPPORTED_FORMULA_TERMS = True
 # 글을 다른 부품·노드·칸 옆에 붙이는 near (D-60). FE 구현 뒤 True로 켠다.
-SUPPORTED_NEAR = False
+SUPPORTED_NEAR = True
 # 격자 구분선 divide/undivide (P-AI-13). FE 구현 뒤 True로 켠다.
-SUPPORTED_DIVIDE = False
+SUPPORTED_DIVIDE = True
+# 화면 글 안의 단어 강조 **단어** (D-63, P-AI-06). FE 구현 11/14.
+SUPPORTED_EMPHASIS = True
+EMPHASIS = re.compile(r"\*\*(?=\S)(.+?)(?<=\S)\*\*")
 DIVIDE_ARG = re.compile(r"(row|col):(\d+)")
 NEAR_SIDES = ("above", "below", "left", "right")
 NEAR_STYLES = ("body", "keyword", "formula")
@@ -137,7 +140,11 @@ def screen_text_errors(blueprint: dict) -> list[str]:
         shown = [(t["id"], t["content"]) for t in sc["texts"]]
         shown += [(a["target"], a["args"][0]) for a in sc["actions"] if a["do"] == "setText"]
         for ident, content in shown:
-            if styles.get(ident) in ("body", "keyword") and SENTENCE_END.search(content.strip()):
+            if styles.get(ident) in ("body", "keyword") and SUPPORTED_EMPHASIS:
+                marks = EMPHASIS.findall(content)
+                if len(marks) > 2 or any(len(m) > 12 for m in marks) or (marks and EMPHASIS.fullmatch(content.strip())):
+                    errs.append(f"{sc['id']} > {ident}: **강조**는 글 하나에 2곳 이하, 한 곳 12자 이하, 글 전체를 감싸지 않는다: {content!r}")
+            if styles.get(ident) in ("body", "keyword") and SENTENCE_END.search(EMPHASIS.sub(r"\1", content).strip()):
                 errs.append(f"{sc['id']} > {ident}: 화면 글은 그림에 붙는 이름표다. 자막처럼 '~요', '~다'로 끝나는 문장 대신 "
                             f"명사로 끝나는 짧은 구절로 쓴다: {content!r}")
     return errs
@@ -306,8 +313,8 @@ class _Checker:
         if style == "formula":
             if "\n" in content:
                 self.err(w, "formula는 한 줄이어야 함")
-        elif style in LIMITS["text"] and len(content) > LIMITS["text"][style]:
-            self.err(w, f"{style} 글자 수 {len(content)}자 (상한 {LIMITS['text'][style]}자)")
+        elif style in LIMITS["text"] and len(shown := EMPHASIS.sub(r"\1", content) if style in ("body", "keyword") else content) > LIMITS["text"][style]:
+            self.err(w, f"{style} 글자 수 {len(shown)}자 (상한 {LIMITS['text'][style]}자)")
         return terms
 
     def check_slide(self, s, info, w, pages):
