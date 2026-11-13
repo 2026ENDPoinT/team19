@@ -39,6 +39,7 @@
 .clip-feed-nav button:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
 .actual-player:fullscreen { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #020617; }
 .actual-player:fullscreen .player-viewport { margin: 0; }
+.actual-player:fullscreen .clip-feed-nav { position: absolute; top: 50%; left: 24px; transform: translateY(-50%); }
 .actual-player:fullscreen > [role="alert"] { position: absolute; bottom: 0; background: #fff; }
 .player-controls { position: absolute; inset: 0; z-index: 3; pointer-events: none; color: #fff; cursor: default; }
 .player-topbar { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 10px 28px; border-radius: 20px 20px 0 0; background: linear-gradient(#020617c9, transparent); }
