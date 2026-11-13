@@ -158,3 +158,10 @@ class ModeTests(unittest.TestCase):
         from pipeline.blueprint import build_user_prompt
         self.assertIn("입문", build_user_prompt({"title": "t", "mode": "intro"}, [], 1))
         self.assertNotIn("모드:", build_user_prompt({"title": "t"}, [], 1))
+
+
+class ExampleTitleTests(unittest.TestCase):
+    def test_example_gets_prefix_once(self):
+        p = lambda pid, kind, title: {"id": pid, "title": title, "kind": kind, "sourcePages": [1], "prerequisites": [], "brief": "가" * 40}
+        r = outline.normalize({"clipPlans": [p("c1", "example", "피봇 8로 분할"), p("c2", "example", "예시: 합병"), p("c3", "concept", "분할정복")]}, "exam")
+        self.assertEqual([c["title"] for c in r["clipPlans"]], ["예시: 피봇 8로 분할", "예시: 합병", "분할정복"])

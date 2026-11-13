@@ -81,6 +81,18 @@ ACTIONS = {
 EPS = 1e-9
 
 
+def _one_line(kind: str, info: dict) -> bool:
+    """위 자리로 올려 작게 그려도 읽을 수 있는 부품인지(팀장 확인 11/14: 큰 부품은 너무 작아진다)."""
+    c = info["ref"]
+    if kind == "text":
+        return True
+    if kind == "grid":
+        return len(info.get("cells") or c.get("cells") or []) <= 1
+    if kind == "diagram":
+        return c.get("layout") == "row" and len(c.get("nodes") or []) <= 3
+    return False
+
+
 def validate_blueprint(
     blueprint: dict,
     page_count: int,
@@ -541,6 +553,8 @@ class _Checker:
         elif do == "place":
             if len(args) != 1 or args[0] not in self.slots or args[0] == "full":
                 self.err(w, f"place의 args는 자리 1개: {', '.join(s for s in self.slots if s != 'full')}")
+            elif args[0] == "top" and not _one_line(kind, info):
+                self.err(w, "위로 올릴 수 있는 것은 한 줄짜리뿐: 글, 한 줄 격자, 노드 3개 이하 row 다이어그램")
             else:
                 info["slot"], info["placed"] = args[0], True
         elif do == "unstamp":
