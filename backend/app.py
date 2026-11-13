@@ -1,6 +1,7 @@
 """FastAPI service for team19: durable lecture/outline/clip jobs and AI module calls."""
 from __future__ import annotations
 
+import gc
 import hashlib
 import json
 import logging
@@ -8,12 +9,14 @@ import os
 import re
 import shutil
 import sqlite3
+import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, File, Header, HTTPException, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -25,7 +28,7 @@ from . import pdf_text_fallback, stored_sample
 AI_MODE = get_ai_mode()  # Reject typos before creating a data directory, DB or executor.
 ROOT = Path(os.getenv("TEAM19_DATA_DIR", "./backend/local-data")).resolve()
 DB = ROOT / "team19.sqlite3"
-MAX_BYTES = int(os.getenv("MAX_PDF_MB", "20")) * 1024 * 1024
+MAX_PDF_PAGES = 100  # upload policy: no file-size limit, at most this many pages (101+ is rejected)
 WORKERS = max(1, min(3 if AI_MODE == "real" else 4,
                      int(os.getenv("BE_WORKERS", "3" if AI_MODE == "real" else "1"))))
 ROOT.mkdir(parents=True, exist_ok=True)
@@ -361,6 +364,40 @@ def claim_lecture(owner: str | None, sha256: str, title: str, path: Path, lid: s
         return lid, job_create(db, "prepare", lid), "pending", True
 
 
+def remove_upload_folder(directory: Path) -> None:
+    """Remove the folder this upload request created. On Windows a PDF library can keep a corrupt file open for a
+    moment after failing, so retry a few times (after a garbage collection) before giving up quietly."""
+    for attempt in range(6):
+        shutil.rmtree(directory, ignore_errors=True)
+        if not directory.exists():
+            return
+        gc.collect()
+        time.sleep(0.05 * (attempt + 1))
+    logging.getLogger("backend").warning("업로드 임시 폴더를 지우지 못했습니다: %s", directory.name)
+
+
+def count_pdf_pages(path: Path) -> int:
+    """Page count from the PDF structure only (no rendering, no text extraction, no AI). Returns 0 for PDFs that
+    cannot be read, are encrypted or have no pages. It never raises: a failed PDF library call would keep the
+    file open (on Windows) through the exception's traceback, and the rejected upload folder could not be removed.
+    PyMuPDF is preferred, like the extractor; pypdf is used when PyMuPDF is not installed or its DLL cannot load."""
+    pages = 0
+    try:
+        try:
+            import pymupdf
+        except (ImportError, OSError):
+            from pypdf import PdfReader
+            reader = PdfReader(str(path), strict=False)
+            pages = 0 if reader.is_encrypted else len(reader.pages)
+        else:
+            with pymupdf.open(str(path)) as document:
+                pages = 0 if document.needs_pass else document.page_count
+    except Exception:
+        pages = 0
+    gc.collect()  # release a handle a failed open may still hold
+    return max(pages, 0)
+
+
 @app.post("/lectures", status_code=202)
 async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(None)):
     owner = owner_of(x_owner_id)
@@ -368,29 +405,37 @@ async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(N
         fail("UNSUPPORTED_FILE_TYPE", "PDF 파일만 업로드할 수 있습니다.", 415)
     lid = ident("lec")
     directory = ROOT / "lectures" / lid
-    directory.mkdir(parents=True, exist_ok=True)
     path = directory / "original.pdf"
-    amount = 0
     digest = hashlib.sha256()
+    claimed = False  # once the lecture row exists, the folder belongs to it and must not be cleaned up here
     try:
-        with path.open("wb") as dst:
-            while chunk := await file.read(1024 * 1024):
-                amount += len(chunk)
-                if amount > MAX_BYTES:
-                    fail("FILE_TOO_LARGE", "PDF 파일이 크기 제한을 초과했습니다.", 413)
-                digest.update(chunk)
-                dst.write(chunk)
+        try:
+            directory.mkdir(parents=True, exist_ok=True)
+            with path.open("wb") as dst:  # no file-size limit: the file is streamed to disk in 1 MiB pieces
+                while chunk := await file.read(1024 * 1024):
+                    digest.update(chunk)
+                    dst.write(chunk)
+        except OSError:
+            fail("STORAGE_UNAVAILABLE", "파일을 저장하지 못했습니다. 저장 공간을 확인한 뒤 다시 시도해 주세요.", 503, True)
         with path.open("rb") as src:
             if src.read(5) != b"%PDF-":
                 fail("INVALID_PDF", "올바른 PDF 파일이 아닙니다.", 422)
+        # The real page count is read before any lecture or Job exists, so a rejected PDF costs nothing.
+        pages = await run_in_threadpool(count_pdf_pages, path)
+        if pages < 1:  # corrupt, encrypted or empty: never show library errors or paths
+            fail("INVALID_PDF", "올바른 PDF 파일이 아니거나 읽을 수 없습니다.", 422)
+        if pages > MAX_PDF_PAGES:
+            fail("PDF_PAGE_LIMIT_EXCEEDED", f"PDF는 최대 {MAX_PDF_PAGES}페이지까지 업로드할 수 있습니다.", 422)
         lecture_id, jid, status, created = claim_lecture(owner, digest.hexdigest(), Path(file.filename).name, path, lid)
+        claimed = created
         if not created:
-            shutil.rmtree(directory, ignore_errors=True)  # only the copy this request just wrote
+            remove_upload_folder(directory)  # only the copy this request just wrote
             return {"lectureId": lecture_id, "jobId": jid, "status": status}
         dispatch(jid)
         return {"lectureId": lid, "jobId": jid, "status": "pending"}
-    except Exception:
-        path.unlink(missing_ok=True)
+    except BaseException:
+        if not claimed:
+            remove_upload_folder(directory)  # only this request's own new folder
         raise
     finally:
         await file.close()

@@ -16,7 +16,7 @@
 
 | API | 요청 | 성공 응답 | 주요 오류 |
 |---|---|---|---|
-| `POST /lectures` | `multipart/form-data`, `file`; 선택 헤더 `X-Owner-Id` | `202 {lectureId, jobId, status}` | `413 FILE_TOO_LARGE`, `415 UNSUPPORTED_FILE_TYPE`, `422 INVALID_PDF`, `422 INVALID_REQUEST`(헤더 형식), `503 STORAGE_UNAVAILABLE` |
+| `POST /lectures` | `multipart/form-data`, `file`; 선택 헤더 `X-Owner-Id` | `202 {lectureId, jobId, status}` | `415 UNSUPPORTED_FILE_TYPE`, `422 INVALID_PDF`, `422 PDF_PAGE_LIMIT_EXCEEDED`, `422 INVALID_REQUEST`(헤더 형식), `503 STORAGE_UNAVAILABLE` (아래 "PDF 업로드 정책") |
 | `GET /lectures` | 선택 헤더 `X-Owner-Id` | `200 [{id, title, status, pageCount}]` 그 주인의 강의, 최신순 | `422 INVALID_REQUEST`(헤더 형식) |
 | `GET /lectures/{id}` | | `200 {id, title, status, pageCount, preparationJobId, pages: [{number, imageUrl}]}` | `404 LECTURE_NOT_FOUND` |
 | `POST /lectures/{id}/outlines` | `{mode}` | `202 {outlineId, jobId, status, reused}` | `404 LECTURE_NOT_FOUND`, `422 INVALID_MODE`, `409 LECTURE_NOT_READY` |
@@ -77,6 +77,23 @@ Job `type`은 3가지이고 `jobId`를 받는 곳이 다르다.
 - 빠른 단계는 3초 간격 조회 사이에 지나가 FE가 못 볼 수 있다. 모든 `stage`를 볼 것이라고 가정하지 않는다.
 - FE는 모르는 `stage` 값이 오면 일반 문구로 보여 준다. 값은 나중에 늘 수 있다.
 - 실패한 Job은 `POST /jobs/{id}/retry`로 같은 `type`의 새 Job이 만들어진다(`retryOf`가 이전 `jobId`).
+
+### PDF 업로드 정책 (파일 크기 제한 없음 · 최대 100페이지)
+
+사용자·팀장·FE 담당자가 합의한 정책이다(사용자 전달, 11/14. `decisions.md`에는 아직 기록되지 않았다).
+
+- **파일 크기 제한이 없다.** 이전의 `413 FILE_TOO_LARGE`는 더 이상 나오지 않는다. 파일은 1 MiB씩 디스크에 저장하며 크기로는 거부하지 않는다.
+- **페이지 수는 실제 PDF 구조에서 읽는다.** 파일 크기로 추정하지 않으며, 페이지를 그림으로 만들거나 글자를 추출하지 않는다. **1~100페이지는 허용, 101페이지 이상은 거부**한다. 큰 파일이어도 100페이지 이하면 받는다.
+- 검사는 **업로드 요청 안에서, 강의·Job을 만들기 전에** 한다. 거부되면 강의와 Job이 **만들어지지 않고**, 임시 PDF와 폴더도 지우며, AI 파이프라인(유료 호출)도 시작하지 않는다. 기존 강의·자료에는 영향이 없다.
+
+| 상황 | HTTP · `error.code` | `message` | `retryable` |
+|---|---|---|---|
+| 101페이지 이상 | `422 PDF_PAGE_LIMIT_EXCEEDED` | `PDF는 최대 100페이지까지 업로드할 수 있습니다.` | `false` |
+| PDF가 아니거나(머리 `%PDF-` 없음), 손상·암호화·페이지 0개로 읽을 수 없음 | `422 INVALID_PDF` | `올바른 PDF 파일이 아닙니다.` 또는 `올바른 PDF 파일이 아니거나 읽을 수 없습니다.` | `false` |
+| 확장자가 `.pdf`가 아님 | `415 UNSUPPORTED_FILE_TYPE` | `PDF 파일만 업로드할 수 있습니다.` | `false` |
+| 저장 공간 부족 등으로 파일을 저장하지 못함 | `503 STORAGE_UNAVAILABLE` | `파일을 저장하지 못했습니다. …` | `true` |
+
+오류 본문은 "오류 모양"과 같고, 내부 경로·라이브러리 예외는 보여 주지 않는다. FE는 `PDF_PAGE_LIMIT_EXCEEDED`일 때 위 `message`를 그대로 사용자에게 보여 주면 된다. 업로드 화면의 안내 문구는 FE 담당이다.
 
 ### 내 강의함: `X-Owner-Id` (D-50, 구현됨 · 목록 분리만, 팀장 결정 [Q-BE-06](../coordination/questions.md))
 
