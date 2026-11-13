@@ -60,11 +60,11 @@ MODE_NAMES = {"intro": "입문", "review": "기본", "exam": "심화"}   # P-AI-
 
 
 def make_blueprint(clip_plan: dict, pages: list[dict], page_count: int, model: str | None = None,
-                   prompt_lang: str = "ko") -> dict:
+                   prompt_lang: str = "en") -> dict:
     """클립 계획 하나로 설계도를 만든다. 검사에 실패하면 오류를 붙여 한 번 다시 만든다.
 
     pages: [{"number", "text", "description"(있으면)}] 이 클립에 필요한 페이지만.
-    prompt_lang: 시스템 프롬프트 언어 "ko" 또는 "en" (내레이션은 둘 다 한국어).
+    prompt_lang: 시스템 프롬프트 언어 "ko" 또는 "en" (내레이션은 둘 다 한국어). 기본은 en(D-58: 입력 토큰이 약 10% 적다).
     돌려주는 값: {"blueprint": dict, "usage": [호출별 사용량], "attempts": 시도 수}
     """
     model = model or os.getenv("AI_BLUEPRINT_MODEL", DEFAULT_MODEL)
@@ -243,7 +243,7 @@ def main(argv=None) -> int:
     ap.add_argument("--pages-json", type=Path, required=True, help="extract_pdf 결과 pages.json")
     ap.add_argument("--plan", type=Path, required=True, help="클립 계획 JSON")
     ap.add_argument("--model", default=None, choices=sorted(PRICES), help=f"생략하면 AI_BLUEPRINT_MODEL 또는 {DEFAULT_MODEL}")
-    ap.add_argument("--prompt-lang", default="ko", choices=["ko", "en"], help="시스템 프롬프트 언어")
+    ap.add_argument("--prompt-lang", default="en", choices=["ko", "en"], help="시스템 프롬프트 언어")
     ap.add_argument("--out", type=Path, required=True)
     args = ap.parse_args(argv)
 
