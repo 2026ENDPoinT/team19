@@ -68,5 +68,6 @@
 | [P-FE-10](P-FE-10-ponytail.md) | Ponytail 개인 환경 시험 사용 | 의견 수집중 |
 | [P-FE-11](P-FE-11-player-colors.md) | 네온 팔레트와 설명 구간 수식 강조 | 의견 수집중 |
 | [P-AI-05](P-AI-05-personal-library.md) | 개인별 저장(내 강의함)을 1단계로 당기기 | 결정됨(D-50) |
+| [P-AI-06](P-AI-06-text-emphasis.md) | 화면 글 안의 핵심 단어 강조 | 의견 수집중 |
 | [P-FE-12](P-FE-12-real-mode.md) | 실제 AI 서버 생성 요청 연결 | 의견 수집중 |
 | [P-FE-13](P-FE-13-highlight-density.md) | 강조 밀도 제한과 상단 상위 개념 제목 | 논의중 |
