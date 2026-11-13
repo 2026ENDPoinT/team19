@@ -178,7 +178,9 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
       if (!caption) throw new Error(`동작의 자막 없음: ${scene.id}:${action.line}`)
       if (caption.startSec <= time) {
         // 짧은 문장도 끝나기 전에 완료해 다음 문장에는 최종 상태가 된다.
-        const duration = Math.min(0.4, caption.endSec - caption.startSec)
+        // 칸 교환·포인터 이동은 0.4초와 문장 전체 길이의 중간만큼 써서 움직인다(문장이 끝나기 전에 도착).
+        const sentence = caption.endSec - caption.startSec
+        const duration = ['swap', 'move'].includes(action.do) && sentence > 0.4 ? (0.4 + sentence) / 2 : Math.min(0.4, sentence)
         const progress = Math.min(1, Math.max(0, (time - caption.startSec) / duration))
         applyAction(state.elements, action, progress)
         if (time < caption.endSec) {

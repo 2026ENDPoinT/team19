@@ -22,7 +22,7 @@ assert.deepEqual(at(1).cellOrigins, {
   '0,0': { row: 0, col: 1, progress: 0 },
   '0,1': { row: 0, col: 0, progress: 0 },
 })
-assert.ok(Math.abs(at(1.2).cellOrigins['0,0'].progress - .5) < 1e-9)
+assert.ok(Math.abs(at(1.35).cellOrigins['0,0'].progress - .5) < 1e-9)
 assert.deepEqual(at(1.2).highlightedCells, ['0,0'])
 assert.deepEqual(at(2).cellOrigins, {})
 assert.deepEqual(at(2.3).cellOrigins, {})

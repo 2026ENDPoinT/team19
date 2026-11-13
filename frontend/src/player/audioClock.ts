@@ -1,7 +1,7 @@
 type AudioSource = Pick<HTMLAudioElement, 'currentTime' | 'paused' | 'ended' | 'seeking' | 'pause' | 'addEventListener' | 'removeEventListener'>
 type Frames = { request: (callback: FrameRequestCallback) => number; cancel: (id: number) => void }
 
-export function bindAudioClock(audio: AudioSource, onTime: (seconds: number) => void, frames: Frames = { request: requestAnimationFrame, cancel: cancelAnimationFrame }) {
+export function bindAudioClock(audio: AudioSource, onTime: (seconds: number) => void, frames: Frames = { request: (callback) => requestAnimationFrame(callback), cancel: (id) => cancelAnimationFrame(id) }) {
   let frame: number | null = null
   let disposed = false
   const events = ['play', 'playing', 'pause', 'seeking', 'seeked', 'timeupdate', 'ended', 'loadedmetadata', 'emptied', 'waiting']
