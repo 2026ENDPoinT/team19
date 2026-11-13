@@ -45,3 +45,22 @@ class ExtractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_too_long_pdf_rejected(tmp_path):
+    import pymupdf
+    import pytest
+    from pipeline import extract
+    from pipeline.errors import PipelineError
+    doc = pymupdf.open()
+    for _ in range(3):
+        doc.new_page()
+    pdf = tmp_path / "long.pdf"
+    doc.save(pdf)
+    old, extract.MAX_PAGES = extract.MAX_PAGES, 2
+    try:
+        with pytest.raises(PipelineError) as e:
+            extract.extract_pdf(pdf, tmp_path / "out")
+        assert e.value.code == "PDF_TOO_LONG" and not (tmp_path / "out").exists()
+    finally:
+        extract.MAX_PAGES = old
