@@ -37,19 +37,23 @@ export default function PlayerControls({ audioRef, time, duration, isPlaying, is
   const [pointerInside, setPointerInside] = useState(false)
   const [keyboardFocus, setKeyboardFocus] = useState(false)
   const [visible, setVisible] = useState(true)
+  const [keyNudge, setKeyNudge] = useState(0)
   useEffect(() => {
     const surface = rootRef.current?.parentElement
     if (!surface) return
     const enter = () => setPointerInside(true)
     const leave = () => setPointerInside(false)
+    // 방향키 탐색 때도 조작부를 다시 보여 주고 1.5초 타이머를 새로 시작한다.
+    const key = (event: KeyboardEvent) => { if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') setKeyNudge((n) => n + 1) }
     setPointerInside(surface.matches(':hover'))
     surface.addEventListener('pointerenter', enter)
     surface.addEventListener('pointerleave', leave)
-    return () => { surface.removeEventListener('pointerenter', enter); surface.removeEventListener('pointerleave', leave) }
+    surface.addEventListener('keydown', key)
+    return () => { surface.removeEventListener('pointerenter', enter); surface.removeEventListener('pointerleave', leave); surface.removeEventListener('keydown', key) }
   }, [])
   useEffect(() => scheduleControlsVisibility({
     playing: isPlaying, hovered: pointerInside, interacting: menuOpen || keyboardFocus,
-  }, setVisible), [isPlaying, pointerInside, menuOpen, keyboardFocus])
+  }, setVisible), [isPlaying, pointerInside, menuOpen, keyboardFocus, keyNudge])
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
   const [rate, setRate] = useState(1)
