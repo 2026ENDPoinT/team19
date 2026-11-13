@@ -162,7 +162,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages, clipId
   const feedNav = !feedEnabled ? null : <div className="clip-feed-nav">
             <button type="button" aria-label="이전 클립" disabled={transitionBusy || position < 0 || order.length < 2} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
             <button type="button" aria-label="다음 클립" disabled={transitionBusy || position < 0 || order.length < 2} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
-            {!isFullscreen && sourceToggle}
+            {!isFullscreen && result && sourceToggle}
           </div>
 
   let stage = null
@@ -197,9 +197,13 @@ export default function ActualClipPreview({ onBack, initialClipId, pages, clipId
       </>}
       <div ref={contentRef} className="clip-transition-container" aria-busy={transitionBusy} style={{ minHeight: loadingHeight }}>
       {error ? (
-        <div className="mt-6 rounded-xl bg-red-50 p-4" role="alert">
-          <p>{error}</p><p className="mt-2 text-sm">다른 클립을 선택하거나 다시 불러와 주세요.</p>
+        // 불러오기에 실패해도 위·아래 버튼은 남겨 다음 클립으로 넘어갈 수 있게 한다.
+        <div className="actual-clip-layout mt-6">
+        {feedNav}
+        <div className="flex-1 rounded-xl bg-red-50 p-4" role="alert">
+          <p>{error}</p><p className="mt-2 text-sm">{feedNav ? '위·아래 버튼으로 다른 클립으로 넘어가거나 다시 불러와 주세요.' : '다른 클립을 선택하거나 다시 불러와 주세요.'}</p>
           <button className="mt-3 rounded-lg border px-4 py-2" type="button" onClick={() => setRetry((value) => value + 1)}>다시 불러오기</button>
+        </div>
         </div>
       ) : !result ? <p role="status" className="mt-6">실제 클립을 불러오고 있어요…</p> : (
         <section className="mt-3">

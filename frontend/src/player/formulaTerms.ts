@@ -55,3 +55,8 @@ export function renderFormulaTerms(source: string, colors: Record<string, string
   const result = render(parseFormulaTerms(source).parts)
   return whole ? `\\textcolor{${palette.coral}}{${result}}` : result
 }
+
+// 수식 안에 \term{항id}{…} 표시가 있는지(D-46). 화면 쪽에서 같은 문자열을 직접 쓰다 백슬래시가 빠지는 실수를 막으려고 한곳에 둔다.
+export function hasFormulaTerms(content: string): boolean {
+  return content.includes('\\term{')
+}

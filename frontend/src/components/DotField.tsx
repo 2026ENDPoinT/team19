@@ -60,9 +60,11 @@ export default function DotField({ spacing = 14, radius = 110, className = '', a
         const x = column * spacing + spacing / 2, y = row * spacing + spacing / 2
         const target = pointer ? Math.max(0, 1 - Math.hypot(x - pointer.x, y - pointer.y) / radius) : 0
         // 다가갈 때는 빠르게, 멀어질 때는 천천히 식는다.
-        heat[index] += (target - heat[index]) * (target > heat[index] ? 0.35 : 0.06)
+        const gap = target - heat[index]
+        heat[index] += gap * (gap > 0 ? 0.35 : 0.06)
         const h = heat[index]
-        if (h > 0.01) active = true
+        // 점 크기가 아직 목표로 가는 중일 때만 다음 화면을 또 그린다(가만히 있으면 멈춰 CPU를 아낀다).
+        if (Math.abs(gap) > 0.003) active = true
         const size = Math.min(spacing * .8, 2 + h * (maxSize - 2))
         context!.fillStyle = h > 0.02 ? `rgba(37, 99, 235, ${(0.25 + h * 0.75) * visible})` : `rgba(148, 163, 184, ${0.4 * visible})`
         context!.fillRect(x - size / 2, y - size / 2, size, size)
@@ -73,7 +75,7 @@ export default function DotField({ spacing = 14, radius = 110, className = '', a
     function loop() {
       frame = 0
       const active = draw()
-      if (!still && (active || pointer)) frame = requestAnimationFrame(loop)
+      if (!still && active) frame = requestAnimationFrame(loop)
     }
 
     function move(event: PointerEvent) {

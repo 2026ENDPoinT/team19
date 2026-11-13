@@ -8,7 +8,7 @@ import { playerColorVariables } from './colors'
 import { emphasizeFormula } from './formulaEmphasis'
 import { breakAtCommas } from './lineBreaks'
 import { hasEmphasis, splitEmphasis } from './textEmphasis'
-import { renderFormulaTerms } from './formulaTerms'
+import { hasFormulaTerms, renderFormulaTerms } from './formulaTerms'
 import FitContent from './FitContent'
 import { layoutGrid } from './gridLayout'
 import { layoutDiagramEdges } from './diagramEdges'
@@ -32,7 +32,7 @@ function Formula({ source }: { source: string }) {
 }
 
 function RichText({ content, formula, caption, active, termColors, whole, emphasize = false, typing = false }: { content: string; formula: boolean; caption: string; active: boolean; termColors?: Record<string, string>; whole?: boolean; emphasize?: boolean; typing?: boolean }) {
-  const annotated = formula && content.includes('\\term')
+  const annotated = formula && hasFormulaTerms(content)
   const render = (source: string) => annotated ? renderFormulaTerms(source, termColors, whole) : emphasizeFormula(source, caption, active)
   // 글자 쓰기: 왼쪽부터 한 글자씩 나타난다. 긴 글도 전체 1.2초 안에 끝나게 간격을 줄인다. 수식은 덩어리째 그 차례에 나타난다.
   let order = 0
@@ -66,7 +66,7 @@ function ElementContent({ element, pageUrl, caption }: { element: Entity; captio
     const style = ['title', 'body', 'keyword', 'formula'].includes(String(element.style)) ? String(element.style) : 'body'
     // **단어** 강조는 body·keyword에만(P-AI-06). 강조가 있으면 글 전체 강조색은 끈다.
     const emphasize = (style === 'body' || style === 'keyword') && hasEmphasis(element.content)
-    return <div className={`player-text player-text--${style}${style === 'formula' && element.content.includes('\\term') ? ' player-text--terms' : element.explaining && !emphasize ? ' player-text--explaining' : ''}`}><RichText key={element.content} typing={style !== 'formula'} content={element.content} formula={style === 'formula'} emphasize={emphasize} caption={caption} active={element.explaining === true} termColors={element.formulaTermColors} whole={element.formulaWhole} />{element.stamp && <span className="player-stamp-overlay" aria-hidden="true"><svg viewBox="-50 -50 100 100"><StampMark kind={element.stamp} size={84} /></svg></span>}</div>
+    return <div className={`player-text player-text--${style}${style === 'formula' && hasFormulaTerms(element.content) ? ' player-text--terms' : element.explaining && !emphasize ? ' player-text--explaining' : ''}`}><RichText key={element.content} typing={style !== 'formula'} content={element.content} formula={style === 'formula'} emphasize={emphasize} caption={caption} active={element.explaining === true} termColors={element.formulaTermColors} whole={element.formulaWhole} />{element.stamp && <span className="player-stamp-overlay" aria-hidden="true"><svg viewBox="-50 -50 100 100"><StampMark kind={element.stamp} size={84} /></svg></span>}</div>
   }
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }
