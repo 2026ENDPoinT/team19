@@ -8,7 +8,7 @@ from pathlib import Path
 from pipeline.validate import ALL_LAYOUTS, ALL_SLOTS, screen_text_errors, validate_blueprint
 
 ROOT = Path(__file__).resolve().parents[2]
-SAMPLES = ROOT / "sandbox" / "ai" / "blueprint_v0"
+SAMPLES = ROOT / "pipeline" / "tests" / "fixtures"
 
 
 def base_clip():

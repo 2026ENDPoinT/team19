@@ -1,8 +1,10 @@
 # 평가 세트 첫 실행: 다른 과목 클립 5개
 
+> **11/14 정리:** main에는 공개 학습 예시(`dc3-*`, 분할정복 3장 14클립)와 FE 테스트가 쓰는 `rl-mdp-review-c4`만 남겼다. 아래 표의 나머지 폴더와 모델 비교용 결과는 [`archive/experiments` 브랜치](https://github.com/2026ENDPoinT/team19/tree/archive/experiments/samples/eval)에 있다.
+
 > 상태: 확인용 실제 결과 (P-AI-03, Q-FE-07) · 담당: AI · 최종 수정: 2026-11-12 · AI/Claude
 
-새 파이프라인(페이지 해설 → 분할 계획 review → 설계도 → 음성)이 만든 결과다. 손으로 고치지 않았다. 판단과 비용은 [실험 기록](../../sandbox/ai/2026-11-12-mode-split-test.md)에 있다.
+새 파이프라인(페이지 해설 → 분할 계획 review → 설계도 → 음성)이 만든 결과다. 손으로 고치지 않았다. 판단과 비용은 [실험 기록](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/2026-11-12-mode-split-test.md)에 있다.
 
 | 폴더 | 과목 · 클립 | 길이 | 부품 |
 |---|---|---|---|

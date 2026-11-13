@@ -2,7 +2,7 @@
 
 > 상태: 확정 v0 (D-28) · 담당: BE (검토 FE) · 최종 수정: 2026-11-14 · BE/Claude
 
-결정 과정과 응답 예시 전체는 [P-BE-02](../coordination/proposals/P-BE-02-api-and-pipeline-v0.md), FE용 샘플 응답은 [sandbox/be/fe-fixtures/](../sandbox/be/fe-fixtures/README.md)에 있다. 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
+결정 과정과 응답 예시 전체는 [P-BE-02](../coordination/proposals/P-BE-02-api-and-pipeline-v0.md), FE용 샘플 응답은 [sandbox/be/fe-fixtures/](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/be/fe-fixtures/README.md)에 있다. 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
 
 ## 공통
 
