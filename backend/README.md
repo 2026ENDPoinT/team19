@@ -19,6 +19,7 @@ $env:AI_MODE = 'sample'
 - 비교용 B: `/clips/clip-01-b`, MP3: `/assets/clip-01-b-audio` (현재 114.25초, 23문장). 길이와 resultId는 파일에서 읽는다.
 - 부품 검사 샘플: `/clips/parts-test`, 신호음 WAV: `/assets/parts-test-audio`.
 - 기존 PDF→샘플 MP4 시연: `/demo`. 저장 위치는 `backend/local-data/`이며 Git에서 제외한다.
+- 다른 노트북에서 접속하는 시연은 [DEMO-NETWORK.md](DEMO-NETWORK.md)를 본다(`--host 127.0.0.1`은 자기 노트북 전용).
 - FE 기본 허용 주소: `http://localhost:5173`, `http://127.0.0.1:5173`. 바꾸려면 `FRONTEND_ORIGINS`에 쉼표로 구분해 지정한다.
 
 ## 기존 업로드 흐름
