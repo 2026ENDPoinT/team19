@@ -13,7 +13,7 @@ export default function PreparationPanel({ fileName, preparation: data, onBack, 
       <h1 id="preparing-title" className="text-[30px] font-bold leading-tight tracking-[-0.04em] text-slate-950 sm:text-[38px]">{data.phase === 'ready' ? '자료 준비가 완료됐어요' : busy ? '강의자료를 준비하고 있어요' : '자료 준비를 확인해 주세요'}</h1>
       <p className="mt-3 text-[15px] leading-7 text-slate-500 sm:text-base">업로드한 PDF를 확인하고 학습에 사용할 페이지 정보를 정리해요.</p>
       <div className="mt-7"><FileSummary file={{ name: fileName }} /></div>
-      {busy && <ProcessingStatus stage={data.job?.status === 'pending' ? 'queued' : data.job?.stage} message={data.phase === 'uploading' ? 'PDF를 업로드하는 중' : undefined} />}
+      {busy && <ProcessingStatus dots stage={data.job?.status === 'pending' ? 'queued' : data.job?.stage} message={data.phase === 'uploading' ? 'PDF를 업로드하는 중' : undefined} />}
       {data.message && <div role="alert" className={`mt-4 rounded-3xl border p-5 sm:p-6 ${queryError ? 'border-amber-200 bg-amber-50/60' : 'border-red-100 bg-red-50/60'}`}>
         <p className={`text-xs font-semibold ${queryError ? 'text-amber-700' : 'text-red-700'}`}>{queryError ? '진행 상태를 확인하지 못했어요' : data.phase === 'upload-error' ? '업로드 확인 오류' : '처리 실패'}</p>
         <h2 className="mt-2 text-xl font-bold tracking-[-0.03em] text-slate-900">{queryError ? '작업 상태를 불러오지 못했어요' : 'PDF 준비 상태를 확인해 주세요'}</h2>

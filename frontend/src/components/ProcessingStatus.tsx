@@ -22,8 +22,9 @@ function RevealText({ text, step, loop = false }: { text: string; step: number; 
 }
 
 // done은 단계별 부분 점수까지 더한 값(없으면 completed). 퍼센트는 done으로, 'N개 완성' 문구는 completed로 쓴다.
-type Props = { stage?: string | null; message?: string; progress?: { completed: number; total: number; done?: number } }
-export default function ProcessingStatus({ stage, message, progress }: Props) {
+// dots: 오른쪽 그림에 마우스 반응 점을 깔지(자료 준비 화면만). 클립 생성 화면에서는 끈다.
+type Props = { stage?: string | null; message?: string; progress?: { completed: number; total: number; done?: number }; dots?: boolean }
+export default function ProcessingStatus({ stage, message, progress, dots = false }: Props) {
   const logoClip = useId()
   const [tip, setTip] = useState(0)
   useEffect(() => {
@@ -65,7 +66,7 @@ export default function ProcessingStatus({ stage, message, progress }: Props) {
         </div>
       </div>
       <div className="processing-artwork" aria-hidden="true">
-        <DotField className="dot-field--art" spacing={18} radius={90} />
+        {dots && <DotField className="dot-field--art" spacing={18} radius={90} maxSize={3} />}
         <div className="processing-orbit processing-orbit--one" />
         <div className="processing-orbit processing-orbit--two" />
         <div className="processing-sheet"><span>PDF</span><i /><i /><i /><i /><div className="processing-scan" /></div>
