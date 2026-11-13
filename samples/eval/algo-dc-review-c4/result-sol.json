@@ -1,0 +1,993 @@
+{
+ "resultId": "eval-algo-dc-c4-sol",
+ "durationSec": 101.5,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "합병 정렬은 어떻게 재귀적으로 작동하나?",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "합병 정렬은 주어진 구간을 재귀적으로 정렬해요.",
+     "시작 인덱스가 끝보다 작을 때만 안으로 들어가요.",
+     "중간 인덱스는 양 끝의 평균을 내림해 구해요.",
+     "왼쪽 재귀 호출이 끝나면 오른쪽을 호출해요.",
+     "양쪽이 정렬되어 돌아오면 마지막에 합병해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_code_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "재귀 호출의 순서"
+     },
+     {
+      "id": "t_code_note",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "body",
+      "content": "입력과 출력: A[p]부터 A[q]까지"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [
+     {
+      "id": "c_sort",
+      "slot": "middle",
+      "hidden": false,
+      "language": "pseudo",
+      "lines": [
+       "MergeSort(A, p, q)",
+       "  if p < q:",
+       "    k = floor((p + q) / 2)",
+       "    MergeSort(A, p, k)",
+       "    MergeSort(A, k + 1, q)",
+       "    A[p..k]와 A[k+1..q]를 합병"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "line": 0,
+      "do": "markLine",
+      "target": "c_sort",
+      "args": [
+       "1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "markLine",
+      "target": "c_sort",
+      "args": [
+       "2"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "markLine",
+      "target": "c_sort",
+      "args": [
+       "3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_code_note",
+      "args": [
+       "중간 인덱스: 양 끝 인덱스 평균의 내림"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "markLine",
+      "target": "c_sort",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t_code_note",
+      "args": [
+       "왼쪽 호출 완료 → 오른쪽 호출"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "markLine",
+      "target": "c_sort",
+      "args": [
+       "6"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t_code_note",
+      "args": [
+       "정렬된 왼쪽 + 정렬된 오른쪽 → 합병"
+      ]
+     }
+    ],
+    "sourcePages": [
+     16,
+     20
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "강의의 8개 원소로 분할 구조부터 살펴봐요.",
+     "처음에는 가운데를 기준으로 4개씩 나눠요.",
+     "각 구간을 다시 나누면 2개씩 묶여요.",
+     "한 번 더 나누면 원소가 1개씩 남아요.",
+     "원소가 1개 이하라면 아무 일 없이 돌아가요."
+    ],
+    "speech": [
+     "강의의 여덟 개 원소로 분할 구조부터 살펴봐요.",
+     "처음에는 가운데를 기준으로 네 개씩 나눠요.",
+     "각 구간을 다시 나누면 두 개씩 묶여요.",
+     "한 번 더 나누면 원소가 한 개씩 남아요.",
+     "원소가 한 개 이하라면 아무 일 없이 돌아가요."
+    ],
+    "texts": [
+     {
+      "id": "t_split_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "낱개가 될 때까지 분할"
+     },
+     {
+      "id": "t_split_note",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "body",
+      "content": "분할 구조를 먼저 한눈에 보기"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_halves",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n_half_left",
+        "label": "37 10 22 30",
+        "shape": "box"
+       },
+       {
+        "id": "n_half_right",
+        "label": "35 13 25 24",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     },
+     {
+      "id": "d_pairs",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n_pair_a",
+        "label": "37 10",
+        "shape": "box"
+       },
+       {
+        "id": "n_pair_b",
+        "label": "22 30",
+        "shape": "box"
+       },
+       {
+        "id": "n_pair_c",
+        "label": "35 13",
+        "shape": "box"
+       },
+       {
+        "id": "n_pair_d",
+        "label": "25 24",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [
+     {
+      "id": "g_original",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "37",
+        "10",
+        "22",
+        "30",
+        "35",
+        "13",
+        "25",
+        "24"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "g_original",
+      "args": [
+       "0-7"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "hide",
+      "target": "g_original",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "d_halves",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_split_note",
+      "args": [
+       "첫 분할: 4개씩 두 구간"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "d_halves",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "d_pairs",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_split_note",
+      "args": [
+       "다음 분할: 2개씩 네 구간"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "hide",
+      "target": "d_pairs",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_original",
+      "args": [
+       "0-7"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "g_original",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t_split_note",
+      "args": [
+       "각 칸이 독립된 구간: 원소 1개씩"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t_split_note",
+      "args": [
+       "종료 조건: p ≥ q이면 그대로 반환"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "t_split_note",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     20,
+     23
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "실제 실행은 왼쪽부터 내려가 37과 10을 만나요.",
+     "각각 정렬된 구간이니 맨 앞의 두 값을 비교해요.",
+     "10이 더 작으므로 합병 결과에 먼저 써요.",
+     "남은 37을 붙이면 첫 합병이 끝나요."
+    ],
+    "speech": [
+     "실제 실행은 왼쪽부터 내려가 삼십칠과 십을 만나요.",
+     "",
+     "십이 더 작으므로 합병 결과에 먼저 써요.",
+     "남은 삼십칠을 붙이면 첫 합병이 끝나요."
+    ],
+    "texts": [
+     {
+      "id": "t_first_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "첫 합병: 낱개 두 구간"
+     },
+     {
+      "id": "t_first_note",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "body",
+      "content": "위 두 줄: 입력 구간 / 맨 아래: 합병 결과"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g_first",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "37"
+       ],
+       [
+        "10"
+       ],
+       [
+        "",
+        ""
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "g_first",
+      "args": [
+       "0,0",
+       "1,0"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_first_note",
+      "args": [
+       "비교: 37 대 10"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setValue",
+      "target": "g_first",
+      "args": [
+       "2,0",
+       "10"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_first",
+      "args": [
+       "1,0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_first_note",
+      "args": [
+       "10을 기록하고, 남은 값은 37"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setValue",
+      "target": "g_first",
+      "args": [
+       "2,1",
+       "37"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_first",
+      "args": [
+       "0,0"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "g_first",
+      "args": [
+       "2,0-1"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t_first_note",
+      "args": [
+       "정렬된 구간 완성: 10, 37"
+      ]
+     }
+    ],
+    "sourcePages": [
+     20,
+     23
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "같은 방식으로 22와 30도 정렬해요.",
+     "두 쌍을 합치면 왼쪽 네 원소가 정렬돼요.",
+     "오른쪽도 정렬하면 13, 24, 25, 35예요."
+    ],
+    "speech": [
+     "같은 방식으로 이십이와 삼십도 정렬해요.",
+     "",
+     "오른쪽도 정렬하면 십삼, 이십사, 이십오, 삼십오예요."
+    ],
+    "texts": [
+     {
+      "id": "t_build_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "돌아오면서 더 크게 합병"
+     },
+     {
+      "id": "t_build_note",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "body",
+      "content": "낱개 → 정렬된 두 원소 구간"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_left_merge",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n_sorted_pair_a",
+        "label": "10 37",
+        "shape": "box"
+       },
+       {
+        "id": "n_sorted_pair_b",
+        "label": "22 30",
+        "shape": "box"
+       },
+       {
+        "id": "n_sorted_left",
+        "label": "10 22 30 37",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_left_a",
+        "from": "n_sorted_pair_a",
+        "to": "n_sorted_left",
+        "hidden": true
+       },
+       {
+        "id": "e_left_b",
+        "from": "n_sorted_pair_b",
+        "to": "n_sorted_left",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [
+     {
+      "id": "g_two_sorted",
+      "slot": "middle",
+      "hidden": true,
+      "cells": [
+       [
+        "10",
+        "22",
+        "30",
+        "37"
+       ],
+       [
+        "13",
+        "24",
+        "25",
+        "35"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "n_sorted_pair_b",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n_sorted_left",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_left_a",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_left_b",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "t_build_note",
+      "args": [
+       "정렬된 두 구간을 합쳐 더 큰 정렬 구간으로"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "d_left_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "g_two_sorted",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_two_sorted",
+      "args": [
+       "1,0-3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_build_note",
+      "args": [
+       "이제 양쪽 네 원소 구간이 모두 정렬됐어요"
+      ]
+     }
+    ],
+    "sourcePages": [
+     20,
+     23
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": true,
+    "lines": [
+     "마지막에는 정렬된 두 구간의 맨 앞을 비교해요.",
+     "10을 쓰고, 다음은 22와 13을 비교해요.",
+     "이어서 13, 22, 24를 차례로 써요.",
+     "남은 값까지 합치면 전체가 정렬돼요.",
+     "재귀로 작은 문제를 풀고, 합병으로 완성해요."
+    ],
+    "speech": [
+     "",
+     "십을 쓰고, 다음은 이십이와 십삼을 비교해요.",
+     "이어서 십삼, 이십이, 이십사를 차례로 써요.",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_final_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "마지막 두 구간의 합병"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g_final_inputs",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "10",
+        "22",
+        "30",
+        "37"
+       ],
+       [
+        "13",
+        "24",
+        "25",
+        "35"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     },
+     {
+      "id": "g_final_output",
+      "slot": "bottom",
+      "hidden": false,
+      "cells": [
+       [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "g_final_inputs",
+      "args": [
+       "0,0",
+       "1,0"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setValue",
+      "target": "g_final_output",
+      "args": [
+       "0",
+       "10"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "g_final_inputs",
+      "args": [
+       "0,0"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_final_inputs",
+      "args": [
+       "0,1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_final_inputs",
+      "args": [
+       "0,1",
+       "1,0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setValue",
+      "target": "g_final_output",
+      "args": [
+       "1",
+       "13"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setValue",
+      "target": "g_final_output",
+      "args": [
+       "2",
+       "22"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setValue",
+      "target": "g_final_output",
+      "args": [
+       "3",
+       "24"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setValue",
+      "target": "g_final_output",
+      "args": [
+       "4",
+       "25"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setValue",
+      "target": "g_final_output",
+      "args": [
+       "5",
+       "30"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setValue",
+      "target": "g_final_output",
+      "args": [
+       "6",
+       "35"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setValue",
+      "target": "g_final_output",
+      "args": [
+       "7",
+       "37"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t_final_title",
+      "args": [
+       "나누고, 재귀 정렬하고, 합병"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "g_final_output",
+      "args": [
+       "0-7"
+      ]
+     }
+    ],
+    "sourcePages": [
+     16,
+     20,
+     23
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "합병 정렬은 주어진 구간을 재귀적으로 정렬해요.",
+   "startSec": 0.0,
+   "endSec": 4.55
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "시작 인덱스가 끝보다 작을 때만 안으로 들어가요.",
+   "startSec": 4.85,
+   "endSec": 8.5
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "중간 인덱스는 양 끝의 평균을 내림해 구해요.",
+   "startSec": 8.8,
+   "endSec": 13.65
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "왼쪽 재귀 호출이 끝나면 오른쪽을 호출해요.",
+   "startSec": 13.95,
+   "endSec": 17.55
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 4,
+   "text": "양쪽이 정렬되어 돌아오면 마지막에 합병해요.",
+   "startSec": 17.85,
+   "endSec": 21.5
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "강의의 8개 원소로 분할 구조부터 살펴봐요.",
+   "startSec": 22.1,
+   "endSec": 26.45
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "처음에는 가운데를 기준으로 4개씩 나눠요.",
+   "startSec": 26.75,
+   "endSec": 31.05
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "각 구간을 다시 나누면 2개씩 묶여요.",
+   "startSec": 31.35,
+   "endSec": 34.75
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "한 번 더 나누면 원소가 1개씩 남아요.",
+   "startSec": 35.05,
+   "endSec": 39.65
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "원소가 1개 이하라면 아무 일 없이 돌아가요.",
+   "startSec": 39.95,
+   "endSec": 43.8
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "실제 실행은 왼쪽부터 내려가 37과 10을 만나요.",
+   "startSec": 44.4,
+   "endSec": 49.85
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "각각 정렬된 구간이니 맨 앞의 두 값을 비교해요.",
+   "startSec": 50.15,
+   "endSec": 54.35
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "10이 더 작으므로 합병 결과에 먼저 써요.",
+   "startSec": 54.65,
+   "endSec": 58.6
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "남은 37을 붙이면 첫 합병이 끝나요.",
+   "startSec": 58.9,
+   "endSec": 63.05
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "같은 방식으로 22와 30도 정렬해요.",
+   "startSec": 63.65,
+   "endSec": 67.75
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "두 쌍을 합치면 왼쪽 네 원소가 정렬돼요.",
+   "startSec": 68.05,
+   "endSec": 72.8
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "오른쪽도 정렬하면 13, 24, 25, 35예요.",
+   "startSec": 73.1,
+   "endSec": 78.65
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "마지막에는 정렬된 두 구간의 맨 앞을 비교해요.",
+   "startSec": 79.25,
+   "endSec": 83.35
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "10을 쓰고, 다음은 22와 13을 비교해요.",
+   "startSec": 83.65,
+   "endSec": 88.35
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "이어서 13, 22, 24를 차례로 써요.",
+   "startSec": 88.65,
+   "endSec": 93.5
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "남은 값까지 합치면 전체가 정렬돼요.",
+   "startSec": 93.8,
+   "endSec": 97.25
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 4,
+   "text": "재귀로 작은 문제를 풀고, 합병으로 완성해요.",
+   "startSec": 97.55,
+   "endSec": 101.5
+  }
+ ]
+}

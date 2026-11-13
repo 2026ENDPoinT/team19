@@ -62,11 +62,11 @@ export function parseClipResult(result: unknown, base: string): ClipResult {
   return { ...result, audioUrl: audioUrl.href } as ClipResult
 }
 
-export async function loadStoredClip(resultUrl: string, audioUrl: string, signal: AbortSignal): Promise<ClipResult> {
+export async function loadStoredClip(resultUrl: string, audioUrl: string, signal: AbortSignal, bundledAudio = 'audio-terra/audio.mp3'): Promise<ClipResult> {
   const response = await fetch(resultUrl, { signal })
   if (!response.ok) throw new Error(`평가 파일을 불러오지 못했어요 (${response.status})`)
   const payload: unknown = await response.json()
   signal.throwIfAborted()
-  if (!isRecord(payload) || payload.audioUrl !== 'audio-terra/audio.mp3') throw new Error('평가 결과와 음성 묶음을 확인해 주세요.')
+  if (!isRecord(payload) || payload.audioUrl !== bundledAudio) throw new Error('평가 결과와 음성 묶음을 확인해 주세요.')
   return parseClipResult({ ...payload, audioUrl }, resultUrl)
 }
