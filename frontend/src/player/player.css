@@ -62,7 +62,7 @@
 .player-bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 12px 12px; border-radius: 0 0 20px 20px; background: linear-gradient(transparent, #020617eb); pointer-events: auto; }
 .player-time-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
 .player-time-row button { padding: 4px 6px; border: 0; background: transparent; color: #fff; cursor: pointer; }
-.player-bottom-bar > input { display: block; width: 100%; margin-top: 8px; accent-color: var(--player-coral); cursor: pointer; }
+.player-bottom-bar > input { display: block; width: 100%; margin-top: 8px; accent-color: #fff; cursor: pointer; }
 
 .player-controls { opacity: 1; visibility: visible; transition: opacity 120ms ease; }
 .player-controls--hidden { opacity: 0; visibility: hidden; transition: opacity 350ms ease, visibility 0s linear 350ms; }
