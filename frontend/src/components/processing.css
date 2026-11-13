@@ -54,3 +54,16 @@
  .processing-experience *, .processing-experience *::before, .processing-experience *::after { animation: none !important; }
  .processing-scan { display: none; }
 }
+
+/* 대기 화면 글자 연출: 흐릿 → 또렷하게 한 글자씩 떠오른다. */
+.processing-brand { font-size: clamp(44px, 6vw, 68px) !important; font-weight: 800 !important; letter-spacing: .14em !important; line-height: 1.1 !important; color: #2563eb; }
+.reveal-text > span { display: inline-block; opacity: 0; animation: reveal-char 900ms cubic-bezier(.2, .7, .2, 1) forwards; }
+.reveal-text--loop > span { animation: reveal-char-loop 7s cubic-bezier(.2, .7, .2, 1) infinite; }
+@keyframes reveal-char { from { opacity: 0; filter: blur(8px); transform: translateY(.35em); } to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes reveal-char-loop {
+  0% { opacity: 0; filter: blur(10px); transform: translateY(.3em) scale(.96); }
+  14% { opacity: 1; filter: blur(0); transform: none; }
+  78% { opacity: 1; filter: blur(0); transform: none; }
+  92%, 100% { opacity: 0; filter: blur(10px); transform: translateY(-.2em); }
+}
+@media (prefers-reduced-motion: reduce) { .reveal-text > span, .reveal-text--loop > span { animation: none; opacity: 1; } }
