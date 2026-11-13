@@ -5,6 +5,7 @@ placeholders, NOT true screenshots of PDF pages. No security policy is disabled.
 """
 from __future__ import annotations
 
+import importlib.util
 import logging
 from pathlib import Path
 import struct
@@ -80,6 +81,15 @@ def _placeholder_png(destination: Path, number: int, text_length: int) -> None:
         return struct.pack('>I', len(data)) + typ + data + struct.pack('>I', zlib.crc32(typ+data) & 0xffffffff)
     png = b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(scanlines, 7)) + chunk(b'IEND', b'')
     destination.write_bytes(png)
+
+
+def pymupdf_available() -> bool:
+    """True when PyMuPDF is installed. Never imports it (stored-sample playback must not load the DLL,
+    see extract_pdf_text_only); a DLL that is installed but blocked is still reported at extraction time."""
+    try:
+        return importlib.util.find_spec("pymupdf") is not None
+    except (ImportError, ValueError):
+        return False
 
 
 def extract_pdf_text_only(pdf_path: Path, output_dir: Path) -> dict:

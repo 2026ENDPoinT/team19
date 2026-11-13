@@ -1,6 +1,7 @@
 fastapi>=0.115,<1
 uvicorn[standard]>=0.30,<1
 python-multipart>=0.0.18,<1
-pypdf>=5,<8  # Windows application-control compatible text-only fallback
+pymupdf>=1.24  # preferred sample-mode PDF text extractor (Korean text); BUG-FE-01
+pypdf>=5,<8  # Windows application-control compatible text-only fallback; may garble Korean
 Pillow>=10,<13
 imageio-ffmpeg>=0.5,<1

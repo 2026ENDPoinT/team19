@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import sqlite3
@@ -17,7 +18,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from .pipeline import Pipeline, PipelineError, check_blueprint, get_ai_mode, validate_result
-from . import stored_sample
+from . import pdf_text_fallback, stored_sample
 
 AI_MODE = get_ai_mode()  # Reject typos before creating a data directory, DB or executor.
 ROOT = Path(os.getenv("TEAM19_DATA_DIR", "./backend/local-data")).resolve()
@@ -297,6 +298,10 @@ def do_clip(job: dict, pipe: Pipeline):
 
 
 setup()
+if AI_MODE == "sample" and not pdf_text_fallback.pymupdf_available():
+    # BUG-FE-01: without PyMuPDF the sample extractor uses pypdf, which can garble Korean text.
+    logging.getLogger("backend").warning("PyMuPDF를 불러올 수 없습니다. 샘플 업로드는 pypdf로 대체되어 한글이 깨질 수 있습니다. "
+                                         "`pip install -r backend/requirements.txt`로 PyMuPDF를 설치하세요.")
 resume_pending()
 app = FastAPI(title="team19 BE", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origins=os.getenv("FRONTEND_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(","), allow_credentials=False, allow_methods=["GET", "HEAD", "POST"], allow_headers=["*"], expose_headers=["Accept-Ranges", "Content-Range", "Content-Length", "ETag", "Last-Modified"])
