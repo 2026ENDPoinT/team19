@@ -155,6 +155,10 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
             {sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}
           </button>
           <div className={`actual-clip-layout${sourceOpen ? ' actual-clip-layout--with-source' : ''}`}>
+          {!initialClipId && <div className="clip-feed-nav">
+            <button type="button" aria-label="이전 클립" disabled={position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
+            <button type="button" aria-label="다음 클립" disabled={position < 0 || position >= order.length - 1} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
+          </div>}
           <div className="actual-player" ref={surfaceRef}>
           <audio src={result.audioUrl} hidden preload="metadata" loop ref={audioRef}
             onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}
@@ -162,10 +166,6 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
           {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={pageUrl} isPlaying={isPlaying} onTogglePlayback={togglePlayback} captionsOn={captionsOn}
             controls={<PlayerControls captionsOn={captionsOn} onToggleCaptions={() => setCaptionsOn((on) => !on)} audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
           {playbackError && <p role="alert" className="mt-2 text-sm text-red-700">{playbackError}</p>}
-          {!initialClipId && <div className="clip-feed-nav">
-            <button type="button" aria-label="이전 클립" disabled={position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
-            <button type="button" aria-label="다음 클립" disabled={position < 0 || position >= order.length - 1} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
-          </div>}
           </div>
           {sourceOpen && (
             <aside id="source-page-panel" className="source-page-panel" aria-label="현재 장면의 원본 페이지">
