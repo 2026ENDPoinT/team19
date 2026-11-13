@@ -43,6 +43,8 @@ $env:AI_MODE = 'sample'
 
 샘플 업로드의 `pdf_text_fallback.py`는 **PyMuPDF를 우선** 사용해 한글·줄바꿈을 추출한다(BUG-FE-01). 실제 추출 시점에만 불러오며, 설치되지 않았거나 Windows DLL 차단으로 불러오지 못하면 기존 pypdf로 대체하고 로그에 품질 경고를 남긴다. **pypdf 대체 경로에서는 한글·줄바꿈 품질을 보장하지 않는다.** PyMuPDF가 읽는 중 발생한 PDF 오류는 대체 추출로 숨기지 않는다. 생성하는 PNG는 계속 원본 슬라이드가 아닌 표시용 대체 그림이다. AI `pipeline/extract.py`는 이 경로에서 가져오거나 실행하지 않는다.
 
+**한글이 깨지면 먼저 확인:** 서버를 켠 Python에서 `python -c "import pymupdf; print(pymupdf.VersionBind)"`가 성공하는지 본다. 실패하면(`backend/requirements.txt`만 설치한 옛 환경 등) 샘플 업로드는 pypdf로 대체되어 한글이 깨진다. `pip install -r backend/requirements.txt`로 PyMuPDF를 설치하고 서버를 다시 켠다. PyMuPDF가 설치돼 있지 않으면 서버 시작 로그에도 `PyMuPDF를 불러올 수 없습니다` 경고가 나온다. 실제 AI 모드는 `pipeline/requirements.txt`의 PyMuPDF를 쓰며 없으면 대체하지 않고 실패한다.
+
 기존에 저장된 깨진 `pages.text`와 클립 제목은 자동 갱신하지 않는다. 수정된 서버에서 원본 PDF를 **새 강의로 재업로드한 뒤 모드를 다시 선택**하면 새 추출 결과로 생성한다. 완료된 기존 Job은 재시도할 수 없으며, 기존 모드 계획·클립은 재사용되므로 기존 강의의 재시도만으로 제목이 바뀐다고 보장하지 않는다. 기존 DB 수정·삭제는 필요 없다.
 
 ## 테스트
