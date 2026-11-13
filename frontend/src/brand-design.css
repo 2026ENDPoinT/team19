@@ -2,6 +2,7 @@
 .brand-header { border-bottom: 1px solid #e9edf2; background: #ffffffed; }
 .brand-header-inner { display: flex; align-items: center; gap: 28px; width: min(1160px, 100%); min-height: 82px; margin: 0 auto; padding: 16px 28px; }
 .brand-wordmark { display: flex; align-items: baseline; gap: 10px; flex-shrink: 0; color: #17202b; font-size: 25px; font-weight: 800; letter-spacing: -.065em; cursor: pointer; }
+.brand-wordmark img { align-self: center; width: 30px; height: 30px; margin-right: -4px; }
 .brand-wordmark span { color: #8290a2; font-size: 11px; font-weight: 500; letter-spacing: -.02em; }
 .brand-navigation { display: flex; align-items: center; gap: 25px; margin-left: auto; }
 .brand-navigation button { position: relative; padding: 10px 0; color: #748093; font-size: 12px; cursor: pointer; transition: color 180ms ease; }
