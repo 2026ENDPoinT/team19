@@ -83,7 +83,7 @@ action { "line": sentence index (from 0), "do": action name, "target": target id
 |---|---|
 | texts | "style": title / body / keyword / formula, "content". formula uses LaTeX inside `$...$` |
 | slides | "page": page number (within the scene's sourcePages), "box": [x, y, w, h] as 0–1 ratios of the original page |
-| diagrams | "layout", "nodes": [{"id", "label", "shape": box / circle, "hidden" (optional)}], "edges": [{"id", "from", "to", "label" (optional), "hidden" (optional)}] |
+| diagrams | "layout", "nodes": [{"id", "label", "shape": box / circle / text, "hidden" (optional)}], "edges": [{"id", "from", "to", "label" (optional), "hidden" (optional)}] |
 | grids | "cells": [[string]] (rows may differ in length, empty cell is ""), "indexLabels": true / false, "pointers": [{"id", "label", "row", "col", "hidden"}] |
 | codes | "language", "lines": [string] |
 
@@ -91,6 +91,7 @@ action { "line": sentence index (from 0), "do": action name, "target": target id
   - The screen is vertical and narrow. **Use column for one-way flows or steps with 3+ nodes.** Use row only for 2–3 nodes with short labels (6 characters or fewer); any edges must go one way, front to back. **Use row to place 2–3 concepts side by side for contrast (edges optional)** (e.g. 최대화 · 최소화, 국소 · 전역).
   - **Use cycle when three or four things interact in both directions (a structure with edges going back).** Use layers for structures where one layer feeds the next, such as a neural network (at most 3 layers, 4 nodes per layer).
   - For two-way relations (edges going back), do not show all edges at the start. Keep them hidden and show them one at a time in the sentence that explains them. **Once shown, an edge stays; never hide it.** Highlight only the edge being explained, and unhighlight it when moving to the next edge.
+- Node shapes: text (just the label, no border) for words or concepts being compared or listed; box for thing-like items such as steps or components; circle for states in a cycle.
 - **Use grids only for data whose cells hold values (arrays, matrices, DP tables, numbers, short symbols).** Do not make a grid for a table that lists or compares words or concepts (condition and meaning, pros and cons, maximize/minimize): it is drawn as array cells and looks awkward. Show 2–4 concepts as a diagram (column; connect pairs with edges), or a single one as a keyword.
 - Use slides only for figures that cannot be redrawn (graphs, photos, complex tables). If you do not know what the page image looks like, make the box close to the whole page.
 
