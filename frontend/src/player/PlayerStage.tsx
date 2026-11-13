@@ -10,6 +10,7 @@ import { layoutGrid } from './gridLayout'
 import { layoutDiagramEdges } from './diagramEdges'
 import Slide from './Slide'
 import Diagram from './Diagram'
+import { StampMark } from './Stamp'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
@@ -47,7 +48,7 @@ function ElementView({ element, pageUrl, caption }: { element: Entity; caption: 
   }
   if (typeof element.content === 'string') {
     const style = ['title', 'body', 'keyword', 'formula'].includes(String(element.style)) ? String(element.style) : 'body'
-    return <div className={`player-text player-text--${style}${style === 'formula' && element.content.includes('\\term') ? ' player-text--terms' : element.explaining ? ' player-text--explaining' : ''}`}><RichText content={element.content} formula={style === 'formula'} caption={caption} active={element.explaining === true} termColors={element.formulaTermColors} whole={element.formulaWhole} /></div>
+    return <div className={`player-text player-text--${style}${style === 'formula' && element.content.includes('\\term') ? ' player-text--terms' : element.explaining ? ' player-text--explaining' : ''}`}><RichText content={element.content} formula={style === 'formula'} caption={caption} active={element.explaining === true} termColors={element.formulaTermColors} whole={element.formulaWhole} />{element.stamp && <span className="player-stamp-overlay" aria-hidden="true"><svg viewBox="-50 -50 100 100"><StampMark kind={element.stamp} size={84} /></svg></span>}</div>
   }
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }

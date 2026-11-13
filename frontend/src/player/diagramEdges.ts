@@ -92,3 +92,17 @@ export function layoutDiagramEdges(nodes: LayoutNode[], edges: Edge[], layout: s
   }
   return { positions:geometry.positions,routes,width:maxX-minX,height:maxY-minY }
 }
+
+// 꺾인 선은 전체 길이의 절반 지점, 직선은 가운데에 찍는다.
+export function midpoint(points: { x: number; y: number }[]) {
+  const lengths = points.slice(1).map((point, i) => Math.hypot(point.x - points[i].x, point.y - points[i].y))
+  let half = lengths.reduce((sum, length) => sum + length, 0) / 2
+  for (let i = 0; i < lengths.length; i++) {
+    if (half <= lengths[i] && lengths[i] > 0) {
+      const t = half / lengths[i]
+      return { x: points[i].x + (points[i + 1].x - points[i].x) * t, y: points[i].y + (points[i + 1].y - points[i].y) * t }
+    }
+    half -= lengths[i]
+  }
+  return points[0]
+}
