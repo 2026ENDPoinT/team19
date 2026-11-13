@@ -58,6 +58,16 @@ def setup() -> None:
         CREATE TABLE IF NOT EXISTS clips (id TEXT PRIMARY KEY, outline_id TEXT NOT NULL REFERENCES outlines(id), plan_id TEXT NOT NULL, position INTEGER NOT NULL, title TEXT NOT NULL, plan_json TEXT NOT NULL, status TEXT NOT NULL, job_id TEXT, result_json TEXT, error TEXT);
         CREATE TABLE IF NOT EXISTS jobs (id TEXT PRIMARY KEY, type TEXT NOT NULL, target_id TEXT NOT NULL, status TEXT NOT NULL, stage TEXT, error TEXT, retry_of TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
         CREATE TABLE IF NOT EXISTS assets (id TEXT PRIMARY KEY, path TEXT NOT NULL, mime TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS job_usage (
+            job_id TEXT NOT NULL REFERENCES jobs(id),
+            stage TEXT NOT NULL CHECK(stage IN ('describing','planning','blueprint','audio')),
+            status TEXT NOT NULL CHECK(status IN ('started','recorded','unavailable')),
+            usage_json TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY(job_id, stage),
+            CHECK((status='recorded' AND usage_json IS NOT NULL) OR (status!='recorded' AND usage_json IS NULL))
+        );
         """)
         # Never automatically rerun a charged call after a process restart. Show the same
         # error on every record the FE reads (job, lecture, clip); outlines use 'planning' while running.
@@ -68,6 +78,7 @@ def setup() -> None:
         db.execute(f"UPDATE outlines SET status='failed' WHERE status IN ('running','planning') OR id IN (SELECT target_id FROM jobs WHERE type='outline' AND status IN ({states}))")
         db.execute(f"UPDATE clips SET status='failed',error=? WHERE status='running' OR id IN (SELECT target_id FROM jobs WHERE type='clip' AND status IN ({states}))", (restarted,))
         db.execute(f"UPDATE jobs SET status='failed',stage='interrupted',error=?,updated_at=CURRENT_TIMESTAMP WHERE status IN ({states})", (restarted,))
+        db.execute("UPDATE job_usage SET status='unavailable',updated_at=CURRENT_TIMESTAMP WHERE status='started' AND job_id IN (SELECT id FROM jobs WHERE status='failed' AND stage='interrupted')")
 
 
 def resume_pending() -> int:
@@ -108,6 +119,32 @@ def stage(db: sqlite3.Connection, jid: str, label: str):
     db.execute("UPDATE jobs SET stage=?,updated_at=CURRENT_TIMESTAMP WHERE id=?", (label, jid))
 
 
+def call_with_usage(jid: str, label: str, fn, *args):
+    """Commit each returned usage list before validation or another paid stage can fail."""
+    with conn() as db:
+        # The unique key also rejects an accidental second call for the same job/stage.
+        db.execute("INSERT INTO job_usage(job_id,stage,status) VALUES(?,?,'started')", (jid, label))
+        stage(db, jid, label)
+    try:
+        result = fn(*args)
+    except Exception:
+        with conn() as db:
+            db.execute("UPDATE job_usage SET status='unavailable',updated_at=CURRENT_TIMESTAMP WHERE job_id=? AND stage=?", (jid, label))
+        raise
+
+    usage = result.get("usage") if isinstance(result, dict) else None
+    payload = None
+    if isinstance(usage, list) and all(isinstance(item, dict) for item in usage):
+        try:
+            payload = json.dumps(usage, ensure_ascii=False, allow_nan=False)
+        except (TypeError, ValueError):
+            pass  # Missing/unserializable usage is unknown, never a fabricated zero cost.
+    with conn() as db:
+        db.execute("UPDATE job_usage SET status=?,usage_json=?,updated_at=CURRENT_TIMESTAMP WHERE job_id=? AND stage=?",
+                   ("recorded" if payload is not None else "unavailable", payload, jid, label))
+    return result
+
+
 def add_asset(db: sqlite3.Connection, path: Path, mime: str) -> str:
     resolved = path.resolve()
     if not resolved.is_file() or not resolved.is_relative_to(ROOT):
@@ -142,6 +179,7 @@ def execute(jid: str):
     except Exception as exc:
         error = json.dumps(pack_error(exc), ensure_ascii=False)
         with conn() as db:
+            db.execute("UPDATE job_usage SET status='unavailable',updated_at=CURRENT_TIMESTAMP WHERE job_id=? AND status='started'", (jid,))
             db.execute("UPDATE jobs SET status='failed',stage='failed',error=?,updated_at=CURRENT_TIMESTAMP WHERE id=?", (error, jid))
             if job["type"] == "prepare":
                 db.execute("UPDATE lectures SET status='failed',error=? WHERE id=?", (error, job["target_id"]))
@@ -166,9 +204,7 @@ def do_prepare(job: dict, pipe: Pipeline):
     pages = result["pages"]
     if not pages:
         raise PipelineError("INVALID_PDF", "PDF 페이지 추출 결과가 비어 있습니다.")
-    with conn() as db:
-        stage(db, jid, "describing")
-    described = pipe.describe_pages(pages)
+    described = call_with_usage(jid, "describing", pipe.describe_pages, pages)
     lookup = {int(p["number"]): p.get("description", "") for p in described.get("pages", [])}
     with conn() as db:
         for p in pages:
@@ -183,12 +219,11 @@ def do_outline(job: dict, pipe: Pipeline):
     with conn() as db:
         outline = row(db, "outlines", oid)
         db.execute("UPDATE outlines SET status='planning' WHERE id=?", (oid,))
-        stage(db, jid, "planning")
         lecture = row(db, "lectures", outline["lecture_id"])
         if lecture["status"] != "ready":
             raise PipelineError("LECTURE_NOT_READY", "강의 분석이 완료되지 않았습니다.")
         pages = [dict(p) for p in db.execute("SELECT * FROM pages WHERE lecture_id=? ORDER BY number", (lecture["id"],))]
-    result = pipe.plan_outline(outline["mode"], [{"number": p["number"], "text": p["text"], "imagePath": p["image_path"], "description": p["description"]} for p in pages], [{"number": p["number"], "description": p["description"]} for p in pages])
+    result = call_with_usage(jid, "planning", pipe.plan_outline, outline["mode"], [{"number": p["number"], "text": p["text"], "imagePath": p["image_path"], "description": p["description"]} for p in pages], [{"number": p["number"], "description": p["description"]} for p in pages])
     plans = result.get("clipPlans", [])
     if not isinstance(plans, list) or not plans:
         raise PipelineError("NO_CLIPS", "생성할 클립 계획이 없습니다.")
@@ -211,20 +246,17 @@ def do_clip(job: dict, pipe: Pipeline):
     cid, jid = job["target_id"], job["id"]
     with conn() as db:
         db.execute("UPDATE clips SET status='running',error=NULL WHERE id=?", (cid,))
-        stage(db, jid, "blueprint")
         clip = row(db, "clips", cid)
         outline = row(db, "outlines", clip["outline_id"])
         lecture = row(db, "lectures", outline["lecture_id"])
         pages = [dict(p) for p in db.execute("SELECT * FROM pages WHERE lecture_id=? ORDER BY number", (lecture["id"],))]
     plan = json.loads(clip["plan_json"])
     relevant_pages = [{"number": p["number"], "text": p["text"], "imagePath": p["image_path"], "description": p["description"]} for p in pages if p["number"] in plan.get("sourcePages", [])]
-    generated = pipe.make_blueprint(plan, relevant_pages, lecture["page_count"])
+    generated = call_with_usage(jid, "blueprint", pipe.make_blueprint, plan, relevant_pages, lecture["page_count"])
     blueprint = generated.get("blueprint", generated)
     check_blueprint(blueprint, lecture["page_count"])
-    with conn() as db:
-        stage(db, jid, "audio")
     out = ROOT / "clips" / cid / jid
-    audio = pipe.make_audio(blueprint, out)
+    audio = call_with_usage(jid, "audio", pipe.make_audio, blueprint, out)
     validate_result(blueprint, audio, lecture["page_count"])
     # Dev-only MP4 before publishing completion; optional and never a substitute for AI output.
     preview = None
