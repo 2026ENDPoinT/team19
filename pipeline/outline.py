@@ -176,9 +176,15 @@ def validate_outline(data: dict, mode: str, page_numbers: set[int], cap: int | N
     return errs
 
 
+def _titled(p: dict) -> str:
+    """예시 클립은 제목이 "예시: "로 시작한다(팀장 11/14). 모델이 빠뜨리면 붙인다."""
+    title = p["title"].strip()
+    return f"예시: {title}" if p["kind"] == "example" and not title.startswith("예시") else title
+
+
 def normalize(data: dict, mode: str) -> dict:
     """검사를 통과한 결과에서 계약에 있는 칸만 남기고 order와 mode를 붙인다. mode는 설계도 단계가 말투를 고르는 데 쓴다."""
-    plans = [{"id": p["id"], "order": i, "mode": mode, "title": p["title"].strip(), "kind": p["kind"],
+    plans = [{"id": p["id"], "order": i, "mode": mode, "title": _titled(p), "kind": p["kind"],
               "sourcePages": list(p["sourcePages"]), "prerequisites": list(p.get("prerequisites", [])),
               "brief": p["brief"].strip()} for i, p in enumerate(data["clipPlans"])]
     sections = [{"title": s["title"], "planIds": list(s["planIds"])} for s in data.get("sections", [])]

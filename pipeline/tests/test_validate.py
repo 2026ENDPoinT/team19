@@ -336,3 +336,14 @@ def test_place_action_and_top_slot():
     bad2 = copy.deepcopy(bp)
     bad2["scenes"][0]["actions"][0]["args"] = ["full"]
     assert any("place" in e for e in validate_blueprint(bad2, 1))
+
+
+def test_place_top_only_one_line():
+    from pipeline.validate import validate_blueprint
+    def bp(grid_rows):
+        return {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가", "나"], "speech": ["", ""],
+                "texts": [{"id": "t1", "slot": "top", "style": "title", "content": "제목", "hidden": False}], "slides": [], "diagrams": [],
+                "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["1", "2"]] * grid_rows, "indexLabels": False, "pointers": []}], "codes": [],
+                "actions": [{"line": 1, "do": "place", "target": "g1", "args": ["top"]}], "sourcePages": [1]}]}
+    assert validate_blueprint(bp(1), 1) == []
+    assert any("한 줄짜리" in e for e in validate_blueprint(bp(2), 1))
