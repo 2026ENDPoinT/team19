@@ -5,6 +5,23 @@ type Point = { x: number; y: number }
 type Edge = LayoutEdge & { id: string; label?: unknown }
 type Route = { points: Point[]; label: Point; anchor: 'start' | 'end' | 'middle'; lines: string[] }
 
+export function wrapArrowLabel(text: string): string[] {
+  if (!text.trim()) return []
+  return text.split('\n').flatMap(paragraph => {
+    const lines: string[] = []
+    let line = ''
+    for (const word of paragraph.trim().split(/\s+/)) {
+      const next = line ? `${line} ${word}` : word
+      if (Array.from(next).length <= 8) { line = next; continue }
+      if (line) lines.push(line)
+      const chars = Array.from(word)
+      while (chars.length > 8) lines.push(chars.splice(0, 8).join(''))
+      line = chars.join('')
+    }
+    if (line) lines.push(line)
+    return lines
+  })
+}
 export function layoutDiagramEdges(nodes: LayoutNode[], edges: Edge[], layout: string) {
   const geometry = layoutDiagram(nodes, edges, layout)
   const routes = new Map<string, Route>()
@@ -36,8 +53,7 @@ export function layoutDiagramEdges(nodes: LayoutNode[], edges: Edge[], layout: s
       const midpoint={x:(points[0].x+points[1].x)/2,y:(points[0].y+points[1].y)/2}
       const outward = Math.sign(offset) || Math.sign((midpoint.x-center.x)*nx+(midpoint.y-center.y)*ny) || 1
       const label={x:midpoint.x+nx*outward*14,y:midpoint.y+ny*outward*14}
-      const chars=Array.from(String(edge.label??''))
-      const lines=Array.from({length:Math.ceil(chars.length/8)},(_,i)=>chars.slice(i*8,i*8+8).join(''))
+      const lines = wrapArrowLabel(String(edge.label ?? ''))
       routes.set(edge.id,{points,label,anchor:'middle',lines})
     }
   } else {
@@ -70,8 +86,7 @@ export function layoutDiagramEdges(nodes: LayoutNode[], edges: Edge[], layout: s
       points = [{x:from.x + offset,y:from.y + side * (aHalf + 1)}, {x:to.x + offset,y:to.y - side * (bHalf + 6)}]
       label = {x:from.x + offset + side * 8,y:(points[0].y + points[1].y) / 2}
     }
-    const chars = Array.from(String(edge.label ?? ''))
-    const lines = Array.from({length:Math.ceil(chars.length / 8)}, (_,i)=>chars.slice(i*8,i*8+8).join(''))
+    const lines = wrapArrowLabel(String(edge.label ?? ''))
     routes.set(edge.id,{points,label,anchor:side > 0 ? 'start' : 'end',lines})
   }
   }
