@@ -86,6 +86,11 @@ ACTIONS = {
 EPS = 1e-9
 
 
+def _wide(info: dict) -> bool:
+    """가로폭을 거의 다 쓰는 부품. 옆에 글을 붙이면 화면 밖으로 밀리거나 칸을 덮는다."""
+    return info["kind"] in ("grid", "diagram", "code", "slide")
+
+
 def _one_line(kind: str, info: dict) -> bool:
     """위 자리로 올려 작게 그려도 읽을 수 있는 부품인지(팀장 확인 11/14: 큰 부품은 너무 작아진다)."""
     c = info["ref"]
@@ -624,6 +629,17 @@ class _Checker:
 
     def check_screen(self, where: str) -> None:
         by_slot = defaultdict(list)
+        sides = defaultdict(list)
+        for ident, info in self.items.items():
+            near = info.get("near")
+            if near and info["visible"]:
+                sides[(near["target"], near.get("cell"), near["side"])].append(ident)
+                owner = self.items.get(near["target"])
+                if near["side"] in ("left", "right") and owner and not near.get("cell") and _wide(owner):
+                    self.err(where, f"{ident}: 넓은 부품(격자·다이어그램·코드)의 왼쪽·오른쪽에는 붙이지 않는다. above/below를 쓸 것")
+        for (target, cell, side), ids in sides.items():
+            if len(ids) > 1:
+                self.err(where, f"{target}{'의 ' + cell + '칸' if cell else ''} {side}에 붙은 글 {len(ids)}개가 동시에 보임: {', '.join(ids)} (한 방향에 하나)")
         for ident, info in self.items.items():
             if info.get("near") and info["visible"]:
                 owner = self.items.get(info["near"]["target"])
