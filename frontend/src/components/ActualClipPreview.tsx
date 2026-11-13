@@ -3,6 +3,7 @@ import { samplePageUrl } from '../services/samplePages'
 import PlayerStage from '../player/PlayerStage'
 import { startAutoplay } from '../player/autoplay'
 import { currentSourcePage } from '../player/currentSourcePage'
+import { sourcePageNavigation } from '../player/sourcePageNavigation'
 import { captureClipTransition } from '../player/clipTransition'
 import { handlePlayerShortcut } from '../player/keyboardShortcuts'
 import PlayerControls from '../player/PlayerControls'
@@ -26,6 +27,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   const { audioRef, time, restart } = useAudioClock(result ? clipId + ':' + result.resultId : 'loading')
   const [retry, setRetry] = useState(0)
   const [sourceOpen, setSourceOpen] = useState(false)
+  const [manualSource, setManualSource] = useState<{ context: string; page: number } | null>(null)
   const [sourceRatios, setSourceRatios] = useState<Record<string, number>>({})
   const [isPlaying, setIsPlaying] = useState(false)
   const [playbackError, setPlaybackError] = useState('')
@@ -168,7 +170,10 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   }
 
   const source = currentSourcePage(stage)
-  const sourceRatio = source ? sourceRatios[pageUrl(source.page) ?? ''] ?? 1.414 : 1.414
+  const sourceContext = `${clipId}:${stage?.sceneId}:${source?.page}`
+  const manualPage = manualSource?.context === sourceContext ? manualSource.page : undefined
+  const sourceNavigation = sourcePageNavigation(stage?.sourcePages ?? [], source?.page, manualPage)
+  const sourceRatio = sourceNavigation.page ? sourceRatios[pageUrl(sourceNavigation.page) ?? ''] ?? 1.414 : 1.414
   return (
     <main className={`clip-preview-page mx-auto w-full px-5 py-3 ${sourceOpen ? 'max-w-[1600px]' : 'max-w-4xl'}`} style={{ '--source-page-ratio': sourceRatio } as CSSProperties}>
       <button type="button" className="rounded-lg border px-4 py-2" onClick={onBack}>← {initialClipId ? '클립 목록' : '업로드 화면'}</button>
@@ -213,11 +218,18 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
           </div>
           {sourceOpen && (
             <aside id="source-page-panel" className="source-page-panel" aria-label="현재 표시 중인 원본 페이지">
-              <h3 className="font-semibold">{source?.representative ? '장면 대표 원본' : '현재 표시 중인 원본'}</h3>
-              {source?.representative && <p className="mt-2 text-sm text-slate-500">설명 중인 쪽이 지정되지 않아 이 장면의 첫 참고 페이지를 표시해요.</p>}
+              <h3 className="font-semibold">{manualPage !== undefined ? '선택한 원본' : source?.representative ? '장면 대표 원본' : '현재 표시 중인 원본'}</h3>
+              {source?.representative && manualPage === undefined && <p className="mt-2 text-sm text-slate-500">설명 중인 쪽이 지정되지 않아 이 장면의 첫 참고 페이지를 표시해요.</p>}
               {stageError ? <p className="mt-3 text-sm">장면을 확인할 수 없어 원본을 표시하지 못했어요.</p>
                 : !source ? <p className="mt-3 text-sm">이 장면에는 연결된 원본 페이지가 없어요.</p>
-                : <SourcePage key={`${clipId}-${source.page}`} page={source.page} imageUrl={pageUrl(source.page)} onAspect={(url, ratio) => setSourceRatios(previous => previous[url] === ratio ? previous : { ...previous, [url]: ratio })} />}
+                 : <>
+                  <div className={`source-page-carousel${sourceNavigation.count > 1 ? ' source-page-carousel--multiple' : ''}`}>
+                    {sourceNavigation.count > 1 && <button type="button" aria-label="이전 원본 페이지" disabled={sourceNavigation.previous === undefined} onClick={() => { if (sourceNavigation.previous !== undefined) setManualSource({context:sourceContext,page:sourceNavigation.previous}) }}>‹</button>}
+                    <SourcePage key={`${clipId}-${sourceNavigation.page}`} page={sourceNavigation.page} imageUrl={pageUrl(sourceNavigation.page)} onAspect={(url, ratio) => setSourceRatios(previous => previous[url] === ratio ? previous : { ...previous, [url]: ratio })} />
+                    {sourceNavigation.count > 1 && <button type="button" aria-label="다음 원본 페이지" disabled={sourceNavigation.next === undefined} onClick={() => { if (sourceNavigation.next !== undefined) setManualSource({context:sourceContext,page:sourceNavigation.next}) }}>›</button>}
+                  </div>
+                  {sourceNavigation.count > 1 && <p className="source-page-counter" aria-live="polite">{sourceNavigation.index + 1} / {sourceNavigation.count}</p>}
+                </>}
             </aside>
           )}
           </div>

@@ -12,3 +12,11 @@
   .clip-preview-page .actual-clip-layout--with-source:has(> .clip-feed-nav) { grid-template-columns: 60px minmax(0, 420px) minmax(0, clamp(320px, calc((100dvh - 150px) * var(--source-page-ratio)), 960px)); }
   .clip-preview-page .source-page-panel { grid-column: -2 / -1; grid-row: 1; position: sticky; top: 12px; }
 }
+
+.source-page-carousel { min-width: 0; }
+.source-page-carousel--multiple { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; align-items: center; gap: 8px; }
+.source-page-carousel > button { display: grid; place-items: center; width: 32px; height: 44px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #0f172a; font-size: 28px; cursor: pointer; }
+.source-page-carousel > button:hover:not(:disabled) { background: #f1f5f9; }
+.source-page-carousel > button:disabled { opacity: .3; cursor: default; }
+.source-page-carousel > button:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+.source-page-counter { margin-top: 8px; text-align: center; font-size: 13px; color: #64748b; }
