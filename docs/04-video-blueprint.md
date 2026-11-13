@@ -3,7 +3,7 @@
 > 상태: 확정 v0 (D-26, D-27, 확장 D-43~D-68) · 담당: AI (형식), FE (재생) · 최종 수정: 2026-11-14 · AI/Claude
 
 AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**를 쓰고, 브라우저가 그 설계도대로 화면을 그린다(D-05). 이 문서가 AI와 FE 사이의 기준이다. 만들어 보며 고치고, 바꿀 때는 제안서로 한다.
-결정 과정과 근거는 [P-AI-02](../coordination/proposals/P-AI-02-blueprint-v0.md), 샘플은 [sandbox/ai/blueprint_v0/](../sandbox/ai/blueprint_v0/)에 있다.
+결정 과정과 근거는 [P-AI-02](../coordination/proposals/P-AI-02-blueprint-v0.md), 샘플은 [sandbox/ai/blueprint_v0/](https://github.com/2026ENDPoinT/team19/blob/archive/experiments/sandbox/ai/blueprint_v0)에 있다.
 
 ## 설계 원칙
 
@@ -117,7 +117,7 @@ AI가 영상을 직접 만들지 않는다. AI는 **설계도(장면 목록)**�
 - **기능 스위치:** 검사기 맨 위에 FE가 구현한 것만 켠다. 지금 켜진 것: 배치 row·column·tree·layers·cycle, 수식 항 `\term`, `near`·`attach`, `divide`, `**` 강조, `stamp`, `place`. AI 프롬프트도 켜진 것만 쓰게 한다.
 - 화면 글이 문장형이면 한 번 다시 만들게 한다(문체 검사). 기호가 든 문장은 읽기 원고(`speech`)와 자막의 유사도 검사를 건너뛴다.
 - 형식 검사는 내용이 맞는지까지 보장하지 않는다. 내용 품질은 AI가 평가 체크리스트로 따로 본다.
-- `sandbox/ai/blueprint_v0/validate.js`는 이전 초안이며 기준이 아니다.
+- 예전 `validate.js`(`archive/experiments` 브랜치)는 이전 초안이며 기준이 아니다. 초기 샘플 설계도 3개는 검사기 테스트용으로 `pipeline/tests/fixtures/`에 있다.
 
 ## 표현이 어려울 때
 
