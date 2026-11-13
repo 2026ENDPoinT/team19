@@ -229,7 +229,7 @@ export default function App() {
       <header className="border-b border-slate-100">
         <div className="mx-auto flex h-17 w-full max-w-7xl items-center px-5 sm:px-8 lg:px-10">
           <button
-            aria-label="강의 숏폼 홈"
+            aria-label="에이도스 홈"
             className="flex items-center gap-2.5"
             onClick={() => setScreen("upload")}
             type="button"
@@ -238,7 +238,7 @@ export default function App() {
               <span className="h-2.5 w-2.5 rounded-full border-2 border-white" />
             </span>
             <span className="text-[19px] font-bold tracking-[-0.04em]">
-              강의 숏폼
+              에이도스
             </span>
           </button>
         </div>
@@ -401,7 +401,7 @@ export default function App() {
                 지금 나에게 맞는 학습 모드는?
               </h1>
               <p className="mt-4 text-[15px] leading-7 text-slate-500 sm:text-base">
-                선택한 모드를 샘플 서버에 전달해 클립 준비 상태를 확인해요. 실제 AI 설명 생성은 아직 연결 전이에요.
+                {preparation.lecture?.aiMode === 'real' ? '선택한 모드로 실제 AI 클립 생성을 요청할 수 있어요. 요청 전에 비용 안내를 확인해요.' : '선택한 모드를 샘플 서버에 전달해 클립 준비 상태를 확인해요. 샘플 결과는 실제 AI 생성이 아니에요.'}
               </p>
             </div>
 

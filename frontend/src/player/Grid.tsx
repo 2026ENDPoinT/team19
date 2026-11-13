@@ -11,7 +11,7 @@ export default function Grid({ element }: { element: Entity }) {
     {cells.flatMap((row, r) => row.map((_, c) => {
       const key = `${r},${c}`, point = layout.positions.get(key)!
       const selected = element.explaining || element.explainedCells?.includes(key)
-      return <g key={key}>
+      return <g key={key} className="player-shape-enter">
         <rect x={point.x - layout.cellWidth / 2} y={point.y - layout.cellHeight / 2} width={layout.cellWidth} height={layout.cellHeight} rx="5" fill={selected ? palette.mint : '#111d32'} fillOpacity={selected ? .18 : 1} stroke={selected ? palette.mint : defaultLineColor} strokeWidth={selected ? 2 : 1} />
         {element.indexLabels === true && <text x={point.x} y={point.y - layout.cellHeight / 2 - 4} textAnchor="middle" fill={defaultTextColor} fontSize="10">{cells.length === 1 ? c : `${r},${c}`}</text>}
       </g>
@@ -35,7 +35,7 @@ export default function Grid({ element }: { element: Entity }) {
       const y = (from && motion ? to.y + (from.y - to.y) * (1 - motion.progress) : to.y) + layout.cellHeight / 2 + 13 + index * 16
       const color = pointerColor(pointer.label, pointer.id)
       const active = pointer.explaining || element.explaining
-      return <g key={pointer.id}>
+      return <g key={pointer.id} className="player-shape-enter">
         <text x={x - 5} y={y} textAnchor="end" fill={active ? color : defaultLineColor} fontSize="12" fontWeight="700">↑</text>
         <text x={x} y={y} textAnchor="start" fill={active ? color : defaultTextColor} fontSize="12" fontWeight="700">{String(pointer.label ?? '')}</text>
       </g>

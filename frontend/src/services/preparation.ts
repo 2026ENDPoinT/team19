@@ -1,6 +1,7 @@
-export type UploadTicket = { lectureId: string; jobId: string }
+export type ServerMode = 'sample' | 'real'
+export type UploadTicket = { lectureId: string; jobId: string; aiMode: ServerMode }
 export type PreparationJob = { id: string; status: 'pending' | 'running' | 'completed' | 'failed'; stage: string | null; error: { message: string } | null }
-export type PreparedLecture = { id: string; pageCount: number; pages: Record<number, string> }
+export type PreparedLecture = { id: string; pageCount: number; pages: Record<number, string>; aiMode: ServerMode }
 export class PreparationFailed extends Error {}
 export class ApiRequestError extends Error {
   status: number
@@ -25,18 +26,23 @@ export async function request(path: string, signal: AbortSignal, options: Reques
   return data
 }
 
-export async function ensureSampleMode(signal: AbortSignal) {
+export class RealGenerationConfirmationRequired extends Error {}
+export async function authorizeGeneration(signal: AbortSignal, allowReal = false, expectedMode?: ServerMode): Promise<ServerMode> {
   const health = await request('/health', signal)
-  if (!record(health) || health.aiMode !== 'sample') throw new Error('이번 연결 확인은 샘플 모드 서버에서 진행해 주세요. 생성 요청은 보내지 않았어요.')
+  if (!record(health) || (health.aiMode !== 'sample' && health.aiMode !== 'real')) throw new Error('서버 실행 모드를 확인할 수 없어요. 생성 요청은 보내지 않았어요.')
+  const mode = health.aiMode as ServerMode
+  if (expectedMode && mode !== expectedMode) throw new Error('서버 실행 모드가 바뀌었어요. 자료를 올렸던 모드의 서버에서 다시 확인해 주세요.')
+  if (mode === 'real' && !allowReal) throw new RealGenerationConfirmationRequired('실제 AI 생성은 API 비용이 발생할 수 있어요. 안내를 확인한 뒤 요청해 주세요.')
+  return mode
 }
 
-export async function uploadPdf(file: File, signal: AbortSignal): Promise<UploadTicket> {
-  await ensureSampleMode(signal)
+export async function uploadPdf(file: File, signal: AbortSignal, allowReal = false): Promise<UploadTicket> {
+  const aiMode = await authorizeGeneration(signal, allowReal)
   const form = new FormData()
   form.append('file', file)
   const data = await request('/lectures', signal, { method: 'POST', body: form })
   if (!record(data) || typeof data.lectureId !== 'string' || !data.lectureId || typeof data.jobId !== 'string' || !data.jobId) throw new Error('업로드 응답을 확인하지 못했어요. 서버에 접수됐을 수 있으므로 자동으로 재전송하지 않아요.')
-  return { lectureId: data.lectureId, jobId: data.jobId }
+  return { lectureId: data.lectureId, jobId: data.jobId, aiMode }
 }
 
 export function preparationDelay(ms: number, signal: AbortSignal): Promise<void> {
@@ -72,7 +78,7 @@ export async function watchPreparation(ticket: UploadTicket, onJob: (job: Prepar
           pages[Number(page.number)] = url.href
         }
       }
-      return { id: ticket.lectureId, pageCount: Number(lecture.pageCount), pages }
+      return { id: ticket.lectureId, pageCount: Number(lecture.pageCount), pages, aiMode: ticket.aiMode }
     }
     await wait(3000, signal)
   }

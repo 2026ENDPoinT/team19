@@ -1,4 +1,5 @@
-import { ApiRequestError, ensureSampleMode, preparationDelay, request } from './preparation.ts'
+import { ApiRequestError, authorizeGeneration, preparationDelay, request } from './preparation.ts'
+import type { ServerMode } from './preparation.ts'
 import type { LearningMode } from '../data/learningModes.ts'
 export type { LearningMode } from '../data/learningModes.ts'
 export type OutlineClip = { id: string; order: number; title: string; sourcePages: number[]; status: 'pending' | 'running' | 'completed' | 'failed'; message: string; jobId: string | null; stage: string }
@@ -22,12 +23,12 @@ export async function loadOutline(lectureId: string, mode: LearningMode, signal:
   if (new Set(clips.map((clip) => clip.id)).size !== clips.length) throw new Error('클립 ID가 중복됐어요.')
   return { id: data.id, mode, status: data.status as Outline['status'], jobId: typeof data.jobId === 'string' ? data.jobId : null, clips: clips.sort((a,b) => a.order - b.order) }
 }
-export async function createOutline(lectureId: string, mode: LearningMode, signal: AbortSignal) {
+export async function createOutline(lectureId: string, mode: LearningMode, signal: AbortSignal, options: { allowReal?: boolean; expectedMode?: ServerMode } = {}) {
   path(lectureId, mode)
-  await ensureSampleMode(signal)
+  const aiMode = await authorizeGeneration(signal, options.allowReal, options.expectedMode)
   const data = await request(`/lectures/${encodeURIComponent(lectureId)}/outlines`, signal, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode }) })
   if (!record(data) || typeof data.outlineId !== 'string' || typeof data.jobId !== 'string') throw new Error('요청 응답을 확인하지 못했어요. 기존 계획부터 다시 조회해 주세요.')
-  return { outlineId: data.outlineId, jobId: data.jobId, reused: data.reused === true }
+  return { outlineId: data.outlineId, jobId: data.jobId, reused: data.reused === true, aiMode }
 }
 export async function watchOutline(lectureId: string, mode: LearningMode, onUpdate: (snapshot: OutlineSnapshot) => void, signal: AbortSignal, wait = preparationDelay): Promise<Outline | null> {
   while (true) {
