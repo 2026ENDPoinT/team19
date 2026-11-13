@@ -11,7 +11,7 @@ export default function Grid({ element }: { element: Entity }) {
       const key = `${r},${c}`, point = layout.positions.get(key)!
       const selected = element.highlightedCells?.includes(key)
       return <g key={key}>
-        <rect x={point.x - layout.cellWidth / 2} y={point.y - layout.cellHeight / 2} width={layout.cellWidth} height={layout.cellHeight} rx="5" fill={selected ? '#1e40af' : '#111d32'} stroke={selected ? '#93c5fd' : '#64748b'} strokeWidth={selected ? 2 : 1} />
+        <rect x={point.x - layout.cellWidth / 2} y={point.y - layout.cellHeight / 2} width={layout.cellWidth} height={layout.cellHeight} rx="5" fill={selected ? '#1e40af' : '#111d32'} stroke={'var(--player-green)'} strokeWidth={selected ? 2 : 1} />
         {element.indexLabels === true && <text x={point.x} y={point.y - layout.cellHeight / 2 - 4} textAnchor="middle" fill="#94a3b8" fontSize="10">{cells.length === 1 ? c : `${r},${c}`}</text>}
       </g>
     }))}
@@ -32,7 +32,7 @@ export default function Grid({ element }: { element: Entity }) {
       const from = motion && layout.positions.get(`${motion.row},${motion.col}`)
       const x = from && motion ? to.x + (from.x - to.x) * (1 - motion.progress) : to.x
       const y = (from && motion ? to.y + (from.y - to.y) * (1 - motion.progress) : to.y) + layout.cellHeight / 2 + 13 + index * 16
-      return <text key={pointer.id} x={x} y={y} textAnchor="middle" fill={pointer.highlighted ? '#fff' : ['#fbbf24', '#38bdf8', '#c4b5fd'][index % 3]} fontSize="12" fontWeight="700">↑ {String(pointer.label ?? '')}</text>
+      return <text key={pointer.id} x={x} y={y} textAnchor="middle" fill={pointer.highlighted ? 'var(--player-yellow)' : ['var(--player-yellow)', 'var(--player-blue)', 'var(--player-pink)', 'var(--player-green)'][index % 4]} fontSize="12" fontWeight="700">↑ {String(pointer.label ?? '')}</text>
     })}
   </svg>
 }

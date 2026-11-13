@@ -1,4 +1,4 @@
-// 화면용 임시 값. 실제 API 모드 값은 계약 확정 후 연결한다.
+// API 모드 값과 현재 화면 문구. 이름 변경은 팀 합의 후 반영한다.
 export const learningModes = [
   { id: 'intro', name: '처음 보기', description: '큰 흐름과 직관을 중심으로 이해해요.' },
   { id: 'review', name: '복습', description: '개념과 예시를 하나씩 다시 살펴봐요.' },

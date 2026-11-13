@@ -21,7 +21,7 @@ export default function Slide({ element, imageUrl }: Props) {
           {(element.marks ?? []).map((mark, index) => {
             const rect = slideViewport(mark.box, size.width, size.height)
             return <g key={index}>
-              <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill="#fbbf2422" stroke="#f59e0b" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+              <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill="var(--player-yellow)" fillOpacity="0.12" stroke="var(--player-yellow)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
               {mark.label && <text x={rect.x + 4} y={rect.y + 18} fill="#111827" fontSize="16" fontWeight="700" paintOrder="stroke" stroke="#fef3c7" strokeWidth="5">{mark.label}</text>}
             </g>
           })}

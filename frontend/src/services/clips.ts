@@ -41,7 +41,11 @@ export async function loadClip(clipId: string, signal: AbortSignal): Promise<Cli
   if (!isRecord(payload) || payload.status !== 'completed' || !isRecord(payload.result)) {
     throw clipResponseError(payload, '아직 재생 가능한 클립 결과가 없어요.')
   }
-  const result = payload.result
+  return parseClipResult(payload.result, base)
+}
+
+export function parseClipResult(result: unknown, base: string): ClipResult {
+  if (!isRecord(result)) throw new Error('클립 결과 형식을 확인해 주세요.')
   if (typeof result.resultId !== 'string' || typeof result.durationSec !== 'number' || !Number.isFinite(result.durationSec) || result.durationSec <= 0 || typeof result.audioUrl !== 'string' || !isRecord(result.blueprint) || typeof result.blueprint.title !== 'string' || result.blueprint.version !== 0 || result.blueprint.theme !== 'dark' || !Array.isArray(result.blueprint.scenes) || !Array.isArray(result.captions)) {
     throw new Error('클립 결과 형식을 확인해 주세요.')
   }
@@ -56,4 +60,13 @@ export async function loadClip(clipId: string, signal: AbortSignal): Promise<Cli
   if (!['http:', 'https:'].includes(audioUrl.protocol)) throw new Error('올바른 음성 주소가 아니에요.')
   // 설계도 세부 의미 검증은 서버의 공식 Python 검사기가 담당한다.
   return { ...result, audioUrl: audioUrl.href } as ClipResult
+}
+
+export async function loadStoredClip(resultUrl: string, audioUrl: string, signal: AbortSignal): Promise<ClipResult> {
+  const response = await fetch(resultUrl, { signal })
+  if (!response.ok) throw new Error(`평가 파일을 불러오지 못했어요 (${response.status})`)
+  const payload: unknown = await response.json()
+  signal.throwIfAborted()
+  if (!isRecord(payload) || payload.audioUrl !== 'audio-terra/audio.mp3') throw new Error('평가 결과와 음성 묶음을 확인해 주세요.')
+  return parseClipResult({ ...payload, audioUrl }, resultUrl)
 }

@@ -1,24 +1,16 @@
+import FileSummary from './components/FileSummary'
 import OutlineFlow from './components/OutlineFlow'
 import PreparationPanel from './components/PreparationPanel'
 import { usePreparation } from './components/usePreparation'
 import ActualClipPreview from './components/ActualClipPreview'
 import type { ChangeEvent, DragEvent, ReactNode } from 'react'
 import './figma-design.css'
-import {
+import { learningModes } from './data/learningModes'
+import type { LearningMode } from './data/learningModes'
+import { useRef, useState } from "react"
 
-
-
-  useEffect,
-  useRef,
-  useState,
-} from "react"
-
-const learningModes = [
-  {
-    id: "intro",
-    name: "처음 보기",
-    description: "큰 흐름과 직관을 중심으로 이해해요.",
-    icon: (
+const modeIcons: Record<LearningMode, ReactNode> = {
+  intro: (
       <svg
         aria-hidden="true"
         className="h-6 w-6"
@@ -33,12 +25,7 @@ const learningModes = [
         />
       </svg>
     ),
-  },
-  {
-    id: "review",
-    name: "복습",
-    description: "개념과 예시를 하나씩 다시 살펴봐요.",
-    icon: (
+  review: (
       <svg
         aria-hidden="true"
         className="h-6 w-6"
@@ -61,12 +48,7 @@ const learningModes = [
         />
       </svg>
     ),
-  },
-  {
-    id: "exam",
-    name: "시험 대비",
-    description: "세부 조건과 헷갈리는 부분까지 확인해요.",
-    icon: (
+  exam: (
       <svg
         aria-hidden="true"
         className="h-6 w-6"
@@ -89,81 +71,9 @@ const learningModes = [
         />
       </svg>
     ),
-  },
-]
-
-type ClipStatus = "ready" | "generating" | "waiting" | "failed"
-
-const sampleClips: Array<{
-  id: string
-  order: number
-  title: string
-  type: string
-  pages: string
-  status: ClipStatus
-}> = [
-  {
-    id: "divide-and-conquer",
-    order: 1,
-    title: "분할정복은 어떤 방식일까?",
-    type: "개념",
-    pages: "원본 2~3쪽",
-    status: "ready",
-  },
-  {
-    id: "merge-sort",
-    order: 2,
-    title: "합병 정렬의 핵심 아이디어",
-    type: "개념",
-    pages: "원본 4~5쪽",
-    status: "generating",
-  },
-  {
-    id: "merge-process",
-    order: 3,
-    title: "두 배열이 하나로 합쳐지는 과정",
-    type: "예시",
-    pages: "원본 6~7쪽",
-    status: "waiting",
-  },
-  {
-    id: "quick-sort",
-    order: 4,
-    title: "퀵 정렬의 피벗과 분할",
-    type: "과정",
-    pages: "원본 8~10쪽",
-    status: "failed",
-  },
-]
-
-const statusStyles: Record<ClipStatus, {
-  label: string
-  className: string
-  dotClassName: string
-}> = {
-  ready: {
-    label: "준비 완료",
-    className: "bg-emerald-50 text-emerald-700",
-    dotClassName: "bg-emerald-500",
-  },
-  generating: {
-    label: "생성 중",
-    className: "bg-blue-50 text-blue-700",
-    dotClassName: "animate-pulse bg-blue-500",
-  },
-  waiting: {
-    label: "대기",
-    className: "bg-slate-100 text-slate-600",
-    dotClassName: "bg-slate-400",
-  },
-  failed: {
-    label: "실패",
-    className: "bg-red-50 text-red-700",
-    dotClassName: "bg-red-500",
-  },
 }
 
-type Screen = "outline" | "upload" | "preparing" | "mode" | "analyzing" | "clips" | "feed"
+type Screen = "upload" | "preparing" | "mode" | "outline"
 
 function UploadIcon() {
   return (
@@ -185,32 +95,6 @@ function UploadIcon() {
   )
 }
 
-function DocumentIcon({ className = "h-6 w-6" }: { className?: string }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M14 3.5H7.5A2.5 2.5 0 0 0 5 6v12a2.5 2.5 0 0 0 2.5 2.5h9A2.5 2.5 0 0 0 19 18V8.5L14 3.5Z"
-        stroke="currentColor"
-        strokeLinejoin="round"
-        strokeWidth="1.7"
-      />
-      <path
-        d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.7"
-      />
-    </svg>
-  )
-}
-
 function ArrowIcon({ direction = "right" }: { direction?: "left" | "right" }) {
   return (
     <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 20 20">
@@ -222,37 +106,6 @@ function ArrowIcon({ direction = "right" }: { direction?: "left" | "right" }) {
         strokeWidth="1.7"
       />
     </svg>
-  )
-}
-
-function FileSummary({
-  file,
-  onReplace,
-}: {
-  file: File
-  onReplace: () => void
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-3.5 sm:p-4">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm">
-        <DocumentIcon />
-      </div>
-      <div className="min-w-0 flex-1 text-left">
-        <p className="truncate text-sm font-semibold text-slate-800">
-          {file.name}
-        </p>
-        <p className="mt-1 text-xs text-slate-500">
-          {(file.size / 1024 / 1024).toFixed(1)}MB · PDF
-        </p>
-      </div>
-      <button
-        className="shrink-0 rounded-lg px-2 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        onClick={onReplace}
-        type="button"
-      >
-        파일 교체
-      </button>
-    </div>
   )
 }
 
@@ -325,98 +178,6 @@ function ModeCard({
   )
 }
 
-function ClipCard({
-  clip,
-  onOpen,
-  onRetry,
-  status,
-}: {
-  clip: typeof sampleClips[number]
-  onOpen: () => void
-  onRetry: () => void
-  status: ClipStatus
-}) {
-  const isReady = status === "ready"
-  const statusStyle = statusStyles[status]
-
-  return (
-    <div
-      className={`rounded-2xl border bg-white p-4 transition sm:p-5 ${
-        isReady
-          ? "cursor-pointer border-blue-200 hover:border-blue-400 hover:shadow-[0_10px_28px_rgba(37,99,235,0.10)]"
-          : "border-slate-200"
-      }`}
-      onClick={isReady ? onOpen : undefined}
-      onKeyDown={
-        isReady
-          ? (event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault()
-                onOpen()
-              }
-            }
-          : undefined
-      }
-      role={isReady ? "button" : undefined}
-      tabIndex={isReady ? 0 : undefined}
-    >
-      <div className="flex items-start gap-3.5 sm:gap-4">
-        <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
-            isReady ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"
-          }`}
-        >
-          {String(clip.order).padStart(2, "0")}
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h3 className="text-[16px] font-bold leading-6 tracking-[-0.02em] text-slate-900 sm:text-[17px]">
-                {clip.title}
-              </h3>
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-medium">
-                <span className="rounded-md bg-blue-50 px-2 py-1 text-blue-700">
-                  {clip.type}
-                </span>
-                <span className="text-slate-400">{clip.pages}</span>
-              </div>
-            </div>
-            <span
-              className={`inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${statusStyle.className}`}
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${statusStyle.dotClassName}`}
-              />
-              {statusStyle.label}
-            </span>
-          </div>
-
-          {isReady && (
-            <p className="mt-3 flex items-center gap-1 text-xs font-semibold text-blue-700">
-              눌러서 학습 시작
-              <ArrowIcon />
-            </p>
-          )}
-
-          {status === "failed" && (
-            <button
-              className="mt-3 rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
-              onClick={(event) => {
-                event.stopPropagation()
-                onRetry()
-              }}
-              type="button"
-            >
-              다시 시도
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function App() {
   const [showActualClip, setShowActualClip] = useState(false)
   const [file, setFile] = useState<File | null>(null)
@@ -424,27 +185,11 @@ export default function App() {
   const [isDragging, setIsDragging] = useState(false)
   const [screen, setScreen] = useState<Screen>("upload")
   const preparation = usePreparation(screen === "preparing" && !showActualClip)
-  const [selectedMode, setSelectedMode] = useState("")
-  const [selectedClip, setSelectedClip] = useState(sampleClips[0].id)
-  const [clipStatuses, setClipStatuses] = useState<Record<string, ClipStatus>>(
-    () =>
-      Object.fromEntries(
-        sampleClips.map((clip) => [clip.id, clip.status]),
-      ) as Record<string, ClipStatus>,
-  )
+  const [selectedMode, setSelectedMode] = useState<LearningMode | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const selectedModeData = learningModes.find(
     (mode) => mode.id === selectedMode,
   )
-  const selectedClipData = sampleClips.find((clip) => clip.id === selectedClip)
-
-  useEffect(() => {
-    if (screen !== "analyzing") return
-
-    const timer = window.setTimeout(() => setScreen("clips"), 1800)
-    return () => window.clearTimeout(timer)
-  }, [screen])
-
   const validateAndSetFile = (selectedFile?: File) => {
     if (!selectedFile) return
 
@@ -459,7 +204,7 @@ export default function App() {
 
     preparation.reset()
     setScreen("upload")
-    setSelectedMode("")
+    setSelectedMode(null)
     setFile(selectedFile)
     setError("")
   }
@@ -530,6 +275,7 @@ export default function App() {
 
           <section className="mt-10 w-full max-w-[680px] sm:mt-12">
             <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.07)] sm:p-6">
+              {!file && (
               <div
                 aria-label="PDF 파일 드래그 앤 드롭 영역"
                 className={`flex min-h-[255px] flex-col items-center justify-center rounded-[18px] border border-dashed px-6 py-10 text-center transition-colors ${
@@ -572,6 +318,7 @@ export default function App() {
                 </button>
                 <p className="mt-4 text-xs text-slate-400">PDF 형식</p>
               </div>
+              )}
 
               {error && (
                 <div
@@ -603,11 +350,7 @@ export default function App() {
                 </div>
               )}
 
-              {file && (
-                <div className="mt-4">
-                  <FileSummary file={file} onReplace={openFilePicker} />
-                </div>
-              )}
+              {file && <FileSummary file={file} onReplace={openFilePicker} />}
 
               <button
                 className="mt-5 flex h-13 w-full items-center justify-center rounded-xl bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
@@ -700,7 +443,7 @@ export default function App() {
               {learningModes.map((mode) => (
                 <ModeCard
                   description={mode.description}
-                  icon={mode.icon}
+                  icon={modeIcons[mode.id]}
                   isSelected={selectedMode === mode.id}
                   key={mode.id}
                   name={mode.name}
@@ -728,195 +471,8 @@ export default function App() {
         </main>
       )}
 
-      {screen === "outline" && preparation.lecture && selectedModeData && <OutlineFlow key={`${preparation.lecture.id}:${selectedMode}`} lecture={preparation.lecture} mode={selectedMode as 'intro' | 'review' | 'exam'} modeName={selectedModeData.name} onBack={() => setScreen("mode")} />}
+      {screen === "outline" && preparation.lecture && selectedModeData && <OutlineFlow key={`${preparation.lecture.id}:${selectedMode}`} lecture={preparation.lecture} mode={selectedModeData.id} modeName={selectedModeData.name} fileName={file?.name} onBack={() => setScreen("mode")} />}
 
-      {screen === "analyzing" && file && selectedModeData && (
-        <main className="mx-auto flex min-h-[calc(100vh-68px)] w-full max-w-4xl flex-col items-center justify-center px-5 py-16 sm:px-8">
-          <section
-            aria-labelledby="analyzing-title"
-            className="w-full max-w-[620px] text-center"
-          >
-            <div
-              aria-label="시제품 화면 전환 중"
-              className="relative mx-auto mb-9 h-24 w-24"
-              role="status"
-            >
-              <div className="absolute inset-0 rounded-full border-[3px] border-blue-100" />
-              <div className="absolute inset-0 animate-spin rounded-full border-[3px] border-transparent border-t-blue-600" />
-              <div className="absolute inset-3 flex items-center justify-center rounded-full bg-blue-50 text-blue-600">
-                <DocumentIcon className="h-8 w-8" />
-              </div>
-            </div>
-
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-semibold text-blue-700">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-600" />
-              시제품 미리보기
-            </div>
-            <h1
-              className="text-[30px] font-bold leading-tight tracking-[-0.04em] text-slate-950 sm:text-[38px]"
-              id="analyzing-title"
-            >
-              학습 클립 화면을 미리 보여드려요
-            </h1>
-            <p className="mt-4 text-[15px] leading-7 text-slate-500 sm:text-base">
-              실제 분할·영상 생성 요청은 보내지 않아요. 다음 단계에서 서버의 클립 목록을 연결할 예정이에요.
-            </p>
-
-            <div className="mx-auto mt-9 max-w-md rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-[0_12px_35px_rgba(15,23,42,0.06)] sm:p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                  <DocumentIcon />
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-slate-800">
-                    {file.name}
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">
-                    학습 모드 · {selectedModeData.name}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
-      )}
-
-      {screen === "clips" && file && selectedModeData && (
-        <main className="mx-auto flex w-full max-w-5xl flex-col items-center px-5 pb-16 pt-12 sm:px-8 sm:pt-18">
-          <section
-            aria-labelledby="clips-title"
-            className="w-full max-w-[820px]"
-          >
-            <button
-              className="mb-7 flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-              onClick={() => setScreen("mode")}
-              type="button"
-            >
-              <ArrowIcon direction="left" />
-              학습 모드 다시 선택
-            </button>
-
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <div className="mb-4 inline-flex items-center rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-semibold text-blue-700">
-                  예시 강의 · 분할정복
-                </div>
-                <h1
-                  className="text-[30px] font-bold leading-tight tracking-[-0.04em] text-slate-950 sm:text-[38px]"
-                  id="clips-title"
-                >
-                  학습 클립 목록
-                </h1>
-                <p className="mt-3 text-[15px] leading-7 text-slate-500">
-                  강의 흐름에 맞춰 4개의 짧은 클립으로 구성했어요.
-                </p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-500">
-                <span className="font-semibold text-slate-700">
-                  {selectedModeData.name}
-                </span>
-                <span className="mx-2 text-slate-300">·</span>
-                {file.name}
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-3">
-              {sampleClips.map((clip) => (
-                <ClipCard
-                  clip={clip}
-                  key={clip.id}
-                  onOpen={() => {
-                    setSelectedClip(clip.id)
-                    setScreen("feed")
-                  }}
-                  onRetry={() =>
-                    setClipStatuses((statuses) => ({
-                      ...statuses,
-                      [clip.id]: "generating",
-                    }))
-                  }
-                  status={clipStatuses[clip.id]}
-                />
-              ))}
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,0.06)] sm:p-5">
-              <button
-                className="flex h-13 w-full items-center justify-center rounded-xl bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                onClick={() => {
-                  setSelectedClip(sampleClips[0].id)
-                  setScreen("feed")
-                }}
-                type="button"
-              >
-                학습 시작하기
-                <span className="ml-2">
-                  <ArrowIcon />
-                </span>
-              </button>
-            </div>
-
-            <p className="mt-4 text-center text-xs leading-5 text-slate-400">
-              화면 논의를 위한 샘플 데이터와 임시 생성 순서입니다. 실제 분석이나
-              AI 생성은 진행되지 않습니다.
-            </p>
-          </section>
-        </main>
-      )}
-
-      {screen === "feed" && selectedClipData && (
-        <main className="mx-auto flex min-h-[calc(100vh-68px)] w-full max-w-5xl flex-col items-center px-5 py-10 sm:px-8">
-          <section className="w-full max-w-[820px]">
-            <button
-              className="mb-6 flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-              onClick={() => setScreen("clips")}
-              type="button"
-            >
-              <ArrowIcon direction="left" />
-              클립 목록으로
-            </button>
-
-            <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-              <div>
-                <div className="mb-4 inline-flex items-center rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-semibold text-blue-700">
-                  세로 학습 피드 · 샘플
-                </div>
-                <h1 className="text-[30px] font-bold leading-tight tracking-[-0.04em] text-slate-950 sm:text-[38px]">
-                  {selectedClipData.title}
-                </h1>
-                <p className="mt-4 text-[15px] leading-7 text-slate-500">
-                  준비된 클립에서 세로 학습 피드로 연결되는 시제품 화면입니다.
-                  피드의 상세 구성은 다음 단계에서 이어집니다.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-2 text-xs font-semibold">
-                  <span className="rounded-lg bg-blue-50 px-3 py-2 text-blue-700">
-                    {selectedClipData.type}
-                  </span>
-                  <span className="rounded-lg bg-slate-100 px-3 py-2 text-slate-600">
-                    {selectedClipData.pages}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mx-auto w-full max-w-[280px] overflow-hidden rounded-[28px] border-[6px] border-slate-900 bg-slate-950 shadow-[0_18px_45px_rgba(15,23,42,0.18)]">
-                <div className="relative flex aspect-[9/16] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_35%,rgba(37,99,235,0.45),transparent_52%)] px-6 text-center text-white">
-                  <div>
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
-                      <span className="text-lg font-bold">01</span>
-                    </div>
-                    <p className="mt-5 text-lg font-bold leading-7">
-                      {selectedClipData.title}
-                    </p>
-                    <p className="mt-3 text-xs leading-5 text-slate-300">
-                      세로 학습 클립이 표시되는 영역
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
-      )}
     </div>
   )
 }

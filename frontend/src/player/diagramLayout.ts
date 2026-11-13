@@ -1,6 +1,30 @@
-export type LayoutNode = { id: string }
+export type LayoutNode = { id: string; label?: unknown; shape?: unknown }
 export type LayoutEdge = { from: string; to: string }
 export type DiagramLayout = { positions: Map<string, { x: number; y: number }>; width: number; height: number }
+
+
+export function layoutNode(node: LayoutNode, layout: string) {
+  const circle = node.shape === 'circle'
+  const fontSize = layout === 'column' && !circle ? 16 : 13
+  const maxWidth = circle ? 78 : layout === 'column' ? 174 : 82
+  const lines: string[] = []
+  let line = '', width = 0, widest = 0
+  for (const char of String(node.label ?? '')) {
+    const advance = fontSize * (/\s/.test(char) ? .4 : /^[\x20-\x7e]$/.test(char) ? .7 : 1)
+    if (char === '\n' || width + advance > maxWidth) {
+      lines.push(line); widest = Math.max(widest, width); line = ''; width = 0
+      if (char === '\n') continue
+    }
+    line += char; width += advance
+  }
+  lines.push(line); widest = Math.max(widest, width)
+  const lineHeight = fontSize + 4
+  const textHeight = lines.length * lineHeight
+  const radius = Math.max(22, Math.ceil(Math.hypot(widest / 2 + 8, textHeight / 2 + 6)))
+  return { lines, fontSize, lineHeight, radius,
+    width: circle ? radius * 2 : layout === 'column' ? 190 : 98,
+    height: circle ? radius * 2 : Math.max(layout === 'column' ? 40 : 36, textHeight + 16) }
+}
 
 // hidden 여부와 무관하게 전체 구조로 배치해 show/hide 중 위치를 유지한다.
 export function layoutDiagram(nodes: LayoutNode[], edges: LayoutEdge[], layout: string): DiagramLayout {
@@ -8,13 +32,19 @@ export function layoutDiagram(nodes: LayoutNode[], edges: LayoutEdge[], layout: 
   const ids = new Set(nodes.map((node) => node.id))
   if (ids.size !== nodes.length) throw new Error('다이어그램 노드 ID 중복')
   for (const edge of edges) if (!ids.has(edge.from) || !ids.has(edge.to)) throw new Error('연결선 대상 노드 없음')
+  const sizes = nodes.map((node) => layoutNode(node, layout))
+  const maxWidth = Math.max(98, ...sizes.map((size) => size.width))
+  const maxHeight = Math.max(44, ...sizes.map((size) => size.height))
   if (layout === 'row') {
-    nodes.forEach((node, index) => positions.set(node.id, { x: 65 + index * 145, y: 55 }))
-    return { positions, width: Math.max(300, nodes.length * 145 - 15), height: 110 }
+    const step = Math.max(145, maxWidth + 47), margin = Math.max(65, maxWidth / 2 + 16)
+    nodes.forEach((node, index) => positions.set(node.id, { x: margin + index * step, y: maxHeight / 2 + 33 }))
+    return { positions, width: Math.max(300, (nodes.length - 1) * step + margin * 2), height: maxHeight + 66 }
   }
   if (layout === 'column') {
-    nodes.forEach((node, index) => positions.set(node.id, { x: 130, y: 34 + index * 82 }))
-    return { positions, width: 260, height: Math.max(110, (nodes.length - 1) * 82 + 68) }
+    const step = Math.max(82, maxHeight + 38), margin = maxHeight / 2 + 12
+    const width = Math.max(260, maxWidth + 70)
+    nodes.forEach((node, index) => positions.set(node.id, { x: width / 2, y: margin + index * step }))
+    return { positions, width, height: Math.max(110, (nodes.length - 1) * step + margin * 2) }
   }
   if (layout !== 'tree') throw new Error(`미지원 다이어그램 배치: ${layout}`)
   const children = new Map(nodes.map((node) => [node.id, [] as string[]]))
@@ -26,14 +56,16 @@ export function layoutDiagram(nodes: LayoutNode[], edges: LayoutEdge[], layout: 
   }
   const visiting = new Set<string>()
   const visited = new Set<string>()
+  const xStep = Math.max(125, maxWidth + 30), yStep = Math.max(90, maxHeight + 50)
+  const xMargin = Math.max(65, maxWidth / 2 + 16), yMargin = Math.max(35, maxHeight / 2 + 12)
   let leaf = 0
   let maxDepth = 0
   function place(id: string, depth: number): number {
     if (visiting.has(id) || visited.has(id)) throw new Error('트리에 순환 또는 중복 연결이 있습니다.')
     visiting.add(id)
     const childXs = children.get(id)!.map((child) => place(child, depth + 1))
-    const x = childXs.length ? (childXs[0] + childXs[childXs.length - 1]) / 2 : 65 + leaf++ * 125
-    positions.set(id, { x, y: 35 + depth * 90 })
+    const x = childXs.length ? (childXs[0] + childXs[childXs.length - 1]) / 2 : xMargin + leaf++ * xStep
+    positions.set(id, { x, y: yMargin + depth * yStep })
     maxDepth = Math.max(maxDepth, depth)
     visiting.delete(id)
     visited.add(id)
@@ -41,5 +73,5 @@ export function layoutDiagram(nodes: LayoutNode[], edges: LayoutEdge[], layout: 
   }
   for (const node of nodes) if (!parents.has(node.id)) place(node.id, 0)
   if (visited.size !== nodes.length) throw new Error('트리에 순환 연결이 있습니다.')
-  return { positions, width: Math.max(300, leaf * 125 + 5), height: Math.max(110, maxDepth * 90 + 70) }
+  return { positions, width: Math.max(300, Math.max(0, leaf - 1) * xStep + xMargin * 2), height: Math.max(110, maxDepth * yStep + yMargin * 2) }
 }
