@@ -3,12 +3,44 @@ import type { LayoutNode, LayoutEdge } from './diagramLayout.ts'
 
 type Point = { x: number; y: number }
 type Edge = LayoutEdge & { id: string; label?: unknown }
-type Route = { points: Point[]; label: Point; anchor: 'start' | 'end'; lines: string[] }
+type Route = { points: Point[]; label: Point; anchor: 'start' | 'end' | 'middle'; lines: string[] }
 
 export function layoutDiagramEdges(nodes: LayoutNode[], edges: Edge[], layout: string) {
   const geometry = layoutDiagram(nodes, edges, layout)
   const routes = new Map<string, Route>()
-  if (layout !== 'column') return { ...geometry, routes }
+  if (layout !== 'column') {
+    const center = { x: geometry.width / 2, y: geometry.height / 2 }
+    for (const edge of edges) {
+      const from = geometry.positions.get(edge.from)!, to = geometry.positions.get(edge.to)!
+      const dx = to.x-from.x, dy = to.y-from.y, length = Math.hypot(dx,dy)
+      if (!length) continue
+      const ux = dx/length, uy = dy/length
+      // Canonical normal keeps opposite directions in the same bundle of lanes.
+      const direction = edge.from < edge.to ? 1 : -1
+      const nx = -uy*direction, ny = ux*direction
+      const siblings = edges.filter(other => (other.from===edge.from && other.to===edge.to) || (other.from===edge.to && other.to===edge.from))
+      const sizes = [edge.from,edge.to].map(id => layoutNode(nodes.find(node=>node.id===id)!,layout))
+      const room = Math.min(...sizes.map(size=>Math.min(size.width,size.height)/2))-6
+      const spacing = siblings.length>1 ? Math.min(28,room*2/(siblings.length-1)) : 0
+      const offset = (siblings.indexOf(edge)-(siblings.length-1)/2)*spacing
+      const ox = nx*offset, oy = ny*offset
+      function port(id: string, x: number, y: number) {
+        const node = nodes.find(node=>node.id===id)!, size = layoutNode(node,layout)
+        const distance = node.shape==='circle'
+          ? Math.sqrt(Math.max(0,size.radius**2-offset**2))
+          : Math.min(x ? (size.width/2-Math.sign(x)*ox)/Math.abs(x) : Infinity, y ? (size.height/2-Math.sign(y)*oy)/Math.abs(y) : Infinity)
+        return distance+1
+      }
+      const a=port(edge.from,ux,uy), b=port(edge.to,-ux,-uy)+5
+      const points=[{x:from.x+ox+ux*a,y:from.y+oy+uy*a},{x:to.x+ox-ux*b,y:to.y+oy-uy*b}]
+      const midpoint={x:(points[0].x+points[1].x)/2,y:(points[0].y+points[1].y)/2}
+      const outward = Math.sign(offset) || Math.sign((midpoint.x-center.x)*nx+(midpoint.y-center.y)*ny) || 1
+      const label={x:midpoint.x+nx*outward*14,y:midpoint.y+ny*outward*14}
+      const chars=Array.from(String(edge.label??''))
+      const lines=Array.from({length:Math.ceil(chars.length/8)},(_,i)=>chars.slice(i*8,i*8+8).join(''))
+      routes.set(edge.id,{points,label,anchor:'middle',lines})
+    }
+  } else {
   const index = new Map(nodes.map((node, i) => [node.id, i]))
   const sizes = new Map(nodes.map(node => [node.id, layoutNode(node, layout)]))
   const left = Math.min(...nodes.map(node => geometry.positions.get(node.id)!.x - sizes.get(node.id)!.width / 2))
@@ -42,12 +74,14 @@ export function layoutDiagramEdges(nodes: LayoutNode[], edges: Edge[], layout: s
     const lines = Array.from({length:Math.ceil(chars.length / 8)}, (_,i)=>chars.slice(i*8,i*8+8).join(''))
     routes.set(edge.id,{points,label,anchor:side > 0 ? 'start' : 'end',lines})
   }
+  }
   let minX=0,minY=0,maxX=geometry.width,maxY=geometry.height
   for (const route of routes.values()) {
     for (const point of route.points) { minX=Math.min(minX,point.x-8);maxX=Math.max(maxX,point.x+8);minY=Math.min(minY,point.y-8);maxY=Math.max(maxY,point.y+8) }
+    if (!route.lines.length && layout !== 'column') continue
     const width=Math.max(0,...route.lines.map(line=>Array.from(line).length*11))+8
-    minX=Math.min(minX,route.label.x-(route.anchor==='end'?width:0))
-    maxX=Math.max(maxX,route.label.x+(route.anchor==='start'?width:0))
+    minX=Math.min(minX,route.label.x-(route.anchor==='end'?width:route.anchor==='middle'?width/2:0))
+    maxX=Math.max(maxX,route.label.x+(route.anchor==='start'?width:route.anchor==='middle'?width/2:0))
     minY=Math.min(minY,route.label.y-route.lines.length*7-8)
     maxY=Math.max(maxY,route.label.y+route.lines.length*7+8)
   }

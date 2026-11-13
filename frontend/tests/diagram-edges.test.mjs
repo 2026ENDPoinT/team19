@@ -30,7 +30,7 @@ for(const scene of result.blueprint.scenes)for(const diagram of scene.diagrams.f
 for(const layout of ['row','tree']){
  const nodes=[{id:'a'},{id:'b'}],edges=[{id:'e',from:'a',to:'b'}]
  const actual=layoutDiagramEdges(nodes,edges,layout),expected=layoutDiagram(nodes,edges,layout)
- assert.deepEqual(actual.positions,expected.positions);assert.equal(actual.width,expected.width);assert.equal(actual.height,expected.height);assert.equal(actual.routes.size,0)
+ assert.deepEqual(actual.positions,expected.positions);assert.equal(actual.width,expected.width);assert.ok(actual.height>=expected.height);assert.equal(actual.routes.size,1)
 }
 const nodes=[{id:'a',label:'원',shape:'circle'},{id:'b',label:'둘',shape:'circle'}]
 const edges=[{id:'ab',from:'a',to:'b',label:'긴 연결선 이름도 여러 줄로 보여요'},{id:'ba',from:'b',to:'a',label:'되돌아감'}]

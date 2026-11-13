@@ -5,7 +5,7 @@ export type DiagramLayout = { positions: Map<string, { x: number; y: number }>; 
 
 export function layoutNode(node: LayoutNode, layout: string) {
   const circle = node.shape === 'circle'
-  const fontSize = layout === 'column' && !circle ? 16 : 13
+  const fontSize = !circle ? 16 : 13
   const maxWidth = circle ? 78 : layout === 'column' ? 174 : 82
   const lines: string[] = []
   let line = '', width = 0, widest = 0
