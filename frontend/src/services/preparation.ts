@@ -100,3 +100,12 @@ export async function listLectures(signal: AbortSignal): Promise<LibraryLecture[
     ? [{ id: item.id, title: typeof item.title === 'string' && item.title ? item.title : '제목 없는 강의', status: String(item.status ?? ''), pageCount: Number(item.pageCount) || 0 }]
     : [])
 }
+
+export async function deleteLecture(id: string, signal: AbortSignal): Promise<'deleted'|'cleanup-pending'> {
+  try { await request(`/lectures/${encodeURIComponent(id)}`, signal, {method:'DELETE',headers:ownerHeaders()}); return 'deleted' }
+  catch (cause) {
+    if (cause instanceof ApiRequestError && cause.status === 404 && cause.code === 'LECTURE_NOT_FOUND') return 'deleted'
+    if (cause instanceof ApiRequestError && cause.status === 500 && cause.code === 'STORAGE_CLEANUP_PENDING') return 'cleanup-pending'
+    throw cause
+  }
+}
