@@ -91,7 +91,7 @@ function StageSlots({state,pageUrl}:{state:PlayerState;pageUrl:(page:number)=>st
   if(invalid)return <p role="alert">현재 지원 범위와 맞지 않는 장면 배치입니다.</p>
   return (
       <div key={state.resetSceneId} className={`player-slots${title ? ' player-slots--titled' : ''}`}>
-        {status && <div className="player-status-line" aria-hidden={status.hidden || undefined} style={{ visibility: status.hidden ? 'hidden' : undefined, opacity: dimsElement(status, anyLit) ? DIM_OPACITY : undefined }}><ElementView element={status} pageUrl={pageUrl} caption={state.caption} /></div>}
+        {status && <div className="player-status-line" aria-hidden={status.hidden || undefined} style={{ visibility: status.hidden ? 'hidden' : undefined }}><ElementView element={status} pageUrl={pageUrl} caption={state.caption} /></div>}
         {topAux && <div className="player-slot player-slot--aux" key={`aux-${topAux.id}`} style={{ opacity: dimsElement(topAux, anyLit) ? DIM_OPACITY : undefined, flexBasis: Math.max(72, preferredHeight(topAux) * .78) }}>
           <FitContent key={topAux.id}><ElementView element={topAux} pageUrl={pageUrl} caption={state.caption} /></FitContent>
         </div>}

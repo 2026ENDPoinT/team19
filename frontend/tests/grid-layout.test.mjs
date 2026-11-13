@@ -29,3 +29,15 @@ check(Array.from({length: 5}, () => Array(4).fill('abcdefghij')), true, 0)
 const uneven = check([['1','2','3'],['4']], false, 0)
 assert.equal(uneven.positions.get('1,0').x, uneven.width / 2)
 console.log('PASS grids fit 360px, square numeric cells, pointer/index bounds, 12 cells, 6x6, table, uneven rows, deterministic layout and source immutability')
+
+const {gridTextLines,gridTextWidth}=await import('../src/player/gridLayout.ts')
+const table=check([['조건','확인할 것'],['탐욕적 선택','선택의 안전성'],['최적 부분 구조','부분제로 구성']],false,0)
+assert.equal(table.table,true)
+assert.ok(table.cellWidth>=150)
+assert.ok(16*380/table.width<22,'text tables avoid numeric array font enlargement')
+for(const text of ['탐욕적 선택','최적 부분 구조','아주긴한글설명문장이들어간경우','a long English explanation']){
+ const lines=gridTextLines(text,table.cellWidth-16)
+ assert.ok(lines.every(line=>gridTextWidth(line)<=table.cellWidth-16))
+}
+assert.deepEqual(gridTextLines('최적 부분 구조',100),['최적 부분','구조'])
+console.log('PASS readable Korean table font, word wrapping and bounded cell text')
