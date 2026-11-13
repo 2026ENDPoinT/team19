@@ -53,6 +53,14 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
     return () => controller.abort()
   }, [clipId, retry, initialClipId])
 
+  // 숏폼처럼 옆 버튼으로 비교할 클립 목록의 이전·다음 클립으로 넘긴다(업로드 클립 화면은 제외).
+  const order = ['clip-01', 'clip-01-b', 'parts-test', ...evalClips.map((clip) => clip.id)]
+  const position = order.indexOf(clipId)
+  function moveClip(step: number) {
+    const next = order[position + step]
+    if (next) { setResult(null); setClipId(next) }
+  }
+
   async function togglePlayback() {
     const audio = audioRef.current
     if (!audio) return
@@ -122,6 +130,10 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
           {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={pageUrl} isPlaying={isPlaying} onTogglePlayback={togglePlayback}
             controls={<PlayerControls audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
           {playbackError && <p role="alert" className="mt-2 text-sm text-red-700">{playbackError}</p>}
+          {!initialClipId && <div className="clip-feed-nav">
+            <button type="button" aria-label="이전 클립" disabled={position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
+            <button type="button" aria-label="다음 클립" disabled={position < 0 || position >= order.length - 1} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
+          </div>}
           </div>
           {sourceOpen && (
             <aside id="source-page-panel" className="source-page-panel" aria-label="현재 장면의 원본 페이지">
