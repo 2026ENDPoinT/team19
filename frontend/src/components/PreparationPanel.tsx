@@ -18,7 +18,6 @@ export default function PreparationPanel({ fileName, preparation: data, onBack, 
         <p className={`text-xs font-semibold ${queryError ? 'text-amber-700' : 'text-red-700'}`}>{queryError ? '진행 상태를 확인하지 못했어요' : data.phase === 'upload-error' ? '업로드 확인 오류' : '처리 실패'}</p>
         <h2 className="mt-2 text-xl font-bold tracking-[-0.03em] text-slate-900">{queryError ? '작업 상태를 불러오지 못했어요' : 'PDF 준비 상태를 확인해 주세요'}</h2>
         <p className="mt-2 break-words text-sm leading-6 text-slate-600">{data.message}</p>
-        {data.phase === 'upload-error' && <p className="mt-3 text-sm leading-6 text-slate-600">연결이 끊겼어요. 처리 상태를 먼저 확인해 주세요.</p>}
         {queryError && <button type="button" className="mt-5 rounded-xl border border-amber-300 bg-white px-4 py-2.5 text-sm font-semibold text-amber-800 hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500" onClick={data.resume}>같은 작업 상태 다시 확인</button>}
         {data.phase === 'failed' && <button type="button" className="mt-5 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" onClick={onBack}>파일 선택으로 돌아가기</button>}
       </div>}
