@@ -30,5 +30,5 @@ export async function loadEvalClip(id: string, signal: AbortSignal) {
   const name = id.split('@')[1] ?? 'terra'
   const result = asset(id, `result-${name}.json`), audio = asset(id, `audio-${name}/audio.mp3`)
   if (!result || !audio) throw new Error('등록된 평가 결과와 음성을 찾지 못했어요.')
-  return loadStoredClip(new URL(result, window.location.href).href, new URL(audio, window.location.href).href, signal)
+  return loadStoredClip(new URL(result, window.location.href).href, new URL(audio, window.location.href).href, signal, `audio-${name}/audio.mp3`)
 }
