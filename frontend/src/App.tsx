@@ -1,3 +1,4 @@
+import DotField from './components/DotField'
 import LibraryPanel from "./components/LibraryPanel"
 import FileSummary from './components/FileSummary'
 import SiteHeader from './components/SiteHeader'
@@ -246,6 +247,7 @@ export default function App() {
 
       {screen === "upload" && (
         <main className="brand-page brand-upload mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-16 sm:px-8 sm:pt-24 lg:pt-28">
+          <DotField className="dot-field--hero" />
           <section className="brand-hero w-full text-center" aria-labelledby="page-title">
             <div className="mb-5 inline-flex items-center rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-semibold text-blue-700">
               내 강의자료로 만드는 학습 피드

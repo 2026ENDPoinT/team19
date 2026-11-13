@@ -67,3 +67,5 @@
   92%, 100% { opacity: 0; filter: blur(10px); transform: translateY(-.2em); }
 }
 @media (prefers-reduced-motion: reduce) { .reveal-text > span, .reveal-text--loop > span { animation: none; opacity: 1; } }
+
+.dot-field--art { inset: 0; z-index: -1; }
