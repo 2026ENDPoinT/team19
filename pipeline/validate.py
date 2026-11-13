@@ -23,6 +23,10 @@ from pathlib import Path
 SUPPORTED_LAYOUTS = ("row", "column", "tree")
 SUPPORTED_SLOTS = ("top", "middle", "bottom")
 SUPPORTED_THEMES = ("dark",)
+# 수식 항 표시 \term{id}{LaTeX} (D-46). FE가 변환을 구현하면 True로 바꾼다. 그 전에는 쓰면 오류다.
+SUPPORTED_FORMULA_TERMS = False
+TERM = "\\term"
+TERM_ID = re.compile(r"[a-z0-9_]+")
 
 ALL_LAYOUTS = ("row", "column", "tree", "layers", "cycle")
 ALL_SLOTS = ("top", "middle", "bottom", "full")
@@ -77,14 +81,17 @@ def validate_blueprint(
     supported_layouts=SUPPORTED_LAYOUTS,
     supported_slots=SUPPORTED_SLOTS,
     supported_themes=SUPPORTED_THEMES,
+    formula_terms=None,
 ) -> list[str]:
     """설계도 하나를 검사하고 오류 문장 목록을 돌려준다. 비어 있으면 통과다."""
-    return _Checker(page_count, supported_layouts, supported_slots, supported_themes).run(blueprint)
+    terms = SUPPORTED_FORMULA_TERMS if formula_terms is None else formula_terms
+    return _Checker(page_count, supported_layouts, supported_slots, supported_themes, terms).run(blueprint)
 
 
 class _Checker:
-    def __init__(self, page_count, layouts, slots, themes):
+    def __init__(self, page_count, layouts, slots, themes, formula_terms=False):
         self.page_count = page_count
+        self.formula_terms = formula_terms
         self.layouts = tuple(layouts)
         self.slots = tuple(slots)
         self.themes = tuple(themes)
@@ -214,17 +221,35 @@ class _Checker:
         style = t.get("style")
         if style not in TEXT_STYLES:
             self.err(w, f"style은 {', '.join(TEXT_STYLES)} 중 하나")
-        self.check_text_content(t.get("content"), style, w)
+        info["terms"] = self.check_text_content(t.get("content"), style, w)
 
-    def check_text_content(self, content, style, w):
+    def check_text_content(self, content, style, w) -> set[str]:
+        """오류를 기록하고, 수식 안의 항 id 집합을 돌려준다."""
         if not _nonempty_str(content):
             self.err(w, "content 없음")
-            return
+            return set()
+        terms: set[str] = set()
+        if TERM in content:
+            if style != "formula":
+                self.err(w, f"{TERM}은 formula에만 쓸 수 있음")
+            elif not self.formula_terms:
+                self.err(w, f"{TERM}(수식 항 강조)은 아직 플레이어가 지원하지 않음")
+            else:
+                ids, problem = _parse_terms(content)
+                if problem:
+                    self.err(w, problem)
+                for x in ids:
+                    if not TERM_ID.fullmatch(x):
+                        self.err(w, f"항 id {x!r}는 영문 소문자, 숫자, _만")
+                    elif x in terms:
+                        self.err(w, f"항 id {x} 중복")
+                    terms.add(x)
         if style == "formula":
             if "\n" in content:
                 self.err(w, "formula는 한 줄이어야 함")
         elif style in LIMITS["text"] and len(content) > LIMITS["text"][style]:
             self.err(w, f"{style} 글자 수 {len(content)}자 (상한 {LIMITS['text'][style]}자)")
+        return terms
 
     def check_slide(self, s, info, w, pages):
         page = s.get("page")
@@ -449,6 +474,10 @@ class _Checker:
                     self.err(w, "격자 강조에는 칸 위치가 필요함")
                 for s in args:
                     self.cells_of(info["cells"], s, w)
+            elif kind == "text" and args and info["ref"].get("style") == "formula" and self.formula_terms:
+                for x in args:
+                    if x not in info.get("terms", set()):
+                        self.err(w, f"수식에 항 {x}가 없음 ({TERM}{{{x}}}{{…}}로 감싼 항만, setText 뒤에는 새 내용 기준)")
             elif args:
                 self.err(w, f"{kind} 강조에는 args가 없어야 함")
         elif do == "move":
@@ -478,7 +507,7 @@ class _Checker:
             if len(args) != 1:
                 self.err(w, "setText는 새 내용 1개")
             else:
-                self.check_text_content(args[0], info["ref"].get("style"), w)
+                info["terms"] = self.check_text_content(args[0], info["ref"].get("style"), w)
         elif do in ("focus", "mark", "unmark"):
             self.slide_action(do, info, args, w)
         elif do == "markLine":
@@ -558,6 +587,33 @@ def _similarity(a: str, b: str) -> float:
     if not a or not b:
         return 1.0
     return difflib.SequenceMatcher(None, a, b).ratio()
+
+
+def _parse_terms(content: str) -> tuple[list[str], str | None]:
+    """TERM{id}{LaTeX}의 id 목록과 문제(괄호 짝 등). 감싼 안쪽에 또 TERM이 있어도 센다."""
+    ids, i = [], 0
+    def group(j):
+        if j >= len(content) or content[j] != "{":
+            return None, j
+        depth = 0
+        for k in range(j, len(content)):
+            if content[k] == "{" and content[k - 1:k] != "\\":
+                depth += 1
+            elif content[k] == "}" and content[k - 1:k] != "\\":
+                depth -= 1
+                if depth == 0:
+                    return content[j + 1:k], k + 1
+        return None, j
+    while True:
+        i = content.find(TERM, i)
+        if i < 0:
+            return ids, None
+        tid, j = group(i + 5)
+        body, k = group(j) if tid is not None else (None, j)
+        if tid is None or body is None:
+            return ids, f"{TERM}은 {TERM}{{항id}}{{LaTeX}} 모양이어야 함 (괄호 짝 확인)"
+        ids.append(tid)
+        i = i + 5
 
 
 def _nonempty_str(x) -> bool:
