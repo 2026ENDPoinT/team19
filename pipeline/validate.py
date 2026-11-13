@@ -25,6 +25,10 @@ SUPPORTED_SLOTS = ("top", "middle", "bottom")
 SUPPORTED_THEMES = ("dark",)
 # 수식 항 표시 \term{id}{LaTeX} (D-46). FE가 변환을 구현해 11/13에 켰다.
 SUPPORTED_FORMULA_TERMS = True
+# 글을 다른 부품·노드·칸 옆에 붙이는 near (D-60). FE 구현 뒤 True로 켠다.
+SUPPORTED_NEAR = False
+NEAR_SIDES = ("above", "below", "left", "right")
+NEAR_STYLES = ("body", "keyword", "formula")
 TERM = "\\term"
 TERM_ID = re.compile(r"[a-z0-9_]+")
 # 화면 글(body, keyword)이 자막처럼 문장으로 끝나는지 본다. 개요·필요처럼 '요'로 끝나는 명사는 뺀다.
@@ -100,10 +104,13 @@ def validate_blueprint(
     supported_slots=SUPPORTED_SLOTS,
     supported_themes=SUPPORTED_THEMES,
     formula_terms=None,
+    near=None,
 ) -> list[str]:
     """설계도 하나를 검사하고 오류 문장 목록을 돌려준다. 비어 있으면 통과다."""
     terms = SUPPORTED_FORMULA_TERMS if formula_terms is None else formula_terms
-    return _Checker(page_count, supported_layouts, supported_slots, supported_themes, terms).run(blueprint)
+    checker = _Checker(page_count, supported_layouts, supported_slots, supported_themes, terms)
+    checker.near = SUPPORTED_NEAR if near is None else near
+    return checker.run(blueprint)
 
 
 def screen_text_errors(blueprint: dict) -> list[str]:
@@ -129,6 +136,7 @@ class _Checker:
     def __init__(self, page_count, layouts, slots, themes, formula_terms=False):
         self.page_count = page_count
         self.formula_terms = formula_terms
+        self.near = SUPPORTED_NEAR
         self.layouts = tuple(layouts)
         self.slots = tuple(slots)
         self.themes = tuple(themes)
@@ -248,7 +256,9 @@ class _Checker:
         info = {"kind": kind, "ref": c, "slot": c.get("slot"), "visible": c.get("hidden") is False}
         if not self.add_id(where, cid, info):
             return
-        if c.get("slot") not in self.slots:
+        if kind == "text" and "near" in c:
+            info["near"] = self.check_near(c, w)
+        elif c.get("slot") not in self.slots:
             self.err(w, f"slot은 {', '.join(self.slots)} 중 하나")
         if not isinstance(c.get("hidden"), bool):
             self.err(w, "hidden은 true 또는 false")
@@ -585,9 +595,33 @@ class _Checker:
                 self.err(w, "unmark할 mark가 없음 (mark와 같은 영역을 적을 것)")
             info["marks"].discard(rect)
 
+    def check_near(self, c: dict, w: str) -> dict | None:
+        """near의 모양만 본다. 주인이 화면에 있는지는 check_screen이 문장마다 본다."""
+        near = c.get("near")
+        if not self.near:
+            self.err(w, "near(옆에 붙이기)는 아직 플레이어가 지원하지 않음")
+            return None
+        if not isinstance(near, dict) or not _nonempty_str(near.get("target")) or near.get("side") not in NEAR_SIDES:
+            self.err(w, f"near는 {{\"target\": id, \"side\": {' / '.join(NEAR_SIDES)}}} (칸이면 \"cell\" 추가)")
+            return None
+        if c.get("style") not in NEAR_STYLES:
+            self.err(w, f"near는 {', '.join(NEAR_STYLES)} 글에만 쓴다")
+        if "cell" in near and not isinstance(near["cell"], str):
+            self.err(w, "near.cell은 칸 위치 문자열 (예: \"3\", \"1,2\")")
+        return near
+
     def check_screen(self, where: str) -> None:
         by_slot = defaultdict(list)
         for ident, info in self.items.items():
+            if info.get("near") and info["visible"]:
+                owner = self.items.get(info["near"]["target"])
+                if owner is None or not owner["visible"]:
+                    self.err(where, f"{ident}가 붙은 {info['near']['target']}가 화면에 없음 (주인을 먼저 보이거나 글을 hide)")
+                elif "cell" in info["near"] and (owner["kind"] != "grid" or not self.cell_of(owner["cells"], info["near"]["cell"], where)):
+                    self.err(where, f"{ident}의 near.cell은 격자 칸 위치여야 함")
+                continue
+            if info.get("near") is None and "near" in info:
+                continue  # 모양이 틀린 near는 check_near가 이미 알렸다
             if info["kind"] in COMPONENT_KEYS.values() and info["visible"]:
                 by_slot[info["slot"]].append(ident)
                 if info["kind"] == "slide" and len(info["marks"]) > LIMITS["marks_visible"]:
