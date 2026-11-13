@@ -122,7 +122,7 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
         }
       }}>
       <div className={`player-slots${reserved.some(element => element.slot === 'top' && element.style === 'title') ? ' player-slots--titled' : ''}`}>
-        {topAux && <div className="player-slot player-slot--aux" key={`aux-${topAux.id}`} style={{ opacity: dimsElement(topAux, anyLit) ? DIM_OPACITY : undefined, flexBasis: preferredHeight(topAux) * .6 }}>
+        {topAux && <div className="player-slot player-slot--aux" key={`aux-${topAux.id}`} style={{ opacity: dimsElement(topAux, anyLit) ? DIM_OPACITY : undefined, flexBasis: Math.max(72, preferredHeight(topAux) * .78) }}>
           <FitContent key={topAux.id}><ElementView element={topAux} pageUrl={pageUrl} caption={state.caption} /></FitContent>
         </div>}
         {slots.map((slot) => {
