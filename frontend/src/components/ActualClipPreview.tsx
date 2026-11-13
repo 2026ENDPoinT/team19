@@ -21,7 +21,7 @@ import type { ClipResult } from '../services/clips'
 type Props = { onBack: () => void; initialClipId?: string; pages?: Record<number, string>; clipIds?: string[] }
 
 export default function ActualClipPreview({ onBack, initialClipId, pages, clipIds }: Props) {
-  const [clipId, setClipId] = useState(initialClipId ?? 'clip-01')
+  const [clipId, setClipId] = useState(initialClipId ?? evalClips[0]?.id ?? 'clip-01')
   const [captionsOn, setCaptionsOn] = useState(true)
   const [result, setResult] = useState<ClipResult | null>(null)
   const [error, setError] = useState('')

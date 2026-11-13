@@ -1,6 +1,20 @@
 import { loadStoredClip } from './clips'
 
 const labels: Record<string, string> = {
+  'dc3-intro-01': '분할정복 입문 1 · 큰 문제를 작게 나누어 해결하기',
+  'dc3-intro-02': '분할정복 입문 2 · 합병 정렬: 나누고 차례대로 합치기',
+  'dc3-intro-03': '분할정복 입문 3 · 퀵 정렬: 기준값으로 양쪽 나누기',
+  'dc3-intro-04': '분할정복 입문 4 · 합병 정렬과 퀵 정렬의 선택 기준',
+  'dc3-review-01': '분할정복 기본 1 · 분할 정복의 세 단계와 종료 조건',
+  'dc3-review-02': '분할정복 기본 2 · 재귀 깊이와 부분문제 유형 읽기',
+  'dc3-review-03': '분할정복 기본 3 · 예시: 두 정렬 배열 합병하기',
+  'dc3-review-04': '분할정복 기본 4 · 합병 정렬의 재귀와 구현 따라가기',
+  'dc3-review-05': '분할정복 기본 5 · 합병 정렬의 시간복잡도 유도',
+  'dc3-review-06': '분할정복 기본 6 · 퀵 정렬의 피봇과 재귀 범위',
+  'dc3-review-07': '분할정복 기본 7 · 예시: 피봇 8로 제자리 분할하기',
+  'dc3-review-08': '분할정복 기본 8 · 퀵 정렬의 최악·최선·평균 분석',
+  'dc3-review-09': '분할정복 기본 9 · 피봇 선택과 작은 구간 성능 개선',
+  'dc3-review-10': '분할정복 기본 10 · 합병 정렬과 퀵 정렬 선택하기',
   'algo-dc-review-c7': '알고리즘 · 피봇 분할',
   'algo-dc-review-c4': '알고리즘 · 합병 정렬 재귀',
   'algo-dc-review-c5': '알고리즘 · 합병 정렬 n log n',
@@ -18,7 +32,7 @@ const assets = import.meta.glob<string>([
 export const evalClips = Object.keys(assets).flatMap((key) => {
   const m = key.match(/\/eval\/([^/]+)\/result-(.+)\.json$/)
   return m ? [{ id: m[2] === 'terra' ? m[1] : `${m[1]}@${m[2]}`, label: `${labels[m[1]] ?? m[1]} / ${m[2]}` }] : []
-})
+}).sort((a, b) => Number(!a.id.startsWith('dc3-')) - Number(!b.id.startsWith('dc3-'))) // 공개 페이지(D-69)는 분할정복 강의 클립을 먼저 보여 준다
 export function isEvalClip(id: string) { return evalClips.some((clip) => clip.id === id) }
 function asset(id: string, file: string): string | undefined {
   return isEvalClip(id) ? assets[`../../../samples/eval/${id.split('@')[0]}/${file}`] : undefined

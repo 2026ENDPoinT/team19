@@ -1,0 +1,37 @@
+# 제출용 공개 페이지(D-69). main에 push하면 FE를 빌드해 GitHub Pages에 올린다.
+# 터널 주소가 바뀌면 아래 VITE_API_BASE_URL만 고쳐 push한다(학습 예시는 서버 없이도 재생된다).
+name: pages
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['frontend/**', 'samples/eval/**', '.github/workflows/pages.yml']
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci && npm run build -- --base=/team19/
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: https://ecological-rest-glasgow-chronic.trycloudflare.com
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+      - id: deploy
+        uses: actions/deploy-pages@v4
