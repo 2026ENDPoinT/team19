@@ -1,7 +1,6 @@
 import Grid from './Grid'
 import { figureDescription, reserveTextSlots } from './figureDescription'
 import './figureDescription.css'
-import { limitHighlights } from './highlightDisplay'
 import { playerColorVariables } from './colors'
 import { emphasizeFormula } from './formulaEmphasis'
 import { breakAtCommas } from './lineBreaks'
@@ -96,7 +95,7 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
     document.addEventListener('fullscreenchange', fit)
     return () => { observer.disconnect(); window.removeEventListener('resize', fit); document.removeEventListener('fullscreenchange', fit) }
   }, [])
-  const elements = limitHighlights(state.elements)
+  const elements = state.elements
   const visible = elements.filter((element) => !element.hidden)
   const reserved = reserveTextSlots(elements)
   const attached = figureDescription(reserved, true)
