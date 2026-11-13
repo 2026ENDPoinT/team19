@@ -76,3 +76,4 @@
 | [P-FE-12](P-FE-12-real-mode.md) | 실제 AI 서버 생성 요청 연결 | 의견 수집중 |
 | [P-FE-13](P-FE-13-highlight-density.md) | 강조 밀도 제한과 상단 상위 개념 제목 | 논의중 |
 | [P-FE-14](P-FE-14-sentence-source-page.md) | 설명 문장별 근거 PDF 페이지 전달 | 논의중 |
+| [P-FE-15](P-FE-15-reuse-identical-pdf.md) | 같은 PDF 업로드 시 기존 강의 재사용 | 논의중 |

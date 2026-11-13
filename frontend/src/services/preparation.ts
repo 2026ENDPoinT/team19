@@ -100,7 +100,3 @@ export async function listLectures(signal: AbortSignal): Promise<LibraryLecture[
     ? [{ id: item.id, title: typeof item.title === 'string' && item.title ? item.title : '제목 없는 강의', status: String(item.status ?? ''), pageCount: Number(item.pageCount) || 0 }]
     : [])
 }
-
-export async function serverMode(signal: AbortSignal): Promise<ServerMode> {
-  return authorizeGeneration(signal, true)
-}

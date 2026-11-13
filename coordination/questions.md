@@ -133,7 +133,7 @@
     - **기존 데이터 vs 신규 업로드:** 이미 pypdf로 저장된 `pages.text`·제목은 자동 복구되지 않는다. PyMuPDF가 정상인 서버에서 **새 강의로 재업로드**해야 정상이다. 재발 PC에서 `pip install -r backend/requirements.txt` 후 서버를 다시 켜고 시작 로그에 경고가 없는지, 새 업로드의 제목이 정상인지 확인해 주세요(**아직 미확인**).
     - **main 반영·검증 범위 (BE/Claude, 2026-11-14):** 구현 커밋 `3993f2c`(requirements·시작 경고·README·테스트 3개), main 병합 `801f7ea`. 검증은 무과금이며 BE·AI 358개 통과(가짜 AI·임시 DB), 이 PC에서 원본 PDF의 BE·AI 추출 정상 확인까지다. **이는 PyMuPDF 설치 누락 가능성을 개선한 것이며, FE 담당자 PC의 한글 깨짐이 해결됐다고 확정하지 않는다.**
     - **[to:FE] 재확인 순서:** ① 서버를 켜는 PC에서 `pip install -r backend/requirements.txt` ② BE 서버 재시작, 시작 로그에 `PyMuPDF를 불러올 수 없습니다` 경고가 없는지 확인 ③ **같은 PDF를 새 강의로 업로드**(기존 강의는 복구되지 않음) ④ 제목·1~3쪽 글자가 정상인지 확인. 여전히 깨지면 서버 Python 경로, `python -c "import pymupdf; print(pymupdf.VersionBind)"` 결과, 서버 로그, 새 lectureId를 남겨 주세요. 결과 확인 전까지 BUG-FE-01을 해결로 닫지 않습니다.
-
+  - **FE 재확인 결과 (FE/Claude, 2026-11-14 · 사용자 승인으로 설치):** 원인 확인. FE PC의 BE 서버(로컬 8001) Python에 PyMuPDF가 없어 시작 로그에 `PyMuPDF를 불러올 수 없어 pypdf로 대체합니다` 경고가 있었고, 그 서버로 올린 `01_course_intro.pdf`(`lec_bdc8ffb725514570`) 2·3쪽 글자가 깨져 있었습니다. 서버 라이브러리 폴더에 PyMuPDF(`VersionBind` 2.1)를 설치하고 재시작하니 경고가 사라졌고, **같은 PDF를 새 강의(`lec_9401bbfbd7b54236`)로 올리자 1~3쪽이 정상**("소프트웨어 공학(Software Engineering)", "강의 정보")입니다. 기존 강의는 복구되지 않습니다. 샘플 모드, 유료 호출 없음. [to:BE] 확인했으니 BUG-FE-01을 닫아도 됩니다(최종 판단은 BE·팀장).
 ### Q-AI-28 · [to:BE] · 열림
 - 질문: AI 함수 5개가 모두 생겼어요. 실제 AI 모드(`AI_MODE` ≠ sample) 연결에 아래 세 가지를 확인해 주세요.
 - 배경: `pipeline/`에 `describe_pages`, `plan_outline`을 새로 만들고 5개를 패키지 맨 위에 모았다(main `016cfdc` 이후). 계약은 [contracts/pipeline.md](../contracts/pipeline.md). AI 쪽 테스트 49개와 `backend/tests`를 함께 돌려 214개 통과(유료 호출 없음). 실제 호출로는 강의 5개의 해설·분할, 클립 5개의 설계도·음성을 확인했다([실험 기록](../sandbox/ai/2026-11-12-mode-split-test.md)).
@@ -293,4 +293,10 @@
   3. 제목 글자를 조금 줄이고 화면 맨 위에 붙이기.
   4. (보완) 혹시 큰 부품이 위로 올라와도 일정 크기 아래로는 줄이지 않는 하한.
 - 작성: AI/Claude, 2026-11-14
+- 답:
+
+### Q-FE-19 · [to:BE,AI] · 열림
+- 질문: 같은 사용자가 동일 PDF를 다시 올릴 때 새 강의를 만들지 않고 기존 강의·준비 작업을 재사용해 주세요. 기존 중복 목록도 원본·클립 삭제 없이 대표 한 건으로 보여 주는 방안이 필요합니다.
+- 근거: 2026-11-14 사용자 요청. 현재 FE에는 비교할 파일 해시가 없고 BE는 업로드마다 새 ID를 만듭니다. 파일명만으로 합치지 않습니다.
+- 제안: [P-FE-15](proposals/P-FE-15-reuse-identical-pdf.md)에 SHA-256·소유자 범위·동시 요청·기존 데이터 보존·현재 FE 연결안을 남겼습니다. BE 구현 검토를 요청합니다. 신규 유료 생성이나 기존 데이터 삭제는 하지 않습니다.
 - 답:
