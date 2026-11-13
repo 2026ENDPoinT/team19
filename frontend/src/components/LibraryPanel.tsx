@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { listLectures, loadLecture, serverMode } from '../services/preparation'
 import type { LibraryLecture, PreparedLecture } from '../services/preparation'
 
@@ -18,16 +18,21 @@ export default function LibraryPanel({ onBack, onOpen }: Props) {
     })
     return () => controller.abort()
   }, [retry])
+  // 여는 중에 화면을 떠나면 요청을 취소해, 늦게 도착한 응답이 다른 화면으로 넘기지 않게 한다.
+  const openRequest = useRef<AbortController | null>(null)
+  useEffect(() => () => openRequest.current?.abort(), [])
   async function open(item: LibraryLecture) {
     if (opening) return
     setOpening(item.id); setError('')
     const controller = new AbortController()
+    openRequest.current = controller
     try {
       const mode = await serverMode(controller.signal)
-      onOpen(await loadLecture(item.id, mode, controller.signal), item.title)
+      const lecture = await loadLecture(item.id, mode, controller.signal)
+      if (!controller.signal.aborted) onOpen(lecture, item.title)
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : '강의를 열지 못했어요.')
-    } finally { setOpening(null) }
+      if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : '강의를 열지 못했어요.')
+    } finally { if (!controller.signal.aborted) setOpening(null) }
   }
   return <main className="mx-auto w-full max-w-[720px] px-5 pb-16 pt-12">
     <button type="button" className="mb-7 rounded-lg px-2 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100" onClick={onBack}>← 뒤로</button>

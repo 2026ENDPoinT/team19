@@ -33,7 +33,7 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
   if (playingClip) return <ActualClipPreview key={playingClip} initialClipId={playingClip} pages={lecture.pages} onBack={() => setPlayingClip(null)} />
   const labels = {pending:'대기 중',running:'생성 중',completed:'준비 완료',failed:'생성 실패'}
   const statusStyles = { pending: 'bg-slate-100 text-slate-600', running: 'bg-blue-50 text-blue-700', completed: 'bg-emerald-50 text-emerald-700', failed: 'bg-red-50 text-red-700' }
-  return <main className="mx-auto w-full max-w-5xl px-5 pb-16 pt-10 sm:px-8 sm:pt-14">
+  return <main className="brand-page brand-outline mx-auto w-full max-w-5xl px-5 pb-16 pt-10 sm:px-8 sm:pt-14">
     <section aria-labelledby="clips-title" className="mx-auto w-full max-w-[820px]">
       <button type="button" className="mb-7 rounded-lg px-2 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" onClick={onBack}>← 학습 모드 선택</button>
       <div className="mb-4 inline-flex rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-semibold text-blue-700">선택한 모드 · {modeName}</div>
@@ -54,7 +54,7 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
       {phase === 'error' && <div className="mt-4">
         <button type="button" className="rounded-xl border border-amber-300 bg-white px-4 py-2.5 text-sm font-semibold text-amber-800 hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500" onClick={() => setRefresh((value) => value + 1)}>다시 확인하기</button>
       </div>}
-      <div className="mt-5 grid gap-3">{snapshot?.outline.clips.map((clip) => <article key={clip.id} className={`rounded-2xl border bg-white p-4 transition sm:p-5 ${clip.status === 'completed' ? 'border-blue-200 shadow-[0_8px_24px_rgba(37,99,235,0.05)]' : 'border-slate-200'}`}>
+      <div className="mt-5 grid gap-3">{snapshot?.outline.clips.map((clip) => <article data-brand-card="clip" key={clip.id} className={`rounded-2xl border bg-white p-4 transition sm:p-5 ${clip.status === 'completed' ? 'border-blue-200 shadow-[0_8px_24px_rgba(37,99,235,0.05)]' : 'border-slate-200'}`}>
         <div className="flex items-start gap-3.5 sm:gap-4">
           <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${clip.status === 'completed' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'}`}>{String(clip.order + 1).padStart(2,'0')}</span>
           <div className="min-w-0 flex-1">
