@@ -4,7 +4,9 @@ import PlayerStage from '../player/PlayerStage'
 import { handlePlayerShortcut } from '../player/keyboardShortcuts'
 import PlayerControls from '../player/PlayerControls'
 import { calculatePlayerState } from '../player/state'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { attachFeedScroll } from '../player/feedScroll'
+import '../player/feed.css'
 import { loadClip } from '../services/clips'
 import { evalClips, evalPageUrl, isEvalClip, loadEvalClip } from '../services/evalClips'
 import type { ClipResult } from '../services/clips'
@@ -22,6 +24,28 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   const [isPlaying, setIsPlaying] = useState(false)
   const [playbackError, setPlaybackError] = useState('')
   const surfaceRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const alignAfterLoad = useRef(false)
+  const [loadingHeight, setLoadingHeight] = useState<number>()
+
+  function chooseClip(next: string) {
+    setLoadingHeight(contentRef.current?.getBoundingClientRect().height)
+    alignAfterLoad.current = true
+    setResult(null)
+    setClipId(next)
+  }
+
+  useEffect(() => attachFeedScroll(() => surfaceRef.current?.querySelector<HTMLElement>('.player-viewport') ?? null), [])
+  useLayoutEffect(() => {
+    if (!result || !alignAfterLoad.current) return
+    setLoadingHeight(undefined)
+    const frame = requestAnimationFrame(() => {
+      const player = surfaceRef.current?.querySelector('.player-viewport')
+      if (player) window.scrollBy({ top: player.getBoundingClientRect().top - 12, behavior: 'instant' })
+      alignAfterLoad.current = false
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [result])
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   useEffect(() => {
@@ -60,7 +84,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   const position = order.indexOf(clipId)
   function moveClip(step: number) {
     const next = order[position + step]
-    if (next) { setResult(null); setClipId(next) }
+    if (next) chooseClip(next)
   }
 
   async function togglePlayback() {
@@ -109,13 +133,14 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
       <p className="mt-2 text-xs text-slate-500">A/B·부품 검사 원본은 BE API에서, 다른 과목 평가 원본은 정식 저장 파일에서 불러옵니다. parts-test는 실제 설명 음성 대신 신호음을 사용합니다.</p>
       </details>
       <label className="mt-3 block font-semibold" htmlFor="actual-clip">비교할 클립</label>
-      <select id="actual-clip" value={clipId} onChange={(event) => { setResult(null); setClipId(event.target.value) }} className="mt-2 w-full rounded-lg border bg-white p-2">
+      <select id="actual-clip" value={clipId} onChange={(event) => chooseClip(event.target.value)} className="mt-2 w-full rounded-lg border bg-white p-2">
         <option value="clip-01">A · Sonnet / Cedar</option>
         <option value="clip-01-b">B · Terra / Cedar</option>
         <option value="parts-test">부품 검사 · 신호음 샘플 (실제 TTS 아님)</option>
         {evalClips.map((clip) => <option key={clip.id} value={clip.id}>평가 · {clip.label}</option>)}
       </select>
       </>}
+      <div ref={contentRef} style={{ minHeight: loadingHeight }}>
       {error ? (
         <div className="mt-6 rounded-xl bg-red-50 p-4" role="alert">
           <p>{error}</p><p className="mt-2 text-sm">다른 클립을 선택하거나 서버 상태를 확인해 주세요. 다시 불러오기는 결과 조회만 하며, 새 생성이나 생성 재시도를 요청하지 않습니다.</p>
@@ -153,6 +178,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
 
         </section>
       )}
+      </div>
     </main>
   )
 }
