@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs'
 import { layoutDiagramEdges } from '../src/player/diagramEdges.ts'
 import { layoutDiagram, layoutNode } from '../src/player/diagramLayout.ts'
 const result=JSON.parse(readFileSync(new URL('../../samples/eval/se-arch-review-c2/result-terra.json',import.meta.url),'utf8'))
-for(const scene of result.blueprint.scenes)for(const diagram of scene.diagrams){
+// 꺾인 선(routes)은 column 배치만 대상이다. 다른 배치는 직선으로 그린다.
+for(const scene of result.blueprint.scenes)for(const diagram of scene.diagrams.filter(d=>d.layout==='column')){
  const before=JSON.stringify(diagram),g=layoutDiagramEdges(diagram.nodes,diagram.edges,diagram.layout)
  for(const edge of diagram.edges){
   const route=g.routes.get(edge.id);assert.ok(route)
