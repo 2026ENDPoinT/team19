@@ -6,7 +6,7 @@ type Props = { fileName: string; preparation: ReturnType<typeof usePreparation>;
 export default function PreparationPanel({ fileName, preparation: data, onBack, onContinue }: Props) {
   const busy = data.phase === 'uploading' || data.phase === 'polling'
   const queryError = data.phase === 'query-error'
-  return <main className="mx-auto w-full max-w-5xl px-5 pb-16 pt-10 sm:px-8 sm:pt-14">
+  return <main className="brand-page brand-preparing mx-auto w-full max-w-5xl px-5 pb-16 pt-10 sm:px-8 sm:pt-14">
     <section aria-labelledby="preparing-title" className="mx-auto w-full max-w-[820px]">
       <button type="button" className="mb-8 rounded-lg px-2 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" onClick={onBack}>← 파일 선택으로</button>
       <div className="mb-4 inline-flex rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-semibold text-blue-700">강의자료 준비</div>

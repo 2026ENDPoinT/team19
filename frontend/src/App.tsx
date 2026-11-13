@@ -1,10 +1,12 @@
 import FileSummary from './components/FileSummary'
+import SiteHeader from './components/SiteHeader'
 import OutlineFlow from './components/OutlineFlow'
 import PreparationPanel from './components/PreparationPanel'
 import { usePreparation } from './components/usePreparation'
 import ActualClipPreview from './components/ActualClipPreview'
 import type { ChangeEvent, DragEvent, ReactNode } from 'react'
 import './figma-design.css'
+import './brand-design.css'
 import { learningModes } from './data/learningModes'
 import type { LearningMode } from './data/learningModes'
 import { useRef, useState } from "react"
@@ -125,7 +127,7 @@ function ModeCard({
   return (
     <button
       aria-pressed={isSelected}
-      className={`group flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition sm:p-5 ${
+      className={`brand-mode-card group flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition sm:p-5 ${
         isSelected
           ? "border-blue-500 bg-blue-50/70 shadow-[0_8px_24px_rgba(37,99,235,0.10)]"
           : "border-slate-200 bg-white hover:border-blue-300 hover:shadow-[0_8px_24px_rgba(15,23,42,0.06)]"
@@ -222,27 +224,11 @@ export default function App() {
 
   const openFilePicker = () => fileInputRef.current?.click()
 
-  if (showActualClip) return <ActualClipPreview onBack={() => setShowActualClip(false)} />
+  if (showActualClip) return <div className="brand-site"><SiteHeader examples onHome={() => { setShowActualClip(false); setScreen('upload') }} onExamples={() => setShowActualClip(true)} /><ActualClipPreview onBack={() => setShowActualClip(false)} /></div>
 
   return (
-    <div className="min-h-screen bg-white text-slate-950">
-      <header className="border-b border-slate-100">
-        <div className="mx-auto flex h-17 w-full max-w-7xl items-center px-5 sm:px-8 lg:px-10">
-          <button
-            aria-label="에이도스 홈"
-            className="flex items-center gap-2.5"
-            onClick={() => setScreen("upload")}
-            type="button"
-          >
-            <span className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-blue-600 text-white shadow-sm shadow-blue-200">
-              <span className="h-2.5 w-2.5 rounded-full border-2 border-white" />
-            </span>
-            <span className="text-[19px] font-bold tracking-[-0.04em]">
-              에이도스
-            </span>
-          </button>
-        </div>
-      </header>
+    <div className="brand-site min-h-screen bg-white text-slate-950">
+      <SiteHeader onHome={() => setScreen('upload')} onExamples={() => setShowActualClip(true)} />
 
       <input
         accept=".pdf,application/pdf"
@@ -253,10 +239,9 @@ export default function App() {
         type="file"
       />
 
-      <div className="mx-auto max-w-7xl px-5 pt-4"><button type="button" className="rounded-lg border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700" onClick={() => setShowActualClip(true)}>실제 클립 A/B 연결 확인</button></div>
       {screen === "upload" && (
-        <main className="mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-16 sm:px-8 sm:pt-24 lg:pt-28">
-          <section className="w-full text-center" aria-labelledby="page-title">
+        <main className="brand-page brand-upload mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-16 sm:px-8 sm:pt-24 lg:pt-28">
+          <section className="brand-hero w-full text-center" aria-labelledby="page-title">
             <div className="mb-5 inline-flex items-center rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-semibold text-blue-700">
               내 강의자료로 만드는 학습 피드
             </div>
@@ -264,7 +249,7 @@ export default function App() {
               className="mx-auto max-w-2xl text-[32px] font-bold leading-[1.25] tracking-[-0.045em] text-slate-950 sm:text-[42px]"
               id="page-title"
             >
-              내 강의자료를 짧은 학습 클립으로
+              강의는 길어도,<br />이해는 짧고 선명하게.
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-[15px] leading-7 text-slate-500 sm:text-base">
               PDF를 올리고 학습 단계를 선택하면,
@@ -274,11 +259,13 @@ export default function App() {
           </section>
 
           <section className="mt-10 w-full max-w-[680px] sm:mt-12">
-            <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.07)] sm:p-6">
+            <div className="brand-upload-card rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.07)] sm:p-6">
               {!file && (
               <div
                 aria-label="PDF 파일 드래그 앤 드롭 영역"
-                className={`flex min-h-[255px] flex-col items-center justify-center rounded-[18px] border border-dashed px-6 py-10 text-center transition-colors ${
+                data-dragging={isDragging}
+                data-invalid={Boolean(error)}
+                className={`brand-dropzone flex min-h-[255px] flex-col items-center justify-center rounded-[18px] border border-dashed px-6 py-10 text-center transition-colors ${
                   isDragging
                     ? "border-blue-500 bg-blue-50/80"
                     : error
@@ -300,7 +287,7 @@ export default function App() {
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={handleDrop}
               >
-                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+                <div className="brand-upload-icon mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
                   <UploadIcon />
                 </div>
                 <p className="text-[17px] font-semibold tracking-[-0.02em] text-slate-800">
@@ -373,10 +360,12 @@ export default function App() {
         </main>
       )}
 
+      {screen === 'upload' && <div className="brand-steps" aria-label="이용 순서">{[['01', '자료 올리기', '익숙한 강의 PDF 한 장에서 시작해요.'], ['02', '학습 모드 선택', '지금 내 공부에 맞는 깊이를 골라요.'], ['03', '짧게 보고 이해하기', '움직이는 개념을 보고 원본과 함께 익혀요.']].map(([number,title,description]) => <div key={number}><span>{number}</span><h2>{title}</h2><p>{description}</p></div>)}</div>}
+
       {screen === "preparing" && file && <PreparationPanel fileName={file.name} preparation={preparation} onBack={() => setScreen("upload")} onContinue={() => setScreen("mode")} />}
 
       {screen === "mode" && file && (
-        <main className="mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-12 sm:px-8 sm:pt-18">
+        <main className="brand-page brand-mode mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-12 sm:px-8 sm:pt-18">
           <section
             aria-labelledby="mode-title"
             className="w-full max-w-[720px]"
@@ -456,7 +445,7 @@ export default function App() {
 
             <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,0.06)] sm:p-5">
               <button
-                className="flex h-13 w-full items-center justify-center rounded-xl bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+                className="brand-primary flex h-13 w-full items-center justify-center rounded-xl bg-blue-600 px-5 text-[15px] font-semibold text-white shadow-sm shadow-blue-200 transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
                 disabled={!selectedMode || !preparation.lecture}
                 onClick={() => setScreen("outline")}
                 type="button"
