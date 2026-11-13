@@ -1,0 +1,138 @@
+[
+  {
+    "id": "d_mvc",
+    "slot": "middle",
+    "layout": "cycle",
+    "hidden": false,
+    "nodes": [
+      {
+        "id": "n_controller",
+        "label": "컨트롤러",
+        "shape": "box"
+      },
+      {
+        "id": "n_model",
+        "label": "모델",
+        "shape": "box"
+      },
+      {
+        "id": "n_view",
+        "label": "뷰",
+        "shape": "box"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e_event",
+        "from": "n_view",
+        "to": "n_controller",
+        "label": "사용자 이벤트",
+        "hidden": true
+      },
+      {
+        "id": "e_change",
+        "from": "n_controller",
+        "to": "n_model",
+        "label": "상태 변경",
+        "hidden": true
+      },
+      {
+        "id": "e_notify",
+        "from": "n_model",
+        "to": "n_view",
+        "label": "변경 알림",
+        "hidden": true
+      },
+      {
+        "id": "e_query",
+        "from": "n_view",
+        "to": "n_model",
+        "label": "상태 조회",
+        "hidden": true
+      },
+      {
+        "id": "e_select",
+        "from": "n_controller",
+        "to": "n_view",
+        "label": "뷰 선택",
+        "hidden": true
+      }
+    ]
+  },
+  {
+    "id": "d_web",
+    "slot": "middle",
+    "layout": "cycle",
+    "hidden": false,
+    "nodes": [
+      {
+        "id": "n_browser",
+        "label": "브라우저",
+        "shape": "box"
+      },
+      {
+        "id": "n_web_controller",
+        "label": "컨트롤러",
+        "shape": "box"
+      },
+      {
+        "id": "n_web_model",
+        "label": "모델",
+        "shape": "box"
+      },
+      {
+        "id": "n_web_view",
+        "label": "뷰",
+        "shape": "box"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e_browser_controller",
+        "from": "n_browser",
+        "to": "n_web_controller",
+        "hidden": true
+      },
+      {
+        "id": "e_web_update",
+        "from": "n_web_controller",
+        "to": "n_web_model",
+        "label": "갱신 요청",
+        "hidden": true
+      },
+      {
+        "id": "e_web_notify",
+        "from": "n_web_model",
+        "to": "n_web_view",
+        "label": "변경 알림",
+        "hidden": true
+      },
+      {
+        "id": "e_web_refresh",
+        "from": "n_web_view",
+        "to": "n_web_model",
+        "label": "새로고침 요청",
+        "hidden": true
+      },
+      {
+        "id": "e_web_controller_view",
+        "from": "n_web_controller",
+        "to": "n_web_view",
+        "hidden": true
+      },
+      {
+        "id": "e_view_browser",
+        "from": "n_web_view",
+        "to": "n_browser",
+        "hidden": true
+      },
+      {
+        "id": "e_web_event",
+        "from": "n_web_view",
+        "to": "n_web_controller",
+        "label": "사용자 이벤트",
+        "hidden": true
+      }
+    ]
+  }
+]
