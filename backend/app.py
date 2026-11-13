@@ -1,10 +1,12 @@
 """FastAPI service for team19: durable lecture/outline/clip jobs and AI module calls."""
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
 import re
+import shutil
 import sqlite3
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -76,6 +78,14 @@ def setup() -> None:
         if "owner_id" not in {c["name"] for c in db.execute("PRAGMA table_info(lectures)")}:
             db.execute("ALTER TABLE lectures ADD COLUMN owner_id TEXT")
         db.execute("CREATE INDEX IF NOT EXISTS idx_lectures_owner ON lectures(owner_id)")
+        # Same-PDF reuse (P-FE-15). Columns are added in place; rows created before this have NULLs, are never
+        # reused (unknown origin) and keep every file and result. reuse_key is set only on the one lecture that
+        # currently represents (owner, PDF bytes, AI mode); NULLs never collide, so failed/superseded rows are free.
+        lecture_columns = {c["name"] for c in db.execute("PRAGMA table_info(lectures)")}
+        for column in ("pdf_sha256", "ai_mode", "reuse_key"):
+            if column not in lecture_columns:
+                db.execute(f"ALTER TABLE lectures ADD COLUMN {column} TEXT")
+        db.execute("CREATE UNIQUE INDEX IF NOT EXISTS uq_lectures_reuse_key ON lectures(reuse_key)")
         # Never automatically rerun a charged call after a process restart. Show the same
         # error on every record the FE reads (job, lecture, clip); outlines use 'planning' while running.
         restarted = json.dumps({"code": "SERVER_RESTARTED", "message": "서버 재시작으로 중단되었습니다. 다시 시도해 주세요.", "retryable": True}, ensure_ascii=False)
@@ -329,6 +339,28 @@ def health():
     return {"status": "ok", "aiMode": AI_MODE}
 
 
+def claim_lecture(owner: str | None, sha256: str, title: str, path: Path, lid: str) -> tuple[str, str, str, bool]:
+    """Return (lectureId, prepareJobId, status, created). One transaction, so concurrent identical uploads
+    yield one lecture and one prepare Job. Nothing is deleted: a failed holder only gives up its reuse_key."""
+    key = f"{owner}:{sha256}:{AI_MODE}" if owner else None
+    with conn() as db:
+        db.execute("BEGIN IMMEDIATE")
+        if key:
+            holder = db.execute("SELECT id,status FROM lectures WHERE reuse_key=?", (key,)).fetchone()
+            if holder and holder["status"] == "failed":
+                # A failed result is not reused and never retried automatically; the record stays as it is.
+                db.execute("UPDATE lectures SET reuse_key=NULL WHERE id=?", (holder["id"],))
+                holder = None
+            if holder:
+                job = db.execute("SELECT id FROM jobs WHERE target_id=? AND type='prepare' ORDER BY rowid DESC LIMIT 1", (holder["id"],)).fetchone()
+                if job:
+                    return holder["id"], job["id"], holder["status"], False
+                db.execute("UPDATE lectures SET reuse_key=NULL WHERE id=?", (holder["id"],))  # no job to follow
+        db.execute("INSERT INTO lectures(id,title,pdf_path,status,owner_id,pdf_sha256,ai_mode,reuse_key) VALUES(?,?,?,'pending',?,?,?,?)",
+                   (lid, title, str(path), owner, sha256, AI_MODE, key))
+        return lid, job_create(db, "prepare", lid), "pending", True
+
+
 @app.post("/lectures", status_code=202)
 async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(None)):
     owner = owner_of(x_owner_id)
@@ -339,19 +371,22 @@ async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(N
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / "original.pdf"
     amount = 0
+    digest = hashlib.sha256()
     try:
         with path.open("wb") as dst:
             while chunk := await file.read(1024 * 1024):
                 amount += len(chunk)
                 if amount > MAX_BYTES:
                     fail("FILE_TOO_LARGE", "PDF 파일이 크기 제한을 초과했습니다.", 413)
+                digest.update(chunk)
                 dst.write(chunk)
         with path.open("rb") as src:
             if src.read(5) != b"%PDF-":
                 fail("INVALID_PDF", "올바른 PDF 파일이 아닙니다.", 422)
-        with conn() as db:
-            db.execute("INSERT INTO lectures(id,title,pdf_path,status,owner_id) VALUES(?,?,?,'pending',?)", (lid, Path(file.filename).name, str(path), owner))
-            jid = job_create(db, "prepare", lid)
+        lecture_id, jid, status, created = claim_lecture(owner, digest.hexdigest(), Path(file.filename).name, path, lid)
+        if not created:
+            shutil.rmtree(directory, ignore_errors=True)  # only the copy this request just wrote
+            return {"lectureId": lecture_id, "jobId": jid, "status": status}
         dispatch(jid)
         return {"lectureId": lid, "jobId": jid, "status": "pending"}
     except Exception:
@@ -361,13 +396,41 @@ async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(N
         await file.close()
 
 
+def fill_missing_hashes(db: sqlite3.Connection, owner: str) -> None:
+    """Read-only on the PDFs: only the new pdf_sha256 column of older rows is filled. Unreadable files are skipped."""
+    for r in db.execute("SELECT id,pdf_path FROM lectures WHERE owner_id=? AND pdf_sha256 IS NULL", (owner,)).fetchall():
+        try:
+            digest = hashlib.sha256()
+            with open(r["pdf_path"], "rb") as f:
+                while block := f.read(1024 * 1024):
+                    digest.update(block)
+        except OSError:
+            continue
+        db.execute("UPDATE lectures SET pdf_sha256=? WHERE id=? AND pdf_sha256 IS NULL", (digest.hexdigest(), r["id"]))
+
+
 @app.get("/lectures")
 def lectures(x_owner_id: str | None = Header(None)):
     owner = owner_of(x_owner_id)
     if owner is None:
         return []  # no device ID, no list (D-50); old lectures without an owner are never listed
     with conn() as db:
-        return [{"id": r["id"], "title": r["title"], "status": r["status"], "pageCount": r["page_count"]} for r in db.execute("SELECT * FROM lectures WHERE owner_id=? ORDER BY created_at DESC, rowid DESC", (owner,))]
+        fill_missing_hashes(db, owner)
+        rows = db.execute("""SELECT l.*, (SELECT COUNT(*) FROM clips c JOIN outlines o ON c.outline_id=o.id
+                                          WHERE o.lecture_id=l.id AND c.status='completed') AS done
+                             FROM lectures l WHERE l.owner_id=? ORDER BY l.created_at DESC, l.rowid DESC""", (owner,)).fetchall()
+    # List view only: one representative per identical PDF. Nothing is deleted or merged; the other lectures stay
+    # openable by ID. Prefer a ready lecture, then one with finished clips, then the newest. Which AI mode an old
+    # row came from is not guessed, and this grouping never makes an old result reusable for uploads.
+    rank = {"ready": 0, "pending": 1, "running": 1}
+    best: dict[str, sqlite3.Row] = {}
+    for r in rows:  # rows are newest first, so earlier means newer on ties
+        group = r["pdf_sha256"] or r["id"]
+        current = best.get(group)
+        if current is None or (rank.get(r["status"], 2), -r["done"]) < (rank.get(current["status"], 2), -current["done"]):
+            best[group] = r
+    chosen = {r["id"] for r in best.values()}
+    return [{"id": r["id"], "title": r["title"], "status": r["status"], "pageCount": r["page_count"]} for r in rows if r["id"] in chosen]
 
 
 @app.get("/lectures/{lecture_id}")

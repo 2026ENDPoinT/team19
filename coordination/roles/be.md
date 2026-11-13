@@ -40,7 +40,7 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
-- **(11/14 · BE/Claude) Q-FE-19 / P-FE-15 BE 검토(설계만).** 같은 PDF 재사용을 SHA-256·소유자·`reuse_key` UNIQUE 트랜잭션으로 설계했다. `reprocess`·failed 재업로드는 옛 강의의 키만 NULL로 이전해 충돌을 피하고 기존 강의·결과를 보존한다. 출처 기록이 없는 옛 강의(BUG-FE-01 시기 포함)는 재사용·자동 묶음에서 제외하고 모드를 결과로 추정하지 않는다. `stale`·`reprocess`·`duplicateCount`의 FE 호환은 미확정. 팀장 결정 8건 대기, 구현·API·DB 변경 없음. BUG-FE-01의 BE 해결 범위는 완료, 종료 판단은 FE([Q-FE-08](../questions.md)).
+- **(11/14 · BE/Claude) Q-FE-19 / P-FE-15 동일 PDF 중복 방지 MVP 구현(`feature/be-pdf-dedup`, 미병합).** FE 담당자와 요구사항을 재확인해 범위를 "같은 PDF 재사용 + 내 강의함 중복 표시 방지"로 줄였다(`reprocess`·`stale`·버전 재처리·영상 다시 만들기는 별도 후속, 앞서 적은 팀장 결정 8가지는 선행 조건 아님). SHA-256·`X-Owner-Id` 범위 재사용, UNIQUE+트랜잭션 동시성, failed 미재사용, 목록 대표 1건(삭제 없음)을 구현하고 무과금 테스트 13개로 확인했다. **FE 브라우저 검증 전, main 병합 전.** BUG-FE-01의 BE 해결 범위는 완료, 종료 판단은 FE([Q-FE-08](../questions.md)).
 
 - **(11/14 · BE/Claude) BUG-FE-01 재발 조사·수정(`feature/be-pymupdf-requirement`).** 이 PC에서는 BE·AI 추출기 모두 원본 한글이 정상(PyMuPDF 2.1). `backend/requirements.txt`에 PyMuPDF가 없어 그것만 설치한 PC는 조용히 pypdf로 대체되는 구조를 확인하고 requirements·시작 경고·README를 고쳤다. 재발 PC의 실제 원인·DB 단계 비교는 미확인([Q-FE-08](../questions.md) BE 답 참조).
 
@@ -70,6 +70,8 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 - (11/12 당시) 실제 AI 생성 통합 전 상태였다. 현재는 D-44·D-45 안전 조치를 구현했으며 실제 AI 첫 전체 통합 검증이 남아 있다.
 
 ### 다음 할 일
+
+- `feature/be-pdf-dedup` 검토 후 main 병합(사용자·팀장 절차), FE와 같은 PDF 재업로드·강의함 1건 표시를 브라우저로 확인한다.
 
 - 팀장이 서버 키를 준비하고 잔액·모델 접근을 확인하면 Q-BE-05 계획(PDF 1쪽·intro·BE_WORKERS=1·새 TEMP·8011/5175)대로 업로드·생성 각 1회만 실행하고 결과를 기록한다. 실패 시 usage 전달은 Q-BE-04(AI)의 열린 요청이다.
 - 최신 FE·BE 병합본의 실제 AI 첫 통합은 별도 실행 승인 후 진행한다. 기본 Conda 환경의 AI SDK 의존성, FE 실제 생성 동의 동선, 새 데이터 폴더, Uvicorn 단일 프로세스·자동 재시작 해제를 먼저 확인한다. 이번 자동 테스트는 임시 SDK 경로와 가짜 AI를 사용했다.
