@@ -108,7 +108,14 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
             {sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}
           </button>
           <div className={`actual-clip-layout${sourceOpen ? ' actual-clip-layout--with-source' : ''}`}>
-          <div className="actual-player" ref={surfaceRef}>
+          <div className="actual-player" ref={surfaceRef} onKeyDown={(event) => {
+            // 화면(슬라이드)에 포커스가 있을 때만: 슬라이더의 기본 방향키 동작은 건드리지 않는다.
+            const step = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0
+            const audio = audioRef.current
+            if (!step || !audio || !(event.target instanceof Element) || !event.target.classList.contains('player-stage')) return
+            event.preventDefault()
+            audio.currentTime = Math.min(Math.max(0, audio.currentTime + step), result.durationSec)
+          }}>
           <audio src={result.audioUrl} hidden preload="metadata" loop ref={audioRef}
             onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}
             onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
