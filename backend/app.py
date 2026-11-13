@@ -65,6 +65,9 @@ def setup() -> None:
         CREATE TABLE IF NOT EXISTS clips (id TEXT PRIMARY KEY, outline_id TEXT NOT NULL REFERENCES outlines(id), plan_id TEXT NOT NULL, position INTEGER NOT NULL, title TEXT NOT NULL, plan_json TEXT NOT NULL, status TEXT NOT NULL, job_id TEXT, result_json TEXT, error TEXT);
         CREATE TABLE IF NOT EXISTS jobs (id TEXT PRIMARY KEY, type TEXT NOT NULL, target_id TEXT NOT NULL, status TEXT NOT NULL, stage TEXT, error TEXT, retry_of TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
         CREATE TABLE IF NOT EXISTS assets (id TEXT PRIMARY KEY, path TEXT NOT NULL, mime TEXT NOT NULL);
+        CREATE INDEX IF NOT EXISTS idx_assets_path ON assets(path);
+        CREATE INDEX IF NOT EXISTS idx_jobs_target_id ON jobs(target_id);
+        CREATE INDEX IF NOT EXISTS idx_clips_outline_id ON clips(outline_id);
         CREATE TABLE IF NOT EXISTS job_usage (
             job_id TEXT NOT NULL REFERENCES jobs(id),
             stage TEXT NOT NULL CHECK(stage IN ('describing','planning','blueprint','audio')),
@@ -187,6 +190,12 @@ def add_asset(db: sqlite3.Connection, path: Path, mime: str) -> str:
     return f"/assets/{aid}"
 
 
+def assets_under(db: sqlite3.Connection, folder: Path) -> list[sqlite3.Row]:
+    # add_asset stores resolved paths; the trailing separator excludes sibling folders.
+    prefix = str(folder.resolve()) + os.sep
+    return db.execute("SELECT id,path FROM assets WHERE path>=? AND path<?", (prefix, prefix + chr(0x10ffff))).fetchall()
+
+
 # ---- Permanent lecture deletion (X-Owner-Id is a device label, not authentication) ----
 TRASH = ROOT / ".trash"
 SAFE_ID = re.compile(r"[A-Za-z0-9_-]{1,64}")
@@ -293,9 +302,7 @@ def delete_lecture_data(owner: str, lecture_id: str) -> None:
                 fail("LECTURE_BUSY", "이 자료로 만드는 작업이 실행 중이라 지금은 삭제할 수 없습니다. 끝난 뒤 다시 시도해 주세요.", 409, True)
             # Folders: only real directories directly under ROOT/lectures/<id> and ROOT/clips/<id>.
             folders = [d for d in (owned_dir("lectures", i) for i in group) if d] + [d for d in (owned_dir("clips", i) for i in clips) if d]
-            prefixes = [os.path.normcase(str(d)) + os.sep for d in folders]
-            assets = [r["id"] for r in db.execute("SELECT id,path FROM assets").fetchall()
-                      if any(os.path.normcase(str(Path(r["path"]).resolve())).startswith(p) for p in prefixes)]
+            assets = [r['id'] for folder in folders for r in assets_under(db, folder)]
             trash = TRASH / token
             if folders:
                 trash.mkdir(parents=True)
@@ -376,6 +383,9 @@ def do_prepare(job: dict, pipe: Pipeline):
     described = call_with_usage(jid, "describing", pipe.describe_pages, pages)
     lookup = {int(p["number"]): p.get("description", "") for p in described.get("pages", [])}
     with conn() as db:
+        for asset_row in assets_under(db, out):
+            db.execute("DELETE FROM assets WHERE id=?", (asset_row["id"],))
+        db.execute("DELETE FROM pages WHERE lecture_id=?", (lid,))
         for p in pages:
             image = Path(p["imagePath"])
             add_asset(db, image, "image/png")  # record physical output; stable read URL queried below
