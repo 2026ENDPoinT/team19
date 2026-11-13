@@ -1,8 +1,8 @@
 # BE 단계별 사용량 기록
 
-> 상태: 초안 · 담당: BE · 최종 수정: 2026-11-13 · BE/Codex
+> 상태: 초안 · 담당: BE · 최종 수정: 2026-11-13 · BE/Claude
 
-`feature/be-usage-records`의 검토용 구현이다. main 병합·Push·실제 유료 실행은 하지 않는다. 기존 [파이프라인 계약](../contracts/pipeline.md)의 사용량 저장을 BE 내부 SQLite에 구현하며 API 응답은 확장하지 않는다.
+`feature/be-usage-records`의 검토용 구현이다. 검토 후 main에 병합했다. 이 변경으로 실제 유료 실행을 하지 않았다. 기존 [파이프라인 계약](../contracts/pipeline.md)의 사용량 저장을 BE 내부 SQLite에 구현하며 API 응답은 확장하지 않는다.
 
 ## 저장 구조
 
