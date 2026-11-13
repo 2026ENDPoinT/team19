@@ -31,7 +31,9 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   function chooseClip(next: string) {
     setLoadingHeight(contentRef.current?.getBoundingClientRect().height)
     alignAfterLoad.current = true
-    setResult(null)
+    audioRef.current?.pause()
+    // 전체화면 중에는 이전 화면을 유지해야 플레이어가 다시 그려지며 전체화면이 풀리지 않는다.
+    if (!document.fullscreenElement) setResult(null)
     setClipId(next)
   }
 
@@ -67,7 +69,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
 
   useEffect(() => {
     const controller = new AbortController()
-    setResult(null)
+    if (!document.fullscreenElement) setResult(null)
     setError('')
     setIsPlaying(false)
     setPlaybackError('')
@@ -111,6 +113,12 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
     return () => document.removeEventListener('keydown', onKeyDown, true)
   }, [result, error])
 
+  // 전체화면은 플레이어 칸만 키우므로 그때만 버튼을 플레이어 안으로 옮긴다.
+  const feedNav = initialClipId ? null : <div className="clip-feed-nav">
+            <button type="button" aria-label="이전 클립" disabled={position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
+            <button type="button" aria-label="다음 클립" disabled={position < 0 || position >= order.length - 1} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
+          </div>
+
   let stage = null
   let stageError = ''
   if (result) {
@@ -148,17 +156,14 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
           <button className="mt-3 rounded-lg border px-4 py-2" type="button" onClick={() => setRetry((value) => value + 1)}>다시 불러오기</button>
         </div>
       ) : !result ? <p role="status" className="mt-6">실제 클립을 불러오고 있어요…</p> : (
-        <section className="mt-3" key={`${clipId}-${result.resultId}`}>
+        <section className="mt-3">
           <h2 className="text-xl font-bold">{result.blueprint.title}</h2>
           <p className="mt-2 break-all text-xs text-slate-500">{result.resultId} · {result.durationSec.toFixed(1)}초</p>
           <button type="button" className="source-page-toggle mt-2 rounded-lg border px-4 py-2" aria-expanded={sourceOpen} aria-controls="source-page-panel" onClick={() => setSourceOpen((open) => !open)}>
             {sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}
           </button>
           <div className={`actual-clip-layout${sourceOpen ? ' actual-clip-layout--with-source' : ''}`}>
-          {!initialClipId && <div className="clip-feed-nav">
-            <button type="button" aria-label="이전 클립" disabled={position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
-            <button type="button" aria-label="다음 클립" disabled={position < 0 || position >= order.length - 1} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
-          </div>}
+          {!isFullscreen && feedNav}
           <div className="actual-player" ref={surfaceRef}>
           <audio src={result.audioUrl} hidden preload="metadata" loop ref={audioRef}
             onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}
@@ -166,6 +171,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
           {stageError ? <p role="alert" className="mt-5 text-red-700">{stageError}</p> : stage && <PlayerStage state={stage} pageUrl={pageUrl} isPlaying={isPlaying} onTogglePlayback={togglePlayback} captionsOn={captionsOn}
             controls={<PlayerControls captionsOn={captionsOn} onToggleCaptions={() => setCaptionsOn((on) => !on)} audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
           {playbackError && <p role="alert" className="mt-2 text-sm text-red-700">{playbackError}</p>}
+          {isFullscreen && feedNav}
           </div>
           {sourceOpen && (
             <aside id="source-page-panel" className="source-page-panel" aria-label="현재 장면의 원본 페이지">
