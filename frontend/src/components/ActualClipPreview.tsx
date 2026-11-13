@@ -152,9 +152,14 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   }, [result, error])
 
   // 전체화면은 플레이어 칸만 키우므로 그때만 버튼을 플레이어 안으로 옮긴다.
+  // 원본 페이지 보기: 학습 예시 화면에서는 위·아래 클립 버튼 아래(맨 아래)에 둥근 버튼으로 둔다.
+  const sourceToggle = initialClipId
+    ? <button type="button" className="source-page-toggle mt-2 rounded-lg border px-4 py-2" aria-expanded={sourceOpen} aria-controls="source-page-panel" onClick={() => setSourceOpen((open) => !open)}>{sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}</button>
+    : <button type="button" className="source-page-toggle clip-feed-source" aria-label={sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'} title={sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'} aria-expanded={sourceOpen} aria-controls="source-page-panel" onClick={() => setSourceOpen((open) => !open)}><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6M8 13h8M8 17h5" /></svg></button>
   const feedNav = initialClipId ? null : <div className="clip-feed-nav">
             <button type="button" aria-label="이전 클립" disabled={transitionBusy || position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
             <button type="button" aria-label="다음 클립" disabled={transitionBusy || position < 0 || position >= order.length - 1} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
+            {!isFullscreen && sourceToggle}
           </div>
 
   let stage = null
@@ -197,9 +202,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
         <section className="mt-3">
           <h2 className="text-xl font-bold">{result.blueprint.title}</h2>
           <p className="mt-2 break-all text-xs text-slate-500">{Math.ceil(result.durationSec)}초</p>
-          <button type="button" className="source-page-toggle mt-2 rounded-lg border px-4 py-2" aria-expanded={sourceOpen} aria-controls="source-page-panel" onClick={() => setSourceOpen((open) => !open)}>
-            {sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}
-          </button>
+          {initialClipId && sourceToggle}
           <div className={`actual-clip-layout${sourceOpen ? ' actual-clip-layout--with-source' : ''}`}>
           {!isFullscreen && feedNav}
           <div className={`actual-player${transitionBusy ? ' clip-transition-active' : ''}`} ref={surfaceRef}>
