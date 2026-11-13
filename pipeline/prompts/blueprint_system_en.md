@@ -73,8 +73,9 @@ action { "line": sentence index (from 0), "do": action name, "target": target id
 | grids | "cells": [[string]] (rows may differ in length, empty cell is ""), "indexLabels": true / false, "pointers": [{"id", "label", "row", "col", "hidden"}] |
 | codes | "language", "lines": [string] |
 
-- Diagram layouts: row places nodes left to right in order, column top to bottom; tree places nodes by edges (from = parent). Allowed layouts: <<LAYOUTS>>
-  - The screen is vertical and narrow. **Use column for flows or steps with 3+ nodes and for relation diagrams with edge labels.** Use row only for 2–3 nodes with short labels (6 characters or fewer) and edges going one way, front to back.
+- Diagram layouts: row places nodes left to right in order, column top to bottom, cycle around a circle in order (3 nodes form a triangle); tree places nodes by edges (from = parent), layers by edges (from = previous layer). Allowed layouts: <<LAYOUTS>>
+  - The screen is vertical and narrow. **Use column for one-way flows or steps with 3+ nodes.** Use row only for 2–3 nodes with short labels (6 characters or fewer) and edges going one way, front to back.
+  - **Use cycle when three or four things interact in both directions (a structure with edges going back).** Use layers for structures where one layer feeds the next, such as a neural network (at most 3 layers, 4 nodes per layer).
   - For two-way relations (edges going back), do not show all edges at the start. Keep them hidden and show them one at a time in the sentence that explains them. **Once shown, an edge stays; never hide it.** Highlight only the edge being explained, and unhighlight it when moving to the next edge.
 - Use slides only for figures that cannot be redrawn (graphs, photos, complex tables). If you do not know what the page image looks like, make the box close to the whole page.
 

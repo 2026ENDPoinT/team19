@@ -28,9 +28,9 @@
 
 ## 2. 품질 (시간 되는 대로, 03:00 전까지)
 
-- [ ] [FE] D-46 수식 항 강조: `\term{id}{X}` 변환과 highlight args 처리 → Q-FE-10에 알림
-- [ ] [AI] 위가 끝나면 `pipeline/validate.py`의 `SUPPORTED_FORMULA_TERMS = True`, 강화학습 클립 재생성(약 $0.05)
-- [ ] [FE] Q-AI-30 다이어그램 꺾인 선(MVC s3·s4 겹침)
+- [x] [FE] D-46 수식 항 강조: `\term{id}{X}` 변환과 highlight args 처리 → Q-FE-10에 알림
+- [x] [AI] 위가 끝나면 `pipeline/validate.py`의 `SUPPORTED_FORMULA_TERMS = True`, 강화학습 클립 재생성(약 $0.05)
+- [x] [FE] Q-AI-30 다이어그램 꺾인 선(MVC s3·s4 겹침)
 - [ ] [팀장] 결정: 클립 수 상한 Q-AI-31(팀장은 A 쪽), 모드 이름 Q-AI-26, speech P-AI-04 확정(평가 음성 5개 청취), 선수 클립 유지 여부, 오류 코드 이름 `PDF_INVALID`/`INVALID_PDF`
 - [ ] [AI] 비용 줄이기: 설계도 프롬프트 예시(16KB, 입력의 절반 이상) 줄이고 품질 비교
 - [ ] [AI] 의미 검사(D-40): 문장마다 새로 보이는 값이 그 문장에 나오는지
