@@ -66,3 +66,4 @@
 | [P-FE-08](P-FE-08-outline-flow.md) | 모드 요청·실제 클립 목록·재생 연결 | 의견 수집중 |
 | [P-FE-09](P-FE-09-eval-player.md) | 다른 과목 저장 결과 플레이어 연결 | 의견 수집중 |
 | [P-FE-10](P-FE-10-ponytail.md) | Ponytail 개인 환경 시험 사용 | 의견 수집중 |
+| [P-FE-11](P-FE-11-player-colors.md) | 네온 팔레트와 설명 구간 수식 강조 | 의견 수집중 |
