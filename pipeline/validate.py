@@ -80,6 +80,7 @@ ACTIONS = {
     "stamp": {"text", "node", "edge"},      # D-53, FE 구현 11/14
     "unstamp": {"text", "node", "edge"},
     "place": {"text", "slide", "diagram", "grid", "code"},  # D-56, FE 구현 11/14
+    "attach": {"text"},                  # D-60, 글을 다른 주인 옆으로 옮겨 붙임(움직이며)
 }
 
 EPS = 1e-9
@@ -567,6 +568,16 @@ class _Checker:
                 self.err(w, "위로 올릴 수 있는 것은 한 줄짜리뿐: 글, 한 줄 격자, 노드 3개 이하 row 다이어그램")
             else:
                 info["slot"], info["placed"] = args[0], True
+                info.pop("near", None)
+        elif do == "attach":
+            if not self.near:
+                self.err(w, "attach(옆에 붙이기)는 아직 플레이어가 지원하지 않음")
+            elif not 2 <= len(args) <= 3 or args[1] not in NEAR_SIDES:
+                self.err(w, f"attach의 args는 [주인 id, {' / '.join(NEAR_SIDES)}] 또는 [주인 id, 방향, 칸 위치]")
+            elif info["ref"].get("style") not in NEAR_STYLES:
+                self.err(w, f"attach는 {', '.join(NEAR_STYLES)} 글에만 쓴다")
+            else:
+                info["near"] = {"target": args[0], "side": args[1], **({"cell": args[2]} if len(args) == 3 else {})}
         elif do == "unstamp":
             if args:
                 self.err(w, "unstamp는 args가 없어야 함")

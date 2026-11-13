@@ -31,12 +31,18 @@ NEAR_RULE = {
            "`\"near\": {\"target\": 주인 id, \"side\": \"above\"/\"below\"/\"left\"/\"right\"}`를 쓰면 그 부품·노드 옆에 붙는다. "
            "격자의 한 칸 밑에 붙이려면 `\"cell\": \"3\"`을 더한다(예: 성공 칸 밑의 `P(X=1)=p`, 배열 옆의 \"피봇 8\"). "
            "붙은 글은 자리를 차지하지 않고, 주인이 화면에 있는 동안만 보일 수 있다(주인을 hide하기 전에 글도 hide). "
-           "주인 하나에 붙은 글은 2개 이하, 짧게(15자 안팎)."),
+           "주인 하나에 붙은 글은 2개 이하, 짧게(15자 안팎). "
+           "글을 다른 주인 옆으로 옮길 때는 `attach`(args [주인 id, 방향] 또는 [주인 id, 방향, 칸])를 쓴다. 글이 움직여 붙으므로, "
+           "아래 자리에 띄운 식을 설명이 끝난 뒤 그 값의 주인 칸 밑으로 옮기는 식으로 쓴다(예: `P(X=1)=p`를 성공 칸 밑으로). "
+           "place로 자리에 돌려보내면 다시 자리 글이 된다."),
     "en": ("\n- **Attach labels, values, and states next to their owner (near).** For a body, keyword, or formula text, write "
            "`\"near\": {\"target\": owner id, \"side\": \"above\"/\"below\"/\"left\"/\"right\"}` instead of slot to attach it beside that "
            "component or node. To attach under one grid cell, add `\"cell\": \"3\"` (e.g. `P(X=1)=p` under the success cell, "
            "\"피봇 8\" beside the array). An attached text takes no slot and may be visible only while its owner is on screen "
-           "(hide the text before hiding the owner). At most 2 texts per owner, short (about 15 chars)."),
+           "(hide the text before hiding the owner). At most 2 texts per owner, short (about 15 chars). "
+           "To move a text to another owner, use `attach` (args [owner id, side] or [owner id, side, cell]); the text moves "
+           "on screen, e.g. a formula shown in the bottom slot moves under the cell it belongs to once explained "
+           "(`P(X=1)=p` under the success cell). place sends it back to a slot."),
 }
 TERMS_RULE = {
     "ko": ("\n- 수식의 한 부분을 설명할 때는 content 안에서 그 부분을 `\\term{항id}{LaTeX}`로 감싸고, 설명하는 문장에서 "
