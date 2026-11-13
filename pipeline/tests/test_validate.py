@@ -388,3 +388,48 @@ def test_speech_check_skips_notation_lines():
     assert c.errors == []
     c.check_speech(["전혀 다른 이야기를 해요."], ["배열을 반으로 나눠요."], "s3")    # 기호 없는 문장은 그대로 검사
     assert any("s3" in e for e in c.errors)
+
+
+def test_near_overlap_rules():
+    import copy
+    from pipeline.validate import validate_blueprint
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가"], "speech": [""],
+          "texts": [{"id": "k1", "style": "keyword", "content": "위", "hidden": False, "near": {"target": "g1", "side": "above"}},
+                    {"id": "k2", "style": "keyword", "content": "아래", "hidden": False, "near": {"target": "g1", "side": "below"}}],
+          "slides": [], "diagrams": [],
+          "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["5", "3", "8"]], "indexLabels": False, "pointers": []}], "codes": [],
+          "actions": [], "sourcePages": [1]}]}
+    assert validate_blueprint(bp, 1, near=True) == []
+    same = copy.deepcopy(bp)
+    same["scenes"][0]["texts"][1]["near"]["side"] = "above"
+    assert any("한 방향에 하나" in e for e in validate_blueprint(same, 1, near=True))
+    side = copy.deepcopy(bp)
+    side["scenes"][0]["texts"][1]["near"]["side"] = "right"
+    assert any("왼쪽·오른쪽" in e for e in validate_blueprint(side, 1, near=True))
+
+
+def test_near_above_conflicts_with_status_line():
+    from pipeline.validate import validate_blueprint
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가", "나"], "speech": ["", ""],
+          "texts": [{"id": "k1", "style": "body", "content": "입력", "hidden": False, "near": {"target": "g1", "side": "above"}},
+                    {"id": "st", "slot": "bottom", "style": "keyword", "content": "저장 11개", "hidden": True}],
+          "slides": [], "diagrams": [],
+          "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["5", "3", "8"]], "indexLabels": False, "pointers": []}], "codes": [],
+          "actions": [{"line": 1, "do": "show", "target": "st", "args": []}], "sourcePages": [1]}]}
+    assert any("상태 줄" in e for e in validate_blueprint(bp, 1, near=True))     # 실제 겹침 사례(algo-dc3near-review-c3)
+    bp["scenes"][0]["actions"].insert(0, {"line": 1, "do": "hide", "target": "k1", "args": []})
+    assert validate_blueprint(bp, 1, near=True) == []
+
+
+def test_divide_action(monkeypatch):
+    from pipeline import validate
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가"], "speech": [""],
+          "texts": [], "slides": [], "diagrams": [],
+          "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["6", "14", "18"], ["1", "2", "15"], ["", "", ""]],
+                     "indexLabels": False, "pointers": []}], "codes": [],
+          "actions": [{"line": 0, "do": "divide", "target": "g1", "args": ["row:1", "col:0"]}], "sourcePages": [1]}]}
+    assert any("구분선" in e for e in validate.validate_blueprint(bp, 1))          # 꺼져 있으면 오류
+    monkeypatch.setattr(validate, "SUPPORTED_DIVIDE", True)
+    assert validate.validate_blueprint(bp, 1) == []
+    bp["scenes"][0]["actions"][0]["args"] = ["row:2"]                               # 마지막 줄 아래는 안 됨
+    assert validate.validate_blueprint(bp, 1)

@@ -21,7 +21,7 @@ from pathlib import Path
 
 from pipeline import costlog
 from pipeline.errors import PipelineError, raise_if_no_credit
-from pipeline.validate import LIMITS, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_NEAR, SUPPORTED_SLOTS, screen_text_errors, validate_blueprint
+from pipeline.validate import LIMITS, SUPPORTED_DIVIDE, SUPPORTED_FORMULA_TERMS, SUPPORTED_LAYOUTS, SUPPORTED_NEAR, SUPPORTED_SLOTS, screen_text_errors, validate_blueprint
 
 ROOT = Path(__file__).resolve().parents[1]
 # 수식 항 강조 규칙(D-46). 검사기의 SUPPORTED_FORMULA_TERMS가 True일 때만 프롬프트에 넣는다.
@@ -31,7 +31,8 @@ NEAR_RULE = {
            "`\"near\": {\"target\": 주인 id, \"side\": \"above\"/\"below\"/\"left\"/\"right\"}`를 쓰면 그 부품·노드 옆에 붙는다. "
            "격자의 한 칸 밑에 붙이려면 `\"cell\": \"3\"`을 더한다(예: 성공 칸 밑의 `P(X=1)=p`, 배열 옆의 \"피봇 8\"). "
            "붙은 글은 자리를 차지하지 않고, 주인이 화면에 있는 동안만 보일 수 있다(주인을 hide하기 전에 글도 hide). "
-           "주인 하나에 붙은 글은 2개 이하, 짧게(15자 안팎). "
+           "주인 하나에 붙은 글은 2개 이하, 짧게(15자 안팎). 겹치지 않게: 격자·다이어그램·코드에는 above/below만 쓰고, "
+           "한 방향(같은 칸)에는 글 하나만 붙인다. keyword는 제목 바로 밑 상태 줄로 그려지므로, keyword가 보이는 동안에는 above에 붙이지 않는다. "
            "글을 다른 주인 옆으로 옮길 때는 `attach`(args [주인 id, 방향] 또는 [주인 id, 방향, 칸])를 쓴다. 글이 움직여 붙으므로, "
            "아래 자리에 띄운 식을 설명이 끝난 뒤 그 값의 주인 칸 밑으로 옮기는 식으로 쓴다(예: `P(X=1)=p`를 성공 칸 밑으로). "
            "place로 자리에 돌려보내면 다시 자리 글이 된다."),
@@ -39,10 +40,22 @@ NEAR_RULE = {
            "`\"near\": {\"target\": owner id, \"side\": \"above\"/\"below\"/\"left\"/\"right\"}` instead of slot to attach it beside that "
            "component or node. To attach under one grid cell, add `\"cell\": \"3\"` (e.g. `P(X=1)=p` under the success cell, "
            "\"피봇 8\" beside the array). An attached text takes no slot and may be visible only while its owner is on screen "
-           "(hide the text before hiding the owner). At most 2 texts per owner, short (about 15 chars). "
+           "(hide the text before hiding the owner). At most 2 texts per owner, short (about 15 chars). To avoid overlap: "
+           "use only above/below for grids, diagrams, and code; attach at most one text per side (or per cell); a keyword is drawn "
+           "as a status line right under the title, so never attach above while a keyword is visible. "
            "To move a text to another owner, use `attach` (args [owner id, side] or [owner id, side, cell]); the text moves "
            "on screen, e.g. a formula shown in the bottom slot moves under the cell it belongs to once explained "
            "(`P(X=1)=p` under the success cell). place sends it back to a slot."),
+}
+# 격자 구분선 규칙(P-AI-13). 검사기의 SUPPORTED_DIVIDE가 True일 때만 넣는다.
+DIVIDE_RULE = {
+    "ko": ("\n- **격자 안의 묶음은 구분선으로 나눈다(divide).** 두 배열·입력과 결과처럼 줄이 다른 뜻이면 `divide` args [\"row:k\"](k번째 줄 아래에 가로선), "
+           "한 배열을 반으로 나누면 [\"col:k\"](k번째 칸 오른쪽에 세로선). \"반으로 나눠요\"처럼 나누는 순간을 말하는 문장에 붙여 선이 그때 생기게 한다. "
+           "합쳐지면 `undivide`로 지운다. 한 격자에 선은 3개 이하."),
+    "en": ("\n- **Separate groups inside a grid with dividers (divide).** When rows mean different things (two arrays, input vs result), use `divide` "
+           "args [\"row:k\"] (horizontal line below row k); when splitting one array in half, use [\"col:k\"] (vertical line right of column k). "
+           "Attach it to the sentence that says the split (\"반으로 나눠요\") so the line appears then. Remove it with `undivide` once merged. "
+           "At most 3 lines per grid."),
 }
 TERMS_RULE = {
     "ko": ("\n- 수식의 한 부분을 설명할 때는 content 안에서 그 부분을 `\\term{항id}{LaTeX}`로 감싸고, 설명하는 문장에서 "
@@ -139,7 +152,7 @@ def _fill(prompt_file: Path, limits: str, lang: str = "ko") -> str:
     example = json.dumps(json.loads(EXAMPLE_FILE.read_text(encoding="utf-8")), ensure_ascii=False, separators=(",", ":"))
     return (prompt_file.read_text(encoding="utf-8")
             .replace("<<TERMS>>", TERMS_RULE[lang] if SUPPORTED_FORMULA_TERMS else "")
-            .replace("<<NEAR>>", NEAR_RULE[lang] if SUPPORTED_NEAR else "")
+            .replace("<<NEAR>>", (NEAR_RULE[lang] if SUPPORTED_NEAR else "") + (DIVIDE_RULE[lang] if SUPPORTED_DIVIDE else ""))
             .replace("<<LAYOUTS>>", ", ".join(SUPPORTED_LAYOUTS))
             .replace("<<SLOTS>>", ", ".join(SUPPORTED_SLOTS))
             .replace("<<LIMITS>>", limits)

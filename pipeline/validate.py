@@ -27,6 +27,9 @@ SUPPORTED_THEMES = ("dark",)
 SUPPORTED_FORMULA_TERMS = True
 # 글을 다른 부품·노드·칸 옆에 붙이는 near (D-60). FE 구현 뒤 True로 켠다.
 SUPPORTED_NEAR = False
+# 격자 구분선 divide/undivide (P-AI-13). FE 구현 뒤 True로 켠다.
+SUPPORTED_DIVIDE = False
+DIVIDE_ARG = re.compile(r"(row|col):(\d+)")
 NEAR_SIDES = ("above", "below", "left", "right")
 NEAR_STYLES = ("body", "keyword", "formula")
 TERM = "\\term"
@@ -81,9 +84,16 @@ ACTIONS = {
     "unstamp": {"text", "node", "edge"},
     "place": {"text", "slide", "diagram", "grid", "code"},  # D-56, FE 구현 11/14
     "attach": {"text"},                  # D-60, 글을 다른 주인 옆으로 옮겨 붙임(움직이며)
+    "divide": {"grid"},                  # P-AI-13, 격자 칸 사이 구분선
+    "undivide": {"grid"},
 }
 
 EPS = 1e-9
+
+
+def _wide(info: dict) -> bool:
+    """가로폭을 거의 다 쓰는 부품. 옆에 글을 붙이면 화면 밖으로 밀리거나 칸을 덮는다."""
+    return info["kind"] in ("grid", "diagram", "code", "slide")
 
 
 def _one_line(kind: str, info: dict) -> bool:
@@ -570,6 +580,16 @@ class _Checker:
             else:
                 info["slot"], info["placed"] = args[0], True
                 info.pop("near", None)
+        elif do in ("divide", "undivide"):
+            if not SUPPORTED_DIVIDE:
+                self.err(w, f"{do}(구분선)는 아직 플레이어가 지원하지 않음")
+            else:
+                cells = info["cells"]
+                for x in args or [""]:
+                    m = DIVIDE_ARG.fullmatch(x)
+                    last = (len(cells) if m and m.group(1) == "row" else max(len(r) for r in cells)) - 1
+                    if not m or not 0 <= int(m.group(2)) < last:
+                        self.err(w, f"{do}의 args는 \"row:k\"(k번째 줄 아래) 또는 \"col:k\"(k번째 칸 오른쪽), k는 0~{max(last - 1, 0)}")
         elif do == "attach":
             if not self.near:
                 self.err(w, "attach(옆에 붙이기)는 아직 플레이어가 지원하지 않음")
@@ -624,6 +644,24 @@ class _Checker:
 
     def check_screen(self, where: str) -> None:
         by_slot = defaultdict(list)
+        sides = defaultdict(list)
+        for ident, info in self.items.items():
+            near = info.get("near")
+            if near and info["visible"]:
+                sides[(near["target"], near.get("cell"), near["side"])].append(ident)
+                owner = self.items.get(near["target"])
+                if near["side"] in ("left", "right") and owner and not near.get("cell") and _wide(owner):
+                    self.err(where, f"{ident}: 넓은 부품(격자·다이어그램·코드)의 왼쪽·오른쪽에는 붙이지 않는다. above/below를 쓸 것")
+        # keyword는 FE가 제목 바로 밑 상태 줄로 그린다(Q-AI-35). 그동안 위에 붙인 글은 상태 줄과 겹친다.
+        status_on = any(i["kind"] == "text" and i["visible"] and not i.get("near") and "near" not in i
+                        and i["ref"].get("style") == "keyword" for i in self.items.values())
+        if status_on:
+            for (target, cell, side), ids in sides.items():
+                if side == "above":
+                    self.err(where, f"{', '.join(ids)}: keyword(상태 줄)가 보이는 동안에는 above에 붙이지 않는다. below를 쓰거나 내용을 keyword에 합칠 것")
+        for (target, cell, side), ids in sides.items():
+            if len(ids) > 1:
+                self.err(where, f"{target}{'의 ' + cell + '칸' if cell else ''} {side}에 붙은 글 {len(ids)}개가 동시에 보임: {', '.join(ids)} (한 방향에 하나)")
         for ident, info in self.items.items():
             if info.get("near") and info["visible"]:
                 owner = self.items.get(info["near"]["target"])
