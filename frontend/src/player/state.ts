@@ -26,7 +26,7 @@ export type Scene = {
 }
 export type Blueprint = { version: number; title: string; theme: string; scenes: Scene[] }
 export type Timing = { sceneId: string; lineIndex: number; text: string; startSec: number; endSec: number }
-export type PlayerState = { sceneId: string | null; sourcePages: number[]; elements: Entity[]; caption: string }
+export type PlayerState = { sceneId: string | null; resetSceneId?: string | null; sourcePages: number[]; elements: Entity[]; caption: string }
 
 function position(value: string, grid: Entity): [number, number] {
   const parts = value.split(',').map(Number)
@@ -207,13 +207,13 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
 export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], seconds: number): PlayerState {
   if (!Number.isFinite(seconds)) throw new Error('유효하지 않은 재생 시간')
   const time = Math.max(0, seconds)
-  const state: PlayerState = { sceneId: null, sourcePages: [], elements: [], caption: '' }
+  const state: PlayerState = { sceneId: null, resetSceneId: null, sourcePages: [], elements: [], caption: '' }
   const timings = new Map(captions.map((caption) => [`${caption.sceneId}:${caption.lineIndex}`, caption]))
   const explanationActions: Action[] = []
   let sceneStart = 0
   for (const scene of blueprint.scenes) {
     if (time < sceneStart) break
-    if (scene.clear) state.elements = []
+    if (scene.clear) { state.elements = []; state.resetSceneId = scene.id }
     state.sceneId = scene.id
     state.sourcePages = [...scene.sourcePages]
     const added = structuredClone([...scene.texts, ...scene.slides, ...scene.diagrams, ...scene.grids, ...scene.codes])
