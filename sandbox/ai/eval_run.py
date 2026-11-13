@@ -32,7 +32,7 @@ def main() -> int:
     ap.add_argument("clip_id")
     ap.add_argument("--models", nargs="+", default=["gpt-6.1-sol"])
     ap.add_argument("--audio", nargs="*", default=[], help="이 모델들의 설계도로 음성까지 만든다")
-    ap.add_argument("--prompt-lang", default="ko", choices=["ko", "en"], help="en이면 결과 이름 뒤에 -en이 붙는다")
+    ap.add_argument("--prompt-lang", default="en", choices=["ko", "en"], help="ko면 결과 이름 뒤에 -ko가 붙는다(기본 en, D-58)")
     ap.add_argument("--reuse", action="store_true", help="설계도 파일이 이미 있으면 다시 만들지 않는다(음성만 추가할 때)")
     args = ap.parse_args()
 
@@ -58,7 +58,7 @@ def main() -> int:
     (out / "pages.json").write_text(json.dumps({"pageCount": extracted["pageCount"], "pages": pages}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
     for model in args.models:
-        tag = SHORT.get(model, model) + ("-en" if args.prompt_lang == "en" else "")
+        tag = SHORT.get(model, model) + ("-ko" if args.prompt_lang == "ko" else "")
         path = out / f"blueprint-{tag}.json"
         if args.reuse and path.exists():
             r = {"blueprint": json.loads(path.read_text(encoding="utf-8")), "usage": [], "attempts": 0}
