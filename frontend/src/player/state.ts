@@ -1,3 +1,4 @@
+import { planNearSpace } from './nearPlanning.ts'
 import { validateNear } from './nearState.ts'
 import { formulaTermColors, parseFormulaTerms } from './formulaTerms.ts'
 import { isLit } from './focusDim.ts'
@@ -26,7 +27,7 @@ export type Scene = {
 }
 export type Blueprint = { version: number; title: string; theme: string; scenes: Scene[] }
 export type Timing = { sceneId: string; lineIndex: number; text: string; startSec: number; endSec: number }
-export type PlayerState = { sceneId: string | null; resetSceneId?: string | null; sourcePages: number[]; elements: Entity[]; caption: string }
+export type PlayerState = { sceneId: string | null; resetSceneId?: string | null; nearPlan?: Entity[]; sourcePages: number[]; elements: Entity[]; caption: string }
 
 function position(value: string, grid: Entity): [number, number] {
   const parts = value.split(',').map(Number)
@@ -227,6 +228,7 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
       element.formulaWhole = element.highlighted === true
     }
     state.elements.push(...added)
+    state.nearPlan = planNearSpace(state.elements, scene.actions)
     for (const action of scene.actions) {
       const caption = timings.get(`${scene.id}:${action.line}`)
       if (!caption) throw new Error(`동작의 자막 없음: ${scene.id}:${action.line}`)

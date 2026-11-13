@@ -7,10 +7,11 @@ import { dimsElement, DIM_OPACITY, isLit } from './focusDim'
 import './near.css'
 
 type Placement = Rect & { scale: number }
-type Props = { elements: Entity[]; stageRef: RefObject<HTMLDivElement | null>; renderElement: (element: Entity) => ReactNode; renderSnapshot: (elements: Entity[]) => ReactNode; onSizes: (sizes: Record<string,{height:number}>) => void }
+type Props = { reservationElements?: Entity[]; elements: Entity[]; stageRef: RefObject<HTMLDivElement | null>; renderElement: (element: Entity) => ReactNode; renderSnapshot: (elements: Entity[]) => ReactNode; onSizes: (sizes: Record<string,{height:number}>) => void }
 function collectAnchors(root: HTMLElement, stage: HTMLElement) {
   const rect=stage.getBoundingClientRect(),scale=rect.width/420||1,result=new Map<string,Rect>()
   root.querySelectorAll('[data-near-anchor], [data-near-cell]').forEach(node=>{
+    if(node.closest('.player-near-reservations'))return
     if(node.closest('.player-near-layer') || (node.closest('.player-stage-measure') && node.closest('.player-stage-measure')!==root))return
     const hidden=node.closest('[aria-hidden="true"]')
     if(hidden&&hidden!==root)return
@@ -20,9 +21,11 @@ function collectAnchors(root: HTMLElement, stage: HTMLElement) {
   })
   return result
 }
-export default function NearLayer({elements,stageRef,renderElement,renderSnapshot,onSizes}:Props) {
+export default function NearLayer({reservationElements,elements,stageRef,renderElement,renderSnapshot,onSizes}:Props) {
   const labels=useRef(new Map<string,HTMLDivElement>()),snapshots=useRef(new Map<string,HTMLDivElement>())
   const [placements,setPlacements]=useState<Record<string,Placement>>({})
+  const reservations=(reservationElements??[]).filter(element=>element.near&&!element.reservationOwner)
+  const reservationLabels=useRef(new Map<string,HTMLDivElement>())
   const attached=elements.filter(element=>element.near&&!element.hidden)
   const anyLit=elements.some(element=>!element.hidden&&isLit(element))
   const measure=()=>{
@@ -41,7 +44,12 @@ export default function NearLayer({elements,stageRef,renderElement,renderSnapsho
       const scale=Math.min(1,260/Math.max(1,width),bounds.height/Math.max(1,height))
       sizes.set(element.id,{width:width*scale,height:height*scale});scales.set(element.id,scale)
     }
-    onSizes(Object.fromEntries([...sizes].map(([id,size])=>[id,{height:size.height}])))
+    const reserved:Record<string,{height:number}>={}
+    for(const element of reservations){
+      const node=reservationLabels.current.get(element.id)
+      if(node)reserved[element.id]={height:node.offsetHeight}
+    }
+    onSizes(reservationElements?reserved:Object.fromEntries([...sizes].map(([id,size])=>[id,{height:size.height}])))
     const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const boxes=layoutNearLabels(elements,anchors,sizes,bounds,(element,to)=>{
       const snapshot=snapshots.current.get(element.id),motion=element.attachMotion
@@ -66,6 +74,7 @@ export default function NearLayer({elements,stageRef,renderElement,renderSnapsho
     return()=>observer.disconnect()
   },[structure,stageRef])
   return <>
+    <div className="player-near-reservations" aria-hidden="true" inert>{reservations.map(element=><div className="player-near-label" key={element.id} ref={node=>{if(node)reservationLabels.current.set(element.id,node);else reservationLabels.current.delete(element.id)}}>{renderElement(element)}</div>)}</div>
     {attached.filter(element=>element.attachMotion).map(element=><div key={`measure-${element.id}`} ref={node=>{if(node)snapshots.current.set(element.id,node);else snapshots.current.delete(element.id)}} className="player-stage-measure" data-near-measure="true" data-playing="false" aria-hidden="true" inert>{renderSnapshot(element.attachMotion!.origin)}</div>)}
     <div className="player-near-layer">{attached.map(element=>{
       const box=placements[element.id]
