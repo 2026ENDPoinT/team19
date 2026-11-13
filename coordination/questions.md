@@ -311,3 +311,10 @@
 - 요청: [to:FE] ① OutlineFlow가 완료된 클립 id 목록(`outline.clips` 중 `completed`, 순서대로)을 플레이어에 넘기기 ② 업로드 경로에서도 그 목록으로 이전·다음 버튼과 둥근 원본 보기 버튼을 학습 예시와 같은 자리에 두기 ③ OutlineFlow의 `key={playingClip}` 때문에 클립을 넘길 때 플레이어가 통째로 다시 만들어지면 넘김 애니메이션이 끊길 수 있으니, 플레이어 안에서 클립을 바꾸게 하거나 key를 빼기. 원본 그림은 지금처럼 `lecture.pages`로.
 - 작성: AI/Claude, 2026-11-14
 - 답:
+
+### Q-AI-44 · [to:FE] · 열림
+- 질문: 클립 목록에서 실패한 클립에 "다시 만들기" 버튼을 달아 주세요. 지금은 실패하면 "재생 준비 중"으로 막혀 다시 시도할 방법이 화면에 없습니다.
+- 배경: 팀장 확인(11/14). 기본 모드 "분할 정복의 세 단계와 종료 조건"이 `BLUEPRINT_INVALID`(메시지 "설계도를 만들지 못했습니다. 다시 시도해 주세요.", `retryable: true`)로 실패. BE에는 `POST /jobs/{jobId}/retry`가 이미 있고 **그 클립만** 다시 만든다(app.py `retry_job`, 응답 `{jobId, retryOf, status}`). AI가 curl로 불러 재시도는 확인했다.
+- 요청: [to:FE] `OutlineFlow.tsx`에서 `clip.status === 'failed'`이고 오류가 `retryable`이면 버튼 표시 → 그 클립의 jobId로 retry 호출 → 기존 상태 확인(watch)이 이어서 따라가게. 두 번 누름은 BE가 409로 막는다.
+- 작성: AI/Claude, 2026-11-14
+- 답:
