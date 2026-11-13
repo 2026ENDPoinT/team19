@@ -95,9 +95,9 @@
 .player-text--terms [style*="color"] .sqrt svg { color: inherit; }
 
 
+/* 끝값을 적지 않아 원래 불투명도(흐림 0.7 등)로 끝난다. 1까지 올라갔다 흐림으로 떨어지는 깜빡임 방지(Q-AI-42). */
 @keyframes player-shape-enter {
   from { opacity: 0; }
-  to { opacity: 1; }
 }
 .player-shape-enter { animation: player-shape-enter 250ms ease-out; }
 

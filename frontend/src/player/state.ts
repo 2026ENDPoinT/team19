@@ -209,6 +209,10 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
   const time = Math.max(0, seconds)
   const state: PlayerState = { sceneId: null, resetSceneId: null, sourcePages: [], elements: [], caption: '' }
   const timings = new Map(captions.map((caption) => [`${caption.sceneId}:${caption.lineIndex}`, caption]))
+  // 문장 사이 쉼(자막 없는 짧은 틈, 장면 사이 포함)에도 직전 문장을 '지금 문장'으로 본다(Q-AI-41).
+  // 그래서 강조·코드 줄·흐림이 다음 문장이 시작될 때까지 유지된다.
+  const ordered = [...captions].sort((a, b) => a.startSec - b.startSec)
+  const sentenceEnd = new Map(ordered.map((caption, index) => [caption, Math.max(caption.endSec, ordered[index + 1]?.startSec ?? caption.endSec)]))
   const explanationActions: Action[] = []
   let sceneStart = 0
   for (const scene of blueprint.scenes) {
@@ -233,7 +237,7 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
         const duration = ['swap', 'move'].includes(action.do) && sentence > 0.4 ? (0.4 + sentence) / 2 : Math.min(0.4, sentence)
         const progress = Math.min(1, Math.max(0, (time - caption.startSec) / duration))
         applyAction(state.elements, action, progress)
-        if (time < caption.endSec) {
+        if (time < (sentenceEnd.get(caption) ?? caption.endSec)) {
           explanationActions.push(action)
         }
       }

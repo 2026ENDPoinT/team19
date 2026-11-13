@@ -21,7 +21,8 @@ for(const time of [.5,2.5,4.5,.5]) {
  if(time===.5){assert.equal(grid(state).pointers[0].explaining,true);assert.equal(state.elements.find(e=>e.id==='text').explaining,true);assert.equal(state.elements.find(e=>e.id==='code').explainedLine,1)}
  else {assert.ok(!grid(state).pointers[0].explaining);assert.ok(!state.elements.find(e=>e.id==='text').explaining);assert.equal(state.elements.find(e=>e.id==='code').explainedLine,undefined)}
 }
-for(const time of [1,1.5,3,5]) assert.deepEqual(grid(at(time)).explainedCells,[],'caption end and gaps reset visual emphasis')
+// 문장 사이 쉼에는 직전 문장 강조를 유지하고(Q-AI-41), 마지막 문장이 끝나면 풀린다.
+for(const [time,cells] of [[1,['0,0']],[1.5,['0,0']],[3,['0,1']],[5,[]]]) assert.deepEqual(grid(at(time)).explainedCells,cells,'gaps keep previous sentence emphasis')
 assert.deepEqual(grid(at(4.5)).highlightedCells,['0,0'],'logical highlight remains intact')
 assert.deepEqual(grid(at(4.5)).cells,[['1','3']],'values persist after explanation')
 const paused=at(.5);at(5);assert.deepEqual(at(.5),paused)

@@ -19,7 +19,8 @@ const entity={id:'f',style:'formula',slot:'middle',content:source}
 const blueprint={version:0,title:'test',theme:'dark',scenes:[{id:'s',clear:true,sourcePages:[],texts:[entity],slides:[],diagrams:[],grids:[],codes:[],lines:['설명','다음'],actions:[{line:0,do:'highlight',target:'f',args:[]}]}]}
 const captions=[{sceneId:'s',lineIndex:0,text:'$1$ 설명',startSec:0,endSec:2},{sceneId:'s',lineIndex:1,text:'다음 설명',startSec:3,endSec:5}]
 const before=JSON.stringify(blueprint)
-for(const [time,active] of [[0,true],[1,true],[2,false],[2.5,false],[3,false],[5,false],[1,true],[0,true]]) {
+// 문장 사이 쉼(2~3초)에도 직전 문장 강조를 유지한다(Q-AI-41).
+for(const [time,active] of [[0,true],[1,true],[2,true],[2.5,true],[3,false],[5,false],[1,true],[0,true]]) {
  const state=calculatePlayerState(blueprint,captions,time)
  assert.equal(state.elements[0].explaining,active)
  assert.equal(state.elements[0].highlighted,true,'existing logical highlight preserved')

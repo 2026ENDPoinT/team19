@@ -30,7 +30,9 @@ export default function OutlineFlow({ lecture, mode, modeName, fileName, onBack 
     })
     return () => controller.abort()
   }, [lecture.id, mode, refresh, playingClip])
-  if (playingClip) return <ActualClipPreview key={playingClip} initialClipId={playingClip} pages={lecture.pages} onBack={() => setPlayingClip(null)} />
+  // 완료된 클립만 순서대로 넘겨 플레이어에서 위·아래로 이어 볼 수 있게 한다(Q-AI-43).
+  const completedIds = (snapshot?.outline.clips ?? []).filter((clip) => clip.status === 'completed').sort((a, b) => a.order - b.order).map((clip) => clip.id)
+  if (playingClip) return <ActualClipPreview key={playingClip} initialClipId={playingClip} clipIds={completedIds} pages={lecture.pages} onBack={() => setPlayingClip(null)} />
   const labels = {pending:'대기 중',running:'생성 중',completed:'준비 완료',failed:'생성 실패'}
   const statusStyles = { pending: 'bg-slate-100 text-slate-600', running: 'bg-blue-50 text-blue-700', completed: 'bg-emerald-50 text-emerald-700', failed: 'bg-red-50 text-red-700' }
   return <main className="brand-page brand-outline mx-auto w-full max-w-5xl px-5 pb-16 pt-10 sm:px-8 sm:pt-14">

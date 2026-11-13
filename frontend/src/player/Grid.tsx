@@ -19,8 +19,7 @@ export default function Grid({ element }: { element: Entity }) {
       return <text key={`i${r},${c}`} x={point.x} y={point.y - layout.cellHeight / 2 - 4} textAnchor="middle" fill={defaultTextColor} fontSize="10">{cells.length === 1 ? c : `${r},${c}`}</text>
     }))}
     {cells.flatMap((row, r) => row.map((value, c) => ({ value, key: `${r},${c}` })))
-      // 움직이는 칸은 다른 칸 위에 보이도록 마지막에 그린다.
-      .sort((a, b) => Number(Boolean(element.cellOrigins?.[a.key])) - Number(Boolean(element.cellOrigins?.[b.key])))
+      // 순서를 바꾸지 않는다: swap이 끝날 때 칸이 빠졌다 다시 들어가며 깜빡이던 문제(Q-AI-42). 엇갈리는 칸은 위·아래로 휘어 겹치지 않는다.
       .map(({ value, key }) => {
       const to = layout.positions.get(key)!
       const motion = element.cellOrigins?.[key]
