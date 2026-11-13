@@ -2,6 +2,7 @@ import { jobStageLabel } from '../services/jobStages'
 import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import './processing.css'
+import DotField from './DotField'
 
 // 기다리는 동안 보여 줄 일반 학습 팁(강의 내용 분석 결과가 아니다). 7초마다 바뀐다.
 const STUDY_TIPS = [
@@ -46,7 +47,7 @@ export default function ProcessingStatus({ stage, message, progress }: Props) {
         </div>
       </div>
       <div className="processing-artwork" aria-hidden="true">
-        <div className="processing-dot-field">{Array.from({ length: 96 }, (_, index) => <i key={index} style={{ '--dot-delay': `${-index * .073}s` } as CSSProperties} />)}</div>
+        <DotField className="dot-field--art" spacing={18} radius={90} />
         <div className="processing-orbit processing-orbit--one" />
         <div className="processing-orbit processing-orbit--two" />
         <div className="processing-sheet"><span>PDF</span><i /><i /><i /><i /><div className="processing-scan" /></div>
