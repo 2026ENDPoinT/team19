@@ -25,3 +25,15 @@ const stale = callbacks.values().next().value
 cleanup();assert.equal(callbacks.size,0);assert.equal(audio.paused,true)
 const count=times.length;audio.emit('timeupdate');stale(0);assert.equal(times.length,count)
 console.log('PASS audio clock: playback frames, pause, forward/reverse seek, loop, cleanup and stale callbacks')
+
+// 기본 프레임 함수는 브라우저처럼 객체 메서드로 부르면 실패하는 requestAnimationFrame도 정상 호출해야 한다.
+{
+  let calls = 0
+  globalThis.requestAnimationFrame = function (cb) { if (this !== undefined && this !== globalThis) throw new TypeError('Illegal invocation'); calls++; return 1 }
+  globalThis.cancelAnimationFrame = function () { if (this !== undefined && this !== globalThis) throw new TypeError('Illegal invocation') }
+  const a = new Audio(); a.paused = false
+  const stop = bindAudioClock(a, () => {})
+  assert.equal(calls, 1)
+  stop()
+  console.log('PASS default animation frame calls keep the browser receiver')
+}
