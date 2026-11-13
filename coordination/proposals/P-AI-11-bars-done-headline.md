@@ -68,8 +68,25 @@ D-46, D-53, D-54, D-56과 같다. FE가 구현해 알리면 AI가 검사기(bars
 (FE 역할만 작성)
 
 ### BE
+> BE/Claude, 2026-11-14 · 기술 검토와 문서만. BE·FE·AI 코드 변경 없음, 무과금.
 
-(BE 역할만 작성)
+**결론: BE 코드 수정·API 계약 변경·DB 변경 모두 필요 없다.** 제안서의 "BE: 영향 없을 것으로 본다"가 코드 기준으로 맞다.
+
+**코드로 확인한 사실(BE가 설계도를 거르지 않는다):**
+- AI 설계도는 `backend/pipeline.py`의 `check_blueprint`가 **AI의 `validate_blueprint`를 그대로 호출**해 검사한다. BE 자체의 설계도 키 목록·화이트리스트는 없다(`validate_result`는 자막의 `sceneId`·`lineIndex`·문장·시간만 비교한다).
+- 통과한 설계도는 `backend/app.py`의 `do_clip`이 `clips.result_json`에 **통째로 `json.dumps`** 하고(`result["blueprint"]`), `GET /clips/{id}`가 `json.loads`로 **그대로** 돌려준다. 장면·부품·동작을 골라 쓰거나 지우는 코드가 없다. (같은 경로로 `lineSourcePages` 보존 테스트를 이미 통과했다.)
+- 샘플 모드의 개발용 MP4 미리보기(`render_preview`)만 설계도를 읽지만 예외를 잡아 설계도·음성 저장을 막지 않으며, 실제 AI 모드는 만들지 않는다.
+
+**항목별(AI 검사기 현재 상태를 `validate_blueprint`에 직접 넣어 확인, 켜거나 우회하지 않음):**
+| 항목 | 현재 AI 검사기 | BE 저장·전달 |
+|---|---|---|
+| `grids[].bars` | 통과(알 수 없는 격자 칸을 막지 않음). 제안서의 "숫자 확인" 검사는 아직 없음 | 검사기를 통과하면 그대로 저장·반환 |
+| `done` / `undone` | `모르는 동작: done`으로 **거부**(AI가 FE 구현 뒤 켤 예정) | 통과한 설계도만 오므로 BE 영향 없음 |
+| `texts[].style: "headline"` | `style은 title, body, keyword, formula 중 하나`로 **거부**(아직 켜지 않음) | 위와 같음 |
+
+**의존하는 부분:** AI 검사기·프롬프트를 켜는 일(AI)과 막대 그리기·완료 표시·headline 그리기(FE)다. 순서는 제안서대로 FE 구현 → AI 활성화이며, BE는 그 순서를 바꾸지 않았다.
+
+**검증 범위:** 위 표는 기존 샘플 설계도 1개에 필드를 넣어 AI 검사기를 호출한 결과와 코드 읽기다. **실제 AI가 새 필드를 만든 설계도로 BE를 통과시킨 통합 검증은 아직 없다**(검사기가 꺼져 있어 지금은 만들 수 없다). 활성화 후 첫 실제 클립에서 `GET /clips/{id}`의 `blueprint`에 필드가 그대로 있는지 확인하면 된다.
 
 ## 결정 (팀장)
 
