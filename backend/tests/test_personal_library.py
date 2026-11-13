@@ -13,9 +13,10 @@ A = "device-aaaaaaaaaaaaaaaa"
 B = "device_BBBBBBBBBBBBBBBB-1"
 
 
-def up(client, owner=None, name="lecture.pdf"):
+def up(client, owner=None, name="lecture.pdf", extra=b""):
+    # extra makes the bytes differ: identical PDFs of one owner are reused (P-FE-15), not listed twice
     headers = {} if owner is None else {"X-Owner-Id": owner}
-    return client.post("/lectures", files={"file": (name, pdf_bytes(), "application/pdf")}, headers=headers)
+    return client.post("/lectures", files={"file": (name, pdf_bytes() + extra, "application/pdf")}, headers=headers)
 
 
 def listing(client, owner=None):
@@ -25,7 +26,7 @@ def listing(client, owner=None):
 def test_each_owner_sees_only_own_lectures_newest_first(client):
     a1 = up(client, A, "a1.pdf").json()["lectureId"]
     b1 = up(client, B, "b1.pdf").json()["lectureId"]
-    a2 = up(client, A, "a2.pdf").json()["lectureId"]
+    a2 = up(client, A, "a2.pdf", extra=b"\n% second\n").json()["lectureId"]
     assert [l["id"] for l in listing(client, A).json()] == [a2, a1]
     assert [l["id"] for l in listing(client, B).json()] == [b1]
     assert listing(client, "device-cccccccccccccccc").json() == []
