@@ -4,7 +4,7 @@ import { emphasizeFormula } from './formulaEmphasis'
 import { renderFormulaTerms } from './formulaTerms'
 import FitContent from './FitContent'
 import { layoutGrid } from './gridLayout'
-import { layoutDiagram } from './diagramLayout'
+import { layoutDiagramEdges } from './diagramEdges'
 import Slide from './Slide'
 import Diagram from './Diagram'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
@@ -53,7 +53,7 @@ function preferredHeight(element: Entity): number {
   if (element.cells) return layoutGrid(element.cells, element.indexLabels === true, element.pointers?.length ?? 0).height + 8
   if (element.nodes) {
     try {
-      const diagram = layoutDiagram(element.nodes, (element.edges ?? []).map((edge) => ({ from: String(edge.from), to: String(edge.to) })), String(element.layout))
+      const diagram = layoutDiagramEdges(element.nodes, (element.edges ?? []).map((edge) => ({ id:edge.id, from: String(edge.from), to: String(edge.to), label:edge.label })), String(element.layout))
       return Math.max(70, diagram.height * Math.min(1, 360 / diagram.width)) + 8
     } catch { return 90 }
   }
