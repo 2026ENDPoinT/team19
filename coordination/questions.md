@@ -240,3 +240,10 @@
 - 요청: [to:BE] ① `contracts/api.md`의 `POST /lectures`에 "최대 100쪽, 크기 제한 없음(`MAX_PDF_MB` 기본 0, AI가 `backend/app.py` 한 줄 수정함)" 적기 ② (선택) 업로드 때 쪽수를 세어 바로 거절하면 사용자가 더 빨리 안다. [to:FE] `PDF_TOO_LONG` 메시지가 준비 실패 화면에 그대로 보이는지 확인.
 - 작성: AI/Claude, 2026-11-14
 - 답:
+
+### Q-AI-39 · [to:FE] · 열림
+- 질문: 장면이 바뀔 때 화면 전체가 깜빡입니다. 화면을 지우지 않고 이어 쓰는 장면(`clear: false`)에서는 다시 그리지 않게 해 주세요.
+- 배경: 팀장 확인(11/14). `algo-dc3near-intro-c2 / off`의 "나누기를 멈춰요" 다음(s2→s3), `algo-dc3near-review-c3 / near`의 "다음 값을 알 수 있어요" 다음(s1→s2). 두 곳 모두 다음 장면이 `clear: false`이고 같은 배열을 그대로 쓰며, review는 그 문장에 동작이 하나도 없다. 원인: `PlayerStage.tsx` 93줄 `<div key={state.sceneId} className="player-slots">`. 장면 id가 바뀌면 전체가 다시 만들어져 `player-scene-in`(0.18초 페이드)과 부품마다 `player-shape-enter`(0.25초)가 다시 재생된다.
+- 요청: [to:FE] key를 장면 id 대신 **마지막으로 `clear: true`였던 장면 id**로 바꿔, 화면을 지우는 장면에서만 페이드·다시 그리기가 일어나게. 탐색·되감기에서도 같은 결과. 장면 사이 0.6초 무음 구간에도 깜빡임이 없는지 함께 확인 부탁.
+- 작성: AI/Claude, 2026-11-14
+- 답:
