@@ -278,3 +278,7 @@
 **격자 구분선 `divide`/`undivide`를 넣는다(P-AI-13).** `row:k`(k번째 줄 아래 가로선), `col:k`(k번째 칸 오른쪽 세로선). FE가 분홍 점선으로 구현했고 AI가 켰다. 세로선은 칸 수가 같은 줄에만 쓴다.
 같은 날 FE 구현에 맞춰 AI 스위치를 모두 켰다: `near`·`attach`(D-60), 단어 강조 `**`(D-63).
 근거: P-AI-13, 강현
+
+### D-69 · 확정 · 2026-11-14
+**해커톤 제출용으로 공개 페이지를 따로 둔다: FE는 GitHub Pages(`https://2026endpoint.github.io/team19/`), BE는 팀장 노트북 + Cloudflare 임시 터널.** 시연은 그대로 localhost(D-66). 학습 예시 맨 앞에 강의함의 분할정복 3장 클립(입문 4, 기본 10, `samples/eval/dc3-*`)을 둬서 서버 없이도 누구나 재생한다. 유료 호출 노출은 팀장이 참가자에게 업로드 자제를 부탁하는 것으로 감수하고, 강의 슬라이드 그림 공개도 감수한다. 터널 주소는 서버·터널을 켜 둔 동안 유지되며, 바뀌면 `.github/workflows/pages.yml`의 주소만 고쳐 push한다. 저장소 공개 전환과 Pages 켜기(Settings → Pages → GitHub Actions)는 팀장이 요청한다.
+근거: D-66, 강현

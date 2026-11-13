@@ -1,0 +1,892 @@
+{
+ "resultId": "eval-dc3-review-04-sol",
+ "durationSec": 69.53,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "합병 정렬의 재귀와 구현 따라가기",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "합병 정렬은 이 배열을 어떻게 정렬할까요?",
+     "먼저 8개 원소를 반씩 나눠요.",
+     "각 부분도 반으로 나누면 2개씩 남아요.",
+     "이 쌍도 낱개로 나누고, 크기 1에서 멈춰요."
+    ],
+    "speech": [
+     "",
+     "먼저 여덟 개 원소를 반씩 나눠요.",
+     "각 부분도 반으로 나누면 두 개씩 남아요.",
+     "이 쌍도 낱개로 나누고, 크기 일에서 멈춰요."
+    ],
+    "texts": [
+     {
+      "id": "title_recursion",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "나누고, 다시 합치기"
+     },
+     {
+      "id": "pair_label",
+      "slot": "bottom",
+      "near": {
+       "target": "pair_grid",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "위: 낱개 · 아래: 합병 결과"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "original_array",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "37",
+        "10",
+        "22",
+        "30",
+        "35",
+        "13",
+        "25",
+        "24"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     },
+     {
+      "id": "pair_grid",
+      "slot": "middle",
+      "hidden": true,
+      "cells": [
+       [
+        "37",
+        "10"
+       ],
+       [
+        "",
+        ""
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "divide",
+      "target": "original_array",
+      "args": [
+       "col:3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "divide",
+      "target": "original_array",
+      "args": [
+       "col:1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "divide",
+      "target": "original_array",
+      "args": [
+       "col:5"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "place",
+      "target": "original_array",
+      "args": [
+       "top"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "pair_grid",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "divide",
+      "target": "pair_grid",
+      "args": [
+       "row:0"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "divide",
+      "target": "pair_grid",
+      "args": [
+       "col:0"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "pair_label",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     16,
+     23
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "이제 위로 올라가며 37과 10을 비교해요.",
+     "작은 10을 합병 결과에 먼저 써요.",
+     "남은 37을 붙이면 이 쌍의 정렬이 끝나요.",
+     "원래 8개도 같은 방식으로 합병하면 이렇게 돼요."
+    ],
+    "speech": [
+     "이제 위로 올라가며 삼십칠과 십을 비교해요.",
+     "작은 십을 합병 결과에 먼저 써요.",
+     "남은 삼십칠을 붙이면 이 쌍의 정렬이 끝나요.",
+     "원래 여덟 개도 같은 방식으로 합병하면 이렇게 돼요."
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "sorted_array",
+      "slot": "middle",
+      "hidden": true,
+      "cells": [
+       [
+        "10",
+        "13",
+        "22",
+        "24",
+        "25",
+        "30",
+        "35",
+        "37"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "pair_grid",
+      "args": [
+       "0,0",
+       "0,1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "pair_grid",
+      "args": [
+       "0,0",
+       "0,1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setValue",
+      "target": "pair_grid",
+      "args": [
+       "1,0",
+       "10"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "pair_grid",
+      "args": [
+       "1,0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "pair_grid",
+      "args": [
+       "1,0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setValue",
+      "target": "pair_grid",
+      "args": [
+       "1,1",
+       "37"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "pair_grid",
+      "args": [
+       "1,1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "undivide",
+      "target": "pair_grid",
+      "args": [
+       "col:0"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "pair_grid",
+      "args": [
+       "1,1"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "hide",
+      "target": "pair_label",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "hide",
+      "target": "pair_grid",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "hide",
+      "target": "original_array",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "sorted_array",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     23
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "코드를 볼까요, p < q일 때만 더 나눠요.",
+     "인덱스 0부터 7이면 중간 인덱스는 3이에요.",
+     "두 재귀 호출은 양쪽 구간을 각각 정렬해요.",
+     "마지막 합병이 정렬된 두 구간을 하나로 이어요."
+    ],
+    "speech": [
+     "코드를 볼까요, 피가 큐보다 작을 때만 더 나눠요.",
+     "인덱스 영부터 칠이면 중간 인덱스는 삼이에요.",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title_pseudo",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "재귀와 합병의 연결"
+     },
+     {
+      "id": "pseudo_label",
+      "slot": "bottom",
+      "near": {
+       "target": "pseudo_original",
+       "side": "below"
+      },
+      "hidden": false,
+      "style": "body",
+      "content": "종료 조건: p ≥ q"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [
+     {
+      "id": "pseudo_original",
+      "slot": "middle",
+      "hidden": false,
+      "language": "pseudo",
+      "lines": [
+       "if (p < q) {",
+       "  k = ⌊(p+q)/2⌋",
+       "  MergeSort(A, p, k)",
+       "  MergeSort(A, k+1, q)",
+       "  A[p]~A[k] 와 A[k+1]~A[q] 를 합병한다",
+       "}"
+      ]
+     },
+     {
+      "id": "pseudo_values",
+      "slot": "middle",
+      "hidden": true,
+      "language": "pseudo",
+      "lines": [
+       "if (0 < 7) {",
+       "  k = ⌊(0+7)/2⌋",
+       "  MergeSort(A, 0, 3)",
+       "  MergeSort(A, 4, 7)",
+       "  A[0]~A[3] 와 A[4]~A[7] 를 합병한다",
+       "}"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "line": 0,
+      "do": "markLine",
+      "target": "pseudo_original",
+      "args": [
+       "1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "hide",
+      "target": "pseudo_label",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "hide",
+      "target": "pseudo_original",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "pseudo_values",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "markLine",
+      "target": "pseudo_values",
+      "args": [
+       "2"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "pseudo_values",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "pseudo_original",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "markLine",
+      "target": "pseudo_original",
+      "args": [
+       "3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "pseudo_label",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "pseudo_label",
+      "args": [
+       "앞부분·뒷부분 재귀 정렬"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "markLine",
+      "target": "pseudo_original",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "pseudo_label",
+      "args": [
+       "정렬된 두 구간의 합병"
+      ]
+     }
+    ],
+    "sourcePages": [
+     20,
+     23
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "C 구현에서는 두 포인터가 가리키는 값을 비교해요.",
+     "한쪽이 끝나면 다른 쪽의 남은 원소를 복사해요.",
+     "마지막에는 임시 배열을 원본 배열로 되돌려요."
+    ],
+    "speech": [
+     "씨 구현에서는 두 포인터가 가리키는 값을 비교해요.",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title_implementation",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "합병 구현과 비용"
+     },
+     {
+      "id": "compare_label",
+      "slot": "bottom",
+      "near": {
+       "target": "c_compare",
+       "side": "below"
+      },
+      "hidden": false,
+      "style": "body",
+      "content": "작은 값을 임시 배열에 저장"
+     },
+     {
+      "id": "remaining_label",
+      "slot": "bottom",
+      "near": {
+       "target": "c_remaining",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "비교 없이 나머지 복사"
+     },
+     {
+      "id": "copy_label",
+      "slot": "bottom",
+      "near": {
+       "target": "c_copy",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "임시 배열 → 원본 배열"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [
+     {
+      "id": "c_compare",
+      "slot": "middle",
+      "hidden": false,
+      "language": "c",
+      "lines": [
+       "while (n1 <= mid && n2 <= high) {",
+       "  if (list[n1] <= list[n2])",
+       "    sorted[s++] = list[n1++];",
+       "  else sorted[s++] = list[n2++];",
+       "}"
+      ]
+     },
+     {
+      "id": "c_remaining",
+      "slot": "middle",
+      "hidden": true,
+      "language": "c",
+      "lines": [
+       "if (n1 > mid)",
+       "  while (n2 <= high)",
+       "    sorted[s++] = list[n2++];",
+       "else while (n1 <= mid)",
+       "  sorted[s++] = list[n1++];"
+      ]
+     },
+     {
+      "id": "c_copy",
+      "slot": "middle",
+      "hidden": true,
+      "language": "c",
+      "lines": [
+       "for (i = low; i <= high; i++)",
+       "  list[i] = sorted[i];"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "line": 0,
+      "do": "markLine",
+      "target": "c_compare",
+      "args": [
+       "2"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "hide",
+      "target": "compare_label",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "hide",
+      "target": "c_compare",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "c_remaining",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "remaining_label",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "remaining_label",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "c_remaining",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "c_copy",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "copy_label",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "markLine",
+      "target": "c_copy",
+      "args": [
+       "2"
+      ]
+     }
+    ],
+    "sourcePages": [
+     22
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": false,
+    "lines": [
+     "비용을 구별하면, 중간점 계산 같은 분할 작업은 O(1)이에요.",
+     "자료의 설명과 달리, 재귀 호출 전체가 O(1)은 아니에요.",
+     "재귀로 푼 양쪽 결과를 합치는 비용은 O(n)이에요."
+    ],
+    "speech": [
+     "비용을 구별하면, 중간점 계산 같은 분할 작업은 빅오 일이에요.",
+     "자료의 설명과 달리, 재귀 호출 전체가 빅오 일은 아니에요.",
+     "재귀로 푼 양쪽 결과를 합치는 비용은 빅오 엔이에요."
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "cost_flow",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "cost_split",
+        "label": "중간점 계산 O(1)",
+        "shape": "box"
+       },
+       {
+        "id": "cost_recursive",
+        "label": "양쪽 재귀 정렬",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "cost_merge",
+        "label": "합병 O(n)",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "cost_edge_recursive",
+        "from": "cost_split",
+        "to": "cost_recursive",
+        "hidden": true
+       },
+       {
+        "id": "cost_edge_merge",
+        "from": "cost_recursive",
+        "to": "cost_merge",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "copy_label",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "c_copy",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "cost_flow",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "cost_split",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "cost_split",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "cost_recursive",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "cost_edge_recursive",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "cost_recursive",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "cost_recursive",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "cost_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "cost_edge_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "cost_merge",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     16,
+     20,
+     22
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "합병 정렬은 이 배열을 어떻게 정렬할까요?",
+   "startSec": 0.0,
+   "endSec": 3.25
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "먼저 8개 원소를 반씩 나눠요.",
+   "startSec": 3.55,
+   "endSec": 5.73
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "각 부분도 반으로 나누면 2개씩 남아요.",
+   "startSec": 6.03,
+   "endSec": 8.71
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "이 쌍도 낱개로 나누고, 크기 1에서 멈춰요.",
+   "startSec": 9.01,
+   "endSec": 12.16
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이제 위로 올라가며 37과 10을 비교해요.",
+   "startSec": 12.76,
+   "endSec": 16.69
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "작은 10을 합병 결과에 먼저 써요.",
+   "startSec": 16.99,
+   "endSec": 19.5
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "남은 37을 붙이면 이 쌍의 정렬이 끝나요.",
+   "startSec": 19.8,
+   "endSec": 23.24
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "원래 8개도 같은 방식으로 합병하면 이렇게 돼요.",
+   "startSec": 23.54,
+   "endSec": 27.28
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "코드를 볼까요, p < q일 때만 더 나눠요.",
+   "startSec": 27.88,
+   "endSec": 32.0
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "인덱스 0부터 7이면 중간 인덱스는 3이에요.",
+   "startSec": 32.3,
+   "endSec": 36.03
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "두 재귀 호출은 양쪽 구간을 각각 정렬해요.",
+   "startSec": 36.33,
+   "endSec": 39.52
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "마지막 합병이 정렬된 두 구간을 하나로 이어요.",
+   "startSec": 39.82,
+   "endSec": 43.36
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "C 구현에서는 두 포인터가 가리키는 값을 비교해요.",
+   "startSec": 43.96,
+   "endSec": 48.38
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "한쪽이 끝나면 다른 쪽의 남은 원소를 복사해요.",
+   "startSec": 48.68,
+   "endSec": 52.17
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "마지막에는 임시 배열을 원본 배열로 되돌려요.",
+   "startSec": 52.47,
+   "endSec": 56.14
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "비용을 구별하면, 중간점 계산 같은 분할 작업은 O(1)이에요.",
+   "startSec": 56.74,
+   "endSec": 61.44
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "자료의 설명과 달리, 재귀 호출 전체가 O(1)은 아니에요.",
+   "startSec": 61.74,
+   "endSec": 65.65
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "재귀로 푼 양쪽 결과를 합치는 비용은 O(n)이에요.",
+   "startSec": 65.95,
+   "endSec": 69.53
+  }
+ ]
+}

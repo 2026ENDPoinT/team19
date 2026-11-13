@@ -1,0 +1,509 @@
+{
+ "resultId": "eval-dc3-intro-03-sol",
+ "durationSec": 43.33,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "퀵 정렬: 기준값으로 양쪽 나누기",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "퀵 정렬은 어떻게 숫자를 정리할까요?",
+     "사람들을 기준 키로 나누는 모습을 떠올려 봐요.",
+     "숫자를 나눌 때 쓰는 기준값을 피봇이라고 해요.",
+     "피봇보다 작으면 왼쪽, 크면 오른쪽으로 나눠요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_intro",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "기준값으로 나누기"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_partition",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "n_small",
+        "label": "작은 값",
+        "shape": "box"
+       },
+       {
+        "id": "n_pivot",
+        "label": "피봇",
+        "shape": "box"
+       },
+       {
+        "id": "n_large",
+        "label": "큰 값",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_pivot",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_pivot",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_small",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_large",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     32
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "이번에는 피봇 60으로 나눈 모습을 볼까요?",
+     "작은 값들은 왼쪽, 큰 값들은 오른쪽에 있어요.",
+     "하지만 양쪽 그룹 안의 순서는 아직 뒤섞여 있어요.",
+     "60은 제자리라서 다음 정렬에서는 빠져요.",
+     "남은 양쪽 그룹에서 같은 나누기를 반복해요."
+    ],
+    "speech": [
+     "이번에는 피봇 육십으로 나눈 모습을 볼까요?",
+     "",
+     "",
+     "육십은 제자리라서 다음 정렬에서는 빠져요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_example",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "나누기와 정렬의 차이"
+     },
+     {
+      "id": "t_pivot_state",
+      "slot": "bottom",
+      "near": {
+       "target": "g_partition",
+       "side": "below"
+      },
+      "hidden": false,
+      "style": "keyword",
+      "content": "피봇 60"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g_partition",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "20",
+        "40",
+        "10",
+        "30",
+        "50",
+        "60",
+        "70",
+        "90",
+        "80"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "divide",
+      "target": "g_partition",
+      "args": [
+       "col:4"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "divide",
+      "target": "g_partition",
+      "args": [
+       "col:5"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "g_partition",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "g_partition",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_partition",
+      "args": [
+       "0-4",
+       "6-8"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_partition",
+      "args": [
+       "0-4",
+       "6-8"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_partition",
+      "args": [
+       "1-2",
+       "7-8"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_partition",
+      "args": [
+       "1-2",
+       "7-8"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "g_partition",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "g_partition",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "t_pivot_state",
+      "args": [
+       "양쪽에서 같은 과정"
+      ]
+     }
+    ],
+    "sourcePages": [
+     32,
+     33
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "한쪽에만 몰리면 어떻게 될까요?",
+     "가장 작은 값을 고르면 나머지가 한쪽에 남아요.",
+     "남은 쪽에서도 반복되면 일이 오래 걸려요.",
+     "그래서 기준값을 잘 고르는 게 중요해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_balance",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "기준값 선택의 중요성"
+     },
+     {
+      "id": "t_choice",
+      "slot": "bottom",
+      "near": {
+       "target": "d_unbalanced",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "한쪽으로 치우치는 나누기"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_unbalanced",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "tree",
+      "nodes": [
+       {
+        "id": "n_all",
+        "label": "전체 숫자",
+        "shape": "box"
+       },
+       {
+        "id": "n_fixed_one",
+        "label": "1 확정",
+        "shape": "box"
+       },
+       {
+        "id": "n_rest_first",
+        "label": "남은 숫자",
+        "shape": "box"
+       },
+       {
+        "id": "n_fixed_nine",
+        "label": "9 확정",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_rest_second",
+        "label": "남은 숫자",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_first_fixed",
+        "from": "n_all",
+        "to": "n_fixed_one"
+       },
+       {
+        "id": "e_first_rest",
+        "from": "n_all",
+        "to": "n_rest_first"
+       },
+       {
+        "id": "e_second_fixed",
+        "from": "n_rest_first",
+        "to": "n_fixed_nine",
+        "hidden": true
+       },
+       {
+        "id": "e_second_rest",
+        "from": "n_rest_first",
+        "to": "n_rest_second",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_rest_first",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n_fixed_nine",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n_rest_second",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e_second_fixed",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e_second_rest",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_rest_second",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_rest_first",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_rest_second",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "t_choice",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     44,
+     49
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "퀵 정렬은 어떻게 숫자를 정리할까요?",
+   "startSec": 0.0,
+   "endSec": 2.92
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "사람들을 기준 키로 나누는 모습을 떠올려 봐요.",
+   "startSec": 3.22,
+   "endSec": 6.14
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "숫자를 나눌 때 쓰는 기준값을 피봇이라고 해요.",
+   "startSec": 6.44,
+   "endSec": 9.53
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "피봇보다 작으면 왼쪽, 크면 오른쪽으로 나눠요.",
+   "startSec": 9.83,
+   "endSec": 13.26
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이번에는 피봇 60으로 나눈 모습을 볼까요?",
+   "startSec": 13.86,
+   "endSec": 17.03
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "작은 값들은 왼쪽, 큰 값들은 오른쪽에 있어요.",
+   "startSec": 17.33,
+   "endSec": 20.52
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "하지만 양쪽 그룹 안의 순서는 아직 뒤섞여 있어요.",
+   "startSec": 20.82,
+   "endSec": 24.19
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "60은 제자리라서 다음 정렬에서는 빠져요.",
+   "startSec": 24.49,
+   "endSec": 27.13
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "남은 양쪽 그룹에서 같은 나누기를 반복해요.",
+   "startSec": 27.43,
+   "endSec": 30.5
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "한쪽에만 몰리면 어떻게 될까요?",
+   "startSec": 31.1,
+   "endSec": 33.47
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "가장 작은 값을 고르면 나머지가 한쪽에 남아요.",
+   "startSec": 33.77,
+   "endSec": 37.04
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "남은 쪽에서도 반복되면 일이 오래 걸려요.",
+   "startSec": 37.34,
+   "endSec": 40.32
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "그래서 기준값을 잘 고르는 게 중요해요.",
+   "startSec": 40.62,
+   "endSec": 43.33
+  }
+ ]
+}

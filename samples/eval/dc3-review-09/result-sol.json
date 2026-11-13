@@ -1,0 +1,662 @@
+{
+ "resultId": "eval-dc3-review-09-sol",
+ "durationSec": 68.65,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "피봇 선택과 작은 구간 성능 개선",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "작은 예로, 정렬된 입력의 피봇을 골라 볼까요?",
+     "왼쪽 값만 고르면 늘 가장 작은 값이에요.",
+     "피봇을 빼면 한쪽만 남아 최악의 분할이 반복돼요.",
+     "무작위 선택은 특정 입력에 치우친 선택을 줄여요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title_pivot",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "피봇 선정 방법"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "random_choice",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "random_range",
+        "label": "현재 구간",
+        "shape": "box"
+       },
+       {
+        "id": "random_pivot",
+        "label": "무작위 피봇",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "random_edge",
+        "from": "random_range",
+        "to": "random_pivot",
+        "label": "하나 선택"
+       }
+      ]
+     }
+    ],
+    "grids": [
+     {
+      "id": "sorted_input",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "sorted_input",
+      "args": [
+       "0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "divide",
+      "target": "sorted_input",
+      "args": [
+       "col:0"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "sorted_input",
+      "args": [
+       "0"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "hide",
+      "target": "sorted_input",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "random_choice",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     49
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "이번에는 세 후보의 중앙값을 골라 볼까요?",
+     "왼쪽·중간·오른쪽 값은 31, 1, 26이에요.",
+     "이 중 중간 크기인 26을 피봇으로 골라요.",
+     "전체가 아니라 세 후보 안에서의 중앙값이에요.",
+     "이 선택도 최악 O(n²)을 없애지는 못해요."
+    ],
+    "speech": [
+     "",
+     "왼쪽, 중간, 오른쪽 값은 삼십일, 일, 이십육이에요.",
+     "이 중 중간 크기인 이십육을 피봇으로 골라요.",
+     "",
+     "이 선택도 최악 빅오 엔 제곱을 없애지는 못해요."
+    ],
+    "texts": [
+     {
+      "id": "pivot_result",
+      "slot": "bottom",
+      "near": {
+       "target": "lecture_input",
+       "side": "below",
+       "cell": "8"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "피봇 26"
+     },
+     {
+      "id": "worst_cost",
+      "slot": "bottom",
+      "near": {
+       "target": "lecture_input",
+       "side": "above"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "최악 O(n²)"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "lecture_input",
+      "slot": "middle",
+      "hidden": true,
+      "cells": [
+       [
+        "31",
+        "17",
+        "42",
+        "9",
+        "1",
+        "23",
+        "18",
+        "11",
+        "26"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "random_choice",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "lecture_input",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "lecture_input",
+      "args": [
+       "8"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "pivot_result",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "lecture_input",
+      "args": [
+       "8"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "worst_cost",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     49,
+     51
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "작은 구간에서는 왜 삽입 정렬로 바꿀까요?",
+     "구간이 작으면 재귀 호출 비용이 더 부담돼요.",
+     "임계값 이하에서는 분할을 멈추고 삽입 정렬을 써요.",
+     "강의의 예시 임계값은 25~50개 정도예요.",
+     "적절한 임계값은 실행 환경에 따라 달라져요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "강의의 예시 임계값은 이십오에서 오십 개 정도예요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title_small",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "작은 구간 성능 개선"
+     },
+     {
+      "id": "threshold_example",
+      "slot": "bottom",
+      "near": {
+       "target": "small_test",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "예시 임계값 25~50개"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "hybrid_flow",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "large_quick",
+        "label": "퀵 정렬·재귀 분할",
+        "shape": "box"
+       },
+       {
+        "id": "small_test",
+        "label": "크기 ≤ 임계값",
+        "shape": "box"
+       },
+       {
+        "id": "small_insertion",
+        "label": "삽입 정렬",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "shrink_edge",
+        "from": "large_quick",
+        "to": "small_test"
+       },
+       {
+        "id": "switch_edge",
+        "from": "small_test",
+        "to": "small_insertion",
+        "label": "재귀 중단",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "large_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "large_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "small_insertion",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "switch_edge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "small_insertion",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "small_insertion",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "small_test",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "threshold_example",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "small_test",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     50
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "실제 정렬에서는 이런 개선이 왜 유용할까요?",
+     "추가 공간이 적고, 가까운 메모리를 쓰는 캐시 지역성도 좋아요.",
+     "생물정보학에서는 유전자 탐색에 접미 배열과 함께 활용돼요.",
+     "일부 범용 정렬은 최악을 감지하면 힙 정렬로 전환해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title_practice",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "현실의 퀵 정렬"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "practice_tree",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "tree",
+      "nodes": [
+       {
+        "id": "practice_root",
+        "label": "퀵 정렬",
+        "shape": "box"
+       },
+       {
+        "id": "practice_space",
+        "label": "추가 공간 절약",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "practice_cache",
+        "label": "캐시 지역성",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "practice_bio",
+        "label": "접미 배열 활용",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "practice_heap",
+        "label": "힙 정렬 전환",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "practice_space_edge",
+        "from": "practice_root",
+        "to": "practice_space",
+        "hidden": true
+       },
+       {
+        "id": "practice_cache_edge",
+        "from": "practice_root",
+        "to": "practice_cache",
+        "hidden": true
+       },
+       {
+        "id": "practice_bio_edge",
+        "from": "practice_root",
+        "to": "practice_bio",
+        "hidden": true
+       },
+       {
+        "id": "practice_heap_edge",
+        "from": "practice_root",
+        "to": "practice_heap",
+        "label": "최악 감지",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "practice_space",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "practice_space_edge",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "practice_cache",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "practice_cache_edge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "practice_bio",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "practice_bio_edge",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "practice_heap",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "practice_heap_edge",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "practice_heap",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     50,
+     51
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "작은 예로, 정렬된 입력의 피봇을 골라 볼까요?",
+   "startSec": 0.0,
+   "endSec": 3.97
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "왼쪽 값만 고르면 늘 가장 작은 값이에요.",
+   "startSec": 4.27,
+   "endSec": 7.34
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "피봇을 빼면 한쪽만 남아 최악의 분할이 반복돼요.",
+   "startSec": 7.64,
+   "endSec": 11.14
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "무작위 선택은 특정 입력에 치우친 선택을 줄여요.",
+   "startSec": 11.44,
+   "endSec": 15.19
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이번에는 세 후보의 중앙값을 골라 볼까요?",
+   "startSec": 15.79,
+   "endSec": 19.06
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "왼쪽·중간·오른쪽 값은 31, 1, 26이에요.",
+   "startSec": 19.36,
+   "endSec": 23.64
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "이 중 중간 크기인 26을 피봇으로 골라요.",
+   "startSec": 23.94,
+   "endSec": 27.29
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "전체가 아니라 세 후보 안에서의 중앙값이에요.",
+   "startSec": 27.59,
+   "endSec": 30.47
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "이 선택도 최악 O(n²)을 없애지는 못해요.",
+   "startSec": 30.77,
+   "endSec": 34.23
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "작은 구간에서는 왜 삽입 정렬로 바꿀까요?",
+   "startSec": 34.83,
+   "endSec": 37.65
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "구간이 작으면 재귀 호출 비용이 더 부담돼요.",
+   "startSec": 37.95,
+   "endSec": 40.87
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "임계값 이하에서는 분할을 멈추고 삽입 정렬을 써요.",
+   "startSec": 41.17,
+   "endSec": 44.58
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "강의의 예시 임계값은 25~50개 정도예요.",
+   "startSec": 44.88,
+   "endSec": 48.14
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "적절한 임계값은 실행 환경에 따라 달라져요.",
+   "startSec": 48.44,
+   "endSec": 51.31
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "실제 정렬에서는 이런 개선이 왜 유용할까요?",
+   "startSec": 51.91,
+   "endSec": 55.0
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "추가 공간이 적고, 가까운 메모리를 쓰는 캐시 지역성도 좋아요.",
+   "startSec": 55.3,
+   "endSec": 59.47
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "생물정보학에서는 유전자 탐색에 접미 배열과 함께 활용돼요.",
+   "startSec": 59.77,
+   "endSec": 64.15
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "일부 범용 정렬은 최악을 감지하면 힙 정렬로 전환해요.",
+   "startSec": 64.45,
+   "endSec": 68.65
+  }
+ ]
+}

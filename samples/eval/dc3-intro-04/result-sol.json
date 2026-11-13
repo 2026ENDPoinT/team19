@@ -1,0 +1,579 @@
+{
+ "resultId": "eval-dc3-intro-04-sol",
+ "durationSec": 40.32,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "합병 정렬과 퀵 정렬의 선택 기준",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "어느 정렬이 무조건 더 좋을까요?",
+     "합병 정렬은 먼저 나누고 합치는 데 힘을 써요.",
+     "피봇은 데이터를 나눌 때 쓰는 기준값이에요.",
+     "퀵 정렬은 피봇으로 나누는 데 힘을 써요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t1",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "힘을 쓰는 단계"
+     },
+     {
+      "id": "merge_focus",
+      "slot": "bottom",
+      "near": {
+       "target": "merge_step",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "**합병**에 집중"
+     },
+     {
+      "id": "quick_focus",
+      "slot": "bottom",
+      "near": {
+       "target": "quick_step",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "**분할**에 집중"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "process_tree",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "tree",
+      "nodes": [
+       {
+        "id": "sort_root",
+        "label": "정렬 방법",
+        "shape": "box"
+       },
+       {
+        "id": "merge_method",
+        "label": "합병 정렬",
+        "shape": "box"
+       },
+       {
+        "id": "quick_method",
+        "label": "퀵 정렬",
+        "shape": "box"
+       },
+       {
+        "id": "merge_step",
+        "label": "나눈 뒤 합병",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "quick_step",
+        "label": "피봇 기준 분할",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "root_merge",
+        "from": "sort_root",
+        "to": "merge_method"
+       },
+       {
+        "id": "root_quick",
+        "from": "sort_root",
+        "to": "quick_method"
+       },
+       {
+        "id": "merge_process",
+        "from": "merge_method",
+        "to": "merge_step",
+        "hidden": true
+       },
+       {
+        "id": "quick_process",
+        "from": "quick_method",
+        "to": "quick_step",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "merge_step",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "merge_process",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "merge_focus",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "merge_step",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "merge_step",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "quick_step",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "quick_process",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "quick_step",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "quick_focus",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     31,
+     52
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "시간과 공간은 어떻게 다를까요?",
+     "합병 정렬은 작업 시간을 예측하기 쉬워요.",
+     "대신 합친 결과를 담을 임시 공간이 필요해요.",
+     "퀵 정렬은 배열 안에서 자리를 바꿔요.",
+     "실용적으로 빠른 경우가 많지만, 치우치면 느려져요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t2",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "시간과 공간의 차이"
+     },
+     {
+      "id": "merge_time",
+      "slot": "bottom",
+      "near": {
+       "target": "merge_compare",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "예측 가능한 시간"
+     },
+     {
+      "id": "merge_space",
+      "slot": "bottom",
+      "near": {
+       "target": "merge_compare",
+       "side": "above"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "임시 작업 공간"
+     },
+     {
+      "id": "quick_space",
+      "slot": "bottom",
+      "near": {
+       "target": "quick_compare",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "배열 안 자리 교환"
+     },
+     {
+      "id": "quick_balance",
+      "slot": "bottom",
+      "near": {
+       "target": "quick_compare",
+       "side": "above"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "분할 균형의 영향"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "resource_compare",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "merge_compare",
+        "label": "합병 정렬",
+        "shape": "box"
+       },
+       {
+        "id": "quick_compare",
+        "label": "퀵 정렬",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "merge_time",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "merge_space",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "quick_space",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "quick_balance",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     28,
+     31,
+     52
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "활용 장면으로 선택 기준을 볼까요?",
+     "메모리에 못 담는 큰 파일은 합병 정렬이 잘 맞아요.",
+     "메모리 안 배열은 퀵 정렬을 고려할 만해요.",
+     "무조건 우열을 가리기보다 사용 조건을 살펴요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t3",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "상황에 맞는 선택"
+     },
+     {
+      "id": "file_note",
+      "slot": "bottom",
+      "near": {
+       "target": "file_choice",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "조각 정렬 후 합병"
+     },
+     {
+      "id": "choice_note",
+      "slot": "bottom",
+      "near": {
+       "target": "usage_tree",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "데이터 크기와 여유 공간"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "usage_tree",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "tree",
+      "nodes": [
+       {
+        "id": "usage_root",
+        "label": "활용 장면",
+        "shape": "box"
+       },
+       {
+        "id": "large_file",
+        "label": "큰 파일",
+        "shape": "box"
+       },
+       {
+        "id": "memory_array",
+        "label": "메모리 안 배열",
+        "shape": "box"
+       },
+       {
+        "id": "file_choice",
+        "label": "합병 정렬",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "array_choice",
+        "label": "퀵 정렬",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "usage_file",
+        "from": "usage_root",
+        "to": "large_file"
+       },
+       {
+        "id": "usage_array",
+        "from": "usage_root",
+        "to": "memory_array"
+       },
+       {
+        "id": "file_merge",
+        "from": "large_file",
+        "to": "file_choice",
+        "hidden": true
+       },
+       {
+        "id": "array_quick",
+        "from": "memory_array",
+        "to": "array_choice",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "file_choice",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "file_merge",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "file_note",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "file_choice",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "file_choice",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "array_choice",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "array_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "array_choice",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "array_choice",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "choice_note",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     29,
+     52
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "어느 정렬이 무조건 더 좋을까요?",
+   "startSec": 0.0,
+   "endSec": 2.31
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "합병 정렬은 먼저 나누고 합치는 데 힘을 써요.",
+   "startSec": 2.61,
+   "endSec": 5.69
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "피봇은 데이터를 나눌 때 쓰는 기준값이에요.",
+   "startSec": 5.99,
+   "endSec": 8.79
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "퀵 정렬은 피봇으로 나누는 데 힘을 써요.",
+   "startSec": 9.09,
+   "endSec": 11.62
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "시간과 공간은 어떻게 다를까요?",
+   "startSec": 12.22,
+   "endSec": 14.42
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "합병 정렬은 작업 시간을 예측하기 쉬워요.",
+   "startSec": 14.72,
+   "endSec": 17.34
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "대신 합친 결과를 담을 임시 공간이 필요해요.",
+   "startSec": 17.64,
+   "endSec": 20.45
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "퀵 정렬은 배열 안에서 자리를 바꿔요.",
+   "startSec": 20.75,
+   "endSec": 23.01
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "실용적으로 빠른 경우가 많지만, 치우치면 느려져요.",
+   "startSec": 23.31,
+   "endSec": 26.66
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "활용 장면으로 선택 기준을 볼까요?",
+   "startSec": 27.26,
+   "endSec": 30.0
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "메모리에 못 담는 큰 파일은 합병 정렬이 잘 맞아요.",
+   "startSec": 30.3,
+   "endSec": 33.88
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "메모리 안 배열은 퀵 정렬을 고려할 만해요.",
+   "startSec": 34.18,
+   "endSec": 36.78
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "무조건 우열을 가리기보다 사용 조건을 살펴요.",
+   "startSec": 37.08,
+   "endSec": 40.32
+  }
+ ]
+}

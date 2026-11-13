@@ -1,0 +1,763 @@
+{
+ "resultId": "eval-dc3-review-08-sol",
+ "durationSec": 71.93,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "퀵 정렬의 최악·최선·평균 분석",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "최솟값이나 최댓값만 피봇이 되면 어떨까요?",
+     "피봇 1은 나머지 8개와 비교해요.",
+     "다음 피봇은 9이고, 비교는 7회로 줄어요."
+    ],
+    "speech": [
+     "",
+     "피봇 일은 나머지 여덟 개와 비교해요.",
+     "다음 피봇은 구이고, 비교는 일곱 회로 줄어요."
+    ],
+    "texts": [
+     {
+      "id": "t_worst",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "극값 피봇과 최악 경우"
+     },
+     {
+      "id": "t_pivot",
+      "slot": "bottom",
+      "near": {
+       "target": "g_worst",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "keyword",
+      "content": "피봇 1 · 비교 8회"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g_worst",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "1",
+        "17",
+        "42",
+        "9",
+        "18",
+        "23",
+        "31",
+        "11",
+        "26"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "t_pivot",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_worst",
+      "args": [
+       "0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g_worst",
+      "args": [
+       "1",
+       "3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_worst",
+      "args": [
+       "0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_worst",
+      "args": [
+       "1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "t_pivot",
+      "args": [
+       "피봇 9 · 비교 7회"
+      ]
+     }
+    ],
+    "sourcePages": [
+     44,
+     45
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "이제 비교량을 더하면, 처음은 (n−1)+(n−2)예요.",
+     "크기가 하나씩 줄어, 마지막 비교 1회까지 더해요.",
+     "합은 n(n−1)/2이고, 이 예시는 36회예요.",
+     "따라서 최악 시간은 Θ(n²)으로 커져요."
+    ],
+    "speech": [
+     "이제 비교량을 더하면, 처음은 엔 빼기 일 더하기 엔 빼기 이예요.",
+     "크기가 하나씩 줄어, 마지막 비교 한 회까지 더해요.",
+     "합은 엔 곱하기 엔 빼기 일을 이로 나눈 값이고, 이 예시는 서른여섯 회예요.",
+     "따라서 최악 시간은 세타 엔 제곱으로 커져요."
+    ],
+    "texts": [
+     {
+      "id": "f_worst_sum",
+      "slot": "middle",
+      "hidden": true,
+      "style": "formula",
+      "content": "$(n-1)+(n-2)$"
+     },
+     {
+      "id": "t_total",
+      "slot": "bottom",
+      "near": {
+       "target": "f_worst_sum",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "9개 예시 · 총 36회"
+     },
+     {
+      "id": "f_worst_bound",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "formula",
+      "content": "$T_{\\mathrm{worst}}(n)=\\Theta(n^2)$"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "t_pivot",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "g_worst",
+      "args": [
+       "1"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "g_worst",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "f_worst_sum",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "f_worst_sum",
+      "args": [
+       "$(n-1)+(n-2)+\\cdots+1$"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "f_worst_sum",
+      "args": [
+       "$(n-1)+(n-2)+\\cdots+1=\\frac{n(n-1)}{2}$"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "t_total",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "f_worst_bound",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     44,
+     45
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "최선처럼 매번 중간값을 고르면 어떨까요?",
+     "크기가 거의 절반이 되어 깊이는 O(log n)이에요.",
+     "각 층의 분할 비용을 합하면 O(n)이에요.",
+     "자료의 층당 n회는 피봇을 제외한 정확한 횟수는 아니에요.",
+     "그래도 균형 분할의 전체 시간은 Θ(n log n)이에요."
+    ],
+    "speech": [
+     "",
+     "크기가 거의 절반이 되어 깊이는 빅오 로그 엔이에요.",
+     "각 층의 분할 비용을 합하면 빅오 엔이에요.",
+     "자료의 층당 엔 회는 피봇을 제외한 정확한 횟수는 아니에요.",
+     "그래도 균형 분할의 전체 시간은 세타 엔 로그 엔이에요."
+    ],
+    "texts": [
+     {
+      "id": "t_best",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "균형 분할과 최선 경우"
+     },
+     {
+      "id": "t_depth",
+      "slot": "bottom",
+      "near": {
+       "target": "d_balanced",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "깊이 O(log n)"
+     },
+     {
+      "id": "t_layer",
+      "slot": "bottom",
+      "near": {
+       "target": "d_balanced",
+       "side": "above"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "층당 비용 O(n)"
+     },
+     {
+      "id": "f_best",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "formula",
+      "content": "$T_{\\mathrm{best}}(n)=\\Theta(n\\log n)$"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_balanced",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "tree",
+      "nodes": [
+       {
+        "id": "n_bal_root",
+        "label": "전체 n개",
+        "shape": "box"
+       },
+       {
+        "id": "n_bal_left",
+        "label": "약 n/2개",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_bal_right",
+        "label": "약 n/2개",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_bal_left",
+        "from": "n_bal_root",
+        "to": "n_bal_left",
+        "hidden": true
+       },
+       {
+        "id": "e_bal_right",
+        "from": "n_bal_root",
+        "to": "n_bal_right",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n_bal_left",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n_bal_right",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_bal_left",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_bal_right",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "t_depth",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "t_layer",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t_layer",
+      "args": [
+       "층당 O(n) · 정확히 n회는 아님"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "f_best",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     46,
+     47
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "무작위 피봇은 어떤 성능을 기대할까요?",
+     "매번 무작위로 고르면 기대 시간은 Θ(n log n)이에요.",
+     "그래도 극값만 뽑히는 최악의 가능성은 남아요."
+    ],
+    "speech": [
+     "",
+     "매번 무작위로 고르면 기대 시간은 세타 엔 로그 엔이에요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_random",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "무작위 피봇과 기대 시간"
+     },
+     {
+      "id": "f_expected",
+      "slot": "bottom",
+      "near": {
+       "target": "n_expected",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "formula",
+      "content": "$\\Theta(n\\log n)$"
+     },
+     {
+      "id": "f_random_worst",
+      "slot": "bottom",
+      "near": {
+       "target": "n_extreme",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "formula",
+      "content": "$\\Theta(n^2)$"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_random",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "tree",
+      "nodes": [
+       {
+        "id": "n_random",
+        "label": "무작위 피봇",
+        "shape": "box"
+       },
+       {
+        "id": "n_expected",
+        "label": "기대 시간",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_extreme",
+        "label": "극값 반복",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_expected",
+        "from": "n_random",
+        "to": "n_expected",
+        "hidden": true
+       },
+       {
+        "id": "e_extreme",
+        "from": "n_random",
+        "to": "n_extreme",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n_expected",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_expected",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "f_expected",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n_extreme",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e_extreme",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "f_random_worst",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     48
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": false,
+    "lines": [
+     "마지막으로, 경우와 성장률 표기를 구분해요.",
+     "경우를 명시하면 최악과 기대 시간 모두 Θ로 표현해요.",
+     "O는 상한 표기이지 최악이라는 뜻은 아니에요."
+    ],
+    "speech": [
+     "",
+     "경우를 명시하면 최악과 기대 시간 모두 세타로 표현해요.",
+     "빅오는 상한 표기이지 최악이라는 뜻은 아니에요."
+    ],
+    "texts": [
+     {
+      "id": "f_case_worst",
+      "slot": "bottom",
+      "near": {
+       "target": "n_case_worst",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "formula",
+      "content": "$\\Theta(n^2)$"
+     },
+     {
+      "id": "f_case_expected",
+      "slot": "bottom",
+      "near": {
+       "target": "n_case_expected",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "formula",
+      "content": "$\\Theta(n\\log n)$"
+     },
+     {
+      "id": "t_upper",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "O: 성장률의 **상한**"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_cases",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "n_case_worst",
+        "label": "최악 시간",
+        "shape": "box"
+       },
+       {
+        "id": "n_case_expected",
+        "label": "기대 시간",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "f_expected",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "f_random_worst",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "d_random",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "d_cases",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "f_case_worst",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "f_case_expected",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "t_upper",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     45,
+     47,
+     48
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "최솟값이나 최댓값만 피봇이 되면 어떨까요?",
+   "startSec": 0.0,
+   "endSec": 4.12
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "피봇 1은 나머지 8개와 비교해요.",
+   "startSec": 4.42,
+   "endSec": 7.03
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "다음 피봇은 9이고, 비교는 7회로 줄어요.",
+   "startSec": 7.33,
+   "endSec": 11.14
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이제 비교량을 더하면, 처음은 (n−1)+(n−2)예요.",
+   "startSec": 11.74,
+   "endSec": 16.82
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "크기가 하나씩 줄어, 마지막 비교 1회까지 더해요.",
+   "startSec": 17.12,
+   "endSec": 20.26
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "합은 n(n−1)/2이고, 이 예시는 36회예요.",
+   "startSec": 20.56,
+   "endSec": 23.63
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "따라서 최악 시간은 Θ(n²)으로 커져요.",
+   "startSec": 23.93,
+   "endSec": 29.12
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "최선처럼 매번 중간값을 고르면 어떨까요?",
+   "startSec": 29.72,
+   "endSec": 33.02
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "크기가 거의 절반이 되어 깊이는 O(log n)이에요.",
+   "startSec": 33.32,
+   "endSec": 36.87
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "각 층의 분할 비용을 합하면 O(n)이에요.",
+   "startSec": 37.17,
+   "endSec": 40.01
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "자료의 층당 n회는 피봇을 제외한 정확한 횟수는 아니에요.",
+   "startSec": 40.31,
+   "endSec": 44.44
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "그래도 균형 분할의 전체 시간은 Θ(n log n)이에요.",
+   "startSec": 44.74,
+   "endSec": 48.58
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "무작위 피봇은 어떤 성능을 기대할까요?",
+   "startSec": 49.18,
+   "endSec": 52.05
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "매번 무작위로 고르면 기대 시간은 Θ(n log n)이에요.",
+   "startSec": 52.35,
+   "endSec": 56.58
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "그래도 극값만 뽑히는 최악의 가능성은 남아요.",
+   "startSec": 56.88,
+   "endSec": 60.11
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "마지막으로, 경우와 성장률 표기를 구분해요.",
+   "startSec": 60.71,
+   "endSec": 63.95
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "경우를 명시하면 최악과 기대 시간 모두 Θ로 표현해요.",
+   "startSec": 64.25,
+   "endSec": 68.31
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "O는 상한 표기이지 최악이라는 뜻은 아니에요.",
+   "startSec": 68.61,
+   "endSec": 71.93
+  }
+ ]
+}

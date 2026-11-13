@@ -1,0 +1,718 @@
+{
+ "resultId": "eval-dc3-review-10-sol",
+ "durationSec": 76.83,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "합병 정렬과 퀵 정렬 선택하기",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "합병 정렬과 퀵 정렬은 어디서 비용이 들까요?",
+     "합병 정렬은 분할에 O(1), 합병에 O(n)이 들어요.",
+     "퀵 정렬은 분할에 O(n), 별도 결합은 없어요."
+    ],
+    "speech": [
+     "",
+     "합병 정렬은 분할에 빅오 일, 합병에 빅오 엔이 들어요.",
+     "퀵 정렬은 분할에 빅오 엔, 별도 결합은 없어요."
+    ],
+    "texts": [
+     {
+      "id": "title_cost",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "비용이 드는 위치"
+     },
+     {
+      "id": "cost_merge",
+      "slot": "bottom",
+      "near": {
+       "target": "node_merge",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "분할 O(1)\n합병 O(n)"
+     },
+     {
+      "id": "cost_quick",
+      "slot": "bottom",
+      "near": {
+       "target": "node_quick",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "분할 O(n)\n별도 결합 없음"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "compare_cost",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "node_merge",
+        "label": "합병 정렬",
+        "shape": "box"
+       },
+       {
+        "id": "node_quick",
+        "label": "퀵 정렬",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "cost_merge",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "node_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "node_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "cost_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "node_quick",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     52
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "이제 최악 시간을 보면, 합병 정렬은 O(n log n)이에요.",
+     "퀵 정렬은 분할이 한쪽으로 치우치면 최악 O(n²)이에요.",
+     "평균과 최선은 둘 다 O(n log n)이에요."
+    ],
+    "speech": [
+     "이제 최악 시간을 보면, 합병 정렬은 빅오 엔 로그 엔이에요.",
+     "퀵 정렬은 분할이 한쪽으로 치우치면 최악 빅오 엔 제곱이에요.",
+     "평균과 최선은 둘 다 빅오 엔 로그 엔이에요."
+    ],
+    "texts": [
+     {
+      "id": "time_merge",
+      "slot": "bottom",
+      "near": {
+       "target": "node_merge",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "최악 O(n log n)"
+     },
+     {
+      "id": "time_quick",
+      "slot": "bottom",
+      "near": {
+       "target": "node_quick",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "최악 O(n²)"
+     },
+     {
+      "id": "time_common",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "평균·최선: 모두 O(n log n)"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "cost_merge",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "cost_quick",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "node_quick",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "time_merge",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "node_merge",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "node_merge",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "time_quick",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "node_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "node_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "time_common",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     52
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "추가 공간은 어디에 필요할까요?",
+     "배열 합병 정렬은 덮어쓰기를 막는 임시 공간 O(n)을 써요.",
+     "제자리 퀵 정렬도 스택은 균형·기대 O(log n)이에요.",
+     "단순 구현은 최악에 재귀 스택도 O(n)이 필요해요."
+    ],
+    "speech": [
+     "",
+     "배열 합병 정렬은 덮어쓰기를 막는 임시 공간 빅오 엔을 써요.",
+     "제자리 퀵 정렬도 스택은 균형 잡힌 경우나 기댓값으로 빅오 로그 엔이에요.",
+     "단순 구현은 최악에 재귀 스택도 빅오 엔이 필요해요."
+    ],
+    "texts": [
+     {
+      "id": "title_space",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "추가 공간과 안정성"
+     },
+     {
+      "id": "space_merge",
+      "slot": "bottom",
+      "near": {
+       "target": "space_node_merge",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "임시 배열 O(n)\n읽기 전 값 보호"
+     },
+     {
+      "id": "space_quick",
+      "slot": "bottom",
+      "near": {
+       "target": "space_node_quick",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "재귀 스택\n균형·기대 O(log n)"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "compare_space",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "space_node_merge",
+        "label": "합병 정렬",
+        "shape": "box"
+       },
+       {
+        "id": "space_node_quick",
+        "label": "퀵 정렬",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "space_merge",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "space_node_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "space_node_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "space_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "space_node_quick",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "space_quick",
+      "args": [
+       "재귀 스택\n균형·기대 O(log n)\n단순 구현 최악 O(n)"
+      ]
+     }
+    ],
+    "sourcePages": [
+     28,
+     52
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": false,
+    "lines": [
+     "같은 값의 원래 순서를 지키는 안정성은 어떨까요?",
+     "합병할 때 동률이면 왼쪽을 먼저 골라 안정성을 지켜요.",
+     "일반적인 제자리 퀵 정렬은 불안정해요."
+    ],
+    "speech": [
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "stable_merge",
+      "slot": "bottom",
+      "near": {
+       "target": "space_node_merge",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "왼쪽 동률 우선\n같은 값의 순서 보존"
+     },
+     {
+      "id": "stable_quick",
+      "slot": "bottom",
+      "near": {
+       "target": "space_node_quick",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "일반적인 제자리 구현\n불안정 정렬"
+     },
+     {
+      "id": "stable_key",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "keyword",
+      "content": "같은 값의 **원래 순서**"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "space_merge",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "space_quick",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "space_node_quick",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "stable_key",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "stable_merge",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "space_node_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "space_node_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "stable_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "space_node_quick",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     29,
+     52
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": true,
+    "lines": [
+     "그럼 실제로는 무엇을 선택할까요?",
+     "합병 정렬은 조각을 순서대로 합치는 외부정렬에 맞아요.",
+     "연결 리스트와 병렬화에도 합병 정렬을 활용해요.",
+     "내부 배열 정렬은 퀵 정렬의 평균 속도를 고려해요.",
+     "언제나 빠른 정렬은 없으니 시간·공간·안정성으로 골라요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title_choice",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "조건에 맞는 정렬 선택"
+     },
+     {
+      "id": "choice_merge",
+      "slot": "bottom",
+      "near": {
+       "target": "choice_node_merge",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "외부정렬\n조각의 순차 합병"
+     },
+     {
+      "id": "choice_quick",
+      "slot": "bottom",
+      "near": {
+       "target": "choice_node_quick",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "내부 배열 정렬\n평균 속도·실측 비교"
+     },
+     {
+      "id": "choice_key",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "keyword",
+      "content": "시간·공간·안정성"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "compare_choice",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "choice_node_merge",
+        "label": "합병 정렬",
+        "shape": "box"
+       },
+       {
+        "id": "choice_node_quick",
+        "label": "퀵 정렬",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "choice_merge",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "choice_node_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "choice_merge",
+      "args": [
+       "외부정렬·연결 리스트\n병렬화\n순차 접근 활용"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "choice_node_merge",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "choice_quick",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "choice_node_quick",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "choice_node_quick",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "choice_key",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     29,
+     52
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "합병 정렬과 퀵 정렬은 어디서 비용이 들까요?",
+   "startSec": 0.0,
+   "endSec": 4.27
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "합병 정렬은 분할에 O(1), 합병에 O(n)이 들어요.",
+   "startSec": 4.57,
+   "endSec": 8.94
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "퀵 정렬은 분할에 O(n), 별도 결합은 없어요.",
+   "startSec": 9.24,
+   "endSec": 13.78
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이제 최악 시간을 보면, 합병 정렬은 O(n log n)이에요.",
+   "startSec": 14.38,
+   "endSec": 19.12
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "퀵 정렬은 분할이 한쪽으로 치우치면 최악 O(n²)이에요.",
+   "startSec": 19.42,
+   "endSec": 23.97
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "평균과 최선은 둘 다 O(n log n)이에요.",
+   "startSec": 24.27,
+   "endSec": 27.72
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "추가 공간은 어디에 필요할까요?",
+   "startSec": 28.32,
+   "endSec": 30.66
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "배열 합병 정렬은 덮어쓰기를 막는 임시 공간 O(n)을 써요.",
+   "startSec": 30.96,
+   "endSec": 35.38
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "제자리 퀵 정렬도 스택은 균형·기대 O(log n)이에요.",
+   "startSec": 35.68,
+   "endSec": 41.13
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "단순 구현은 최악에 재귀 스택도 O(n)이 필요해요.",
+   "startSec": 41.43,
+   "endSec": 44.96
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "같은 값의 원래 순서를 지키는 안정성은 어떨까요?",
+   "startSec": 45.56,
+   "endSec": 50.03
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "합병할 때 동률이면 왼쪽을 먼저 골라 안정성을 지켜요.",
+   "startSec": 50.33,
+   "endSec": 54.62
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "일반적인 제자리 퀵 정렬은 불안정해요.",
+   "startSec": 54.92,
+   "endSec": 57.86
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "그럼 실제로는 무엇을 선택할까요?",
+   "startSec": 58.46,
+   "endSec": 61.17
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "합병 정렬은 조각을 순서대로 합치는 외부정렬에 맞아요.",
+   "startSec": 61.47,
+   "endSec": 65.29
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "연결 리스트와 병렬화에도 합병 정렬을 활용해요.",
+   "startSec": 65.59,
+   "endSec": 68.58
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "내부 배열 정렬은 퀵 정렬의 평균 속도를 고려해요.",
+   "startSec": 68.88,
+   "endSec": 72.17
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 4,
+   "text": "언제나 빠른 정렬은 없으니 시간·공간·안정성으로 골라요.",
+   "startSec": 72.47,
+   "endSec": 76.83
+  }
+ ]
+}

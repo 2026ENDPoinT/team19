@@ -1,0 +1,663 @@
+{
+ "resultId": "eval-dc3-review-06-sol",
+ "durationSec": 68.03,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "퀵 정렬의 피봇과 재귀 범위",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "퀵 정렬은 언제 원소의 자리를 정리할까요?",
+     "합병 정렬은 양쪽을 정렬한 뒤 합쳐요.",
+     "퀵 정렬은 재귀 전에 피봇 기준으로 정리해요.",
+     "피봇은 원소들을 양쪽으로 나누는 기준값이에요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_intro",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "정리하는 시점의 차이"
+     },
+     {
+      "id": "t_merge_label",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "재귀 뒤 **합병**",
+      "near": {
+       "target": "n_merge",
+       "side": "below"
+      }
+     },
+     {
+      "id": "t_quick_label",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "재귀 전 **분할**",
+      "near": {
+       "target": "n_quick",
+       "side": "below"
+      }
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_compare",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "n_merge",
+        "label": "합병 정렬",
+        "shape": "box"
+       },
+       {
+        "id": "n_quick",
+        "label": "퀵 정렬",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "t_merge_label",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_merge",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "t_quick_label",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     31,
+     32
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "이번에는 피봇이 60인 예를 볼까요?",
+     "분할을 마치면 이처럼 자리가 바뀌어요.",
+     "60보다 작은 값은 왼쪽, 큰 값은 오른쪽이에요.",
+     "하지만 양쪽 내부의 순서는 아직 뒤섞여 있어요.",
+     "최종 위치가 확정된 것은 피봇 60뿐이에요."
+    ],
+    "speech": [
+     "이번에는 피봇이 육십인 예를 볼까요?",
+     "",
+     "육십보다 작은 값은 왼쪽, 큰 값은 오른쪽이에요.",
+     "",
+     "최종 위치가 확정된 것은 피봇 육십뿐이에요."
+    ],
+    "texts": [
+     {
+      "id": "t_partition",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "피봇 기준으로 분할"
+     },
+     {
+      "id": "t_pivot",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "keyword",
+      "content": "피봇 60",
+      "near": {
+       "target": "g_example",
+       "side": "below"
+      }
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g_example",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "30",
+        "80",
+        "90",
+        "70",
+        "50",
+        "20",
+        "60",
+        "10",
+        "40"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_example",
+      "args": [
+       "0",
+       "5"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_example",
+      "args": [
+       "1",
+       "8"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_example",
+      "args": [
+       "2",
+       "7"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_example",
+      "args": [
+       "3",
+       "5"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_example",
+      "args": [
+       "5",
+       "6"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "divide",
+      "target": "g_example",
+      "args": [
+       "col:4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "divide",
+      "target": "g_example",
+      "args": [
+       "col:5"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_example",
+      "args": [
+       "0-4",
+       "6-8"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_example",
+      "args": [
+       "0-4",
+       "6-8"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "g_example",
+      "args": [
+       "1-2",
+       "7-8"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "g_example",
+      "args": [
+       "1-2",
+       "7-8"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "g_example",
+      "args": [
+       "5"
+      ]
+     }
+    ],
+    "sourcePages": [
+     32,
+     33
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": false,
+    "lines": [
+     "코드에서는 어느 범위만 다시 정렬할까요?",
+     "p는 분할을 마친 피봇의 인덱스예요.",
+     "왼쪽 재귀 범위는 left부터 p−1까지예요.",
+     "오른쪽은 p+1부터 right까지로, 피봇을 제외해요.",
+     "left ≥ right면 원소가 1개 이하라 종료해요."
+    ],
+    "speech": [
+     "",
+     "피는 분할을 마친 피봇의 인덱스예요.",
+     "왼쪽 재귀 범위는 레프트부터 피 마이너스 일까지예요.",
+     "오른쪽은 피 플러스 일부터 라이트까지로, 피봇을 제외해요.",
+     "레프트가 라이트 이상이면 원소가 한 개 이하라 종료해요."
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [
+     {
+      "id": "c_ranges",
+      "slot": "middle",
+      "hidden": true,
+      "language": "pseudo",
+      "lines": [
+       "피봇은 A[p] 에 놓는다.",
+       "QuickSort(A, left, p-1)",
+       "QuickSort(A, p+1, right)"
+      ]
+     },
+     {
+      "id": "c_condition",
+      "slot": "middle",
+      "hidden": true,
+      "language": "pseudo",
+      "lines": [
+       "if (left < right) {"
+      ]
+     }
+    ],
+    "actions": [
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "g_example",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "t_pivot",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "g_example",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "c_ranges",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "markLine",
+      "target": "c_ranges",
+      "args": [
+       "1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "markLine",
+      "target": "c_ranges",
+      "args": [
+       "2"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "markLine",
+      "target": "c_ranges",
+      "args": [
+       "3"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "hide",
+      "target": "c_ranges",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "c_condition",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "markLine",
+      "target": "c_condition",
+      "args": [
+       "1"
+      ]
+     }
+    ],
+    "sourcePages": [
+     33,
+     35
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": false,
+    "lines": [
+     "이제 양쪽을 정렬하면 어떻게 될까요?",
+     "같은 과정을 반복하면 양쪽도 정렬돼요.",
+     "피봇 기준의 순서가 잡혀 있어 별도 합병은 필요 없어요.",
+     "피봇과 같은 값은 분할 구현에 따라 양쪽에 놓일 수 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_equal",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "같은 값의 배치는 구현별 차이",
+      "near": {
+       "target": "g_example",
+       "side": "below"
+      }
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "c_condition",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "g_example",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "t_pivot",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_example",
+      "args": [
+       "0",
+       "2"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_example",
+      "args": [
+       "1",
+       "2"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_example",
+      "args": [
+       "2",
+       "3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g_example",
+      "args": [
+       "7",
+       "8"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "undivide",
+      "target": "g_example",
+      "args": [
+       "col:4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "undivide",
+      "target": "g_example",
+      "args": [
+       "col:5"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "hide",
+      "target": "t_pivot",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "t_equal",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     32,
+     33,
+     35
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "퀵 정렬은 언제 원소의 자리를 정리할까요?",
+   "startSec": 0.0,
+   "endSec": 4.26
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "합병 정렬은 양쪽을 정렬한 뒤 합쳐요.",
+   "startSec": 4.56,
+   "endSec": 7.96
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "퀵 정렬은 재귀 전에 피봇 기준으로 정리해요.",
+   "startSec": 8.26,
+   "endSec": 11.99
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "피봇은 원소들을 양쪽으로 나누는 기준값이에요.",
+   "startSec": 12.29,
+   "endSec": 16.4
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이번에는 피봇이 60인 예를 볼까요?",
+   "startSec": 17.0,
+   "endSec": 19.91
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "분할을 마치면 이처럼 자리가 바뀌어요.",
+   "startSec": 20.21,
+   "endSec": 22.74
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "60보다 작은 값은 왼쪽, 큰 값은 오른쪽이에요.",
+   "startSec": 23.04,
+   "endSec": 26.51
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "하지만 양쪽 내부의 순서는 아직 뒤섞여 있어요.",
+   "startSec": 26.81,
+   "endSec": 29.82
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "최종 위치가 확정된 것은 피봇 60뿐이에요.",
+   "startSec": 30.12,
+   "endSec": 33.24
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "코드에서는 어느 범위만 다시 정렬할까요?",
+   "startSec": 33.84,
+   "endSec": 36.94
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "p는 분할을 마친 피봇의 인덱스예요.",
+   "startSec": 37.24,
+   "endSec": 39.75
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "왼쪽 재귀 범위는 left부터 p−1까지예요.",
+   "startSec": 40.05,
+   "endSec": 43.8
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "오른쪽은 p+1부터 right까지로, 피봇을 제외해요.",
+   "startSec": 44.1,
+   "endSec": 48.5
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "left ≥ right면 원소가 1개 이하라 종료해요.",
+   "startSec": 48.8,
+   "endSec": 52.72
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "이제 양쪽을 정렬하면 어떻게 될까요?",
+   "startSec": 53.32,
+   "endSec": 55.94
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "같은 과정을 반복하면 양쪽도 정렬돼요.",
+   "startSec": 56.24,
+   "endSec": 59.46
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "피봇 기준의 순서가 잡혀 있어 별도 합병은 필요 없어요.",
+   "startSec": 59.76,
+   "endSec": 63.54
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "피봇과 같은 값은 분할 구현에 따라 양쪽에 놓일 수 있어요.",
+   "startSec": 63.84,
+   "endSec": 68.03
+  }
+ ]
+}

@@ -1,0 +1,551 @@
+{
+ "resultId": "eval-dc3-intro-02-sol",
+ "durationSec": 37.66,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "합병 정렬: 나누고 차례대로 합치기",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "합병 정렬은 어떻게 순서를 맞출까요?",
+     "번호 카드 더미를 반씩 나눠요.",
+     "카드가 1장씩 남으면 나누기를 멈춰요.",
+     "작은 묶음부터 순서대로 합쳐요."
+    ],
+    "speech": [
+     "",
+     "",
+     "카드가 한 장씩 남으면 나누기를 멈춰요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_title",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "합병 정렬"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_process",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n_split",
+        "label": "반씩 나누기",
+        "shape": "box"
+       },
+       {
+        "id": "n_single",
+        "label": "낱장 카드",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_merge",
+        "label": "정렬하며 합치기",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_split",
+        "from": "n_split",
+        "to": "n_single",
+        "hidden": true
+       },
+       {
+        "id": "e_merge",
+        "from": "n_single",
+        "to": "n_merge",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_split",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n_single",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e_split",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_split",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_single",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n_merge",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "e_merge",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_single",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_merge",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     23
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "작은 예로, 정렬된 두 묶음을 볼게요.",
+     "양쪽 맨 앞의 6과 1을 비교해요.",
+     "작은 1을 먼저 결과에 놓아요.",
+     "다음은 6과 2를 비교해요."
+    ],
+    "speech": [
+     "",
+     "양쪽 맨 앞의 육과 일을 비교해요.",
+     "작은 일을 먼저 결과에 놓아요.",
+     "다음은 육과 이를 비교해요."
+    ],
+    "texts": [
+     {
+      "id": "t_result",
+      "slot": "bottom",
+      "near": {
+       "target": "g_merge",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "맨 아래: 합병 결과"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g_merge",
+      "slot": "middle",
+      "hidden": true,
+      "cells": [
+       [
+        "6",
+        "14"
+       ],
+       [
+        "1",
+        "2"
+       ],
+       [
+        "",
+        "",
+        "",
+        ""
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "d_process",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "g_merge",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "t_result",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "divide",
+      "target": "g_merge",
+      "args": [
+       "row:0"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "divide",
+      "target": "g_merge",
+      "args": [
+       "row:1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_merge",
+      "args": [
+       "0,0",
+       "1,0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setValue",
+      "target": "g_merge",
+      "args": [
+       "2,0",
+       "1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_merge",
+      "args": [
+       "0,0",
+       "1,0"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "g_merge",
+      "args": [
+       "2,0"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "g_merge",
+      "args": [
+       "2,0"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "g_merge",
+      "args": [
+       "0,0",
+       "1,1"
+      ]
+     }
+    ],
+    "sourcePages": [
+     15
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": false,
+    "lines": [
+     "이번에도 작은 2를 뒤에 놓아요.",
+     "한쪽이 비면 나머지를 그대로 붙여요."
+    ],
+    "speech": [
+     "이번에도 작은 이를 뒤에 놓아요.",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "setValue",
+      "target": "g_merge",
+      "args": [
+       "2,1",
+       "2"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "g_merge",
+      "args": [
+       "0,0",
+       "1,1"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "g_merge",
+      "args": [
+       "2,1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setValue",
+      "target": "g_merge",
+      "args": [
+       "2,2",
+       "6"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setValue",
+      "target": "g_merge",
+      "args": [
+       "2,3",
+       "14"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "g_merge",
+      "args": [
+       "2,1"
+      ]
+     }
+    ],
+    "sourcePages": [
+     15
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "큰 데이터에는 왜 유용할까요?",
+     "한꺼번에 담기 어려우면 조각별로 정리해요.",
+     "정리된 조각을 차례대로 합치면 돼요."
+    ],
+    "speech": [
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_application",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "큰 데이터 정리"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_application",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n_large",
+        "label": "대용량 데이터",
+        "shape": "box"
+       },
+       {
+        "id": "n_chunks",
+        "label": "조각별 정렬",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_combined",
+        "label": "차례대로 합병",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_chunks",
+        "from": "n_large",
+        "to": "n_chunks",
+        "hidden": true
+       },
+       {
+        "id": "e_combined",
+        "from": "n_chunks",
+        "to": "n_combined",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n_chunks",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_chunks",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n_combined",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e_combined",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     29
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "합병 정렬은 어떻게 순서를 맞출까요?",
+   "startSec": 0.0,
+   "endSec": 3.19
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "번호 카드 더미를 반씩 나눠요.",
+   "startSec": 3.49,
+   "endSec": 5.86
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "카드가 1장씩 남으면 나누기를 멈춰요.",
+   "startSec": 6.16,
+   "endSec": 9.05
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "작은 묶음부터 순서대로 합쳐요.",
+   "startSec": 9.35,
+   "endSec": 11.93
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "작은 예로, 정렬된 두 묶음을 볼게요.",
+   "startSec": 12.53,
+   "endSec": 15.47
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "양쪽 맨 앞의 6과 1을 비교해요.",
+   "startSec": 15.77,
+   "endSec": 18.1
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "작은 1을 먼저 결과에 놓아요.",
+   "startSec": 18.4,
+   "endSec": 20.31
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "다음은 6과 2를 비교해요.",
+   "startSec": 20.61,
+   "endSec": 22.51
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "이번에도 작은 2를 뒤에 놓아요.",
+   "startSec": 23.11,
+   "endSec": 25.86
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "한쪽이 비면 나머지를 그대로 붙여요.",
+   "startSec": 26.16,
+   "endSec": 28.63
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "큰 데이터에는 왜 유용할까요?",
+   "startSec": 29.23,
+   "endSec": 31.36
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "한꺼번에 담기 어려우면 조각별로 정리해요.",
+   "startSec": 31.66,
+   "endSec": 34.87
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "정리된 조각을 차례대로 합치면 돼요.",
+   "startSec": 35.17,
+   "endSec": 37.66
+  }
+ ]
+}

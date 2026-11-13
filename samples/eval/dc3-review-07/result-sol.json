@@ -1,0 +1,681 @@
+{
+ "resultId": "eval-dc3-review-07-sol",
+ "durationSec": 79.92,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "예시: 피봇 8로 제자리 분할하기",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "예시를 들어, 피봇 8로 분할해 볼까요?",
+     "피봇 8을 맨 왼쪽으로 옮겨 탐색에서 빼요.",
+     "low=left, high=right+1은 첫 증감 전 초기값이에요.",
+     "먼저 증감하므로 탐색은 인덱스 1과 11에서 시작해요."
+    ],
+    "speech": [
+     "예시를 들어, 피봇 팔로 분할해 볼까요?",
+     "피봇 팔을 맨 왼쪽으로 옮겨 탐색에서 빼요.",
+     "로우는 레프트, 하이는 라이트 더하기 일로, 첫 증감 전 초기값이에요.",
+     "먼저 증감하므로 탐색은 인덱스 일과 십일에서 시작해요."
+    ],
+    "texts": [
+     {
+      "id": "title_partition",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "피봇 8로 제자리 분할"
+     },
+     {
+      "id": "initial_indices",
+      "slot": "bottom",
+      "near": {
+       "target": "array",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "초기값: low=0, high=12"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "array",
+      "slot": "middle",
+      "hidden": false,
+      "indexLabels": true,
+      "cells": [
+       [
+        "6",
+        "3",
+        "11",
+        "9",
+        "12",
+        "2",
+        "8",
+        "15",
+        "18",
+        "10",
+        "7",
+        "14"
+       ]
+      ],
+      "pointers": [
+       {
+        "id": "ptr_low",
+        "label": "low",
+        "row": 0,
+        "col": 1,
+        "hidden": true
+       },
+       {
+        "id": "ptr_high",
+        "label": "high",
+        "row": 0,
+        "col": 11,
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "array",
+      "args": [
+       "6"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "array",
+      "args": [
+       "0",
+       "6"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "array",
+      "args": [
+       "6"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "array",
+      "args": [
+       "0",
+       "6"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "array",
+      "args": [
+       "0",
+       "6"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "initial_indices",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "hide",
+      "target": "initial_indices",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "ptr_low",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "ptr_high",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     38,
+     43
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "탐색 규칙을 보면, 왼쪽은 ≥8, 오른쪽은 ≤8에서 멈춰요.",
+     "같은 값에 멈춰도 다음 반복에서 먼저 1칸 이동해요.",
+     "왼쪽은 3을 지나 11에서, 오른쪽은 7에서 멈춰요.",
+     "11과 7을 교환해 서로 맞는 쪽으로 보내요."
+    ],
+    "speech": [
+     "탐색 규칙을 보면, 왼쪽은 팔 이상, 오른쪽은 팔 이하에서 멈춰요.",
+     "같은 값에 멈춰도 다음 반복에서 먼저 한 칸 이동해요.",
+     "왼쪽은 삼을 지나 십일에서, 오른쪽은 칠에서 멈춰요.",
+     "십일과 칠을 교환해 서로 맞는 쪽으로 보내요."
+    ],
+    "texts": [
+     {
+      "id": "scan_rule",
+      "slot": "bottom",
+      "near": {
+       "target": "array",
+       "side": "below"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "정지: 왼쪽 ≥8 · 오른쪽 ≤8"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "show",
+      "target": "scan_rule",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "move",
+      "target": "ptr_low",
+      "args": [
+       "2"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "move",
+      "target": "ptr_high",
+      "args": [
+       "10"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "array",
+      "args": [
+       "2",
+       "10"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "swap",
+      "target": "array",
+      "args": [
+       "2",
+       "10"
+      ]
+     }
+    ],
+    "sourcePages": [
+     34,
+     39,
+     43
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": false,
+    "lines": [
+     "이어서 9와 6에서 두 탐색이 멈춰요.",
+     "9와 6을 교환해 양쪽의 어긋난 값을 옮겨요.",
+     "다음 탐색은 12와 2에서 멈춰요.",
+     "12와 2도 교환해 같은 작업을 반복해요."
+    ],
+    "speech": [
+     "이어서 구와 육에서 두 탐색이 멈춰요.",
+     "구와 육을 교환해 양쪽의 어긋난 값을 옮겨요.",
+     "다음 탐색은 십이와 이에서 멈춰요.",
+     "십이와 이도 교환해 같은 작업을 반복해요."
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "array",
+      "args": [
+       "2",
+       "10"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "move",
+      "target": "ptr_low",
+      "args": [
+       "3"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "move",
+      "target": "ptr_high",
+      "args": [
+       "6"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "array",
+      "args": [
+       "3",
+       "6"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "array",
+      "args": [
+       "3",
+       "6"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "array",
+      "args": [
+       "3",
+       "6"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "move",
+      "target": "ptr_low",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "move",
+      "target": "ptr_high",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "array",
+      "args": [
+       "4",
+       "5"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "swap",
+      "target": "array",
+      "args": [
+       "4",
+       "5"
+      ]
+     }
+    ],
+    "sourcePages": [
+     39,
+     43
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": false,
+    "lines": [
+     "종료를 보면, low=5, high=4로 교차해요.",
+     "반복 조건 low<high가 거짓이므로 탐색을 끝내요.",
+     "피봇과 A[4]를 바꾸면 p=4가 확정돼요."
+    ],
+    "speech": [
+     "종료를 보면, 로우는 오, 하이는 사로 교차해요.",
+     "반복 조건 로우가 하이보다 작다가 거짓이므로 탐색을 끝내요.",
+     "피봇과 에이의 사 번 칸을 바꾸면 피는 사로 확정돼요."
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "move",
+      "target": "ptr_low",
+      "args": [
+       "5"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "move",
+      "target": "ptr_high",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "setText",
+      "target": "scan_rule",
+      "args": [
+       "교차: low=5, high=4"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "hide",
+      "target": "scan_rule",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "array",
+      "args": [
+       "0",
+       "4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "ptr_low",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "ptr_high",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "array",
+      "args": [
+       "4",
+       "5"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "array",
+      "args": [
+       "4"
+      ]
+     }
+    ],
+    "sourcePages": [
+     39,
+     43
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": false,
+    "lines": [
+     "분할 결과를 보면, 왼쪽은 ≤8, 오른쪽은 ≥8이에요.",
+     "피봇을 빼고 0~3과 5~11을 각각 재귀 정렬해요.",
+     "분할은 경계만 만든 것이고, 양쪽 내부 정렬은 남아 있어요."
+    ],
+    "speech": [
+     "분할 결과를 보면, 왼쪽은 팔 이하, 오른쪽은 팔 이상이에요.",
+     "피봇을 빼고 영부터 삼과 오부터 십일을 각각 재귀 정렬해요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "pivot_final",
+      "slot": "bottom",
+      "near": {
+       "target": "array",
+       "side": "below",
+       "cell": "4"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "피봇 8 · p=4"
+     },
+     {
+      "id": "recursive_ranges",
+      "slot": "bottom",
+      "near": {
+       "target": "array",
+       "side": "above"
+      },
+      "hidden": true,
+      "style": "body",
+      "content": "재귀 범위: 0~3 · 5~11"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "array",
+      "args": [
+       "4"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "array",
+      "args": [
+       "0-3",
+       "5-11"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "pivot_final",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "divide",
+      "target": "array",
+      "args": [
+       "col:3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "divide",
+      "target": "array",
+      "args": [
+       "col:4"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "recursive_ranges",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "array",
+      "args": [
+       "0-3",
+       "5-11"
+      ]
+     }
+    ],
+    "sourcePages": [
+     39,
+     43
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "예시를 들어, 피봇 8로 분할해 볼까요?",
+   "startSec": 0.0,
+   "endSec": 2.89
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "피봇 8을 맨 왼쪽으로 옮겨 탐색에서 빼요.",
+   "startSec": 3.19,
+   "endSec": 6.55
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "low=left, high=right+1은 첫 증감 전 초기값이에요.",
+   "startSec": 6.85,
+   "endSec": 12.21
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "먼저 증감하므로 탐색은 인덱스 1과 11에서 시작해요.",
+   "startSec": 12.51,
+   "endSec": 16.73
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "탐색 규칙을 보면, 왼쪽은 ≥8, 오른쪽은 ≤8에서 멈춰요.",
+   "startSec": 17.33,
+   "endSec": 23.16
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "같은 값에 멈춰도 다음 반복에서 먼저 1칸 이동해요.",
+   "startSec": 23.46,
+   "endSec": 27.89
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "왼쪽은 3을 지나 11에서, 오른쪽은 7에서 멈춰요.",
+   "startSec": 28.19,
+   "endSec": 33.76
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "11과 7을 교환해 서로 맞는 쪽으로 보내요.",
+   "startSec": 34.06,
+   "endSec": 37.71
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "이어서 9와 6에서 두 탐색이 멈춰요.",
+   "startSec": 38.31,
+   "endSec": 41.47
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "9와 6을 교환해 양쪽의 어긋난 값을 옮겨요.",
+   "startSec": 41.77,
+   "endSec": 45.13
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "다음 탐색은 12와 2에서 멈춰요.",
+   "startSec": 45.43,
+   "endSec": 48.04
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "12와 2도 교환해 같은 작업을 반복해요.",
+   "startSec": 48.34,
+   "endSec": 51.46
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "종료를 보면, low=5, high=4로 교차해요.",
+   "startSec": 52.06,
+   "endSec": 55.72
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "반복 조건 low<high가 거짓이므로 탐색을 끝내요.",
+   "startSec": 56.02,
+   "endSec": 59.99
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "피봇과 A[4]를 바꾸면 p=4가 확정돼요.",
+   "startSec": 60.29,
+   "endSec": 63.81
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "분할 결과를 보면, 왼쪽은 ≤8, 오른쪽은 ≥8이에요.",
+   "startSec": 64.41,
+   "endSec": 69.58
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "피봇을 빼고 0~3과 5~11을 각각 재귀 정렬해요.",
+   "startSec": 69.88,
+   "endSec": 75.14
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "분할은 경계만 만든 것이고, 양쪽 내부 정렬은 남아 있어요.",
+   "startSec": 75.44,
+   "endSec": 79.92
+  }
+ ]
+}

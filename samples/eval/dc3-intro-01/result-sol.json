@@ -1,0 +1,507 @@
+{
+ "resultId": "eval-dc3-intro-01-sol",
+ "durationSec": 39.41,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "큰 문제를 작게 나누어 해결하기",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "서류가 산더미라면 어떻게 정리할까요?",
+     "먼저 서류를 작은 묶음으로 나눠요.",
+     "각 묶음은 따로 정리하면 한결 수월해요.",
+     "정리한 결과를 모으는 전략이 분할 정복이에요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title_flow",
+      "slot": "top",
+      "style": "title",
+      "content": "분할 정복",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "flow",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "flow_divide",
+        "label": "서류 나누기",
+        "shape": "box"
+       },
+       {
+        "id": "flow_solve",
+        "label": "묶음별 정리",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "flow_combine",
+        "label": "결과 모으기",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "flow_edge1",
+        "from": "flow_divide",
+        "to": "flow_solve",
+        "hidden": true
+       },
+       {
+        "id": "flow_edge2",
+        "from": "flow_solve",
+        "to": "flow_combine",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "flow_divide",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "flow_solve",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "flow_edge1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "flow_divide",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "flow_solve",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "flow_combine",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "flow_edge2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "flow_solve",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "flow_combine",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     6,
+     7
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "이제 문제 풀이의 흐름으로 읽어 볼까요?",
+     "문제를 작게 나누는 단계가 분할이에요.",
+     "작은 문제를 각각 푸는 단계가 정복이에요.",
+     "결과를 모으는 결합으로 원래 문제를 해결해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "flow_terms",
+      "near": {
+       "target": "flow",
+       "side": "below"
+      },
+      "style": "body",
+      "content": "분할 → 정복 → 결합",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "flow_combine",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "flow_terms",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "flow_divide",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "flow_divide",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "flow_solve",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "flow_solve",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "flow_combine",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     6,
+     7
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "작은 그림으로 재귀를 살펴볼까요?",
+     "작은 문제에도 같은 방법을 쓰는 게 재귀예요.",
+     "다른 묶음에도 같은 방법을 적용해요.",
+     "직접 풀 만큼 작아지면 나누기를 멈춰요.",
+     "다음에는 이 전략을 쓰는 2가지 정렬을 볼게요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     "다음에는 이 전략을 쓰는 두 가지 정렬을 볼게요."
+    ],
+    "texts": [
+     {
+      "id": "title_recursion",
+      "slot": "top",
+      "style": "title",
+      "content": "같은 방법의 반복",
+      "hidden": false
+     },
+     {
+      "id": "recursion_label",
+      "near": {
+       "target": "recursion_tree",
+       "side": "below"
+      },
+      "style": "body",
+      "content": "작은 문제에서도 **재귀**",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "recursion_tree",
+      "slot": "middle",
+      "layout": "tree",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "tree_root",
+        "label": "큰 문제",
+        "shape": "box"
+       },
+       {
+        "id": "tree_left",
+        "label": "작은 문제",
+        "shape": "box"
+       },
+       {
+        "id": "tree_right",
+        "label": "작은 문제",
+        "shape": "box"
+       },
+       {
+        "id": "tree_ll",
+        "label": "더 작은 문제",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "tree_lr",
+        "label": "더 작은 문제",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "tree_rl",
+        "label": "더 작은 문제",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "tree_rr",
+        "label": "더 작은 문제",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "tree_e_left",
+        "from": "tree_root",
+        "to": "tree_left"
+       },
+       {
+        "id": "tree_e_right",
+        "from": "tree_root",
+        "to": "tree_right"
+       },
+       {
+        "id": "tree_e_ll",
+        "from": "tree_left",
+        "to": "tree_ll",
+        "hidden": true
+       },
+       {
+        "id": "tree_e_lr",
+        "from": "tree_left",
+        "to": "tree_lr",
+        "hidden": true
+       },
+       {
+        "id": "tree_e_rl",
+        "from": "tree_right",
+        "to": "tree_rl",
+        "hidden": true
+       },
+       {
+        "id": "tree_e_rr",
+        "from": "tree_right",
+        "to": "tree_rr",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "tree_ll",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "tree_lr",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "tree_e_ll",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "tree_e_lr",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "recursion_label",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "tree_rl",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "tree_rr",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "tree_e_rl",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "tree_e_rr",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "recursion_label",
+      "args": [
+       "충분히 작으면 직접 해결"
+      ]
+     }
+    ],
+    "sourcePages": [
+     7,
+     9
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "서류가 산더미라면 어떻게 정리할까요?",
+   "startSec": 0.0,
+   "endSec": 3.32
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "먼저 서류를 작은 묶음으로 나눠요.",
+   "startSec": 3.62,
+   "endSec": 5.99
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "각 묶음은 따로 정리하면 한결 수월해요.",
+   "startSec": 6.29,
+   "endSec": 9.03
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "정리한 결과를 모으는 전략이 분할 정복이에요.",
+   "startSec": 9.33,
+   "endSec": 12.59
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이제 문제 풀이의 흐름으로 읽어 볼까요?",
+   "startSec": 13.19,
+   "endSec": 15.68
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "문제를 작게 나누는 단계가 분할이에요.",
+   "startSec": 15.98,
+   "endSec": 18.31
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "작은 문제를 각각 푸는 단계가 정복이에요.",
+   "startSec": 18.61,
+   "endSec": 21.34
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "결과를 모으는 결합으로 원래 문제를 해결해요.",
+   "startSec": 21.64,
+   "endSec": 24.62
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "작은 그림으로 재귀를 살펴볼까요?",
+   "startSec": 25.22,
+   "endSec": 27.41
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "작은 문제에도 같은 방법을 쓰는 게 재귀예요.",
+   "startSec": 27.71,
+   "endSec": 30.44
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "다른 묶음에도 같은 방법을 적용해요.",
+   "startSec": 30.74,
+   "endSec": 32.89
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "직접 풀 만큼 작아지면 나누기를 멈춰요.",
+   "startSec": 33.19,
+   "endSec": 36.17
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "다음에는 이 전략을 쓰는 2가지 정렬을 볼게요.",
+   "startSec": 36.47,
+   "endSec": 39.41
+  }
+ ]
+}

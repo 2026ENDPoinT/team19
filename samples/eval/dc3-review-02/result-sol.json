@@ -1,0 +1,841 @@
+{
+ "resultId": "eval-dc3-review-02-sol",
+ "durationSec": 79.65,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "재귀 깊이와 부분문제 유형 읽기",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "재귀 그림의 개수와 크기는 어떻게 다를까요?",
+     "한 층마다 개수는 3배, 각 크기는 절반이 돼요.",
+     "3개 호출이 꼭 겹치지 않는 세 조각은 아니에요."
+    ],
+    "speech": [
+     "",
+     "한 층마다 개수는 세 배, 각 크기는 절반이 돼요.",
+     "세 개 호출이 꼭 겹치지 않는 세 조각은 아니에요."
+    ],
+    "texts": [
+     {
+      "id": "title_structure",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "개수와 크기"
+     },
+     {
+      "id": "label_model",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "재귀 호출의 일반 모형",
+      "near": {
+       "target": "levels",
+       "side": "below"
+      }
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "levels",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "level0",
+        "label": "1개 · n",
+        "shape": "box"
+       },
+       {
+        "id": "level1",
+        "label": "3개 · n/2",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "level2",
+        "label": "9개 · n/2²",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "level_edge1",
+        "from": "level0",
+        "to": "level1",
+        "hidden": true
+       },
+       {
+        "id": "level_edge2",
+        "from": "level1",
+        "to": "level2",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "level1",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "level_edge1",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "level2",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "level_edge2",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "label_model",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     9
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "그렇다면 크기 1까지 몇 번 나눌까요?",
+     "k번 나눈 크기는 n/2ᵏ이고, 종료 조건은 n/2ᵏ=1이에요.",
+     "양변을 정리하면 n=2ᵏ이 돼요.",
+     "따라서 분할 깊이는 k=log₂n이에요."
+    ],
+    "speech": [
+     "그렇다면 크기 일까지 몇 번 나눌까요?",
+     "케이 번 나눈 크기는 엔 나누기 이의 케이 제곱이고, 종료 조건은 엔 나누기 이의 케이 제곱이 일인 거예요.",
+     "양변을 정리하면 엔은 이의 케이 제곱이 돼요.",
+     "따라서 분할 깊이는 케이 이콜 로그 이 엔이에요."
+    ],
+    "texts": [
+     {
+      "id": "title_depth",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "재귀 깊이와 모형"
+     },
+     {
+      "id": "depth_formula",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "formula",
+      "content": "$n/2^k=1$"
+     },
+     {
+      "id": "depth_headers",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "body",
+      "content": "분할 횟수 · 각 문제의 크기",
+      "near": {
+       "target": "depth_grid",
+       "side": "above"
+      }
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "depth_grid",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "0",
+        "n"
+       ],
+       [
+        "",
+        ""
+       ],
+       [
+        "",
+        ""
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "setValue",
+      "target": "depth_grid",
+      "args": [
+       "1,0",
+       "1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setValue",
+      "target": "depth_grid",
+      "args": [
+       "1,1",
+       "n/2"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setValue",
+      "target": "depth_grid",
+      "args": [
+       "2,0",
+       "k"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "setValue",
+      "target": "depth_grid",
+      "args": [
+       "2,1",
+       "n/2ᵏ"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "depth_formula",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "depth_formula",
+      "args": [
+       "$n/2^k=1\\Rightarrow n=2^k$"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "depth_formula",
+      "args": [
+       "$n/2^k=1\\Rightarrow n=2^k\\Rightarrow k=\\log_2 n$"
+      ]
+     }
+    ],
+    "sourcePages": [
+     10
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": false,
+    "lines": [
+     "n=1024면 10번 나눠 크기 1에 도달해요.",
+     "자료의 10층은 분할 횟수이고, 처음까지 세면 11층이에요."
+    ],
+    "speech": [
+     "엔이 천이십사면 열 번 나눠 크기 일에 도달해요.",
+     "자료의 십 층은 분할 횟수이고, 처음까지 세면 십일 층이에요."
+    ],
+    "texts": [
+     {
+      "id": "count_note",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "분할 10번 · 처음 포함 11층",
+      "near": {
+       "target": "numeric_grid",
+       "side": "below"
+      }
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "numeric_grid",
+      "slot": "middle",
+      "hidden": true,
+      "cells": [
+       [
+        "0",
+        "1024"
+       ],
+       [
+        "1",
+        "512"
+       ],
+       [
+        "⋮",
+        "⋮"
+       ],
+       [
+        "9",
+        "2"
+       ],
+       [
+        "10",
+        "1"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "depth_headers",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "depth_grid",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "numeric_grid",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "place",
+      "target": "depth_formula",
+      "args": [
+       "top"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "count_note",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     10
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": false,
+    "lines": [
+     "이번에는 개수와 크기를 재귀식에 연결해 볼까요?",
+     "a는 호출 개수이고, 각 문제의 크기는 n/b예요.",
+     "f(n)을 더하면, 재귀 밖의 비용까지 포함한 식이에요.",
+     "합병 정렬은 a=b=2로, 반 크기 문제 2개를 풀어요."
+    ],
+    "speech": [
+     "",
+     "에이는 호출 개수이고, 각 문제의 크기는 엔 나누기 비예요.",
+     "에프 엔을 더하면, 재귀 밖의 비용까지 포함한 식이에요.",
+     "합병 정렬은 에이와 비가 모두 이로, 반 크기 문제 두 개를 풀어요."
+    ],
+    "texts": [
+     {
+      "id": "recurrence",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "formula",
+      "content": "$T(n)=\\term{calls}{a}T(\\term{size}{n/b})$"
+     },
+     {
+      "id": "merge_label",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "keyword",
+      "content": "합병 정렬 a=b=2",
+      "near": {
+       "target": "recursion_model",
+       "side": "below"
+      }
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "recursion_model",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "model_parent",
+        "label": "입력 크기 n",
+        "shape": "box"
+       },
+       {
+        "id": "model_children",
+        "label": "a개 · 크기 n/b",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "model_edge",
+        "from": "model_parent",
+        "to": "model_children"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "count_note",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "numeric_grid",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "depth_formula",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "recursion_model",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "recurrence",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "recurrence",
+      "args": [
+       "calls",
+       "size"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "recurrence",
+      "args": [
+       "calls",
+       "size"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "recurrence",
+      "args": [
+       "$T(n)=aT(n/b)+\\term{outside}{f(n)}$"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "recurrence",
+      "args": [
+       "outside"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "recurrence",
+      "args": [
+       "outside"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "recurrence",
+      "args": [
+       "$T(n)=2T(n/2)+f(n)$"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "merge_label",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     9,
+     12
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": true,
+    "lines": [
+     "다른 분할 정복 유형은 어떻게 다를까요?",
+     "퀵 정렬은 2개를 모두 풀지만, 크기는 피봇에 따라 달라져요.",
+     "이진탐색은 절반인 한쪽만 풀어 결합 과정이 없어요.",
+     "선택 문제도 한쪽만 풀지만, 크기는 일정하지 않아요.",
+     "삽입 정렬·피보나치 수처럼 상수씩 줄면 깊이는 n에 비례해요."
+    ],
+    "speech": [
+     "",
+     "퀵 정렬은 두 개를 모두 풀지만, 크기는 피봇에 따라 달라져요.",
+     "",
+     "",
+     "삽입 정렬, 피보나치 수처럼 상수씩 줄면 깊이는 엔에 비례해요."
+    ],
+    "texts": [
+     {
+      "id": "title_types",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "분할 정복의 다른 유형"
+     },
+     {
+      "id": "quick_note",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "두 쪽 재귀 · 비균등 크기",
+      "near": {
+       "target": "type_quick",
+       "side": "below"
+      }
+     },
+     {
+      "id": "binary_note",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "한쪽 재귀 · 절반 크기",
+      "near": {
+       "target": "type_binary",
+       "side": "below"
+      }
+     },
+     {
+      "id": "select_note",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "한쪽 재귀 · 비균등 크기",
+      "near": {
+       "target": "type_select",
+       "side": "below"
+      }
+     },
+     {
+      "id": "constant_note",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "body",
+      "content": "1개·2개씩 감소 · 깊이 ∝ n",
+      "near": {
+       "target": "type_constant",
+       "side": "below"
+      }
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "type_tree",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "tree",
+      "nodes": [
+       {
+        "id": "type_root",
+        "label": "분할 정복",
+        "shape": "box"
+       },
+       {
+        "id": "type_quick",
+        "label": "퀵 정렬",
+        "shape": "box"
+       },
+       {
+        "id": "type_binary",
+        "label": "이진탐색",
+        "shape": "box"
+       },
+       {
+        "id": "type_select",
+        "label": "선택 문제",
+        "shape": "box"
+       },
+       {
+        "id": "type_constant",
+        "label": "상수만큼 감소",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "type_edge_quick",
+        "from": "type_root",
+        "to": "type_quick"
+       },
+       {
+        "id": "type_edge_binary",
+        "from": "type_root",
+        "to": "type_binary"
+       },
+       {
+        "id": "type_edge_select",
+        "from": "type_root",
+        "to": "type_select"
+       },
+       {
+        "id": "type_edge_constant",
+        "from": "type_root",
+        "to": "type_constant"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "type_quick",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "quick_note",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "type_quick",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "type_binary",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "binary_note",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "type_binary",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "type_select",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "select_note",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "type_select",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "type_constant",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "constant_note",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     13
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "재귀 그림의 개수와 크기는 어떻게 다를까요?",
+   "startSec": 0.0,
+   "endSec": 3.42
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "한 층마다 개수는 3배, 각 크기는 절반이 돼요.",
+   "startSec": 3.72,
+   "endSec": 7.77
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "3개 호출이 꼭 겹치지 않는 세 조각은 아니에요.",
+   "startSec": 8.07,
+   "endSec": 11.72
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "그렇다면 크기 1까지 몇 번 나눌까요?",
+   "startSec": 12.32,
+   "endSec": 15.49
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "k번 나눈 크기는 n/2ᵏ이고, 종료 조건은 n/2ᵏ=1이에요.",
+   "startSec": 15.79,
+   "endSec": 23.41
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "양변을 정리하면 n=2ᵏ이 돼요.",
+   "startSec": 23.71,
+   "endSec": 26.84
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "따라서 분할 깊이는 k=log₂n이에요.",
+   "startSec": 27.14,
+   "endSec": 30.51
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "n=1024면 10번 나눠 크기 1에 도달해요.",
+   "startSec": 31.11,
+   "endSec": 35.26
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "자료의 10층은 분할 횟수이고, 처음까지 세면 11층이에요.",
+   "startSec": 35.56,
+   "endSec": 40.26
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "이번에는 개수와 크기를 재귀식에 연결해 볼까요?",
+   "startSec": 40.86,
+   "endSec": 44.59
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "a는 호출 개수이고, 각 문제의 크기는 n/b예요.",
+   "startSec": 44.89,
+   "endSec": 49.29
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "f(n)을 더하면, 재귀 밖의 비용까지 포함한 식이에요.",
+   "startSec": 49.59,
+   "endSec": 53.31
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "합병 정렬은 a=b=2로, 반 크기 문제 2개를 풀어요.",
+   "startSec": 53.61,
+   "endSec": 58.37
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "다른 분할 정복 유형은 어떻게 다를까요?",
+   "startSec": 58.97,
+   "endSec": 62.08
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "퀵 정렬은 2개를 모두 풀지만, 크기는 피봇에 따라 달라져요.",
+   "startSec": 62.38,
+   "endSec": 66.62
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "이진탐색은 절반인 한쪽만 풀어 결합 과정이 없어요.",
+   "startSec": 66.92,
+   "endSec": 70.68
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "선택 문제도 한쪽만 풀지만, 크기는 일정하지 않아요.",
+   "startSec": 70.98,
+   "endSec": 74.54
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 4,
+   "text": "삽입 정렬·피보나치 수처럼 상수씩 줄면 깊이는 n에 비례해요.",
+   "startSec": 74.84,
+   "endSec": 79.65
+  }
+ ]
+}

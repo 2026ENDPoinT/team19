@@ -1,0 +1,713 @@
+{
+ "resultId": "eval-dc3-review-05-sol",
+ "durationSec": 73.88,
+ "audioUrl": "audio-sol/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "합병 정렬의 시간복잡도 유도",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "8개 원소의 합병 비용을 층별로 세어 볼까요?",
+     "비교 횟수를 기준으로, 합병할 구간을 묶어 봐요.",
+     "2개씩 합치면 정렬된 4묶음이 돼요.",
+     "4×2=8개를 처리하므로, 층당 비용은 O(n)이에요."
+    ],
+    "speech": [
+     "여덟 개 원소의 합병 비용을 층별로 세어 볼까요?",
+     "",
+     "두 개씩 합치면 정렬된 네 묶음이 돼요.",
+     "사 곱하기 이는 여덟 개를 처리하므로, 층당 비용은 빅오 엔이에요."
+    ],
+    "texts": [
+     {
+      "id": "t1",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "한 층의 작업량"
+     },
+     {
+      "id": "f1",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "formula",
+      "content": "$4\\times 2=8$"
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g1",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "37",
+        "10",
+        "22",
+        "30",
+        "35",
+        "13",
+        "25",
+        "24"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "divide",
+      "target": "g1",
+      "args": [
+       "col:1"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "divide",
+      "target": "g1",
+      "args": [
+       "col:3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "divide",
+      "target": "g1",
+      "args": [
+       "col:5"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "0",
+       "1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "4",
+       "5"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "6",
+       "7"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "f1",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     24,
+     25
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "이번에는 4개씩 합치는 층을 볼까요?",
+     "정렬된 2묶음도 모두 합치면 8개예요.",
+     "마지막 합병의 앞부분은 10, 13, 22, 24예요.",
+     "끝까지 합치면 뒤에는 25, 30, 35, 37이 와요."
+    ],
+    "speech": [
+     "이번에는 네 개씩 합치는 층을 볼까요?",
+     "정렬된 두 묶음도 모두 합치면 여덟 개예요.",
+     "마지막 합병의 앞부분은 십, 십삼, 이십이, 이십사예요.",
+     "끝까지 합치면 뒤에는 이십오, 삼십, 삼십오, 삼십칠이 와요."
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "undivide",
+      "target": "g1",
+      "args": [
+       "col:1"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "undivide",
+      "target": "g1",
+      "args": [
+       "col:5"
+      ]
+     },
+     {
+      "line": 0,
+      "do": "setText",
+      "target": "f1",
+      "args": [
+       "$2\\times 4=8$"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "1",
+       "2"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "2",
+       "3"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "5",
+       "6"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "6",
+       "7"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "undivide",
+      "target": "g1",
+      "args": [
+       "col:3"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "1",
+       "4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "2",
+       "4"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "3",
+       "5"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "f1",
+      "args": [
+       "$1\\times 8=8$"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "4",
+       "6"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "5",
+       "6"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "swap",
+      "target": "g1",
+      "args": [
+       "6",
+       "7"
+      ]
+     }
+    ],
+    "sourcePages": [
+     25
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "그렇다면 합병 층은 몇 층일까요?",
+     "8→4→2→1로 나누면, 합병도 3층이에요.",
+     "크기가 1이면 멈추므로 n/2^k=1이에요.",
+     "n이 2의 거듭제곱이면 k=log₂n이에요."
+    ],
+    "speech": [
+     "",
+     "팔에서 사, 이, 일로 나누면, 합병도 세 층이에요.",
+     "크기가 일이면 멈추므로 엔 나누기 이의 케이 제곱은 일이에요.",
+     "엔이 이의 거듭제곱이면 케이는 밑이 이인 로그 엔이에요."
+    ],
+    "texts": [
+     {
+      "id": "t3",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "합병 층수"
+     },
+     {
+      "id": "f3",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "formula",
+      "content": "$\\frac{n}{2^k}=1$"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d3",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n38",
+        "label": "8",
+        "shape": "box"
+       },
+       {
+        "id": "n34",
+        "label": "4",
+        "shape": "box"
+       },
+       {
+        "id": "n32",
+        "label": "2",
+        "shape": "box"
+       },
+       {
+        "id": "n31",
+        "label": "1",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "e381",
+        "from": "n38",
+        "to": "n34",
+        "label": "1층"
+       },
+       {
+        "id": "e342",
+        "from": "n34",
+        "to": "n32",
+        "label": "2층"
+       },
+       {
+        "id": "e321",
+        "from": "n32",
+        "to": "n31",
+        "label": "3층"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n31",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "f3",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n31",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "f3",
+      "args": [
+       "$k=\\log_2 n$"
+      ]
+     }
+    ],
+    "sourcePages": [
+     26,
+     27
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "이제 층당 비용과 층수를 곱해 볼까요?",
+     "곱하면 전체 시간은 O(n log n)이에요.",
+     "재귀식의 2T(n/2)는 절반 크기 문제 2개예요.",
+     "여기에 현재 구간의 합병 비용 O(n)을 더해요."
+    ],
+    "speech": [
+     "",
+     "곱하면 전체 시간은 빅오 엔 로그 엔이에요.",
+     "재귀식의 이 곱하기 티 엔 나누기 이는 절반 크기 문제 두 개예요.",
+     "여기에 현재 구간의 합병 비용 빅오 엔을 더해요."
+    ],
+    "texts": [
+     {
+      "id": "t4",
+      "slot": "top",
+      "hidden": false,
+      "style": "title",
+      "content": "전체 비용과 재귀식"
+     },
+     {
+      "id": "f4",
+      "slot": "bottom",
+      "hidden": false,
+      "style": "formula",
+      "content": "$O(n)\\times O(\\log n)$"
+     },
+     {
+      "id": "f4r",
+      "slot": "bottom",
+      "hidden": true,
+      "style": "formula",
+      "content": "$2T(n/2)$"
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d4cost",
+      "slot": "middle",
+      "hidden": false,
+      "layout": "row",
+      "nodes": [
+       {
+        "id": "n4work",
+        "label": "층당 작업",
+        "shape": "box"
+       },
+       {
+        "id": "n4depth",
+        "label": "합병 층수",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     },
+     {
+      "id": "d4rec",
+      "slot": "middle",
+      "hidden": true,
+      "layout": "column",
+      "nodes": [
+       {
+        "id": "n4left",
+        "label": "절반 문제",
+        "shape": "box"
+       },
+       {
+        "id": "n4right",
+        "label": "절반 문제",
+        "shape": "box"
+       },
+       {
+        "id": "n4merge",
+        "label": "합병",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "e4lm",
+        "from": "n4left",
+        "to": "n4merge"
+       },
+       {
+        "id": "e4rm",
+        "from": "n4right",
+        "to": "n4merge"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "f4",
+      "args": [
+       "$O(n)\\times O(\\log n)=O(n\\log n)$"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "d4cost",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "hide",
+      "target": "f4",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "d4rec",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "f4r",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "f4r",
+      "args": [
+       "$2T(n/2)+O(n)$"
+      ]
+     }
+    ],
+    "sourcePages": [
+     24,
+     27
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": false,
+    "lines": [
+     "재귀식을 완성하면 T(n)이며, 층별 계산과 같아요.",
+     "이미 정렬돼 있어도 이 기본 구현은 같은 구조로 진행해요."
+    ],
+    "speech": [
+     "재귀식을 완성하면 티 엔이며, 층별 계산과 같아요.",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "setText",
+      "target": "f4r",
+      "args": [
+       "$T(n)=2T(n/2)+O(n)$"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n4merge",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     24,
+     27
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "8개 원소의 합병 비용을 층별로 세어 볼까요?",
+   "startSec": 0.0,
+   "endSec": 3.74
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "비교 횟수를 기준으로, 합병할 구간을 묶어 봐요.",
+   "startSec": 4.04,
+   "endSec": 7.02
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "2개씩 합치면 정렬된 4묶음이 돼요.",
+   "startSec": 7.32,
+   "endSec": 10.24
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "4×2=8개를 처리하므로, 층당 비용은 O(n)이에요.",
+   "startSec": 10.54,
+   "endSec": 15.61
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이번에는 4개씩 합치는 층을 볼까요?",
+   "startSec": 16.21,
+   "endSec": 19.1
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "정렬된 2묶음도 모두 합치면 8개예요.",
+   "startSec": 19.4,
+   "endSec": 22.75
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "마지막 합병의 앞부분은 10, 13, 22, 24예요.",
+   "startSec": 23.05,
+   "endSec": 27.51
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "끝까지 합치면 뒤에는 25, 30, 35, 37이 와요.",
+   "startSec": 27.81,
+   "endSec": 32.68
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "그렇다면 합병 층은 몇 층일까요?",
+   "startSec": 33.28,
+   "endSec": 36.03
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "8→4→2→1로 나누면, 합병도 3층이에요.",
+   "startSec": 36.33,
+   "endSec": 39.81
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "크기가 1이면 멈추므로 n/2^k=1이에요.",
+   "startSec": 40.11,
+   "endSec": 44.39
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "n이 2의 거듭제곱이면 k=log₂n이에요.",
+   "startSec": 44.69,
+   "endSec": 48.84
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "이제 층당 비용과 층수를 곱해 볼까요?",
+   "startSec": 49.44,
+   "endSec": 52.26
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "곱하면 전체 시간은 O(n log n)이에요.",
+   "startSec": 52.56,
+   "endSec": 55.5
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "재귀식의 2T(n/2)는 절반 크기 문제 2개예요.",
+   "startSec": 55.8,
+   "endSec": 60.45
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "여기에 현재 구간의 합병 비용 O(n)을 더해요.",
+   "startSec": 60.75,
+   "endSec": 63.98
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "재귀식을 완성하면 T(n)이며, 층별 계산과 같아요.",
+   "startSec": 64.58,
+   "endSec": 69.11
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "이미 정렬돼 있어도 이 기본 구현은 같은 구조로 진행해요.",
+   "startSec": 69.41,
+   "endSec": 73.88
+  }
+ ]
+}
