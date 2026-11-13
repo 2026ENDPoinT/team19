@@ -34,7 +34,7 @@ SENTENCE_END = re.compile(r"(?<![개필수중주소])요[.!?]*$|(죠|니다|이�
 ALL_LAYOUTS = ("row", "column", "tree", "layers", "cycle")
 ALL_SLOTS = ("top", "middle", "bottom", "full")
 TEXT_STYLES = ("title", "body", "keyword", "formula")
-SHAPES = ("box", "circle")
+SHAPES = ("box", "circle", "text")  # text: 테두리 없이 글자만 (D-54, FE 구현 11/14)
 COMPONENT_KEYS = {"texts": "text", "slides": "slide", "diagrams": "diagram", "grids": "grid", "codes": "code"}
 
 LIMITS = {
@@ -304,7 +304,7 @@ class _Checker:
             if self.add_id(w, nid, {"kind": "node", "parent": d.get("id"), "visible": n.get("hidden") is not True}):
                 node_ids.add(nid)
             if n.get("shape") not in SHAPES:
-                self.err(f"{w} {nid}", "shape는 box 또는 circle")
+                self.err(f"{w} {nid}", "shape는 box, circle, text 중 하나")
             if not _nonempty_str(n.get("label")):
                 self.err(f"{w} {nid}", "label 없음")
             elif len(n["label"]) > LIMITS["node_label"]:
