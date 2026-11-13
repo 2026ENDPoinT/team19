@@ -347,3 +347,21 @@ def test_place_top_only_one_line():
                 "actions": [{"line": 1, "do": "place", "target": "g1", "args": ["top"]}], "sourcePages": [1]}]}
     assert validate_blueprint(bp(1), 1) == []
     assert any("한 줄짜리" in e for e in validate_blueprint(bp(2), 1))
+
+
+def test_near_text():
+    import copy
+    from pipeline.validate import validate_blueprint
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가", "나"], "speech": ["", ""],
+          "texts": [{"id": "k1", "style": "keyword", "content": "피봇", "hidden": False, "near": {"target": "g1", "side": "below", "cell": "2"}}],
+          "slides": [], "diagrams": [],
+          "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["5", "3", "8"]], "indexLabels": False, "pointers": []}], "codes": [],
+          "actions": [{"line": 1, "do": "hide", "target": "k1", "args": []}], "sourcePages": [1]}]}
+    assert validate_blueprint(bp, 1, near=True) == []                    # 붙은 글은 자리를 차지하지 않는다
+    assert any("near" in e for e in validate_blueprint(bp, 1, near=False))  # 꺼져 있으면 오류
+    gone = copy.deepcopy(bp)
+    gone["scenes"][0]["actions"] = [{"line": 1, "do": "hide", "target": "g1", "args": []}]
+    assert any("화면에 없음" in e for e in validate_blueprint(gone, 1, near=True))
+    bad = copy.deepcopy(bp)
+    bad["scenes"][0]["texts"][0]["near"]["cell"] = "7"
+    assert validate_blueprint(bad, 1, near=True)
