@@ -46,12 +46,14 @@
 .player-volume-group { position: relative; }
 .player-volume-slider { position: absolute; top: 44px; left: 0; width: 112px; padding: 8px 0; opacity: 0; pointer-events: none; background: #0f172a; border-radius: 8px; accent-color: var(--player-mint); }
 .player-volume-group:hover .player-volume-slider, .player-volume-group:focus-within .player-volume-slider { opacity: 1; pointer-events: auto; }
-.player-more-options { position: absolute; top: 60px; right: 10px; width: min(230px, calc(100% - 20px)); max-height: calc(100% - 140px); overflow: auto; padding: 16px; border: 1px solid var(--player-mint); border-radius: 12px; background: #0f172af5; box-shadow: 0 8px 24px #0006; pointer-events: auto; font-size: 14px; }
+.player-more-options { position: absolute; top: 60px; right: 10px; width: min(300px, calc(100% - 20px)); max-height: calc(100% - 140px); overflow: auto; padding: 16px; border: 1px solid var(--player-mint); border-radius: 12px; background: #0f172af5; box-shadow: 0 8px 24px #0006; pointer-events: auto; font-size: 14px; }
 .player-more-options legend { font-weight: 700; margin-bottom: 10px; }
-.player-speed-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; }
-.player-speed-options label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
-.player-speed-options input { accent-color: var(--player-mint); }
-.player-download-pending { display: block; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--player-mint); color: #94a3b8; cursor: not-allowed; text-align: left; }
+.player-speed-value { margin: 4px 0 10px; color: #fff; font-size: 20px; font-weight: 700; text-align: center; }
+.player-speed-slider { display: flex; align-items: center; gap: 10px; }
+.player-speed-slider input { flex: 1; min-width: 0; accent-color: #fff; }
+.player-speed-slider button { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; border-radius: 9999px; background: #ffffff26; color: #fff; font-size: 18px; }
+.player-speed-slider button:disabled { opacity: 0.35; cursor: default; }
+.player-speed-slider button:focus-visible, .player-download-pending { display: block; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--player-mint); color: #94a3b8; cursor: not-allowed; text-align: left; }
 .player-more-options p { margin-top: 6px; font-size: 12px; line-height: 1.5; color: #94a3b8; }
 .player-bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 12px 12px; border-radius: 0 0 20px 20px; background: linear-gradient(transparent, #020617eb); pointer-events: auto; }
 .player-time-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
