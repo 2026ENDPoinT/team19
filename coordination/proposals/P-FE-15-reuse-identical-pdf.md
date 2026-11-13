@@ -24,6 +24,43 @@
 
 ## 의견
 ### BE
+> BE/Claude, 2026-11-14 · 설계 검토만. **구현·API 변경은 팀장 결정 전까지 하지 않았다.** 무과금.
+
+**현재 구조(코드 확인):** `POST /lectures`는 업로드마다 새 `lectureId`·`prepare` Job을 만들고 PDF 해시를 저장하지 않는다. `lectures`에는 파일 해시·추출기·모드 칸이 없다. `GET /lectures`(D-50)는 그 소유자의 강의를 전부 돌려준다. 강의 행과 `original.pdf`는 디스크에 남아 있어 읽기 전용으로 해시를 계산할 수 있다.
+
+**추천 설계(칸 추가만, 기존 행·파일 삭제 없음):**
+1. **동일 파일:** 업로드를 디스크에 쓰는 기존 반복문에서 `sha256`을 함께 계산한다(이름·크기는 보지 않는다). `lectures`에 `pdf_sha256`, `ai_mode`(`sample`/`real`), `extractor`(`pymupdf`/`pypdf`), `extract_version`, `reuse_key`를 `ALTER TABLE ADD COLUMN`으로 추가한다.
+2. **소유자:** `X-Owner-Id`가 있을 때만 재사용한다. 헤더가 없으면(주인 없음) 지금처럼 항상 새 강의다. 다른 소유자의 같은 PDF는 합치지 않는다.
+3. **동시 요청:** `reuse_key = 소유자:SHA-256:ai_mode:extract_version`을 **UNIQUE**로 두고(재사용 가능한 대표 한 건에만 값, 나머지는 NULL이라 중복 허용), 조회→삽입→Job 생성을 **한 SQLite 트랜잭션**(`BEGIN IMMEDIATE`)에서 한다. 동시에 들어온 두 번째 요청은 UNIQUE 충돌을 받아 승자 행을 다시 읽어 반환한다. 승자만 `dispatch`하므로 강의·유료 Job이 하나만 생긴다. 새로 받은 임시 사본은 **그 요청이 방금 만든 폴더만** 지운다.
+   - **`reprocess`·failed 재업로드에서 키 충돌을 피하는 방법(삭제 없음):** 새 강의를 만들기 **전에 같은 트랜잭션 안에서** 현재 키를 쥔 옛 강의의 `reuse_key`만 `NULL`로 바꾼 뒤 새 행을 삽입한다(`UPDATE … SET reuse_key=NULL WHERE reuse_key=?` → `INSERT`). UNIQUE는 키 값이 있는 행끼리만 충돌하므로 `NULL`이 된 옛 강의는 영향이 없다. 옛 강의의 행·`original.pdf`·페이지·클립·Job·결과·ID는 그대로이고 ID로 계속 열리며 재시도도 된다. 나중에 옛 강의를 재시도해 ready가 돼도 키가 `NULL`이라 대표가 되지 않아 충돌하지 않는다. 마지막 안전장치로 `IntegrityError`가 나면 새 행을 만들지 않고 승자 행을 다시 읽어 반환한다.
+   - **이중 처리 방지:** `reprocess`는 값으로 교체 대상 `lectureId`를 받아(`reprocess=<옛 lectureId>`) 그 강의가 **지금도 키를 쥐고 있을 때만** 새 강의를 만든다. 이미 다른 요청이 교체했다면 새로 만들지 않고 현재 대표를 `reused: true`로 돌려준다(더블클릭·동시 재처리가 강의·유료 Job을 여러 개 만들지 않는다). failed 재업로드도 같은 방식이라, 동시에 두 번 올려도 첫 요청이 옛 failed의 키를 비우고 새 강의를 만들며 두 번째는 그 새 강의를 재사용한다.
+4. **상태별 동작(같은 key가 있을 때):**
+
+| 기존 강의 | 반환 |
+|---|---|
+| ready | 기존 `lectureId`와 그 강의의 최신 `prepare` Job ID. 추출·해설을 다시 하지 않는다(유료 호출 없음). |
+| pending/running | 같은 강의와 진행 중인 같은 Job. |
+| failed | **재사용도 자동 재시도도 하지 않는다.** 사용자가 다시 올리면 새 강의를 만들고 옛 행의 `reuse_key`만 NULL로 바꿔(삭제 아님) 새 행이 대표가 된다. 옛 행은 기존 `POST /jobs/{id}/retry`로 계속 재시도할 수 있다. |
+
+5. **FE 호환(코드 읽기 기준, 실행 검증 전):** 단순 재사용(ready/pending)만 해당한다. FE는 응답의 `lectureId`·`jobId`로 `GET /jobs/{jobId}`를 보고 `completed`면 `GET /lectures/{id}`를 읽는데, 그때 `preparationJobId === jobId`와 `status==='ready'`를 검사한다. 재사용 시 **그 강의의 최신 prepare Job ID**를 주면 이 검사를 통과할 것으로 **보이며**, 추가 필드 `reused: true`는 FE가 무시해도 된다고 **판단**한다. 구현 후 FE와 실제로 확인해야 한다. **`stale` 표시, `reprocess` 사용자 선택(버튼·비용 확인·재요청), 목록 `duplicateCount`는 FE 추가 작업이 필요할 수 있고 FE 호환은 확정되지 않았다**(FE 의견 필요). HTTP 코드는 기존 `202` 유지(FE는 코드를 보지 않음) 또는 outline처럼 `200` — 팀장 선택.
+
+**가장 중요한 쟁점: 잘못 만들어진 옛 강의를 재사용하지 않는 규칙**
+- 재사용 대상은 **이 기능 이후** 만들어져 `extractor`·`extract_version`이 기록된 강의뿐이다. 이 기능 이전의 강의(BUG-FE-01 시기의 pypdf 결과 포함)는 해시가 비어 있고 추출기가 **알 수 없음**이라 `reuse_key`가 없다. 그래서 같은 PDF를 올려도 **옛 결과를 자동 재사용하지 않고** 새로 처리한다(샘플 모드는 무과금).
+- 샘플 모드에서 PyMuPDF가 없어 **pypdf로 대체돼 만든 강의**는 `extractor='pypdf'`로 기록하고 `reuse_key`를 주지 않는다(재사용 불가). 의존성을 고친 뒤 같은 PDF를 다시 올리면 자동으로 새로 처리된다. BUG-FE-01 재발 방지의 핵심이다.
+- 실제 AI 모드는 PyMuPDF가 필수(대체 없음)라 `extractor='pymupdf'`다.
+- **추출·해설 방식이 바뀐 경우(`extract_version`):** BE 상수를 올리는 사람이 책임진다(추출기·AI 해설 프롬프트가 의미 있게 바뀔 때, AI와 협의). 올리면 기존 key가 안 맞아 새 업로드는 새 강의가 된다. 단 **유료(real) 재처리가 사용자 모르게 일어나지 않도록** 두 가지 중 팀장 선택: (가) 새 업로드를 곧 새 처리로 본다(기존 FE의 real 업로드 전 비용 확인이 곧 승인), (나) 기존 ready를 `reused:true, stale:true`로 돌려주고 명시적 재처리 요청(`POST /lectures`의 선택 필드 `reprocess=true`, 새 강의 생성)이 있을 때만 새로 처리. **(나)를 추천**한다: 기존 결과 보존·무과금 우선이고, 재처리는 사용자가 누르면 FE가 비용 확인 후 보낸다.
+- 사용자의 **명시적 재처리**도 같은 `reprocess=true`로 처리한다. 기존 강의는 지우지 않고 `reuse_key`만 새 강의로 넘어간다.
+- **모드 분리:** key에 `ai_mode`가 있어 sample 결과를 real에서 재사용하지 않고 그 반대도 마찬가지다.
+
+**출처가 불명확한 옛 자료는 안전하게 제외한다(우선 정책):** 이 기능 이전의 강의는 sample/real 어느 서버에서, 어떤 추출기로 만들었는지 **저장된 기록이 없다.** 클립 결과의 `sample` 표시 같은 **결과만으로 모드를 추정하지 않는다**(깨진 강의나 일부만 만든 강의에서 신뢰할 수 없다). 따라서 `ai_mode`·`extractor`·`extract_version`이 기록되지 않은 강의는 ① **재사용 대상에서 제외**하고 ② **자동 묶음 대상에서도 제외**한다. 같은 PDF를 다시 올리면 새로 처리된다. 옛 강의는 지우지 않으며 목록에 그대로 보이고 ID로 계속 열린다.
+
+**기존 중복 목록 통합은 재사용과 별도 정책이다(삭제·병합 없음):** 위 원칙 때문에 **기록이 있는 새 강의끼리만** `(소유자, SHA-256, 모드)`로 묶어 목록 대표 한 건(+선택 필드 `duplicateCount`)으로 보여 준다. 대표 우선순위는 ① 신뢰하는 추출기로 만든 ready ② ready ③ 완성 클립 수 ④ 최신이다. **옛 강의 중복까지 묶으려면** 팀장이 정책을 따로 정해야 한다: (A) 묶지 않음(기본·안전, 옛 중복은 그대로 목록에 여러 건) (B) 팀장이 해당 소유자의 옛 강의가 만들어진 서버 모드를 확인해 알려 주는 경우에만 묶기. 어느 쪽이든 해시는 저장된 `original.pdf`를 **읽기만** 해 새 칸에 채우고(다른 칸·파일 불변, 실패하면 건너뜀), **모드·추출기는 추정으로 채우지 않는다.**
+
+**예상 변경 파일:** `backend/app.py`(마이그레이션·업로드·목록), `backend/pdf_text_fallback.py`(반환값에 `extractor`), `backend/tests/test_reuse_upload.py`(신규), `contracts/api.md`(`reused`/`stale`/`reprocess`/`duplicateCount`), `backend/README.md`. FE·AI 코드 변경 없음(선택 필드는 무시 가능).
+
+**필요한 테스트(무과금):** `reprocess`·failed 재업로드 시 키 이전(옛 강의 보존, UNIQUE 무충돌, 동시 요청 1건 처리), 출처 미기록 옛 행의 재사용·묶음 제외, 같은 소유자·같은 바이트(이름 다름)=재사용, 같은 이름·다른 바이트=별개, 다른 소유자/헤더 없음=교차 없음, 동시 업로드 N개=강의 1·`prepare` Job 1, ready/pending/failed 각 반환, pypdf 대체로 만든 강의·옛 행은 재사용 안 됨, `extract_version` 변경, `reprocess`, sample↔real 분리, 옛 DB 마이그레이션·해시 채움에서 기존 행·파일 불변, 목록 대표 선택, FE 확인 조건(`preparationJobId === jobId`).
+
+**팀장 결정 요청:** ① 재사용 HTTP 코드(202 유지/200) ② 버전 변경 시 (가)/(나) ③ `reprocess` 선택 필드와 `stale` 표시 채택 여부 ④ 목록 `duplicateCount` 필드 채택 여부(FE 작업 필요) ⑤ failed를 "새 업로드=새 강의"로 둘지 ⑥ 해시 채우기 시점 ⑦ **옛 강의 중복 통합 정책**(A 묶지 않음/B 모드 확인 뒤 묶기) ⑧ `reprocess=<lectureId>` 방식 채택 여부.
 
 ### AI
 

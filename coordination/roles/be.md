@@ -40,6 +40,8 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
+- **(11/14 · BE/Claude) Q-FE-19 / P-FE-15 BE 검토(설계만).** 같은 PDF 재사용을 SHA-256·소유자·`reuse_key` UNIQUE 트랜잭션으로 설계했다. `reprocess`·failed 재업로드는 옛 강의의 키만 NULL로 이전해 충돌을 피하고 기존 강의·결과를 보존한다. 출처 기록이 없는 옛 강의(BUG-FE-01 시기 포함)는 재사용·자동 묶음에서 제외하고 모드를 결과로 추정하지 않는다. `stale`·`reprocess`·`duplicateCount`의 FE 호환은 미확정. 팀장 결정 8건 대기, 구현·API·DB 변경 없음. BUG-FE-01의 BE 해결 범위는 완료, 종료 판단은 FE([Q-FE-08](../questions.md)).
+
 - **(11/14 · BE/Claude) BUG-FE-01 재발 조사·수정(`feature/be-pymupdf-requirement`).** 이 PC에서는 BE·AI 추출기 모두 원본 한글이 정상(PyMuPDF 2.1). `backend/requirements.txt`에 PyMuPDF가 없어 그것만 설치한 PC는 조용히 pypdf로 대체되는 구조를 확인하고 requirements·시작 경고·README를 고쳤다. 재발 PC의 실제 원인·DB 단계 비교는 미확인([Q-FE-08](../questions.md) BE 답 참조).
 
 - **(11/14 · BE/Claude) D-50 FE 연동 점검·D-57 호환·시연 연결 준비(무과금).** FE `X-Owner-Id` 이름·형식(16~64자)이 BE와 일치함을 코드로 확인했다. D-57의 클립 계획 `mode`가 `plan_json`→`make_blueprint`(재시도 포함)까지 보존됨을 테스트 5개로 고정했다(기존 계획에 `mode`가 없어도 동작). 두 노트북 연결은 [DEMO-NETWORK.md](../../backend/DEMO-NETWORK.md)에 정리했고 CORS 테스트 4개를 추가했다. **실제 두 기기 연결은 미수행.** 시연 화면 주소·Pages 문제는 [Q-BE-08](../questions.md).
