@@ -229,7 +229,8 @@ class _Checker:
                 continue
             if re.search(r"[0-9]", sp):
                 self.err(where, f"speech[{i}]에 아라비아 숫자가 남아 있음. 한글로 읽는 대로 쓸 것")
-            if _similarity(sp, ln) < SPEECH_MIN_SIMILARITY:
+            # 자막에 영어·코드·수식 기호가 있으면 음성은 읽는 말이라 글자가 달라지는 게 정상이다(Q-FE-16). 그때는 비교하지 않는다.
+            if not _NOTATION.search(ln) and _similarity(sp, ln) < SPEECH_MIN_SIMILARITY:
                 self.err(where, f"speech[{i}]가 lines[{i}]와 내용이 너무 다름. 읽는 법만 바꿀 것")
 
     def check_page(self, p, where, field) -> bool:
@@ -678,6 +679,7 @@ class _Checker:
 
 # speech와 lines 비교(P-AI-04): 숫자·수사·기호를 빼고 남은 글이 이만큼은 같아야 한다.
 SPEECH_MIN_SIMILARITY = 0.5
+_NOTATION = re.compile(r"[A-Za-z<>=≤≥≠+*/^_\[\]{}|∑√π∞→←]")
 _NUMBERISH = re.compile(r"[0-9\s.,!?~·:;()\[\]{}+\-*/=<>^%'\"“”‘’…]|[영공일이삼사오육칠팔구십백천만억하나둘셋넷다섯여섯일곱여덟아홉열스물서른마흔쉰]")
 
 

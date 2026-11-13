@@ -378,3 +378,13 @@ def test_attach_moves_text_out_of_slot():
                       {"line": 1, "do": "show", "target": "k2", "args": []}], "sourcePages": [1]}]}
     assert validate_blueprint(bp, 1, near=True) == []           # 붙은 뒤 아래 자리가 비어 다른 글을 둘 수 있다
     assert any("attach" in e for e in validate_blueprint(bp, 1, near=False))
+
+
+def test_speech_check_skips_notation_lines():
+    from pipeline.validate import _Checker
+    c = _Checker(1, ("row",), ("top",), ("dark",))
+    c.check_speech(["리스트 로우가 피봇보다 작으면 로우를 늘려요."], ["list[low] < pivot이면 low를 늘려요."], "s1")
+    c.check_speech(["여기까지 비용은 빅오 일이에요."], ["여기까지 비용은 O(1)이에요."], "s2")
+    assert c.errors == []
+    c.check_speech(["전혀 다른 이야기를 해요."], ["배열을 반으로 나눠요."], "s3")    # 기호 없는 문장은 그대로 검사
+    assert any("s3" in e for e in c.errors)
