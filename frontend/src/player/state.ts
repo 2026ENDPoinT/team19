@@ -1,5 +1,7 @@
+import { validateNear } from './nearState.ts'
 import { formulaTermColors, parseFormulaTerms } from './formulaTerms.ts'
 export type Action = { line: number; do: string; target: string; args: string[] }
+export type Near = { target: string; side: 'above' | 'below' | 'left' | 'right'; cell?: string }
 export type Entity = {
   id: string; hidden?: boolean; slot?: string; content?: string
   cells?: string[][]; row?: number; col?: number; box?: number[]
@@ -10,6 +12,8 @@ export type Entity = {
   cellOrigins?: Record<string, { row: number; col: number; progress: number }>
   focusBox?: number[]; marks?: { box: number[]; label: string }[]
   stamp?: 'x' | 'o'
+  near?: Near
+  attachMotion?: { origin: Entity[]; progress: number }
   [key: string]: unknown
 }
 export type Scene = {
@@ -60,7 +64,7 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
   const args = action.args
   switch (action.do) {
     case 'show': target.hidden = false; break
-    case 'hide': target.hidden = true; delete target.stamp; break
+    case 'hide': target.hidden = true; delete target.stamp; delete target.attachMotion; break
     // 부정(X)·맞음(O) 도장(D-53, P-AI-07). 대상은 텍스트·노드·선. 한 대상에 하나만 남는다.
     case 'stamp': {
       if (args[0] !== 'x' && args[0] !== 'o') throw new Error(`도장은 x 또는 o만 가능해요: ${args[0]}`)
@@ -75,6 +79,16 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
       if (!['top', 'middle', 'bottom'].includes(args[0])) throw new Error(`옮길 수 없는 자리: ${args[0]}`)
       if (!elements.includes(target)) throw new Error(`자리를 옮길 수 없는 대상: ${target.id}`)
       target.slot = args[0]
+      delete target.near; delete target.attachMotion
+      break
+    }
+    case 'attach': {
+      if (!elements.includes(target) || typeof target.content !== 'string' || !['body','keyword','formula'].includes(String(target.style)) || ![2,3].includes(args.length) || !['above','below','left','right'].includes(args[1])) throw new Error('attach 대상·방향이 올바르지 않아요.')
+      const origin = target.attachMotion?.origin ?? structuredClone(elements).map(element => { delete element.attachMotion; return element })
+      target.near = { target: args[0], side: args[1] as Near['side'], ...(args.length === 3 ? { cell: args[2] } : {}) }
+      validateNear(elements)
+      if (progress < 1) target.attachMotion = { origin, progress }
+      else delete target.attachMotion
       break
     }
     case 'highlight':
@@ -237,6 +251,7 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
     if (action.do === 'markLine') target.explainedLine = Number(action.args[0])
     if (action.do === 'mark') target.explainedMarks = [...(target.explainedMarks ?? []), coordinates(action.args[0])]
   }
+  validateNear(state.elements)
   state.caption = captions.find((caption) => time >= caption.startSec && time < caption.endSec)?.text ?? ''
   return state
 }

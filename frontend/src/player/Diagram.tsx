@@ -54,7 +54,7 @@ export default function Diagram({ element }: { element: Entity }) {
           const active = node.explaining || element.explaining
           const fill = active ? palette.mint : '#1e293b'
           const stroke = active ? palette.mint : defaultLineColor
-          return <g key={node.id} className="player-shape-enter" opacity={dimParts && !node.highlighted ? DIM_OPACITY : undefined} transform={`translate(${point.x},${point.y})`}>
+          return <g key={node.id} data-near-anchor={node.id} className="player-shape-enter" opacity={dimParts && !node.highlighted ? DIM_OPACITY : undefined} transform={`translate(${point.x},${point.y})`}>
             {node.shape === 'text' ? null : node.shape === 'circle' ? <circle r={size.radius} fill={fill} fillOpacity={active ? .18 : 1} stroke={stroke} strokeWidth={active ? 3 : 2} /> : <rect x={-size.width / 2} y={-size.height / 2} width={size.width} height={size.height} rx="7" fill={fill} fillOpacity={active ? .18 : 1} stroke={stroke} strokeWidth={active ? 3 : 2} />}
             <text textAnchor="middle" dominantBaseline="middle" fill={active ? palette.mint : defaultTextColor} fontSize={size.fontSize}>{size.lines.map((line, index) => <tspan key={index} x={0} y={(index - (size.lines.length - 1) / 2) * size.lineHeight}>{line}</tspan>)}</text>
             {node.stamp && <StampMark kind={node.stamp} size={Math.min(size.width, size.height) * .94} />}
