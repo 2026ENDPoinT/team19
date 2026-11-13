@@ -25,7 +25,7 @@ from . import pdf_text_fallback, stored_sample
 AI_MODE = get_ai_mode()  # Reject typos before creating a data directory, DB or executor.
 ROOT = Path(os.getenv("TEAM19_DATA_DIR", "./backend/local-data")).resolve()
 DB = ROOT / "team19.sqlite3"
-MAX_BYTES = int(os.getenv("MAX_PDF_MB", "20")) * 1024 * 1024
+MAX_BYTES = int(os.getenv("MAX_PDF_MB", "0")) * 1024 * 1024  # 0이면 크기 제한 없음(D-67 수정, 쪽수 100쪽 제한이 대신함)
 WORKERS = max(1, min(3 if AI_MODE == "real" else 4,
                      int(os.getenv("BE_WORKERS", "3" if AI_MODE == "real" else "1"))))
 ROOT.mkdir(parents=True, exist_ok=True)
@@ -376,7 +376,7 @@ async def upload(file: UploadFile = File(...), x_owner_id: str | None = Header(N
         with path.open("wb") as dst:
             while chunk := await file.read(1024 * 1024):
                 amount += len(chunk)
-                if amount > MAX_BYTES:
+                if MAX_BYTES and amount > MAX_BYTES:
                     fail("FILE_TOO_LARGE", "PDF 파일이 크기 제한을 초과했습니다.", 413)
                 digest.update(chunk)
                 dst.write(chunk)
