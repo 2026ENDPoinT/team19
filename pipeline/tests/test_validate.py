@@ -406,3 +406,16 @@ def test_near_overlap_rules():
     side = copy.deepcopy(bp)
     side["scenes"][0]["texts"][1]["near"]["side"] = "right"
     assert any("왼쪽·오른쪽" in e for e in validate_blueprint(side, 1, near=True))
+
+
+def test_near_above_conflicts_with_status_line():
+    from pipeline.validate import validate_blueprint
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가", "나"], "speech": ["", ""],
+          "texts": [{"id": "k1", "style": "body", "content": "입력", "hidden": False, "near": {"target": "g1", "side": "above"}},
+                    {"id": "st", "slot": "bottom", "style": "keyword", "content": "저장 11개", "hidden": True}],
+          "slides": [], "diagrams": [],
+          "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["5", "3", "8"]], "indexLabels": False, "pointers": []}], "codes": [],
+          "actions": [{"line": 1, "do": "show", "target": "st", "args": []}], "sourcePages": [1]}]}
+    assert any("상태 줄" in e for e in validate_blueprint(bp, 1, near=True))     # 실제 겹침 사례(algo-dc3near-review-c3)
+    bp["scenes"][0]["actions"].insert(0, {"line": 1, "do": "hide", "target": "k1", "args": []})
+    assert validate_blueprint(bp, 1, near=True) == []

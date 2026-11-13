@@ -637,6 +637,13 @@ class _Checker:
                 owner = self.items.get(near["target"])
                 if near["side"] in ("left", "right") and owner and not near.get("cell") and _wide(owner):
                     self.err(where, f"{ident}: 넓은 부품(격자·다이어그램·코드)의 왼쪽·오른쪽에는 붙이지 않는다. above/below를 쓸 것")
+        # keyword는 FE가 제목 바로 밑 상태 줄로 그린다(Q-AI-35). 그동안 위에 붙인 글은 상태 줄과 겹친다.
+        status_on = any(i["kind"] == "text" and i["visible"] and not i.get("near") and "near" not in i
+                        and i["ref"].get("style") == "keyword" for i in self.items.values())
+        if status_on:
+            for (target, cell, side), ids in sides.items():
+                if side == "above":
+                    self.err(where, f"{', '.join(ids)}: keyword(상태 줄)가 보이는 동안에는 above에 붙이지 않는다. below를 쓰거나 내용을 keyword에 합칠 것")
         for (target, cell, side), ids in sides.items():
             if len(ids) > 1:
                 self.err(where, f"{target}{'의 ' + cell + '칸' if cell else ''} {side}에 붙은 글 {len(ids)}개가 동시에 보임: {', '.join(ids)} (한 방향에 하나)")
