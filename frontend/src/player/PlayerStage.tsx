@@ -1,6 +1,7 @@
 import Grid from './Grid'
 import { playerColorVariables } from './colors'
 import { emphasizeFormula } from './formulaEmphasis'
+import { renderFormulaTerms } from './formulaTerms'
 import FitContent from './FitContent'
 import { layoutGrid } from './gridLayout'
 import { layoutDiagram } from './diagramLayout'
@@ -21,10 +22,12 @@ function Formula({ source }: { source: string }) {
   return <span ref={ref} />
 }
 
-function RichText({ content, formula, caption, active }: { content: string; formula: boolean; caption: string; active: boolean }) {
-  if (formula && !content.includes('$')) return <Formula source={emphasizeFormula(content, caption, active)} />
+function RichText({ content, formula, caption, active, termColors, whole }: { content: string; formula: boolean; caption: string; active: boolean; termColors?: Record<string, string>; whole?: boolean }) {
+  const annotated = formula && content.includes('\\term')
+  const render = (source: string) => annotated ? renderFormulaTerms(source, termColors, whole) : emphasizeFormula(source, caption, active)
+  if (formula && !content.includes('$')) return <Formula source={render(content)} />
   return <>{content.split(/(\$[^$]+\$)/g).map((part, index) => part.startsWith('$') && part.endsWith('$')
-    ? <Formula key={index} source={emphasizeFormula(part.slice(1, -1), caption, active)} />
+    ? <Formula key={index} source={render(part.slice(1, -1))} />
     : <span key={index}>{part}</span>)}</>
 }
 
@@ -41,7 +44,7 @@ function ElementView({ element, pageUrl, caption }: { element: Entity; caption: 
   }
   if (typeof element.content === 'string') {
     const style = ['title', 'body', 'keyword', 'formula'].includes(String(element.style)) ? String(element.style) : 'body'
-    return <div className={`player-text player-text--${style}${element.explaining ? ' player-text--explaining' : ''}`}><RichText content={element.content} formula={style === 'formula'} caption={caption} active={element.explaining === true} /></div>
+    return <div className={`player-text player-text--${style}${style === 'formula' && element.content.includes('\\term') ? ' player-text--terms' : element.explaining ? ' player-text--explaining' : ''}`}><RichText content={element.content} formula={style === 'formula'} caption={caption} active={element.explaining === true} termColors={element.formulaTermColors} whole={element.formulaWhole} /></div>
   }
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }
