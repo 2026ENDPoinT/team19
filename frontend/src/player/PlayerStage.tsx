@@ -1,5 +1,6 @@
 import Grid from './Grid'
-import { figureDescription, reserveTextSlots } from './figureDescription'
+import { figureDescription } from './figureDescription'
+import { stageComposition } from './stageComposition'
 import './figureDescription.css'
 import { playerColorVariables } from './colors'
 import { emphasizeFormula } from './formulaEmphasis'
@@ -58,16 +59,19 @@ function ElementView({ element, pageUrl, caption }: { element: Entity; caption: 
 }
 
 function preferredHeight(element: Entity): number {
-  if (element.cells) return layoutGrid(element.cells, element.indexLabels === true, element.pointers?.length ?? 0).height + 8
+  if (element.cells) {
+    const grid = layoutGrid(element.cells, element.indexLabels === true, element.pointers?.length ?? 0)
+    return grid.height * Math.min(2, 380 / grid.width) + 8
+  }
   if (element.nodes) {
     try {
       const diagram = layoutDiagramEdges(element.nodes, (element.edges ?? []).map((edge) => ({ id:edge.id, from: String(edge.from), to: String(edge.to), label:edge.label })), String(element.layout))
       return Math.max(70, diagram.height * 380 / diagram.width) + 8
     } catch { return 90 }
   }
-  if (Array.isArray(element.lines)) return Math.min(260, element.lines.length * 24 + 16)
+  if (Array.isArray(element.lines)) return element.lines.length * 31 + 16
   if (typeof element.page === 'number') return 190
-  if (element.slot === 'top' && element.style === 'title') return 130
+  if (element.slot === 'top' && element.style === 'title') return 42
   const text = String(element.content ?? '')
   return Math.min(140, Math.max(48, Math.ceil(text.length / 20) * 30 + 12))
 }
@@ -102,14 +106,10 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
   }, [])
   const elements = state.elements
   const visible = elements.filter((element) => !element.hidden)
-  // 위 자리는 제목과 보조 부품 하나를 함께 둔다(P-AI-09). 보조 부품은 제목 아래에 작게 그린다.
-  const topVisible = visible.filter((element) => element.slot === 'top')
-  const topAux = topVisible.length === 2 && topVisible.some((element) => element.style === 'title') ? topVisible.find((element) => element.style !== 'title') : undefined
-  const reserved = reserveTextSlots(elements.filter((element) => element !== topAux))
+  const { title, topAux, status, reserved, invalid } = stageComposition(elements)
   const attached = figureDescription(reserved, true)
   const slots = ['top', 'middle', 'bottom']
   const anyLit = visible.some(isLit)
-  const invalid = visible.some((element) => !slots.includes(element.slot ?? '')) || slots.some((slot) => visible.filter((element) => element.slot === slot && element !== topAux).length > 1)
   if (invalid) return <p role="alert">현재 지원 범위와 맞지 않는 장면 배치입니다.</p>
   return (
     <div ref={frameRef} className="player-viewport" style={{ ...playerColorVariables, width: 420 * scale, height: 420 * 16 / 9 * scale }}>
@@ -121,7 +121,8 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
           onTogglePlayback()
         }
       }}>
-      <div className={`player-slots${reserved.some(element => element.slot === 'top' && element.style === 'title') ? ' player-slots--titled' : ''}`}>
+      <div key={state.sceneId} className={`player-slots${title ? ' player-slots--titled' : ''}`}>
+        {status && <div className="player-status-line" aria-hidden={status.hidden || undefined} style={{ visibility: status.hidden ? 'hidden' : undefined, opacity: dimsElement(status, anyLit) ? DIM_OPACITY : undefined }}><ElementView element={status} pageUrl={pageUrl} caption={state.caption} /></div>}
         {topAux && <div className="player-slot player-slot--aux" key={`aux-${topAux.id}`} style={{ opacity: dimsElement(topAux, anyLit) ? DIM_OPACITY : undefined, flexBasis: Math.max(72, preferredHeight(topAux) * .78) }}>
           <FitContent key={topAux.id}><ElementView element={topAux} pageUrl={pageUrl} caption={state.caption} /></FitContent>
         </div>}

@@ -11,12 +11,12 @@ export default function FitContent({ children }: { children: ReactNode }) {
     if (!frame || !content) return
     function fit() {
       if (!frame || !content) return
-      setScale(Math.min(1, frame.clientWidth / 360, frame.clientHeight / Math.max(1, content.offsetHeight)))
+      setScale(Math.min(1, frame.clientWidth / Math.max(380, content.scrollWidth), frame.clientHeight / Math.max(1, content.offsetHeight)))
     }
     const observer = new ResizeObserver(fit)
     observer.observe(frame); observer.observe(content)
     fit()
     return () => observer.disconnect()
   }, [])
-  return <div ref={frameRef} className="player-fit-frame"><div ref={contentRef} className="player-fit-content" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>{children}</div></div>
+  return <div ref={frameRef} className="player-fit-frame"><div ref={contentRef} className="player-fit-content" style={{ width: 380, transform: `translate(-50%, -50%) scale(${scale})` }}>{children}</div></div>
 }

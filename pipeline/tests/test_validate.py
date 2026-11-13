@@ -365,3 +365,16 @@ def test_near_text():
     bad = copy.deepcopy(bp)
     bad["scenes"][0]["texts"][0]["near"]["cell"] = "7"
     assert validate_blueprint(bad, 1, near=True)
+
+
+def test_attach_moves_text_out_of_slot():
+    from pipeline.validate import validate_blueprint
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가", "나"], "speech": ["", ""],
+          "texts": [{"id": "f1", "slot": "bottom", "style": "formula", "content": "$P(X=1)=p$", "hidden": False},
+                    {"id": "k2", "slot": "bottom", "style": "keyword", "content": "다음", "hidden": True}],
+          "slides": [], "diagrams": [],
+          "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["성공", "실패"]], "indexLabels": False, "pointers": []}], "codes": [],
+          "actions": [{"line": 1, "do": "attach", "target": "f1", "args": ["g1", "below", "0"]},
+                      {"line": 1, "do": "show", "target": "k2", "args": []}], "sourcePages": [1]}]}
+    assert validate_blueprint(bp, 1, near=True) == []           # 붙은 뒤 아래 자리가 비어 다른 글을 둘 수 있다
+    assert any("attach" in e for e in validate_blueprint(bp, 1, near=False))
