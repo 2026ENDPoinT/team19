@@ -14,7 +14,7 @@ BP = {"scenes": [
 ]}
 
 
-def fake_tts(client, model, voice, text):
+def fake_tts(client, model, voice, text, style=None):
     return b"\x01\x00" * audio.RATE  # 1초짜리
 
 
@@ -44,11 +44,32 @@ class AudioTests(unittest.TestCase):
     def test_parallel_keeps_order_and_dedupes(self):
         bp = {"scenes": [{"id": "s1", "lines": ["가", "가나다", "가"]}]}   # 길이가 다른 음성이 동시에 와도 순서대로 이어야 한다
         with tempfile.TemporaryDirectory() as tmp, \
-                mock.patch.object(audio, "_tts", side_effect=lambda c, m, v, t: b"\x01\x00" * (audio.RATE * len(t))) as tts, \
+                mock.patch.object(audio, "_tts", side_effect=lambda c, m, v, t, s=None: b"\x01\x00" * (audio.RATE * len(t))) as tts, \
                 mock.patch.object(audio, "_client", return_value=object()):
             c = audio.make_audio(bp, tmp, fmt="wav")["captions"]
             self.assertEqual([(x["startSec"], x["endSec"]) for x in c], [(0.0, 1.0), (1.3, 4.3), (4.6, 5.6)])
             self.assertEqual(tts.call_count, 2)                         # 같은 문장은 한 번만
+
+    def test_level_trims_and_evens_loudness(self):
+        quiet_tone = (b"\x00\x00" * (audio.RATE // 2)) + (b"\xe8\x03" * audio.RATE) + (b"\x00\x00" * (audio.RATE // 2))  # 1000, 앞뒤 0.5초 무음
+        out = audio.level(quiet_tone)
+        self.assertAlmostEqual(len(out) / 2 / audio.RATE, 1.1, places=2)          # 앞뒤 0.05초만 남김
+        self.assertEqual(max(out[i] | out[i + 1] << 8 for i in range(0, len(out), 2) if out[i + 1] < 128), 1800)  # 크기 키움(상한 1.8배)
+
+    def test_split_scene_uses_longest_pauses(self):
+        tone, gap = b"\xe8\x03" * audio.RATE, lambda s: b"\x00\x00" * int(audio.RATE * s)
+        pcm = tone + gap(0.2) + tone + gap(0.6) + tone + gap(0.6) + tone       # 첫 0.2초는 쉼표 쉼
+        parts = audio.split_scene(pcm, ["가나다라마바", "사아자", "차카타"])
+        self.assertEqual([round(len(p) / 2 / audio.RATE, 1) for p in parts], [2.2, 1.0, 1.0])
+        self.assertIsNone(audio.split_scene(tone, ["가", "나"]))               # 쉼이 없으면 실패 → 문장별로
+
+    def test_scene_unit_falls_back_per_line(self):
+        with tempfile.TemporaryDirectory() as tmp, \
+                mock.patch.object(audio, "_tts", side_effect=fake_tts) as tts, \
+                mock.patch.object(audio, "_client", return_value=object()):
+            r = audio.make_audio(BP, tmp, fmt="wav", unit="scene")              # 가짜 음성엔 쉼이 없어 자르기 실패
+            self.assertEqual(len(r["captions"]), 3)
+            self.assertEqual(tts.call_count, 1 + 3)                             # 장면 1번 + 문장 3번
 
     def test_check_captions_mismatch(self):
         errs = audio.check_captions(BP, [{"sceneId": "s1", "lineIndex": 0, "startSec": 0, "endSec": 1}], 1)
