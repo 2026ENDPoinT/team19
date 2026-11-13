@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import { scheduleControlsVisibility } from './controlVisibility'
+import { toPlaybackRate, toShownRate } from './playbackSpeed'
 
 type Props = {
   audioRef: RefObject<HTMLAudioElement | null>
@@ -69,8 +70,10 @@ export default function PlayerControls({ audioRef, time, duration, isPlaying, is
     if (!audio) return
     function sync() {
       if (!audio) return
-      setVolume(audio.volume); setMuted(audio.muted); setRate(audio.playbackRate); setReady(audio.readyState >= 1)
+      setVolume(audio.volume); setMuted(audio.muted); setRate(toShownRate(audio.playbackRate)); setReady(audio.readyState >= 1)
     }
+    // 처음 연결될 때 기본 빠르기(화면 1.0x = 실제 1.25배)를 건다. 새 클립을 불러와도 defaultPlaybackRate로 유지된다.
+    if (audio.defaultPlaybackRate === 1 && audio.playbackRate === 1) audio.defaultPlaybackRate = audio.playbackRate = toPlaybackRate(1)
     const events = ['volumechange', 'ratechange', 'loadedmetadata', 'emptied']
     events.forEach((event) => audio.addEventListener(event, sync))
     sync()
@@ -88,7 +91,7 @@ export default function PlayerControls({ audioRef, time, duration, isPlaying, is
   const rateIndex = RATES.reduce((best, value, index) => Math.abs(value - rate) < Math.abs(RATES[best] - rate) ? index : best, 0)
   function changeRate(value: number) {
     const audio = audioRef.current
-    if (audio) { audio.playbackRate = value; setRate(value) }
+    if (audio) { audio.defaultPlaybackRate = audio.playbackRate = toPlaybackRate(value); setRate(value) }
   }
   return (
     <div ref={rootRef} className={`player-controls${visible ? '' : ' player-controls--hidden'}`} aria-hidden={!visible} inert={!visible}
