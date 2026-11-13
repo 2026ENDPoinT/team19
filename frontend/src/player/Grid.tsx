@@ -1,5 +1,6 @@
 import { defaultLineColor, defaultTextColor, palette, pointerColor } from './colors'
 import type { Entity } from './state'
+import { cellAnchor } from './nearLayout'
 import { layoutGrid } from './gridLayout'
 import { DIM_OPACITY, dimsParts } from './focusDim'
 
@@ -9,6 +10,10 @@ export default function Grid({ element }: { element: Entity }) {
   const layout = layoutGrid(cells, element.indexLabels === true, pointers.length)
   const fontSize = Math.min(22, layout.cellHeight * .52)
   return <svg className="player-grid-graphic" width="100%" height={layout.height * Math.min(2, 380 / layout.width)} viewBox={`0 0 ${layout.width} ${layout.height}`} role="img" aria-label={`배열: ${cells.map((row) => row.join(', ')).join(' / ')}`}>
+    {cells.flatMap((row,r)=>row.map((_,c)=>{
+      const point=layout.positions.get(`${r},${c}`)!
+      return <rect key={`anchor-${r},${c}`} data-near-cell={cellAnchor(element.id,`${r},${c}`)} x={point.x-layout.cellWidth/2} y={point.y-layout.cellHeight/2} width={layout.cellWidth} height={layout.cellHeight} fill="none" pointerEvents="none" />
+    }))}
     {element.indexLabels === true && cells.flatMap((row, r) => row.map((_, c) => {
       const point = layout.positions.get(`${r},${c}`)!
       return <text key={`i${r},${c}`} x={point.x} y={point.y - layout.cellHeight / 2 - 4} textAnchor="middle" fill={defaultTextColor} fontSize="10">{cells.length === 1 ? c : `${r},${c}`}</text>

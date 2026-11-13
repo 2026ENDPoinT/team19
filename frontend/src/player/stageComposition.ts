@@ -2,6 +2,7 @@ import type { Entity } from './state.ts'
 import { reserveTextSlots } from './figureDescription.ts'
 
 export function stageComposition(elements: Entity[]) {
+  elements = elements.filter(element => !element.near)
   const visible = elements.filter(element => !element.hidden)
   const title = visible.find(element => element.slot === 'top' && element.style === 'title')
   const topVisible = visible.filter(element => element.slot === 'top')

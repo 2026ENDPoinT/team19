@@ -1,0 +1,7 @@
+.player-near-layer { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.player-near-label { position: absolute; width: max-content; max-width: 260px; transform-origin: top left; }
+.player-near-label .player-text { font-size: 18px; line-height: 1.4; padding: 3px 6px; border-radius: 4px; background: #020617d9; }
+.player-near-label .player-text--keyword { font-size: 19px; }
+.player-near-label .player-text--formula { font-size: 20px; }
+.player-stage-measure { position: absolute; inset: 0; display: flex; flex-direction: column; padding: inherit; box-sizing: border-box; visibility: hidden; pointer-events: none; }
+.player-stage-measure *, .player-stage-measure .player-slots { animation: none !important; }
