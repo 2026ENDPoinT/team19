@@ -177,7 +177,7 @@
     - **원인 확인:** 사용자 원본 비교에서 `01_course_intro.pdf`(SHA-256 `4d3e38bb36b6343c04713206a5bb51783f7977feb1ded125d23893583a74ca82`)의 1쪽 공백 소실과 2·3쪽 한글 깨짐이 pypdf에서 재현됐고 PyMuPDF에서는 정상이었다. 이번 원인은 sample 경로의 pypdf 텍스트 추출이며, 이전 다른 PDF 점검으로 해결됐다고 볼 수 없었다.
     - **수정:** `backend/pdf_text_fallback.py`에서 PyMuPDF를 우선 사용한다. ImportError 또는 DLL 로딩 OSError이면 pypdf로 대체하고 한글·줄바꿈 품질을 보장하지 못한다는 로그를 남긴다. placeholder PNG·페이지 번호·반환 형식·샘플 제목 생성 방식·API 계약은 유지했다. FE·실제 AI `pipeline/`은 수정하지 않았다.
     - **사용자 브라우저 확인:** 동일 PDF를 새로 업로드한 FE 화면에서 1번 `Software Engineering Course` 정상 띄어쓰기, 2번 `소프트웨어 공학(Software Engineering)`, 3번 `강의 정보` 정상 한글을 확인했다는 사용자 보고를 받았다. 사용자 확인 환경은 PyMuPDF 2.1 정상 로딩, `AI_MODE=sample`, 새로운 임시 데이터 폴더다. 이 기록은 사용자 화면 확인이며, 해당 원본의 DB 직접 조회나 lectureId를 확인한 기록은 아니다.
-    - **자동 검증:** `backend/tests`와 `pipeline/tests` 전체 303개 통과(신규 14개). 합성 PDF·모의 추출기·격리 임시 DB로 한글·줄바꿈, DLL 실패 대체 경로, DB→제목→outline API·이미지·음성 회귀를 확인했다. 유료 AI 호출은 하지 않았다.
+    - **자동 검증:** 수정 직후 `backend/tests`와 `pipeline/tests` 전체 303개 통과(신규 14개). 최신 main `2913a2e` 병합 후에는 AI 담당 신규 테스트 1개를 포함해 304개 통과했다. 합성 PDF·모의 추출기·격리 임시 DB로 한글·줄바꿈, DLL 실패 대체 경로, DB→제목→outline API·이미지·음성 회귀를 확인했다. 유료 AI 호출은 하지 않았다.
     - **기존 결과 및 남은 범위:** 이미 저장된 텍스트·제목은 자동 복구되지 않으므로 수정 서버에서 원본 PDF를 새 강의로 재업로드하고 모드를 다시 선택해야 한다. 기존 DB는 수정·삭제하지 않는다. 실제 AI 모드 전체 통합은 아직 검증하지 않았다.
 
 ### Q-AI-28 · [to:BE] · 열림
