@@ -1,6 +1,7 @@
 import { defaultLineColor, defaultTextColor, palette, pointerColor } from './colors'
 import type { Entity } from './state'
 import { layoutGrid } from './gridLayout'
+import { DIM_OPACITY, dimsParts } from './focusDim'
 
 export default function Grid({ element }: { element: Entity }) {
   const cells = element.cells ?? []
@@ -28,7 +29,7 @@ export default function Grid({ element }: { element: Entity }) {
       const y = (from ? to.y + (from.y - to.y) * t : to.y) + arc
       const selected = element.explaining || element.explainedCells?.includes(key)
       const tooLong = value.length * fontSize * .65 > layout.cellWidth - 8
-      return <g key={key} className="player-shape-enter" transform={`translate(${x},${y})`}>
+      return <g key={key} className="player-shape-enter" opacity={dimsParts(element) && !element.highlightedCells?.includes(key) ? DIM_OPACITY : undefined} transform={`translate(${x},${y})`}>
         <rect x={-layout.cellWidth / 2} y={-layout.cellHeight / 2} width={layout.cellWidth} height={layout.cellHeight} rx="5" fill={selected ? palette.mint : '#111d32'} fillOpacity={selected ? .18 : 1} stroke={selected ? palette.mint : defaultLineColor} strokeWidth={selected ? 2 : 1} />
         <text x={0} y={0} dominantBaseline="central" textAnchor="middle" fill={selected ? palette.mint : defaultTextColor} fontSize={fontSize} fontWeight="600" textLength={tooLong ? layout.cellWidth - 8 : undefined} lengthAdjust="spacingAndGlyphs">{value}</text>
       </g>

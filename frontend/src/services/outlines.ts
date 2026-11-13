@@ -56,3 +56,13 @@ export async function watchOutline(lectureId: string, mode: LearningMode, onUpda
     await wait(3000, signal)
   }
 }
+
+// Called after mode selection; retries can query without claiming another creation.
+export async function watchOrCreateOutline(lectureId: string, mode: LearningMode, onUpdate: (snapshot: OutlineSnapshot) => void, signal: AbortSignal, expectedMode: ServerMode, claimCreation: () => boolean, wait = preparationDelay) {
+  const existing = await watchOutline(lectureId, mode, onUpdate, signal, wait)
+  signal.throwIfAborted()
+  if (existing || !claimCreation()) return existing
+  await createOutline(lectureId, mode, signal, { allowReal: true, expectedMode })
+  signal.throwIfAborted()
+  return watchOutline(lectureId, mode, onUpdate, signal, wait)
+}
