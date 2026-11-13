@@ -27,6 +27,9 @@ SUPPORTED_THEMES = ("dark",)
 SUPPORTED_FORMULA_TERMS = False
 TERM = "\\term"
 TERM_ID = re.compile(r"[a-z0-9_]+")
+# 화면 글(body, keyword)이 자막처럼 문장으로 끝나는지 본다. 개요·필요처럼 '요'로 끝나는 명사는 뺀다.
+# shortcut: 흔한 종결 어미만 본다. 놓치는 문장형이 보이면 어미를 더한다.
+SENTENCE_END = re.compile(r"(?<![개필수중주소])요[.!?]*$|(죠|니다|이다|한다|된다|있다|없다|[았었했됐]다)[.!?]*$")
 
 ALL_LAYOUTS = ("row", "column", "tree", "layers", "cycle")
 ALL_SLOTS = ("top", "middle", "bottom", "full")
@@ -86,6 +89,25 @@ def validate_blueprint(
     """설계도 하나를 검사하고 오류 문장 목록을 돌려준다. 비어 있으면 통과다."""
     terms = SUPPORTED_FORMULA_TERMS if formula_terms is None else formula_terms
     return _Checker(page_count, supported_layouts, supported_slots, supported_themes, terms).run(blueprint)
+
+
+def screen_text_errors(blueprint: dict) -> list[str]:
+    """AI가 쓴 설계도의 문체 검사. 화면 글(body, keyword)이 자막 같은 문장이면 알린다.
+
+    형식 계약(docs/04)이 아니라서 validate_blueprint에 넣지 않는다. BE 샘플 모드는 PDF 문장을 body에 그대로 쓴다.
+    형식 검사를 통과한 설계도에만 부른다.
+    """
+    styles: dict[str, str] = {}  # id는 클립 전체에서 겹치지 않고, clear:false 장면은 앞 장면 글을 setText로 바꾼다
+    errs = []
+    for sc in blueprint["scenes"]:
+        styles.update((t["id"], t["style"]) for t in sc["texts"])
+        shown = [(t["id"], t["content"]) for t in sc["texts"]]
+        shown += [(a["target"], a["args"][0]) for a in sc["actions"] if a["do"] == "setText"]
+        for ident, content in shown:
+            if styles.get(ident) in ("body", "keyword") and SENTENCE_END.search(content.strip()):
+                errs.append(f"{sc['id']} > {ident}: 화면 글은 그림에 붙는 이름표다. 자막처럼 '~요', '~다'로 끝나는 문장 대신 "
+                            f"명사로 끝나는 짧은 구절로 쓴다: {content!r}")
+    return errs
 
 
 class _Checker:

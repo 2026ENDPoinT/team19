@@ -658,7 +658,7 @@
           "id": "t_point",
           "slot": "middle",
           "style": "body",
-          "content": "합병 정렬은 합칠 때, 퀵 정렬은 나눌 때 일한다",
+          "content": "합병 정렬은 합칠 때, 퀵 정렬은 나눌 때",
           "hidden": true
         }
       ],
