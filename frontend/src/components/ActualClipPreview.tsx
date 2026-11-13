@@ -1,6 +1,8 @@
 import { useAudioClock } from '../player/useAudioClock'
 import { samplePageUrl } from '../services/samplePages'
 import PlayerStage from '../player/PlayerStage'
+import { startAutoplay } from '../player/autoplay'
+import { captureClipTransition } from '../player/clipTransition'
 import { handlePlayerShortcut } from '../player/keyboardShortcuts'
 import PlayerControls from '../player/PlayerControls'
 import { calculatePlayerState } from '../player/state'
@@ -28,7 +30,17 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   const alignAfterLoad = useRef(false)
   const [loadingHeight, setLoadingHeight] = useState<number>()
 
-  function chooseClip(next: string) {
+  const transitionRef = useRef<ReturnType<typeof captureClipTransition> | null>(null)
+  const [transitionBusy, setTransitionBusy] = useState(false)
+  useEffect(() => () => { const transition = transitionRef.current; transitionRef.current = null; transition?.cancel() }, [])
+
+  function chooseClip(next: string, direction = 0) {
+    if (transitionRef.current || next === clipId) return
+    const player = surfaceRef.current?.querySelector<HTMLElement>('.player-viewport')
+    if (direction && player && contentRef.current) {
+      transitionRef.current = captureClipTransition(contentRef.current, player, direction)
+      setTransitionBusy(true)
+    }
     setLoadingHeight(contentRef.current?.getBoundingClientRect().height)
     alignAfterLoad.current = true
     setResult(null)
@@ -39,11 +51,20 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
   // useEffect(() => attachFeedScroll(() => surfaceRef.current?.querySelector<HTMLElement>('.player-viewport') ?? null), [])
   useLayoutEffect(() => {
     if (!result || !alignAfterLoad.current) return
-    setLoadingHeight(undefined)
     const frame = requestAnimationFrame(() => {
       const player = surfaceRef.current?.querySelector('.player-viewport')
-      if (player) window.scrollBy({ top: player.getBoundingClientRect().top - 12, behavior: 'instant' })
+      if (player && !transitionRef.current) window.scrollBy({ top: player.getBoundingClientRect().top - 12, behavior: 'instant' })
       alignAfterLoad.current = false
+      const transition = transitionRef.current
+      if (transition && player instanceof HTMLElement) {
+        void transition.play(player).finally(() => {
+          if (transitionRef.current === transition) { transitionRef.current = null; setTransitionBusy(false); setLoadingHeight(undefined) }
+        })
+      } else if (transition) {
+        transition.cancel(); transitionRef.current = null; setTransitionBusy(false); setLoadingHeight(undefined)
+      } else {
+        setLoadingHeight(undefined)
+      }
     })
     return () => cancelAnimationFrame(frame)
   }, [result])
@@ -75,17 +96,28 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
     loading
       .then((data) => { if (!controller.signal.aborted) setResult(data) })
       .catch((cause: unknown) => {
-        if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : '클립 연결 오류')
+        if (!controller.signal.aborted) {
+          transitionRef.current?.cancel(); transitionRef.current = null; setTransitionBusy(false); setLoadingHeight(undefined)
+          setError(cause instanceof Error ? cause.message : '클립 연결 오류')
+        }
       })
     return () => controller.abort()
   }, [clipId, retry, initialClipId])
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!result || error || !audio) return
+    return startAutoplay(audio, () => {
+      setPlaybackError('자동재생을 시작하지 못했어요. 재생 버튼이나 스페이스바를 눌러 시작해 주세요.')
+    })
+  }, [result, error])
 
   // 숏폼처럼 옆 버튼으로 비교할 클립 목록의 이전·다음 클립으로 넘긴다(업로드 클립 화면은 제외).
   const order = ['clip-01', 'clip-01-b', 'parts-test', ...evalClips.map((clip) => clip.id)]
   const position = order.indexOf(clipId)
   function moveClip(step: number) {
     const next = order[position + step]
-    if (next) chooseClip(next)
+    if (next) chooseClip(next, step)
   }
 
   async function togglePlayback() {
@@ -134,14 +166,14 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
       <p className="mt-2 text-xs text-slate-500">A/B·부품 검사 원본은 BE API에서, 다른 과목 평가 원본은 정식 저장 파일에서 불러옵니다. parts-test는 실제 설명 음성 대신 신호음을 사용합니다.</p>
       </details>
       <label className="mt-3 block font-semibold" htmlFor="actual-clip">비교할 클립</label>
-      <select id="actual-clip" value={clipId} onChange={(event) => chooseClip(event.target.value)} className="mt-2 w-full rounded-lg border bg-white p-2">
+      <select id="actual-clip" disabled={transitionBusy} value={clipId} onChange={(event) => chooseClip(event.target.value)} className="mt-2 w-full rounded-lg border bg-white p-2">
         <option value="clip-01">A · Sonnet / Cedar</option>
         <option value="clip-01-b">B · Terra / Cedar</option>
         <option value="parts-test">부품 검사 · 신호음 샘플 (실제 TTS 아님)</option>
         {evalClips.map((clip) => <option key={clip.id} value={clip.id}>평가 · {clip.label}</option>)}
       </select>
       </>}
-      <div ref={contentRef} style={{ minHeight: loadingHeight }}>
+      <div ref={contentRef} className="clip-transition-container" aria-busy={transitionBusy} style={{ minHeight: loadingHeight }}>
       {error ? (
         <div className="mt-6 rounded-xl bg-red-50 p-4" role="alert">
           <p>{error}</p><p className="mt-2 text-sm">다른 클립을 선택하거나 서버 상태를 확인해 주세요. 다시 불러오기는 결과 조회만 하며, 새 생성이나 생성 재시도를 요청하지 않습니다.</p>
@@ -155,7 +187,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
             {sourceOpen ? '원본 페이지 닫기' : '원본 페이지 보기'}
           </button>
           <div className={`actual-clip-layout${sourceOpen ? ' actual-clip-layout--with-source' : ''}`}>
-          <div className="actual-player" ref={surfaceRef}>
+          <div className={`actual-player${transitionBusy ? ' clip-transition-active' : ''}`} ref={surfaceRef}>
           <audio src={result.audioUrl} hidden preload="metadata" loop ref={audioRef}
             onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}
             onError={() => setError('음성을 불러오지 못했어요. BE의 미디어 제공 상태를 확인해 주세요.')} />
@@ -163,8 +195,8 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
             controls={<PlayerControls captionsOn={captionsOn} onToggleCaptions={() => setCaptionsOn((on) => !on)} audioRef={audioRef} time={time} duration={result.durationSec} isPlaying={isPlaying} isFullscreen={isFullscreen} onTogglePlayback={togglePlayback} onRestart={restart} onFullscreen={toggleFullscreen} />} />}
           {playbackError && <p role="alert" className="mt-2 text-sm text-red-700">{playbackError}</p>}
           {!initialClipId && <div className="clip-feed-nav">
-            <button type="button" aria-label="이전 클립" disabled={position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
-            <button type="button" aria-label="다음 클립" disabled={position < 0 || position >= order.length - 1} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
+            <button type="button" aria-label="이전 클립" disabled={transitionBusy || position <= 0} onClick={() => moveClip(-1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 15 6-6 6 6" /></svg></button>
+            <button type="button" aria-label="다음 클립" disabled={transitionBusy || position < 0 || position >= order.length - 1} onClick={() => moveClip(1)}><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg></button>
           </div>}
           </div>
           {sourceOpen && (
