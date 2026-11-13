@@ -23,6 +23,8 @@
 | 추출 작업 | preparationJobId | |
 | 페이지 | pages[].number, text, imageUrl, empty | 번호는 1부터. `empty`는 내용 없는 페이지 |
 
+BE 내부 저장에만 주인 칸 `owner_id`(기기 ID, 비어 있을 수 있음, D-50)가 있고 API 응답에는 나오지 않는다. [api.md](api.md#내-강의함-x-owner-id-d-50-구현됨--목록-분리만) 참고.
+
 ## 분할 계획 (Outline)과 클립 계획 (ClipPlan)
 
 | 항목 | 이름 | 설명 |

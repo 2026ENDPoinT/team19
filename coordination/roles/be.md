@@ -40,6 +40,8 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
+- **(11/14 · BE/Claude) D-50 최소 구현(`feature/be-personal-library`, 미병합·미Push).** `lectures.owner_id` 열 추가(기존 DB 보존), 업로드가 `X-Owner-Id` 저장, `GET /lectures`는 그 주인 것만(헤더 없으면 `[]`, 형식 오류는 422). 다른 API·`/assets` 접근 통제는 없음. 신규 테스트 14개 포함 BE·AI 342개 통과(유료 호출 없음). 계약은 [api.md](../../contracts/api.md)에 한계와 함께 기록. 병합은 팀장 확인 후.
+
 - **(11/14 · BE/Claude) Q-FE-14 BE 판단·D-50 설계.** 문장별 근거 페이지는 BE가 이미 보존함을 가짜 AI 테스트로 확인(`feature/be-line-source-check`, 미병합)하고 [P-FE-14](../proposals/P-FE-14-sentence-source-page.md)에 BE 의견을 남겼다. D-50은 사전 구현 허가 기록이 없어 코드 없이 설계·위험 분석만 [P-AI-05](../proposals/P-AI-05-personal-library.md) BE 의견에 적고 [Q-BE-06](../questions.md)으로 팀장 결정을 요청했다. 유료 호출 없음.
 
 - **(11/13 · BE/Claude) usage 기록 검토·병합, 첫 유료 통합은 키 없어 미실행.** Codex의 `feature/be-usage-records`(`job_usage`, [설명](../../backend/USAGE-RECORDS.md))를 diff로 검토해 치명 문제가 없음을 확인하고 최신 main(`5881100`)과 충돌 없이 병합했다. 전체 BE·AI 326개 통과(병합 전후). **유료 호출 0회:** OPENAI/ANTHROPIC 키가 프로세스·Windows 환경변수·루트 `.env`에 없어 업로드·생성·서버 실행을 하지 않았다. 생성 클립·재생·콘솔 비용은 미검증이다([Q-BE-05](../questions.md) 답 참조).
