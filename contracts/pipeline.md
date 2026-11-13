@@ -52,6 +52,7 @@ AI 모듈은 `PipelineError` 하나를 던진다. `code`, `retryable`, 사용자
 |---|---|---|
 | `PDF_INVALID` | false | 열 수 없거나 암호가 걸렸거나 페이지가 없는 PDF |
 | `PDF_NO_TEXT` | false | 글자도 페이지 해설도 얻지 못함 |
+| `PDF_TOO_LONG` | false | 100쪽을 넘는 PDF(`pipeline/extract.py`의 `MAX_PAGES`). 추출 전에 거절해 유료 호출이 없다 |
 | `PROVIDER_RATE_LIMIT` | true | 요청 한도 초과 |
 | `PROVIDER_TIMEOUT` | true | 외부 API 시간 초과 |
 | `PROVIDER_ERROR` | true | 외부 API 오류 |

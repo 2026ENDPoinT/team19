@@ -1,5 +1,5 @@
 import { jobStageLabel } from '../services/jobStages'
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import type { CSSProperties } from 'react'
 import './processing.css'
 import DotField from './DotField'
@@ -22,8 +22,10 @@ function RevealText({ text, step, loop = false }: { text: string; step: number; 
 }
 
 // done은 단계별 부분 점수까지 더한 값(없으면 completed). 퍼센트는 done으로, 'N개 완성' 문구는 completed로 쓴다.
-type Props = { stage?: string | null; message?: string; progress?: { completed: number; total: number; done?: number } }
-export default function ProcessingStatus({ stage, message, progress }: Props) {
+// dots: 오른쪽 그림에 마우스 반응 점을 깔지(자료 준비 화면만). 클립 생성 화면에서는 끈다.
+type Props = { stage?: string | null; message?: string; progress?: { completed: number; total: number; done?: number }; dots?: boolean }
+export default function ProcessingStatus({ stage, message, progress, dots = false }: Props) {
+  const logoClip = useId()
   const [tip, setTip] = useState(0)
   useEffect(() => {
     const timer = setInterval(() => setTip((index) => (index + 1) % STUDY_TIPS.length), 7000)
@@ -34,7 +36,23 @@ export default function ProcessingStatus({ stage, message, progress }: Props) {
     <div className="processing-layout">
       <div className="processing-copy" role="status">
         <span className="processing-eyebrow"><span /> LEARNING IN MOTION</span>
-        <h2 className="processing-brand" aria-label="EIDOS"><RevealText text="EIDOS" step={0.32} loop /></h2>
+        <h2 className="processing-brand" aria-label="EIDOS">
+          <svg viewBox="0 0 340 88" className="processing-dot-word" aria-hidden="true" focusable="false">
+            {Array.from('EIDOS').map((letter, index) => {
+              const positions = [3, 58, 88, 148, 213], widths = [55, 30, 60, 65, 57]
+              const clip = `${logoClip}-${index}`
+              return <svg key={letter} x={positions[index]} width={widths[index]} height="88" overflow="visible">
+                <g className="processing-dot-letter" style={{ animationDelay: `${index * .32}s` }}>
+                  <defs><clipPath id={clip}><text x="0" y="72" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="78">{letter}</text></clipPath></defs>
+                  <foreignObject width={widths[index]} height="88" clipPath={`url(#${clip})`}>
+                    <div style={{ position: 'relative', width: widths[index], height: 88 }}><DotField spacing={5} radius={65} /></div>
+                  </foreignObject>
+                  <text x="0" y="72" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="78" fill="none" stroke="currentColor" strokeWidth=".8">{letter}</text>
+                </g>
+              </svg>
+            })}
+          </svg>
+        </h2>
         <p className="processing-intro">강의자료를 바탕으로 나만의 학습 클립을 준비하고 있어요.</p>
         <div className="processing-current">
           <div role="progressbar" aria-label="클립 생성 완료율" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent ?? undefined} className="processing-spinner">
@@ -48,7 +66,7 @@ export default function ProcessingStatus({ stage, message, progress }: Props) {
         </div>
       </div>
       <div className="processing-artwork" aria-hidden="true">
-        <DotField className="dot-field--art" spacing={18} radius={90} />
+        {dots && <DotField className="dot-field--art" spacing={18} radius={90} maxSize={3} />}
         <div className="processing-orbit processing-orbit--one" />
         <div className="processing-orbit processing-orbit--two" />
         <div className="processing-sheet"><span>PDF</span><i /><i /><i /><i /><div className="processing-scan" /></div>

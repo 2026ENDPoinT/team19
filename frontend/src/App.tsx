@@ -77,6 +77,10 @@ const modeIcons: Record<LearningMode, ReactNode> = {
     ),
 }
 
+// 모든 화면에서 테두리가 있는 박스(업로드 카드, 선택한 파일, 오류·안내 상자, 모드 카드, 클립 카드, 강의함 항목, 대기 화면, 단계 칸) 주변에만 점을 깐다.
+// 작은 버튼·선택 상자·상단 메뉴·영상 플레이어 안은 넣지 않는다.
+const DOT_ANCHORS = 'main [class*="rounded-2xl"][class*="border"], main [class*="rounded-3xl"][class*="border"], main .processing-experience, .brand-steps > div'
+
 type Screen = "upload" | "preparing" | "mode" | "outline" | "library"
 
 function UploadIcon() {
@@ -234,6 +238,8 @@ export default function App() {
 
   return (
     <div className="brand-site min-h-screen bg-white text-slate-950">
+      {/* 점 판은 첫 업로드 화면과 자료 준비 화면에만 둔다. 자료 준비 화면은 점이 덜 커진다. */}
+      {(screen === 'upload' || screen === 'preparing') && <DotField className="dot-field--site" anchors={DOT_ANCHORS} fade={150} maxSize={screen === 'preparing' ? 3 : 3.85} />}
       <SiteHeader library={screen === 'library'} onLibrary={() => setScreen('library')} onHome={() => setScreen('upload')} onExamples={() => setShowActualClip(true)} />
 
       <input
@@ -247,7 +253,6 @@ export default function App() {
 
       {screen === "upload" && (
         <main className="brand-page brand-upload mx-auto flex w-full max-w-4xl flex-col items-center px-5 pb-16 pt-16 sm:px-8 sm:pt-24 lg:pt-28">
-          <DotField className="dot-field--hero" />
           <section className="brand-hero w-full text-center" aria-labelledby="page-title">
             <div className="mb-5 inline-flex items-center rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-semibold text-blue-700">
               내 강의자료로 만드는 학습 피드
