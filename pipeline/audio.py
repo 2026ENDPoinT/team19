@@ -21,7 +21,7 @@ import wave
 from pathlib import Path
 
 from pipeline import costlog
-from pipeline.errors import PipelineError
+from pipeline.errors import PipelineError, raise_if_no_credit
 from pipeline.korean_numbers import spoken_text
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -143,10 +143,12 @@ def _tts(client, model: str, voice: str, text: str) -> bytes:
                                           instructions=VOICE_STYLE, response_format="pcm")
         return resp.read()
     except openai.RateLimitError as e:
+        raise_if_no_credit(e)
         raise PipelineError("PROVIDER_RATE_LIMIT", "음성 서비스 요청이 많습니다. 잠시 후 다시 시도해 주세요.", True) from e
     except openai.APITimeoutError as e:
         raise PipelineError("PROVIDER_TIMEOUT", "음성 서비스 응답이 늦습니다. 다시 시도해 주세요.", True) from e
     except (openai.APIStatusError, openai.APIConnectionError) as e:
+        raise_if_no_credit(e)
         raise PipelineError("TTS_FAILED", "음성을 만들지 못했습니다. 다시 시도해 주세요.", True) from e
 
 

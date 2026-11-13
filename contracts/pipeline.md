@@ -56,6 +56,7 @@ AI 모듈은 `PipelineError` 하나를 던진다. `code`, `retryable`, 사용자
 | `PROVIDER_TIMEOUT` | true | 외부 API 시간 초과 |
 | `PROVIDER_ERROR` | true | 외부 API 오류 |
 | `PROVIDER_REFUSED` | false | AI가 안전 정책으로 생성을 거절함 |
+| `PROVIDER_NO_CREDIT` | false | AI 서비스 크레딧이 소진됨. 충전 전에는 다시 해도 실패한다 |
 | `BLUEPRINT_INVALID` | true | 다시 만들어도 형식 검사 실패 |
 | `TTS_FAILED` | true | 음성 생성 실패 |
 | `OUTLINE_INVALID` | true | 다시 만들어도 분할 계획 검사 실패 |
