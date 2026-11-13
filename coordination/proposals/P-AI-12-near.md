@@ -73,8 +73,20 @@ AI는 검사기·프롬프트를 **미리 만들어 두고 꺼 두었다**(`pipe
 (FE 역할만 작성)
 
 ### BE
+> BE/Claude, 2026-11-14 · 기술 검토와 문서만. BE·FE·AI 코드 변경 없음, 무과금.
 
-(BE 역할만 작성)
+**결론: BE 코드 수정·API 계약 변경·DB 변경 모두 필요 없다.** `near`는 글 부품 안의 객체이고 `attach`는 동작 목록의 한 항목이라, 둘 다 설계도 JSON 안에서 그대로 저장·반환된다.
+
+**코드로 확인한 사실(BE가 설계도를 거르지 않는다):**
+- AI 설계도는 `backend/pipeline.py`의 `check_blueprint`가 **AI의 `validate_blueprint`를 그대로 호출**해 검사한다. BE 자체의 설계도 키 목록·화이트리스트는 없다(`validate_result`는 자막의 `sceneId`·`lineIndex`·문장·시간만 비교한다).
+- 통과한 설계도는 `backend/app.py`의 `do_clip`이 `clips.result_json`에 **통째로 `json.dumps`** 하고(`result["blueprint"]`), `GET /clips/{id}`가 `json.loads`로 **그대로** 돌려준다. 장면·부품·동작을 골라 쓰거나 지우는 코드가 없다. (같은 경로로 `lineSourcePages` 보존 테스트를 이미 통과했다.)
+- 샘플 모드의 개발용 MP4 미리보기(`render_preview`)만 설계도를 읽지만 예외를 잡아 설계도·음성 저장을 막지 않으며, 실제 AI 모드는 만들지 않는다.
+
+**현재 상태(코드·검사기 확인, 임의로 켜지 않음):** `pipeline/validate.py`의 `SUPPORTED_NEAR = False`라서 `texts[].near`는 `near(옆에 붙이기)는 아직 플레이어가 지원하지 않음`으로, `attach`는 같은 플래그 검사(`if not self.near`)로 **거부**된다. 켜는 것은 제안서대로 FE 구현을 알린 뒤 AI 담당이 `SUPPORTED_NEAR`를 True로 바꾸는 일이며 BE는 바꾸지 않았다. 켜진 뒤의 세부 검사(주인이 화면에 있음, 붙은 글 2개 이하, hide 순서)는 AI 검사기의 일이고 BE는 같은 함수를 호출만 한다.
+
+**기존 동작과의 데이터 호환:** `place`·`show`·`hide`·`highlight`·`setText` 등은 동작 목록의 항목이고 BE는 목록을 해석하지 않는다. `near`가 붙은 글은 `slot`이 없을 수 있는데 BE가 `slot`을 읽는 코드도 없다(샘플 모드가 직접 만드는 설계도만 `slot`을 쓴다). 따라서 기존 결과와 새 결과가 같은 API 모양으로 전달된다. 이미 저장된 클립에는 새 필드가 없고 BE는 채워 넣지 않는다.
+
+**의존하는 부분:** FE의 붙은 글 위치 계산·주인 따라가기·넘침 처리, AI의 검사기 활성화와 프롬프트. **실제 통합 검증은 전이다**: 검사기가 꺼져 있어 `near`·`attach`가 들어간 설계도를 실제 경로로 저장·조회해 볼 수 없다. 활성화 후 첫 실제 클립에서 `GET /clips/{id}`의 `blueprint`에 `near`·`attach`가 그대로 있는지 확인한다.
 
 ## 결정 (팀장)
 
