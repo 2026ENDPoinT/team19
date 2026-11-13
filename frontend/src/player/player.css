@@ -118,3 +118,6 @@
 .player-stamp { animation: player-stamp-in 220ms ease-out; transform-box: fill-box; transform-origin: center; }
 .player-stage[data-playing="false"] .player-stamp { animation: none; }
 @media (prefers-reduced-motion: reduce) { .player-stamp { animation: none; } }
+
+/* 화면 글 안 **단어** 강조(P-AI-06): 한 가지 강조색. */
+.player-text-emphasis { color: var(--player-yellow); font-weight: 800; }

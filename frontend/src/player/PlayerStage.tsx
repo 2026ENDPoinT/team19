@@ -4,6 +4,7 @@ import './figureDescription.css'
 import { playerColorVariables } from './colors'
 import { emphasizeFormula } from './formulaEmphasis'
 import { breakAtCommas } from './lineBreaks'
+import { hasEmphasis, splitEmphasis } from './textEmphasis'
 import { renderFormulaTerms } from './formulaTerms'
 import FitContent from './FitContent'
 import { layoutGrid } from './gridLayout'
@@ -26,13 +27,13 @@ function Formula({ source }: { source: string }) {
   return <span ref={ref} />
 }
 
-function RichText({ content, formula, caption, active, termColors, whole }: { content: string; formula: boolean; caption: string; active: boolean; termColors?: Record<string, string>; whole?: boolean }) {
+function RichText({ content, formula, caption, active, termColors, whole, emphasize = false }: { content: string; formula: boolean; caption: string; active: boolean; termColors?: Record<string, string>; whole?: boolean; emphasize?: boolean }) {
   const annotated = formula && content.includes('\\term')
   const render = (source: string) => annotated ? renderFormulaTerms(source, termColors, whole) : emphasizeFormula(source, caption, active)
   if (formula && !content.includes('$')) return <Formula source={render(content)} />
   return <>{content.split(/(\$[^$]+\$)/g).map((part, index) => part.startsWith('$') && part.endsWith('$')
     ? <Formula key={index} source={render(part.slice(1, -1))} />
-    : <span key={index}>{breakAtCommas(part)}</span>)}</>
+    : <span key={index}>{emphasize ? splitEmphasis(part).map((piece, i) => piece.strong ? <strong key={i} className="player-text-emphasis">{piece.text}</strong> : breakAtCommas(piece.text)) : breakAtCommas(part)}</span>)}</>
 }
 
 function ElementView({ element, pageUrl, caption }: { element: Entity; caption: string; pageUrl: (page: number) => string | undefined }) {
@@ -48,7 +49,9 @@ function ElementView({ element, pageUrl, caption }: { element: Entity; caption: 
   }
   if (typeof element.content === 'string') {
     const style = ['title', 'body', 'keyword', 'formula'].includes(String(element.style)) ? String(element.style) : 'body'
-    return <div className={`player-text player-text--${style}${style === 'formula' && element.content.includes('\\term') ? ' player-text--terms' : element.explaining ? ' player-text--explaining' : ''}`}><RichText content={element.content} formula={style === 'formula'} caption={caption} active={element.explaining === true} termColors={element.formulaTermColors} whole={element.formulaWhole} />{element.stamp && <span className="player-stamp-overlay" aria-hidden="true"><svg viewBox="-50 -50 100 100"><StampMark kind={element.stamp} size={84} /></svg></span>}</div>
+    // **단어** 강조는 body·keyword에만(P-AI-06). 강조가 있으면 글 전체 강조색은 끈다.
+    const emphasize = (style === 'body' || style === 'keyword') && hasEmphasis(element.content)
+    return <div className={`player-text player-text--${style}${style === 'formula' && element.content.includes('\\term') ? ' player-text--terms' : element.explaining && !emphasize ? ' player-text--explaining' : ''}`}><RichText content={element.content} formula={style === 'formula'} emphasize={emphasize} caption={caption} active={element.explaining === true} termColors={element.formulaTermColors} whole={element.formulaWhole} />{element.stamp && <span className="player-stamp-overlay" aria-hidden="true"><svg viewBox="-50 -50 100 100"><StampMark kind={element.stamp} size={84} /></svg></span>}</div>
   }
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }
