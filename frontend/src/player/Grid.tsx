@@ -39,6 +39,22 @@ export default function Grid({ element }: { element: Entity }) {
         <text x={0} y={0} dominantBaseline="central" textAnchor="middle" fill={selected ? palette.mint : defaultTextColor} fontSize={fontSize} fontWeight="600" textLength={tooLong ? layout.cellWidth - 8 : undefined} lengthAdjust="spacingAndGlyphs">{value}</text>
       </g>
     })}
+    {/* 구분선(P-AI-13): 줄 사이 가로선, 칸 사이 세로선. 분홍 점선(노랑은 강조 선·포인터 i와 겹쳐 4색 중 분홍). */}
+    {(element.dividers ?? []).map((divider) => {
+      const [kind, value] = divider.split(':'), k = Number(value)
+      const half = layout.cellHeight / 2
+      if (kind === 'row') {
+        const a = layout.positions.get(`${k},0`), b = layout.positions.get(`${k + 1},0`)
+        if (!a || !b) return null
+        const y = (a.y + b.y) / 2
+        return <line key={divider} x1={6} x2={layout.width - 6} y1={y} y2={y} stroke={palette.pink} strokeWidth="2" strokeDasharray="5 4" strokeLinecap="round" />
+      }
+      const row = cells.findIndex((cellsRow) => cellsRow.length > k + 1)
+      const a = layout.positions.get(`${row},${k}`), b = layout.positions.get(`${row},${k + 1}`)
+      if (row < 0 || !a || !b) return null
+      const first = layout.positions.get('0,0')!, last = layout.positions.get(`${cells.length - 1},0`)!
+      return <line key={divider} x1={(a.x + b.x) / 2} x2={(a.x + b.x) / 2} y1={first.y - half - 6} y2={last.y + half + 6} stroke={palette.pink} strokeWidth="2" strokeDasharray="5 4" strokeLinecap="round" />
+    })}
     {pointers.map((pointer, index) => {
       if (pointer.hidden) return null
       const to = layout.positions.get(`${pointer.row},${pointer.col}`)

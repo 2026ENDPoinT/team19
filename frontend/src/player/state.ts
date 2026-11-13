@@ -14,6 +14,7 @@ export type Entity = {
   focusBox?: number[]; marks?: { box: number[]; label: string }[]
   stamp?: 'x' | 'o'
   heldLit?: boolean; heldCells?: string[]
+  dividers?: string[]
   near?: Near
   attachMotion?: { origin: Entity[]; progress: number }
   [key: string]: unknown
@@ -66,7 +67,7 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
   const args = action.args
   switch (action.do) {
     case 'show': target.hidden = false; break
-    case 'hide': target.hidden = true; delete target.stamp; delete target.attachMotion; break
+    case 'hide': target.hidden = true; delete target.stamp; delete target.attachMotion; delete target.dividers; break
     // 부정(X)·맞음(O) 도장(D-53, P-AI-07). 대상은 텍스트·노드·선. 한 대상에 하나만 남는다.
     case 'stamp': {
       if (args[0] !== 'x' && args[0] !== 'o') throw new Error(`도장은 x 또는 o만 가능해요: ${args[0]}`)
@@ -76,6 +77,22 @@ function applyAction(elements: Entity[], action: Action, progress = 1) {
       break
     }
     case 'unstamp': delete target.stamp; break
+    // 격자 구분선(P-AI-13). "row:k"는 k번째 줄 아래 가로선, "col:k"는 k번째 칸 오른쪽 세로선. 칸 위치 기준.
+    case 'divide':
+    case 'undivide': {
+      if (!target.cells) throw new Error(`구분선은 격자에만 그을 수 있어요: ${target.id}`)
+      const columns = Math.max(...target.cells.map((row) => row.length))
+      for (const arg of args) {
+        const match = /^(row|col):(\d+)$/.exec(arg)
+        const limit = match?.[1] === 'row' ? target.cells.length - 1 : columns - 1
+        if (!match || Number(match[2]) >= limit) throw new Error(`구분선 위치 오류: ${arg}`)
+      }
+      if (!args.length) throw new Error('구분선 위치가 없어요')
+      const current = new Set(target.dividers ?? [])
+      for (const arg of args) { if (action.do === 'divide') current.add(arg); else current.delete(arg) }
+      target.dividers = [...current]
+      break
+    }
     // 부품을 다른 자리로 옮긴다(P-AI-09, D-56). 안의 노드·칸·강조·도장 상태는 그대로 따라간다.
     case 'place': {
       if (!['top', 'middle', 'bottom'].includes(args[0])) throw new Error(`옮길 수 없는 자리: ${args[0]}`)
