@@ -27,6 +27,9 @@ SUPPORTED_THEMES = ("dark",)
 SUPPORTED_FORMULA_TERMS = True
 # 글을 다른 부품·노드·칸 옆에 붙이는 near (D-60). FE 구현 뒤 True로 켠다.
 SUPPORTED_NEAR = False
+# 격자 구분선 divide/undivide (P-AI-13). FE 구현 뒤 True로 켠다.
+SUPPORTED_DIVIDE = False
+DIVIDE_ARG = re.compile(r"(row|col):(\d+)")
 NEAR_SIDES = ("above", "below", "left", "right")
 NEAR_STYLES = ("body", "keyword", "formula")
 TERM = "\\term"
@@ -81,6 +84,8 @@ ACTIONS = {
     "unstamp": {"text", "node", "edge"},
     "place": {"text", "slide", "diagram", "grid", "code"},  # D-56, FE 구현 11/14
     "attach": {"text"},                  # D-60, 글을 다른 주인 옆으로 옮겨 붙임(움직이며)
+    "divide": {"grid"},                  # P-AI-13, 격자 칸 사이 구분선
+    "undivide": {"grid"},
 }
 
 EPS = 1e-9
@@ -575,6 +580,16 @@ class _Checker:
             else:
                 info["slot"], info["placed"] = args[0], True
                 info.pop("near", None)
+        elif do in ("divide", "undivide"):
+            if not SUPPORTED_DIVIDE:
+                self.err(w, f"{do}(구분선)는 아직 플레이어가 지원하지 않음")
+            else:
+                cells = info["cells"]
+                for x in args or [""]:
+                    m = DIVIDE_ARG.fullmatch(x)
+                    last = (len(cells) if m and m.group(1) == "row" else max(len(r) for r in cells)) - 1
+                    if not m or not 0 <= int(m.group(2)) < last:
+                        self.err(w, f"{do}의 args는 \"row:k\"(k번째 줄 아래) 또는 \"col:k\"(k번째 칸 오른쪽), k는 0~{max(last - 1, 0)}")
         elif do == "attach":
             if not self.near:
                 self.err(w, "attach(옆에 붙이기)는 아직 플레이어가 지원하지 않음")

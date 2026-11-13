@@ -419,3 +419,17 @@ def test_near_above_conflicts_with_status_line():
     assert any("상태 줄" in e for e in validate_blueprint(bp, 1, near=True))     # 실제 겹침 사례(algo-dc3near-review-c3)
     bp["scenes"][0]["actions"].insert(0, {"line": 1, "do": "hide", "target": "k1", "args": []})
     assert validate_blueprint(bp, 1, near=True) == []
+
+
+def test_divide_action(monkeypatch):
+    from pipeline import validate
+    bp = {"version": 0, "title": "t", "theme": "dark", "scenes": [{"id": "s1", "clear": True, "lines": ["가"], "speech": [""],
+          "texts": [], "slides": [], "diagrams": [],
+          "grids": [{"id": "g1", "slot": "middle", "hidden": False, "cells": [["6", "14", "18"], ["1", "2", "15"], ["", "", ""]],
+                     "indexLabels": False, "pointers": []}], "codes": [],
+          "actions": [{"line": 0, "do": "divide", "target": "g1", "args": ["row:1", "col:0"]}], "sourcePages": [1]}]}
+    assert any("구분선" in e for e in validate.validate_blueprint(bp, 1))          # 꺼져 있으면 오류
+    monkeypatch.setattr(validate, "SUPPORTED_DIVIDE", True)
+    assert validate.validate_blueprint(bp, 1) == []
+    bp["scenes"][0]["actions"][0]["args"] = ["row:2"]                               # 마지막 줄 아래는 안 됨
+    assert validate.validate_blueprint(bp, 1)
