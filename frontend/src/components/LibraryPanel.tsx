@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { listLectures, loadLecture, serverMode } from '../services/preparation'
+import { listLectures, loadLecture, authorizeGeneration } from '../services/preparation'
 import type { LibraryLecture, PreparedLecture } from '../services/preparation'
 
 type Props = { onBack: () => void; onOpen: (lecture: PreparedLecture, title: string) => void }
@@ -27,7 +27,7 @@ export default function LibraryPanel({ onBack, onOpen }: Props) {
     const controller = new AbortController()
     openRequest.current = controller
     try {
-      const mode = await serverMode(controller.signal)
+      const mode = await authorizeGeneration(controller.signal, true)
       const lecture = await loadLecture(item.id, mode, controller.signal)
       if (!controller.signal.aborted) onOpen(lecture, item.title)
     } catch (cause) {
