@@ -15,5 +15,8 @@ try {
  for(const progress of [undefined,{completed:0,total:0}]) {
   const html=draw(progress);assert.ok(!html.includes('aria-valuenow='));assert.ok(!html.includes('%'));assert.ok(!html.includes('분석 중'))
  }
+ const artwork=draw(undefined)
+ assert.ok(artwork.includes('processing-artwork\" aria-hidden=\"true'))
+ assert.equal((artwork.match(/--dot-delay:/g)||[]).length,96)
  console.log('PASS confirmed completion percentage and no percentage or placeholder for unknown progress')
 } finally {await server.close()}
