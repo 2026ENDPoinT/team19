@@ -386,20 +386,16 @@ def test_restart_interrupts_running_prepare_and_retry_uses_new_job(client):
     assert lecture["preparationJobId"] == retried["jobId"]  # FE compares this with the job it is polling
 
 
-def test_restart_interrupts_outline_planning_consistently(client):
+def test_restart_interrupts_outline_planning_consistently(client, monkeypatch):
     module = sys.modules["backend.app"]
     lecture_id = prepared_lecture(client)
+    # Leave the outline at the pre-call boundary instead of generating and deleting jobs.
+    monkeypatch.setattr(module, "dispatch", lambda jid: None)
     jid = client.post(f"/lectures/{lecture_id}/outlines", json={"mode": "review"}).json()["jobId"]
-    wait_job(client, jid)
     outline_id = client.get(f"/lectures/{lecture_id}/outlines/review").json()["id"]
-    clips = client.get(f"/lectures/{lecture_id}/outlines/review").json()["clips"]
-    for c in clips:
-        wait_job(client, c["jobId"], timeout=35)  # let background clip jobs finish before editing the DB
-    for c in clips:
-        _crash_state(module, "DELETE FROM jobs WHERE id=?", (c["jobId"],))
-        _crash_state(module, "DELETE FROM clips WHERE id=?", (c["id"],))  # crash happened before clips existed
     _crash_state(module, "UPDATE jobs SET status='running',stage='planning' WHERE id=?", (jid,))
     _crash_state(module, "UPDATE outlines SET status='planning' WHERE id=?", (outline_id,))
+    _crash_state(module, "INSERT INTO job_usage(job_id,stage,status) VALUES(?,'planning','started')", (jid,))
     _, fresh = restart(client)
     assert job(fresh, jid)["status"] == "failed"
     assert fresh.get(f"/lectures/{lecture_id}/outlines/review").json()["status"] == "failed"
