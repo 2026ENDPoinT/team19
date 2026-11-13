@@ -1,3 +1,4 @@
+import { breakAtCommas } from './lineBreaks.ts'
 export type LayoutNode = { id: string; label?: unknown; shape?: unknown }
 export type LayoutEdge = { from: string; to: string }
 export type DiagramLayout = { positions: Map<string, { x: number; y: number }>; width: number; height: number }
@@ -7,17 +8,24 @@ export function layoutNode(node: LayoutNode, layout: string) {
   const circle = node.shape === 'circle'
   const fontSize = !circle ? 16 : 13
   const maxWidth = circle ? 78 : layout === 'column' ? 174 : 82
+  const measure = (text: string) => Array.from(text).reduce((sum, char) => sum + fontSize * (/\s/.test(char) ? .4 : /^[\x20-\x7e]$/.test(char) ? .7 : 1), 0)
+  // 자막·텍스트와 같은 규칙: 띄어쓰기 자리에서 줄을 바꾸고, 한 단어가 칸보다 길 때만 글자 단위로 자른다.
   const lines: string[] = []
-  let line = '', width = 0, widest = 0
-  for (const char of String(node.label ?? '')) {
-    const advance = fontSize * (/\s/.test(char) ? .4 : /^[\x20-\x7e]$/.test(char) ? .7 : 1)
-    if (char === '\n' || width + advance > maxWidth) {
-      lines.push(line); widest = Math.max(widest, width); line = ''; width = 0
-      if (char === '\n') continue
+  for (const paragraph of breakAtCommas(String(node.label ?? '')).split('\n')) {
+    let line = ''
+    for (const word of paragraph.split(' ')) {
+      const candidate = line ? `${line} ${word}` : word
+      if (measure(candidate) <= maxWidth) { line = candidate; continue }
+      if (line) lines.push(line)
+      line = ''
+      for (const char of word) {
+        if (line && measure(line + char) > maxWidth) { lines.push(line); line = '' }
+        line += char
+      }
     }
-    line += char; width += advance
+    lines.push(line)
   }
-  lines.push(line); widest = Math.max(widest, width)
+  const widest = Math.max(0, ...lines.map(measure))
   const lineHeight = fontSize + 4
   const textHeight = lines.length * lineHeight
   const radius = Math.max(22, Math.ceil(Math.hypot(widest / 2 + 8, textHeight / 2 + 6)))
