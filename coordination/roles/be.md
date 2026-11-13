@@ -40,7 +40,7 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
-- **(11/14 · BE/Claude) PDF 제한 + 영구 삭제 최종 통합(`feature/be-final-integration`, main 병합 승인 대기).** 최신 main(`e188a68`)에서 `feature/be-unlimited-pdf`(크기 제한 제거·최대 100쪽)와 `feature/be-delete-lecture`(D-64 영구 삭제)를 충돌 없이 합쳤다(두 원본 브랜치는 보존). 쪽수 초과 오류 코드를 D-67·AI 구현과 같은 `PDF_TOO_LONG`(422)으로 통일, AI의 같은 검사는 방어선으로 유지. 같은 소유자·같은 PDF 전체 삭제 범위는 사용자 승인이며 팀장이 별도로 승인한 것은 아님. FE: 업로드 안내·오류 표시([Q-BE-10](../questions.md)), 삭제 UI([Q-BE-09](../questions.md)).
+- **(11/14 · BE/Claude) PDF 제한 + 영구 삭제 최종 통합 — main 병합·Push 완료(병합 `ee9331c`).** 최신 main(`e188a68`)에서 `feature/be-unlimited-pdf`(크기 제한 제거·최대 100쪽)와 `feature/be-delete-lecture`(D-64 영구 삭제)를 충돌 없이 합쳤다(두 원본 브랜치는 보존). 쪽수 초과 오류 코드를 D-67·AI 구현과 같은 `PDF_TOO_LONG`(422)으로 통일, AI의 같은 검사는 방어선으로 유지. 같은 소유자·같은 PDF 전체 삭제 범위는 사용자 승인이며 팀장이 별도로 승인한 것은 아님. FE: 업로드 안내·오류 표시([Q-BE-10](../questions.md)), 삭제 UI와 브라우저 검증([Q-BE-09](../questions.md)). 남은 BE 일: 신규 기능 없음, 실제 통합 시연에서 발견되는 버그만 수정. D-67 환경변수 설명과 BE 구현(크기 설정 없음)의 차이는 별도 정책 정리 사항.
 
 - **(11/14 · BE/Claude) PDF 파일 크기 제한 제거·최대 100페이지 제한(`feature/be-unlimited-pdf`, main 병합 승인 대기).** 사용자 전달 합의: 크기 제한 없음, 1~100페이지 허용, 101페이지 이상 `422 PDF_TOO_LONG`. 페이지 수는 PyMuPDF(없으면 pypdf)로 구조만 읽어 강의·Job 생성 전에 검사하고, 거부 시 DB 행·Job·AI 호출 없이 임시 폴더를 지운다(`MAX_BYTES`·`413` 삭제). 무과금 테스트 추가, 계약 [api.md](../../contracts/api.md)·[Q-BE-10](../questions.md)에 기록. FE 브라우저 검증 전. 영구 삭제 브랜치(`feature/be-delete-lecture`)와 분리.
 
