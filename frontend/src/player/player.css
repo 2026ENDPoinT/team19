@@ -84,3 +84,20 @@
 .player-text--terms [style*="color"] .overline-line,
 .player-text--terms [style*="color"] .underline-line { border-color: currentColor; }
 .player-text--terms [style*="color"] .sqrt svg { color: inherit; }
+
+
+@keyframes player-shape-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.player-shape-enter { animation: player-shape-enter 250ms ease-out; }
+.player-stage[data-playing="false"] .player-shape-enter { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .player-shape-enter { animation: none; }
+}
+
+.player-slots--titled { padding-top: 130px; }
+.player-slot--title { position: absolute; top: 88px; left: 20px; width: calc(100% - 40px); height: 130px; }
+.player-code-line.player-highlight { background: none; outline: none; }
+
+.player-slot--title .player-text--title { font-size: 40.5px; }

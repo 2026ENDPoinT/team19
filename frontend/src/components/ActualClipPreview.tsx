@@ -122,7 +122,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages }: Prop
             const audio = audioRef.current
             if (!step || !audio || !(event.target instanceof Element) || !event.target.classList.contains('player-stage')) return
             event.preventDefault()
-            audio.currentTime = Math.min(Math.max(0, audio.currentTime + step), result.durationSec)
+            audio.currentTime = Math.min(Math.max(0, audio.currentTime + step * (audio.paused ? 1 : 2)), result.durationSec)
           }}>
           <audio src={result.audioUrl} hidden preload="metadata" loop ref={audioRef}
             onPlay={() => { setIsPlaying(true); setPlaybackError('') }} onPause={() => setIsPlaying(false)} onEnded={() => setIsPlaying(false)}

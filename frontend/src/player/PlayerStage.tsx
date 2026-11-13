@@ -1,4 +1,5 @@
 import Grid from './Grid'
+import { limitHighlights } from './highlightDisplay'
 import { playerColorVariables } from './colors'
 import { emphasizeFormula } from './formulaEmphasis'
 import { renderFormulaTerms } from './formulaTerms'
@@ -59,6 +60,7 @@ function preferredHeight(element: Entity): number {
   }
   if (Array.isArray(element.lines)) return Math.min(260, element.lines.length * 24 + 16)
   if (typeof element.page === 'number') return 190
+  if (element.slot === 'top' && element.style === 'title') return 130
   const text = String(element.content ?? '')
   return Math.min(140, Math.max(48, Math.ceil(text.length / 20) * 30 + 12))
 }
@@ -90,13 +92,13 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
     document.addEventListener('fullscreenchange', fit)
     return () => { observer.disconnect(); window.removeEventListener('resize', fit); document.removeEventListener('fullscreenchange', fit) }
   }, [])
-  const visible = state.elements.filter((element) => !element.hidden)
+  const visible = limitHighlights(state.elements).filter((element) => !element.hidden)
   const slots = ['top', 'middle', 'bottom']
   const invalid = visible.some((element) => !slots.includes(element.slot ?? '')) || slots.some((slot) => visible.filter((element) => element.slot === slot).length > 1)
   if (invalid) return <p role="alert">현재 지원 범위와 맞지 않는 장면 배치입니다.</p>
   return (
     <div ref={frameRef} className="player-viewport" style={{ ...playerColorVariables, width: 420 * scale, height: 420 * 16 / 9 * scale }}>
-    <div className="player-stage" aria-label={isPlaying ? '영상 일시정지' : '영상 재생'} style={{ transform: `translateX(-50%) scale(${scale})` }}
+    <div className="player-stage" data-playing={isPlaying} aria-label={isPlaying ? '영상 일시정지' : '영상 재생'} style={{ transform: `translateX(-50%) scale(${scale})` }}
       role="button" tabIndex={0} aria-pressed={isPlaying} onClick={onTogglePlayback}
       onKeyDown={(event) => {
         if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {
@@ -104,11 +106,11 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
           onTogglePlayback()
         }
       }}>
-      <div className="player-slots">
+      <div className={`player-slots${visible.some(element => element.slot === 'top' && element.style === 'title') ? ' player-slots--titled' : ''}`}>
         {slots.map((slot) => {
           const element = visible.find((item) => item.slot === slot)
           if (!element) return null
-          return <div className={`player-slot${element.explaining && element.style !== 'formula' ? ' player-highlight' : ''}`} key={slot} style={{ flexBasis: preferredHeight(element) }}>
+          return <div className={`player-slot${slot === 'top' && element.style === 'title' ? ' player-slot--title' : ''}`} key={slot} style={{ flexBasis: preferredHeight(element) }}>
             <FitContent key={element.id}><ElementView element={element} pageUrl={pageUrl} caption={state.caption} /></FitContent>
           </div>
         })}
