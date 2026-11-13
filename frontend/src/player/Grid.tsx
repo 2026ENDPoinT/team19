@@ -40,12 +40,12 @@ export default function Grid({ element }: { element: Entity }) {
       const motion = pointer.moveOrigin
       const from = motion && layout.positions.get(`${motion.row},${motion.col}`)
       const x = from && motion ? to.x + (from.x - to.x) * (1 - motion.progress) : to.x
-      const y = (from && motion ? to.y + (from.y - to.y) * (1 - motion.progress) : to.y) + layout.cellHeight / 2 + 13 + index * 16
+      const y = (from && motion ? to.y + (from.y - to.y) * (1 - motion.progress) : to.y) + layout.cellHeight / 2 + 20 + index * 24
       const color = pointerColor(pointer.label, pointer.id)
       const active = pointer.explaining || element.explaining
       return <g key={pointer.id} className="player-shape-enter">
-        <text x={x - 5} y={y} textAnchor="end" fill={active ? color : defaultLineColor} fontSize="12" fontWeight="700">↑</text>
-        <text x={x} y={y} textAnchor="start" fill={active ? color : defaultTextColor} fontSize="12" fontWeight="700">{String(pointer.label ?? '')}</text>
+        <text x={x - 6} y={y} textAnchor="end" fill={active ? color : defaultLineColor} fontSize="18" fontWeight="700">↑</text>
+        <text x={x} y={y} textAnchor="start" fill={active ? color : defaultTextColor} fontSize="18" fontWeight="700">{String(pointer.label ?? '')}</text>
       </g>
     })}
   </svg>

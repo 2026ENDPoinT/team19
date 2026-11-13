@@ -6,7 +6,7 @@ export function layoutGrid(cells: string[][], indexLabels: boolean, pointerCount
   const cellWidth = Math.min(table ? 84 : 42, (344 - gap * (columns - 1)) / columns)
   const cellHeight = table ? 36 : cellWidth
   const indexHeight = indexLabels ? 14 : 0
-  const pointerHeight = pointerCount * 16
+  const pointerHeight = pointerCount * 24
   const rowHeight = indexHeight + cellHeight + pointerHeight + 12
   const width = columns * cellWidth + (columns - 1) * gap + 16
   const height = Math.max(1, cells.length) * rowHeight + 4
