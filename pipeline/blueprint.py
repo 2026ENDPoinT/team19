@@ -56,6 +56,7 @@ MAX_TOKENS = 32000
 CLAUDE_EFFORT = {"claude-haiku-5-5": "medium"}
 # 기본 설계도 모델. 팀장 방향(Q-AI-07): 품질 차이가 크지 않으면 Terra. 환경변수 AI_BLUEPRINT_MODEL로 바꾼다.
 DEFAULT_MODEL = "gpt-6.1-sol"
+MODE_NAMES = {"intro": "입문", "review": "기본", "exam": "심화"}   # P-AI-10. 모드가 없는 옛 계획은 기본처럼 쓴다
 
 
 def make_blueprint(clip_plan: dict, pages: list[dict], page_count: int, model: str | None = None,
@@ -129,6 +130,7 @@ def build_user_prompt(clip_plan: dict, pages: list[dict], page_count: int) -> st
     parts = [
         "# 클립 계획",
         json.dumps({k: clip_plan.get(k) for k in ("title", "kind", "brief", "sourcePages")}, ensure_ascii=False, indent=1),
+        *([f"\n모드: {clip_plan['mode']}({MODE_NAMES[clip_plan['mode']]}). 시스템 지시의 모드별 규칙을 따른다."] if clip_plan.get("mode") in MODE_NAMES else []),
         f"\n강의 전체 페이지 수: {page_count}. sourcePages와 slides.page는 아래 페이지 중에서만 쓴다.",
         "\n# 강의 페이지",
     ]
