@@ -11,7 +11,7 @@
 .player-text--formula { font-size: 22px; }
 .player-caption { display: flex; align-items: center; justify-content: center; flex-shrink: 0; min-height: 100px; margin-top: 16px; padding: 8px 6px 0; font-size: 19px; line-height: 1.55; text-align: center; overflow-wrap: anywhere; word-break: keep-all; text-wrap: balance; white-space: pre-line; }
 .player-grid-graphic { display: block; overflow: visible; }
-.player-code { width: 100%; margin: 0; padding: 4px; font-size: 14px; line-height: 1.7; }
+.player-code { width: 100%; margin: 0; padding: 4px; font-size: 20px; line-height: 1.55; }
 .player-code-line { display: block; white-space: pre-wrap; overflow-wrap: anywhere; padding: 0 4px; }
 .player-line-number { display: inline-block; min-width: 24px; color: #fff; opacity: .65; user-select: none; }
 .player-unsupported { color: #fde68a; font-size: 15px; line-height: 1.6; text-align: center; }
@@ -102,11 +102,11 @@
   .player-shape-enter { animation: none; }
 }
 
-.player-slots--titled { padding-top: 96px; }
-.player-slot--title { position: absolute; top: 40px; left: 20px; width: calc(100% - 40px); height: 96px; }
+.player-slots--titled { padding-top: 32px; }
+.player-slot--title { position: absolute; top: 40px; left: 20px; width: calc(100% - 40px); height: 42px; }
 .player-code-line.player-highlight { background: none; outline: none; }
 
-.player-slot--title .player-text--title { font-size: 34px; }
+.player-slot--title .player-text--title { font-size: 26px; white-space: nowrap; text-wrap: nowrap; }
 
 .player-icon-button--off { opacity: 0.55; }
 
@@ -131,3 +131,10 @@
 .player-slot--aux { animation: player-place-in 320ms ease-out; }
 .player-stage[data-playing="false"] .player-slot--aux { animation: none; }
 @media (prefers-reduced-motion: reduce) { .player-slot--aux { animation: none; } }
+
+.player-status-line { flex-shrink: 0; padding: 4px 8px; border-left: 2px solid var(--player-mint); border-radius: 4px; background: #4fe3c112; }
+.player-status-line .player-text--keyword { font-size: 18px; line-height: 1.4; text-align: left; }
+@keyframes player-scene-in { from { opacity: 0; } to { opacity: 1; } }
+.player-slots { animation: player-scene-in 180ms ease-out; }
+.player-stage[data-playing="false"] .player-slots { animation: none; }
+@media (prefers-reduced-motion: reduce) { .player-slots { animation: none; } }
