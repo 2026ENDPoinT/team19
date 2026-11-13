@@ -200,7 +200,8 @@ export function calculatePlayerState(blueprint: Blueprint, captions: Timing[], s
   }
   for (const action of explanationActions) {
     const target = all.find(element => element.id === action.target)
-    if (!target || target.hidden) continue
+    // 제목은 바뀌어도(setText) 설명 대상으로 강조하지 않는다.
+    if (!target || target.hidden || target.style === 'title') continue
     if (action.do === 'hide') { target.explaining = false; continue }
     if (action.do === 'unhighlight') {
       if (target.cells && action.args.length) {

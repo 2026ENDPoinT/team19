@@ -27,3 +27,11 @@ assert.deepEqual(grid(at(4.5)).cells,[['1','3']],'values persist after explanati
 const paused=at(.5);at(5);assert.deepEqual(at(.5),paused)
 assert.equal(JSON.stringify(blueprint),before)
 console.log('PASS stable pointer identity, white/grey defaults, scoped cell emphasis, pointer/code/text reset, gaps and seek without changing logical values')
+
+// 제목은 setText로 바뀌어도 설명 강조하지 않는다.
+{
+  const s={id:'t',clear:true,sourcePages:[],lines:['제목 변경'],texts:[{id:'title',slot:'top',style:'title',content:'처음'}],slides:[],diagrams:[],codes:[],grids:[],actions:[{line:0,do:'setText',target:'title',args:['바뀜']}]}
+  const state=calculatePlayerState({version:0,title:'t',theme:'dark',scenes:[s]},[{sceneId:'t',lineIndex:0,text:'제목 변경',startSec:0,endSec:1}],.5)
+  const title=state.elements.find(e=>e.id==='title')
+  assert.equal(title.content,'바뀜'); assert.ok(!title.explaining)
+}
