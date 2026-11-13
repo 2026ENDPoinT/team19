@@ -77,5 +77,5 @@
 | [P-AI-12](P-AI-12-near.md) | 글을 다른 부품·노드·칸 옆에 붙이기(near) | 결정됨(D-60) |
 | [P-FE-12](P-FE-12-real-mode.md) | 실제 AI 서버 생성 요청 연결 | 결정됨, 적용 완료 |
 | [P-FE-13](P-FE-13-highlight-density.md) | 강조 밀도 제한과 상단 상위 개념 제목 | 결정됨, 적용 완료 |
-| [P-FE-14](P-FE-14-sentence-source-page.md) | 설명 문장별 근거 PDF 페이지 전달 | 논의중 |
+| [P-FE-14](P-FE-14-sentence-source-page.md) | 설명 문장별 근거 PDF 페이지 전달 | 보류 |
 | [P-FE-15](P-FE-15-reuse-identical-pdf.md) | 같은 PDF 업로드 시 기존 강의 재사용 | 결정됨, 적용 완료 |
