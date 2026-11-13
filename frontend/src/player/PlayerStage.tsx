@@ -34,14 +34,14 @@ function ElementView({ element, pageUrl, caption }: { element: Entity; caption: 
   if (element.cells) return <Grid element={element} />
   if (Array.isArray(element.lines)) {
     return <pre className="player-code"><code>{element.lines.map((line, index) => (
-      <span key={index} className={element.markedLine === index + 1 ? 'player-code-line player-highlight' : 'player-code-line'}>
+      <span key={index} className={element.explainedLine === index + 1 ? 'player-code-line player-highlight' : 'player-code-line'}>
         <span className="player-line-number">{index + 1}</span>{String(line)}
       </span>
     ))}</code></pre>
   }
   if (typeof element.content === 'string') {
     const style = ['title', 'body', 'keyword', 'formula'].includes(String(element.style)) ? String(element.style) : 'body'
-    return <div className={`player-text player-text--${style}`}><RichText content={element.content} formula={style === 'formula'} caption={caption} active={element.explaining === true} /></div>
+    return <div className={`player-text player-text--${style}${element.explaining ? ' player-text--explaining' : ''}`}><RichText content={element.content} formula={style === 'formula'} caption={caption} active={element.explaining === true} /></div>
   }
   return <p className="player-unsupported">{element.nodes ? '다이어그램' : '원본 그림'} 부품 연결 예정 · {element.id}</p>
 }
@@ -105,7 +105,7 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
         {slots.map((slot) => {
           const element = visible.find((item) => item.slot === slot)
           if (!element) return null
-          return <div className={`player-slot${element.highlighted && element.style !== 'formula' ? ' player-highlight' : ''}`} key={slot} style={{ flexBasis: preferredHeight(element) }}>
+          return <div className={`player-slot${element.explaining && element.style !== 'formula' ? ' player-highlight' : ''}`} key={slot} style={{ flexBasis: preferredHeight(element) }}>
             <FitContent key={element.id}><ElementView element={element} pageUrl={pageUrl} caption={state.caption} /></FitContent>
           </div>
         })}

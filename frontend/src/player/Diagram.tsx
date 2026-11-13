@@ -1,3 +1,4 @@
+import { defaultLineColor, defaultTextColor, palette } from './colors'
 import { useId } from 'react'
 import type { Entity } from './state'
 import { layoutDiagram, layoutNode } from './diagramLayout'
@@ -31,18 +32,19 @@ export default function Diagram({ element }: { element: Entity }) {
           }
           const a = boundary(fromNode), b = boundary(toNode) + 5
           return <g key={edge.id}>
-            <line x1={from.x + dx / distance * a} y1={from.y + dy / distance * a} x2={to.x - dx / distance * b} y2={to.y - dy / distance * b} stroke="var(--player-yellow)" strokeWidth={edge.highlighted ? 3 : 2} markerEnd={`url(#${arrowId})`} />
-            {typeof edge.label === 'string' && edge.label.length > 0 && <text x={(from.x + to.x) / 2 + (vertical ? 14 : 0)} y={(from.y + to.y) / 2 + (vertical ? 4 : -8)} textAnchor={vertical ? 'start' : 'middle'} fill="#cbd5e1" fontSize="11" paintOrder="stroke" stroke="#020617" strokeWidth="4">{String(edge.label)}</text>}
+            <line x1={from.x + dx / distance * a} y1={from.y + dy / distance * a} x2={to.x - dx / distance * b} y2={to.y - dy / distance * b} stroke={edge.explaining || element.explaining ? palette.yellow : defaultLineColor} strokeWidth={edge.explaining || element.explaining ? 3 : 2} markerEnd={`url(#${arrowId})`} />
+            {typeof edge.label === 'string' && edge.label.length > 0 && <text x={(from.x + to.x) / 2 + (vertical ? 14 : 0)} y={(from.y + to.y) / 2 + (vertical ? 4 : -8)} textAnchor={vertical ? 'start' : 'middle'} fill={edge.explaining || element.explaining ? palette.yellow : defaultTextColor} fontSize="11" paintOrder="stroke" stroke="#020617" strokeWidth="4">{String(edge.label)}</text>}
           </g>
         })}
         {nodes.filter((node) => !node.hidden).map((node) => {
           const point = geometry.positions.get(node.id)!
           const size = layoutNode(node, String(element.layout))
-          const fill = node.highlighted ? '#1e40af' : '#1e293b'
-          const stroke = 'var(--player-blue)'
+          const active = node.explaining || element.explaining
+          const fill = active ? palette.mint : '#1e293b'
+          const stroke = active ? palette.mint : defaultLineColor
           return <g key={node.id} transform={`translate(${point.x},${point.y})`}>
-            {node.shape === 'circle' ? <circle r={size.radius} fill={fill} stroke={stroke} strokeWidth={node.highlighted ? 3 : 2} /> : <rect x={-size.width / 2} y={-size.height / 2} width={size.width} height={size.height} rx="7" fill={fill} stroke={stroke} strokeWidth={node.highlighted ? 3 : 2} />}
-            <text textAnchor="middle" dominantBaseline="middle" fill="#f8fafc" fontSize={size.fontSize}>{size.lines.map((line, index) => <tspan key={index} x={0} y={(index - (size.lines.length - 1) / 2) * size.lineHeight}>{line}</tspan>)}</text>
+            {node.shape === 'circle' ? <circle r={size.radius} fill={fill} fillOpacity={active ? .18 : 1} stroke={stroke} strokeWidth={active ? 3 : 2} /> : <rect x={-size.width / 2} y={-size.height / 2} width={size.width} height={size.height} rx="7" fill={fill} fillOpacity={active ? .18 : 1} stroke={stroke} strokeWidth={active ? 3 : 2} />}
+            <text textAnchor="middle" dominantBaseline="middle" fill={active ? palette.mint : defaultTextColor} fontSize={size.fontSize}>{size.lines.map((line, index) => <tspan key={index} x={0} y={(index - (size.lines.length - 1) / 2) * size.lineHeight}>{line}</tspan>)}</text>
           </g>
         })}
       </svg>
