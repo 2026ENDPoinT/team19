@@ -37,6 +37,9 @@
 .clip-feed-nav button:hover:not(:disabled) { background: #f1f5f9; }
 .clip-feed-nav button:disabled { opacity: 0.35; cursor: default; }
 .clip-feed-nav button:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+.clip-feed-nav .clip-feed-source { display: none; }
+@media (min-width: 1024px) { .clip-feed-nav button.clip-feed-source { display: grid; } }
+.clip-feed-nav .clip-feed-source[aria-expanded="true"] { background: #2563eb; color: #fff; }
 .actual-player:fullscreen { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #020617; }
 .actual-player:fullscreen .player-viewport { margin: 0; }
 .actual-player:fullscreen .clip-feed-nav { position: absolute; top: 50%; left: 24px; transform: translateY(-50%); }
