@@ -575,7 +575,12 @@ def delete_lecture(lecture_id: str, x_owner_id: str | None = Header(None)):
     owner = owner_of(x_owner_id)
     if owner is None:
         fail("INVALID_REQUEST", "X-Owner-Id 헤더가 필요합니다.", 422)
-    delete_lecture_data(owner, lecture_id)
+    try:
+        delete_lecture_data(owner, lecture_id)
+    except sqlite3.Error:
+        # Database busy/broken: rows were rolled back and folders restored; answer in the API's error shape.
+        logging.getLogger("backend").warning("강의 삭제 중 저장소 오류", exc_info=True)
+        fail("STORAGE_UNAVAILABLE", "저장소 오류로 삭제하지 못했습니다. 아무것도 삭제되지 않았습니다. 잠시 뒤 다시 시도해 주세요.", 503, True)
     return Response(status_code=204)
 
 

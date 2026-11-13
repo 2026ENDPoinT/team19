@@ -272,8 +272,8 @@ def test_database_error_rolls_back_rows_and_puts_folders_back(client, monkeypatc
         raise sqlite3.OperationalError("disk I/O error")
 
     monkeypatch.setattr(m, "delete_rows", half_done)
-    with pytest.raises(sqlite3.OperationalError):
-        delete(client, lid)
+    r = delete(client, lid)
+    assert r.status_code == 503 and r.json()["error"]["code"] == "STORAGE_UNAVAILABLE"  # API error shape, not a crash
     assert table_counts() == before  # the partial deletes were rolled back
     assert all(d.exists() for d in snap["dirs"]) and (snap["dirs"][0] / "original.pdf").is_file()
     assert not (m.ROOT / ".trash").exists() or not list((m.ROOT / ".trash").iterdir())
@@ -362,3 +362,39 @@ def test_existing_flows_still_work_after_a_delete(client):
     assert [l["id"] for l in client.get("/lectures", headers={"X-Owner-Id": A}).json()] == [b]
     again = up(client, OTHER, A).json()  # same PDF as b is still reused
     assert again["lectureId"] == b
+
+
+def test_selecting_several_entries_and_deleting_them_one_by_one(client):
+    """FE flow: check several list entries, then send one DELETE per entry and refresh the list."""
+    first, _ = build(client, SAME, A, "one.pdf")
+    second, _ = build(client, OTHER, A, "two.pdf")
+    third, _ = build(client, SAME + b"\n%third\n", A, "three.pdf")
+    keep_other_owner, _ = build(client, SAME, B, "b.pdf")
+    shown = [l["id"] for l in client.get("/lectures", headers={"X-Owner-Id": A}).json()]
+    assert sorted(shown) == sorted([first, second, third])
+    results = [delete(client, lid).status_code for lid in (first, third)]
+    assert results == [204, 204]
+    assert [l["id"] for l in client.get("/lectures", headers={"X-Owner-Id": A}).json()] == [second]
+    # An id that an earlier delete in the same batch already removed (same-PDF group) is a plain 404 for the FE.
+    assert delete(client, first).status_code == 404
+    assert delete(client, second).status_code == 204
+    assert client.get("/lectures", headers={"X-Owner-Id": A}).json() == []
+    assert [l["id"] for l in client.get("/lectures", headers={"X-Owner-Id": B}).json()] == [keep_other_owner]
+
+
+def test_every_delete_outcome_has_its_own_status_and_code_for_the_fe(client):
+    lid, outline = build(client)
+    with module().conn() as db:
+        db.execute("UPDATE jobs SET status='running' WHERE id=?", (outline["clips"][0]["jobId"],))
+    outcomes = {
+        "busy": delete(client, lid),
+        "not_found": delete(client, "lec_unknown00000000"),
+        "other_owner": delete(client, lid, B),
+        "bad_header": delete(client, lid, "x"),
+        "no_header": delete(client, lid, None),
+    }
+    shape = {k: (r.status_code, r.json()["error"]["code"]) for k, r in outcomes.items()}
+    assert shape == {"busy": (409, "LECTURE_BUSY"), "not_found": (404, "LECTURE_NOT_FOUND"),
+                     "other_owner": (404, "LECTURE_NOT_FOUND"), "bad_header": (422, "INVALID_REQUEST"),
+                     "no_header": (422, "INVALID_REQUEST")}
+    assert all(r.json()["error"]["retryable"] in (True, False) and r.json()["error"]["message"] for r in outcomes.values())

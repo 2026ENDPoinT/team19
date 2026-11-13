@@ -40,7 +40,7 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ### 최근 한 일
 
-- **(11/14 · BE/Claude) 내 강의함 PDF 영구 삭제 구현(`feature/be-delete-lecture`, 미병합).** 사용자·FE 담당자가 직접 합의한 B안(영구 삭제). `DELETE /lectures/{id}`(필수 `X-Owner-Id`, 204/404/422/409/503/500)이 같은 소유자·같은 PDF(SHA-256)의 강의 기록 전체와 DB 행·파일을 지운다. 실행 중 Job이 있으면 409, 파일은 `.trash`로 옮긴 뒤 DB 커밋하고 삭제(실패 시 복구, 재시작 시 정리). 무과금 테스트 22개 추가, BE·AI 401개 통과. **main 병합 전, FE 브라우저 검증 전.** 기기 ID는 인증이 아니라는 한계 유지. 정리는 [P-BE-03](../proposals/P-BE-03-delete-lecture.md), FE 요청은 [Q-BE-09](../questions.md).
+- **(11/14 · BE/Claude) 내 강의함 PDF 영구 삭제 구현(`feature/be-delete-lecture`, 미병합).** 사용자·FE 담당자가 직접 합의한 B안(영구 삭제). `DELETE /lectures/{id}`(필수 `X-Owner-Id`, 204/404/422/409/503/500)이 같은 소유자·같은 PDF(SHA-256)의 강의 기록 전체와 DB 행·파일을 지운다. 실행 중 Job이 있으면 409, 파일은 `.trash`로 옮긴 뒤 DB 커밋하고 삭제(실패 시 복구, 재시작 시 정리). FE 공식 요청 [Q-FE-20](../questions.md)과 일치함을 확인했고 저장소 오류도 503 JSON으로 응답한다. 무과금 테스트 24개 추가. **main 병합 전, FE 브라우저 검증 전.** 별개로 목록 대표가 깨진 옛 강의가 되는 문제는 원인만 조사해 Q-FE-19에 기록(규칙 변경은 결정 대기). 기기 ID는 인증이 아니라는 한계 유지. 정리는 [P-BE-03](../proposals/P-BE-03-delete-lecture.md), FE 요청은 [Q-BE-09](../questions.md).
 
 - **(11/14 · BE/Claude) P-AI-11·P-AI-12 BE 영향 검토(코드 변경 없음).** 설계도는 AI 검사기를 통과한 뒤 `result_json`에 통째로 저장돼 그대로 반환되므로 `bars`·`done`·`headline`·`near`·`attach` 모두 BE 코드·API·DB 변경이 필요 없다고 두 제안서 BE 칸에 기록했다. 현재 AI 검사기는 `bars`만 통과시키고 나머지는 FE 구현 전이라 거부(`SUPPORTED_NEAR=False` 등)한다. 켜진 뒤 실제 통합 검증은 미완료.
 
