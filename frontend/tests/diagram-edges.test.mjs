@@ -40,3 +40,25 @@ assert.notEqual(circle.routes.get('ab').points[0].x,circle.routes.get('ba').poin
 assert.throws(()=>layoutDiagramEdges(nodes,[{id:'bad',from:'a',to:'missing'}],'column'))
 assert.equal(layoutDiagramEdges([],[],'column').routes.size,0)
 console.log('PASS circular ports, long labels, bounds, invalid references, empty diagrams and unchanged row/tree geometry')
+
+const cycles=JSON.parse(readFileSync(new URL('./mvc-cycle.fixture.json',import.meta.url),'utf8'))
+assert.ok(cycles.length>=2,'fixed MVC cycle scenes are present')
+for(const diagram of cycles){
+ const before=JSON.stringify(diagram),g=layoutDiagramEdges(diagram.nodes,diagram.edges,'cycle')
+ let pairs=0
+ for(const edge of diagram.edges){
+  const route=g.routes.get(edge.id)
+  assert.ok(route,'every cycle edge is routed')
+  for(const point of route.points)assert.ok(Number.isFinite(point.x)&&Number.isFinite(point.y)&&point.x>=0&&point.x<=g.width&&point.y>=0&&point.y<=g.height)
+  for(const other of diagram.edges.filter(other=>other.from===edge.to&&other.to===edge.from)){
+   pairs++
+   const reverse=g.routes.get(other.id)
+   assert.notDeepEqual(route.points,[...reverse.points].reverse(),'opposite arrows use separate lanes')
+   assert.ok(Math.hypot(route.label.x-reverse.label.x,route.label.y-reverse.label.y)>28,'opposite labels follow separate outer lanes')
+  }
+ }
+ assert.ok(pairs>=4,'MVC contains at least two reciprocal pairs')
+ assert.deepEqual(layoutDiagramEdges(diagram.nodes.map(n=>({...n,hidden:true})),diagram.edges.map(e=>({...e,hidden:true})),'cycle'),g,'show/hide preserves cycle lanes')
+ assert.equal(JSON.stringify(diagram),before)
+}
+console.log('PASS fixed MVC cycle reciprocal arrows, outer labels, bounds and visibility stability')
