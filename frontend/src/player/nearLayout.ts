@@ -41,7 +41,7 @@ export function interpolateRect(from:Rect,to:Rect,progress:number):Rect {
 export function nearSpace(elements: Entity[], sizes: Record<string, {height:number}>) {
   const result: Record<string,{above:number;below:number}> = {}
   for (const label of elements) {
-    if (label.hidden || !label.near || !['above','below'].includes(label.near.side)) continue
+    if (label.reservationOwner || label.hidden || !label.near || !['above','below'].includes(label.near.side)) continue
     let owner = elements.find(e=>e.id===label.near!.target || e.nodes?.some(n=>n.id===label.near!.target))
     const visited = new Set<string>()
     while (owner?.near && !visited.has(owner.id)) { visited.add(owner.id); const target=owner.near.target; owner=elements.find(e=>e.id===target || e.nodes?.some(n=>n.id===target)) }

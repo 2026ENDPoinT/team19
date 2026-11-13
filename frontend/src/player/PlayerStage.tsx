@@ -95,7 +95,7 @@ function preferredHeight(element: Entity): number {
 
 function StageSlots({state,pageUrl,sizes={}}:{state:PlayerState;pageUrl:(page:number)=>string|undefined;sizes?:Record<string,{height:number}>}) {
   const elements = state.elements
-  const spaces = nearSpace(elements,sizes)
+  const spaces = nearSpace(state.nearPlan??elements,sizes)
   const visible = elements.filter((element) => !element.hidden)
   const { title, topAux, status, reserved, invalid } = stageComposition(elements)
   const attached = figureDescription(reserved, true)
@@ -162,7 +162,7 @@ export default function PlayerStage({ state, pageUrl, isPlaying, onTogglePlaybac
         }
       }}>
       <StageSlots state={state} pageUrl={pageUrl} sizes={nearSizes} />
-      {state.elements.some(element=>element.near) && <NearLayer onSizes={updateNearSizes} elements={state.elements} stageRef={stageRef} renderElement={element=><ElementView element={element} pageUrl={pageUrl} caption={state.caption} />} renderSnapshot={elements=><><StageSlots state={{...state,elements}} pageUrl={pageUrl} sizes={nearSizes} /><p className="player-caption">{breakAtCommas(state.caption)||'\u00a0'}</p></>} />}
+      {(state.nearPlan?.some(element=>element.near&&!element.reservationOwner) || state.elements.some(element=>element.near)) && <NearLayer reservationElements={state.nearPlan} onSizes={updateNearSizes} elements={state.elements} stageRef={stageRef} renderElement={element=><ElementView element={element} pageUrl={pageUrl} caption={state.caption} />} renderSnapshot={elements=><><StageSlots state={{...state,elements}} pageUrl={pageUrl} sizes={nearSizes} /><p className="player-caption">{breakAtCommas(state.caption)||'\u00a0'}</p></>} />}
       <p className="player-caption" aria-label="현재 자막" style={captionsOn ? undefined : { visibility: 'hidden' }}>{breakAtCommas(state.caption) || '\u00a0'}</p>
     </div>
     {controls}
