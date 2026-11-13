@@ -36,9 +36,11 @@ PDF를 올리면 작업이 접수되고, 진행 상태를 확인할 수 있고, 
 
 ## 현황 (세션마다 갱신)
 
-> 최종 갱신: 2026-11-13 · BE/Claude
+> 최종 갱신: 2026-11-14 · BE/Claude
 
 ### 최근 한 일
+
+- **(11/14 · BE/Claude) Q-FE-14 BE 판단·D-50 설계.** 문장별 근거 페이지는 BE가 이미 보존함을 가짜 AI 테스트로 확인(`feature/be-line-source-check`, 미병합)하고 [P-FE-14](../proposals/P-FE-14-sentence-source-page.md)에 BE 의견을 남겼다. D-50은 사전 구현 허가 기록이 없어 코드 없이 설계·위험 분석만 [P-AI-05](../proposals/P-AI-05-personal-library.md) BE 의견에 적고 [Q-BE-06](../questions.md)으로 팀장 결정을 요청했다. 유료 호출 없음.
 
 - **(11/13 · BE/Claude) usage 기록 검토·병합, 첫 유료 통합은 키 없어 미실행.** Codex의 `feature/be-usage-records`(`job_usage`, [설명](../../backend/USAGE-RECORDS.md))를 diff로 검토해 치명 문제가 없음을 확인하고 최신 main(`5881100`)과 충돌 없이 병합했다. 전체 BE·AI 326개 통과(병합 전후). **유료 호출 0회:** OPENAI/ANTHROPIC 키가 프로세스·Windows 환경변수·루트 `.env`에 없어 업로드·생성·서버 실행을 하지 않았다. 생성 클립·재생·콘솔 비용은 미검증이다([Q-BE-05](../questions.md) 답 참조).
 - **(11/13 · BE/Codex) D-44·D-45 구현 완료(`979f754`).** sample pending 자동 재개를 유지하고 real 재시작 시 pending/running 작업과 대상 상태를 `SERVER_RESTARTED`로 실패 처리한다. 명시적 재시도·원자적 Job 실행은 보존한다. `AI_MODE`는 sample/real만 허용하며 real 작업 스레드는 기본 3개(`BE_WORKERS` 1~3), sample은 기존 기본 1개(1~4)다. 서버 프로세스는 1개로 운영해야 한다.
