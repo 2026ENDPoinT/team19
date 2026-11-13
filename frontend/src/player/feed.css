@@ -1,1 +1,5 @@
 .actual-player .clip-feed-nav { right: auto; left: 0; z-index: 1; }
+
+/* Deferred spacing for scroll snapping.
+.actual-clip-layout { padding-top: clamp(64px, 12vh, 140px); padding-bottom: clamp(80px, 16vh, 180px); }
+*/
