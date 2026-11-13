@@ -30,7 +30,7 @@ def main() -> int:
     ap.add_argument("lecture")
     ap.add_argument("mode")
     ap.add_argument("clip_id")
-    ap.add_argument("--models", nargs="+", default=["gpt-6.1-terra"])
+    ap.add_argument("--models", nargs="+", default=["gpt-6.1-sol"])
     ap.add_argument("--audio", nargs="*", default=[], help="이 모델들의 설계도로 음성까지 만든다")
     ap.add_argument("--prompt-lang", default="ko", choices=["ko", "en"], help="en이면 결과 이름 뒤에 -en이 붙는다")
     ap.add_argument("--reuse", action="store_true", help="설계도 파일이 이미 있으면 다시 만들지 않는다(음성만 추가할 때)")

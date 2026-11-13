@@ -49,7 +49,7 @@ PDF 하나를 넣으면 분할 계획과 클립 1개 이상의 설계도와 음�
 
 ### 새 세션 참고 (작업 요령)
 - 파이썬은 `.venv/Scripts/python.exe`, 한글 출력은 `PYTHONIOENCODING=utf-8`. 테스트: `.venv/Scripts/python.exe -m pytest pipeline/tests backend/tests -q`(254개, 약 1분).
-- 평가 클립 다시 만들기: `sandbox/ai/eval_run.py <강의> <모드> <클립id> --models gpt-6.1-terra --audio gpt-6.1-terra` (유료, 약 $0.05). 강의 추출 결과는 `materials/extract/`(git 제외).
+- 평가 클립 다시 만들기: `sandbox/ai/eval_run.py <강의> <모드> <클립id> --models gpt-6.1-sol --audio gpt-6.1-sol` (유료, 약 $0.08). 강의 추출 결과는 `materials/extract/`(git 제외).
 - FE 확인: `cd frontend && npm run dev` → http://localhost:5173 → "실제 클립 A/B 연결 확인" → 평가 클립 선택.
 - 코드 변경은 `feature/ai-…` 브랜치에서 커밋 → main에 `--no-ff` merge → push(D-31). 문서·샘플은 main 바로.
 
