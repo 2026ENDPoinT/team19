@@ -1,0 +1,536 @@
+{
+ "resultId": "eval-econ-exam-01-terra",
+ "durationSec": 96.93,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "경기순환의 국면과 충격",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "경기순환은 무엇일까요?",
+     "그래프의 직선은 우상향하는 장기 성장 추세예요.",
+     "실질 GDP는 이 추세선 주위를 오르내려요.",
+     "각 순환의 지속기간과 진폭은 다양해요.",
+     "고점에서 저점까지는 경기침체기예요."
+    ],
+    "speech": [
+     "",
+     "",
+     "실질 지디피는 이 추세선 주위를 오르내려요.",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_cycle",
+      "slot": "top",
+      "style": "title",
+      "content": "경기순환의 국면",
+      "hidden": false
+     }
+    ],
+    "slides": [
+     {
+      "id": "slide_cycle",
+      "slot": "middle",
+      "page": 1,
+      "box": [
+       0.47,
+       0.32,
+       0.45,
+       0.24
+      ],
+      "hidden": false
+     }
+    ],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [],
+    "sourcePages": [
+     1
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "침체 기준은 총산출, 소득, 고용의 6개월 이상 감소예요.",
+     "실질 GDP가 하락하면서 실업률도 크게 증가해요.",
+     "저점에서 고점까지의 확장기에는 총산출, 소득, 고용이 증가해요."
+    ],
+    "speech": [
+     "침체 기준은 총산출, 소득, 고용의 육 개월 이상 감소예요.",
+     "실질 지디피가 하락하면서 실업률도 크게 증가해요.",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [],
+    "sourcePages": [
+     1
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "경기순환을 일으키는 충격은 무엇일까요?",
+     "수요충격은 수요가 예상과 다르게 변하는 일이에요.",
+     "공급충격은 공급이 예상과 다르게 변하는 일이에요.",
+     "둘 다 예상보다 많으면 양(+), 적으면 음(−)이에요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "둘 다 예상보다 많으면 양, 적으면 음이에요."
+    ],
+    "texts": [
+     {
+      "id": "t_shock",
+      "slot": "top",
+      "style": "title",
+      "content": "수요충격과 공급충격",
+      "hidden": false
+     },
+     {
+      "id": "t_sign",
+      "slot": "bottom",
+      "style": "body",
+      "content": "예상보다 많음: 양(+) · 적음: 음(−)",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_shock",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_demand",
+        "label": "수요충격",
+        "shape": "box"
+       },
+       {
+        "id": "n_supply",
+        "label": "공급충격",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_demand",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_demand",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_supply",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_supply",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "t_sign",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     2
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "혁신은 어떻게 경기변동을 일으킬까요?",
+     "중요한 신상품이나 기술이 퍼지면 투자와 생산, 고용이 늘어요.",
+     "혁신이 대부분 실현되면 성장이 느려지거나 후퇴할 수 있어요.",
+     "생산성은 투입 1단위당 산출량이며, 예상 밖 상승은 호황을 부를 수 있어요.",
+     "예상 밖 생산성 하락은 침체로 이어지며, 자원이나 기술 변화가 원인이 될 수 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "생산성은 투입 일 단위당 산출량이며, 예상 밖 상승은 호황을 부를 수 있어요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_factors",
+      "slot": "top",
+      "style": "title",
+      "content": "충격의 발생 요인",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_factors",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_innovation",
+        "label": "불규칙적 혁신",
+        "shape": "box"
+       },
+       {
+        "id": "n_productivity",
+        "label": "생산성 변화",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_money",
+        "label": "통화 요인",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_politics",
+        "label": "정치적 사건",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_finance",
+        "label": "금융 불안정",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_accident",
+        "label": "우연한 사건",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "n_innovation",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_innovation",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n_productivity",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_productivity",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     2,
+     3
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": false,
+    "lines": [
+     "통화 공급이 예상보다 많으면 산출이 일시 증가하고 결국 물가가 올라요.",
+     "반대로 예상보다 적으면 산출이 줄고 결국 물가도 내려가요.",
+     "예상 밖 정치적 사건은 확장 기회나 경제적 부담을 만들어요.",
+     "자산버블과 붕괴는 대출과 경제 신뢰를 바꿔요.",
+     "자연재해나 전염병도 생산능력을 줄이고 대응 과정에서 혁신을 자극할 수 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "n_productivity",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "n_money",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "highlight",
+      "target": "n_money",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_money",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n_politics",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_politics",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_politics",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n_finance",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_finance",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "n_finance",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "n_accident",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "n_accident",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     3
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "경기순환은 무엇일까요?",
+   "startSec": 0.0,
+   "endSec": 1.88
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "그래프의 직선은 우상향하는 장기 성장 추세예요.",
+   "startSec": 2.18,
+   "endSec": 5.9
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "실질 GDP는 이 추세선 주위를 오르내려요.",
+   "startSec": 6.2,
+   "endSec": 9.53
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "각 순환의 지속기간과 진폭은 다양해요.",
+   "startSec": 9.83,
+   "endSec": 12.78
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 4,
+   "text": "고점에서 저점까지는 경기침체기예요.",
+   "startSec": 13.08,
+   "endSec": 15.93
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "침체 기준은 총산출, 소득, 고용의 6개월 이상 감소예요.",
+   "startSec": 16.53,
+   "endSec": 21.5
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "실질 GDP가 하락하면서 실업률도 크게 증가해요.",
+   "startSec": 21.8,
+   "endSec": 25.44
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "저점에서 고점까지의 확장기에는 총산출, 소득, 고용이 증가해요.",
+   "startSec": 25.74,
+   "endSec": 31.02
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "경기순환을 일으키는 충격은 무엇일까요?",
+   "startSec": 31.62,
+   "endSec": 34.55
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "수요충격은 수요가 예상과 다르게 변하는 일이에요.",
+   "startSec": 34.85,
+   "endSec": 37.99
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "공급충격은 공급이 예상과 다르게 변하는 일이에요.",
+   "startSec": 38.29,
+   "endSec": 41.75
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "둘 다 예상보다 많으면 양(+), 적으면 음(−)이에요.",
+   "startSec": 42.05,
+   "endSec": 46.2
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "혁신은 어떻게 경기변동을 일으킬까요?",
+   "startSec": 46.8,
+   "endSec": 49.55
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "중요한 신상품이나 기술이 퍼지면 투자와 생산, 고용이 늘어요.",
+   "startSec": 49.85,
+   "endSec": 54.36
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "혁신이 대부분 실현되면 성장이 느려지거나 후퇴할 수 있어요.",
+   "startSec": 54.66,
+   "endSec": 58.7
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "생산성은 투입 1단위당 산출량이며, 예상 밖 상승은 호황을 부를 수 있어요.",
+   "startSec": 59.0,
+   "endSec": 64.8
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 4,
+   "text": "예상 밖 생산성 하락은 침체로 이어지며, 자원이나 기술 변화가 원인이 될 수 있어요.",
+   "startSec": 65.1,
+   "endSec": 70.91
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "통화 공급이 예상보다 많으면 산출이 일시 증가하고 결국 물가가 올라요.",
+   "startSec": 71.51,
+   "endSec": 77.32
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "반대로 예상보다 적으면 산출이 줄고 결국 물가도 내려가요.",
+   "startSec": 77.62,
+   "endSec": 82.11
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "예상 밖 정치적 사건은 확장 기회나 경제적 부담을 만들어요.",
+   "startSec": 82.41,
+   "endSec": 86.74
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "자산버블과 붕괴는 대출과 경제 신뢰를 바꿔요.",
+   "startSec": 87.04,
+   "endSec": 90.77
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 4,
+   "text": "자연재해나 전염병도 생산능력을 줄이고 대응 과정에서 혁신을 자극할 수 있어요.",
+   "startSec": 91.07,
+   "endSec": 96.93
+  }
+ ]
+}

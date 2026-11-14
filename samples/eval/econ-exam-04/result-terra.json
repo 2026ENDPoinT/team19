@@ -1,0 +1,645 @@
+{
+ "resultId": "eval-econ-exam-04-terra",
+ "durationSec": 88.48,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "인플레이션의 소득 재분배",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "명목소득과 실질소득은 무엇이 다를까요?",
+     "명목소득은 화폐액이고, 실질소득은 그 구매력이에요.",
+     "실질소득은 명목소득을 물가지수로 나누어 구해요.",
+     "명목소득이 고정되면 물가 상승에 따라 구매력이 줄어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t1",
+      "slot": "top",
+      "style": "title",
+      "content": "명목소득과 실질소득",
+      "hidden": false
+     },
+     {
+      "id": "f_income",
+      "slot": "bottom",
+      "style": "formula",
+      "content": "$\\text{실질소득}=\\frac{\\text{명목소득}}{\\text{물가지수}}$",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_income",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_nominal",
+        "label": "명목소득",
+        "shape": "box"
+       },
+       {
+        "id": "n_real",
+        "label": "실질소득",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_nominal",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_real",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_nominal",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_real",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "f_income",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_real",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     8
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "예상치 못한 인플레이션은 누구에게 불리할까요?",
+     "고정소득자는 받는 돈이 같아 구매력이 줄어요.",
+     "저축자는 물가 상승률이 저축 수익률보다 높으면 손해예요.",
+     "변동소득자는 소득이 물가에 맞춰 오르면 손해를 피해요.",
+     "소득이 물가보다 더 빨리 오르면 이익을 볼 수도 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t2",
+      "slot": "top",
+      "style": "title",
+      "content": "소득과 저축의 변화",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_groups",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_fixed",
+        "label": "고정소득자",
+        "shape": "box"
+       },
+       {
+        "id": "n_saver",
+        "label": "저축자",
+        "shape": "box"
+       },
+       {
+        "id": "n_variable",
+        "label": "변동소득자",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_fixed",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_fixed",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_saver",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_saver",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n_variable",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_variable",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     8,
+     9
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "이번에는 은행과 수지의 대출 예시를 볼까요?",
+     "은행은 수지에게 2년 만기로 100만원을 빌려줘요.",
+     "2년 후 물가가 2배가 되었다고 해요.",
+     "고정된 원금 100만원의 구매력은 이전의 절반이에요.",
+     "예상보다 물가가 더 오르면 채권자에서 채무자로 실질가치가 이동해요."
+    ],
+    "speech": [
+     "",
+     "은행은 수지에게 이 년 만기로 백만 원을 빌려줘요.",
+     "이 년 후 물가가 두 배가 되었다고 해요.",
+     "고정된 원금 백만 원의 구매력은 이전의 절반이에요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t3",
+      "slot": "top",
+      "style": "title",
+      "content": "채권자와 채무자",
+      "hidden": false
+     },
+     {
+      "id": "loan_state",
+      "slot": "bottom",
+      "style": "body",
+      "content": "2년 만기 · 원금 100만원",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_loan",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_bank",
+        "label": "은행",
+        "shape": "box"
+       },
+       {
+        "id": "n_suji",
+        "label": "수지",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_loan",
+        "from": "n_bank",
+        "to": "n_suji",
+        "label": "대출"
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "loan_state",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "e_loan",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "e_loan",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "loan_state",
+      "args": [
+       "원금 100만원 · 물가 2배"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "loan_state",
+      "args": [
+       "원금 구매력: 이전의 절반"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "n_bank",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "n_suji",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     9
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "인플레이션을 예상하면 재분배가 줄어들까요?",
+     "예상 물가를 임금과 이자에 반영하면 재분배가 줄 수 있어요.",
+     "명목이자율은 화폐 상환액의 원금 대비 증가율이에요.",
+     "실질이자율은 상환액의 구매력이 원금보다 늘어난 비율이에요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t4",
+      "slot": "top",
+      "style": "title",
+      "content": "기대 인플레이션과 이자",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_rates",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_rate_nominal",
+        "label": "명목이자율",
+        "shape": "box"
+       },
+       {
+        "id": "n_rate_real",
+        "label": "실질이자율",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_rate_nominal",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_rate_nominal",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_rate_real",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     9,
+     10
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": false,
+    "lines": [
+     "강의의 이자율 예시에서 실질이자율은 5%예요.",
+     "여기에 기대 인플레이션율 6%를 더해요.",
+     "따라서 명목이자율은 약 11%예요.",
+     "정확한 복리 계산은 11.3%로, 강의의 11%는 근삿값이에요."
+    ],
+    "speech": [
+     "강의의 이자율 예시에서 실질이자율은 오 퍼센트예요.",
+     "여기에 기대 인플레이션율 육 퍼센트를 더해요.",
+     "따라서 명목이자율은 약 십일 퍼센트예요.",
+     "정확한 복리 계산은 십일 점 삼 퍼센트로, 강의의 십일 퍼센트는 근삿값이에요."
+    ],
+    "texts": [
+     {
+      "id": "f_rates",
+      "slot": "bottom",
+      "style": "formula",
+      "content": "$5\\%$",
+      "hidden": true
+     },
+     {
+      "id": "rate_label",
+      "slot": "middle",
+      "style": "body",
+      "content": "실질이자율 + 기대 인플레이션율",
+      "near": {
+       "target": "d_rates",
+       "side": "below"
+      },
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "show",
+      "target": "f_rates",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "unhighlight",
+      "target": "n_rate_real",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "rate_label",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "f_rates",
+      "args": [
+       "$5\\%+6\\%$"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "f_rates",
+      "args": [
+       "$11\\%\\approx 5\\%+6\\%$"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_rate_nominal",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_rate_nominal",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     9,
+     10
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "명목소득과 실질소득은 무엇이 다를까요?",
+   "startSec": 0.0,
+   "endSec": 3.56
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "명목소득은 화폐액이고, 실질소득은 그 구매력이에요.",
+   "startSec": 3.86,
+   "endSec": 7.85
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "실질소득은 명목소득을 물가지수로 나누어 구해요.",
+   "startSec": 8.15,
+   "endSec": 11.28
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "명목소득이 고정되면 물가 상승에 따라 구매력이 줄어요.",
+   "startSec": 11.58,
+   "endSec": 15.56
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "예상치 못한 인플레이션은 누구에게 불리할까요?",
+   "startSec": 16.16,
+   "endSec": 19.48
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "고정소득자는 받는 돈이 같아 구매력이 줄어요.",
+   "startSec": 19.78,
+   "endSec": 23.05
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "저축자는 물가 상승률이 저축 수익률보다 높으면 손해예요.",
+   "startSec": 23.35,
+   "endSec": 27.86
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "변동소득자는 소득이 물가에 맞춰 오르면 손해를 피해요.",
+   "startSec": 28.16,
+   "endSec": 31.94
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "소득이 물가보다 더 빨리 오르면 이익을 볼 수도 있어요.",
+   "startSec": 32.24,
+   "endSec": 35.71
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "이번에는 은행과 수지의 대출 예시를 볼까요?",
+   "startSec": 36.31,
+   "endSec": 39.63
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "은행은 수지에게 2년 만기로 100만원을 빌려줘요.",
+   "startSec": 39.93,
+   "endSec": 43.41
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "2년 후 물가가 2배가 되었다고 해요.",
+   "startSec": 43.71,
+   "endSec": 45.85
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "고정된 원금 100만원의 구매력은 이전의 절반이에요.",
+   "startSec": 46.15,
+   "endSec": 49.66
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "예상보다 물가가 더 오르면 채권자에서 채무자로 실질가치가 이동해요.",
+   "startSec": 49.96,
+   "endSec": 55.02
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "인플레이션을 예상하면 재분배가 줄어들까요?",
+   "startSec": 55.62,
+   "endSec": 58.82
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "예상 물가를 임금과 이자에 반영하면 재분배가 줄 수 있어요.",
+   "startSec": 59.12,
+   "endSec": 63.3
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "명목이자율은 화폐 상환액의 원금 대비 증가율이에요.",
+   "startSec": 63.6,
+   "endSec": 67.23
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "실질이자율은 상환액의 구매력이 원금보다 늘어난 비율이에요.",
+   "startSec": 67.53,
+   "endSec": 72.07
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "강의의 이자율 예시에서 실질이자율은 5%예요.",
+   "startSec": 72.67,
+   "endSec": 76.6
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "여기에 기대 인플레이션율 6%를 더해요.",
+   "startSec": 76.9,
+   "endSec": 79.62
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "따라서 명목이자율은 약 11%예요.",
+   "startSec": 79.92,
+   "endSec": 82.65
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "정확한 복리 계산은 11.3%로, 강의의 11%는 근삿값이에요.",
+   "startSec": 82.95,
+   "endSec": 88.48
+  }
+ ]
+}

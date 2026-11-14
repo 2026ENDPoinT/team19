@@ -15,6 +15,15 @@ const labels: Record<string, string> = {
   'dc3-review-08': '분할정복 기본 8 · 퀵 정렬의 최악·최선·평균 분석',
   'dc3-review-09': '분할정복 기본 9 · 피봇 선택과 작은 구간 성능 개선',
   'dc3-review-10': '분할정복 기본 10 · 합병 정렬과 퀵 정렬 선택하기',
+  'econ-intro-01': '경제의 이해 입문 1 · 경기순환과 실업의 흐름',
+  'econ-intro-02': '경제의 이해 입문 2 · 인플레이션과 생활 속 영향',
+  'econ-review-01': '경제의 이해 기본 1 · 경기순환의 국면과 충격',
+  'econ-review-02': '경제의 이해 기본 2 · 실업률과 실업의 유형',
+  'econ-review-03': '경제의 이해 기본 3 · 인플레이션과 구매력 변화',
+  'econ-exam-01': '경제의 이해 심화 1 · 경기순환의 국면과 충격',
+  'econ-exam-02': '경제의 이해 심화 2 · 실업률과 실업 유형의 판별',
+  'econ-exam-03': '경제의 이해 심화 3 · 물가상승률의 측정과 원인',
+  'econ-exam-04': '경제의 이해 심화 4 · 인플레이션의 소득 재분배',
   'algo-dc-review-c7': '알고리즘 · 피봇 분할',
   'algo-dc-review-c4': '알고리즘 · 합병 정렬 재귀',
   'algo-dc-review-c5': '알고리즘 · 합병 정렬 n log n',
@@ -32,7 +41,9 @@ const assets = import.meta.glob<string>([
 export const evalClips = Object.keys(assets).flatMap((key) => {
   const m = key.match(/\/eval\/([^/]+)\/result-(.+)\.json$/)
   return m ? [{ id: m[2] === 'terra' ? m[1] : `${m[1]}@${m[2]}`, label: `${labels[m[1]] ?? m[1]} / ${m[2]}` }] : []
-}).sort((a, b) => Number(!a.id.startsWith('dc3-')) - Number(!b.id.startsWith('dc3-'))) // 공개 페이지(D-69)는 분할정복 강의 클립을 먼저 보여 준다
+}).filter((clip) => !clip.id.startsWith('rl-mdp-')) // 강화학습 클립은 FE 테스트용으로만 남기고 목록에서 뺀다(공개 페이지 D-69)
+  .sort((a, b) => modeOrder(a.id).localeCompare(modeOrder(b.id))) // 강의마다 입문 → 기본 → 심화
+function modeOrder(id: string) { return id.replace('-intro-', '-1-').replace('-review-', '-2-').replace('-exam-', '-3-') }
 export function isEvalClip(id: string) { return evalClips.some((clip) => clip.id === id) }
 function asset(id: string, file: string): string | undefined {
   return isEvalClip(id) ? assets[`../../../samples/eval/${id.split('@')[0]}/${file}`] : undefined

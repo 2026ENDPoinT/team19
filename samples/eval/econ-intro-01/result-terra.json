@@ -1,0 +1,408 @@
+{
+ "resultId": "eval-econ-intro-01-terra",
+ "durationSec": 37.57,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "경기순환과 실업의 흐름",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "경기순환은 무엇일까요?",
+     "경제는 길게 보면 성장할 수 있어요.",
+     "하지만 그 흐름이 늘 매끄럽지는 않아요.",
+     "파도처럼 오르내리는 흐름이 경기순환이에요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t1",
+      "slot": "top",
+      "style": "title",
+      "content": "경기순환",
+      "hidden": false
+     }
+    ],
+    "slides": [
+     {
+      "id": "sl1",
+      "slot": "middle",
+      "page": 1,
+      "box": [
+       0.47,
+       0.32,
+       0.45,
+       0.24
+      ],
+      "hidden": false
+     }
+    ],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [],
+    "sourcePages": [
+     1
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "경기가 나빠지면 일자리는 어떻게 될까요?",
+     "빵집을 찾는 손님이 줄어든다고 생각해 봐요.",
+     "빵집은 판매할 빵을 덜 만들 수 있어요.",
+     "그러면 필요한 직원도 줄일 수 있어요.",
+     "일하고 싶어도 일을 못 찾는 실업이 늘 수 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t2",
+      "slot": "top",
+      "style": "title",
+      "content": "경기와 일자리",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d1",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n1",
+        "label": "빵집",
+        "shape": "box"
+       },
+       {
+        "id": "n2",
+        "label": "손님 감소",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n3",
+        "label": "생산 감소",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n4",
+        "label": "고용 감소",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n5",
+        "label": "실업 증가",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e1",
+        "from": "n1",
+        "to": "n2",
+        "hidden": true
+       },
+       {
+        "id": "e2",
+        "from": "n2",
+        "to": "n3",
+        "hidden": true
+       },
+       {
+        "id": "e3",
+        "from": "n3",
+        "to": "n4",
+        "hidden": true
+       },
+       {
+        "id": "e4",
+        "from": "n4",
+        "to": "n5",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n2",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n3",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n4",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "e3",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "n5",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "e4",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     1,
+     5
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": false,
+    "lines": [
+     "실업은 경기 때문에만 생길까요?",
+     "직장을 찾는 과정이나 산업의 변화도 원인이에요.",
+     "경기 흐름을 살피면 고용 변화에 대비할 수 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t3",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "고용 변화 대비",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d2",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": true,
+      "nodes": [
+       {
+        "id": "n6",
+        "label": "실업의 원인",
+        "shape": "box"
+       },
+       {
+        "id": "n7",
+        "label": "직장 탐색",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n8",
+        "label": "산업 변화",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e5",
+        "from": "n6",
+        "to": "n7",
+        "hidden": true
+       },
+       {
+        "id": "e6",
+        "from": "n6",
+        "to": "n8",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "d1",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "d2",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n7",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n8",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e5",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e6",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "t3",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     1,
+     5
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "경기순환은 무엇일까요?",
+   "startSec": 0.0,
+   "endSec": 1.67
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "경제는 길게 보면 성장할 수 있어요.",
+   "startSec": 1.97,
+   "endSec": 4.35
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "하지만 그 흐름이 늘 매끄럽지는 않아요.",
+   "startSec": 4.65,
+   "endSec": 7.44
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "파도처럼 오르내리는 흐름이 경기순환이에요.",
+   "startSec": 7.74,
+   "endSec": 10.88
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "경기가 나빠지면 일자리는 어떻게 될까요?",
+   "startSec": 11.48,
+   "endSec": 14.62
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "빵집을 찾는 손님이 줄어든다고 생각해 봐요.",
+   "startSec": 14.92,
+   "endSec": 17.67
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "빵집은 판매할 빵을 덜 만들 수 있어요.",
+   "startSec": 17.97,
+   "endSec": 20.62
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "그러면 필요한 직원도 줄일 수 있어요.",
+   "startSec": 20.92,
+   "endSec": 23.21
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "일하고 싶어도 일을 못 찾는 실업이 늘 수 있어요.",
+   "startSec": 23.51,
+   "endSec": 26.95
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "실업은 경기 때문에만 생길까요?",
+   "startSec": 27.55,
+   "endSec": 30.12
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "직장을 찾는 과정이나 산업의 변화도 원인이에요.",
+   "startSec": 30.42,
+   "endSec": 33.83
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "경기 흐름을 살피면 고용 변화에 대비할 수 있어요.",
+   "startSec": 34.13,
+   "endSec": 37.57
+  }
+ ]
+}

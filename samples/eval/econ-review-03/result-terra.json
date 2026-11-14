@@ -1,0 +1,637 @@
+{
+ "resultId": "eval-econ-review-03-terra",
+ "durationSec": 64.39,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "인플레이션과 구매력 변화",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "인플레이션은 무엇일까요?",
+     "일반적인 물가가 오르면 같은 돈의 구매력이 줄어요.",
+     "하지만 일부 상품의 가격은 유지되거나 내릴 수도 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title1",
+      "slot": "top",
+      "style": "title",
+      "content": "인플레이션과 구매력",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d1",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_price",
+        "label": "일반 물가 상승",
+        "shape": "box"
+       },
+       {
+        "id": "n_power",
+        "label": "구매력 감소",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n_individual",
+        "label": "일부 가격 안정·하락",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_power",
+        "from": "n_price",
+        "to": "n_power",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n_power",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e_power",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n_individual",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     6
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "소비자물가지수로 상승률을 어떻게 구할까요?",
+     "2020년 지수 100이 2021년에 102.5가 됐어요.",
+     "상승분 2.5를 전년 지수 100으로 나눠요.",
+     "여기에 100을 곱하면 상승률은 2.5%예요."
+    ],
+    "speech": [
+     "",
+     "이천이십 년 지수 백이 이천이십일 년에 백이 점 오가 됐어요.",
+     "상승분 이 점 오를 전년 지수 백으로 나눠요.",
+     "여기에 백을 곱하면 상승률은 이 점 오 퍼센트예요."
+    ],
+    "texts": [
+     {
+      "id": "title2",
+      "slot": "top",
+      "style": "title",
+      "content": "소비자물가지수 변화",
+      "hidden": false
+     },
+     {
+      "id": "year0",
+      "slot": "bottom",
+      "near": {
+       "target": "g_cpi",
+       "side": "below",
+       "cell": "0"
+      },
+      "style": "body",
+      "content": "2020년",
+      "hidden": false
+     },
+     {
+      "id": "year1",
+      "slot": "bottom",
+      "near": {
+       "target": "g_cpi",
+       "side": "below",
+       "cell": "1"
+      },
+      "style": "body",
+      "content": "2021년",
+      "hidden": false
+     },
+     {
+      "id": "f_rate",
+      "slot": "bottom",
+      "style": "formula",
+      "content": "$\\frac{2.5}{100}$",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g_cpi",
+      "slot": "middle",
+      "hidden": false,
+      "cells": [
+       [
+        "100",
+        "102.5"
+       ]
+      ],
+      "indexLabels": false,
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "g_cpi",
+      "args": [
+       "0-1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "g_cpi",
+      "args": [
+       "0-1"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "f_rate",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "f_rate",
+      "args": [
+       "$\\frac{2.5}{100}\\times 100=2.5\\%$"
+      ]
+     }
+    ],
+    "sourcePages": [
+     6,
+     7
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "물가는 왜 오를까요?",
+     "수요견인 인플레이션은 총지출이 생산능력을 넘을 때 나타나요.",
+     "비용인상 인플레이션은 생산비 상승이 물가를 밀어 올려요."
+    ],
+    "speech": [
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title3",
+      "slot": "top",
+      "style": "title",
+      "content": "인플레이션의 원인과 영향",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_types",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_demand",
+        "label": "수요견인",
+        "shape": "box"
+       },
+       {
+        "id": "n_cost",
+        "label": "비용인상",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_demand",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_demand",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_cost",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     8
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": false,
+    "lines": [
+     "예상 밖의 물가 상승은 누구에게 영향을 줄까요?",
+     "고정소득자는 같은 소득으로 살 수 있는 양이 줄어요.",
+     "돈을 빌려준 채권자는 고정 상환액의 구매력이 줄어요.",
+     "빌린 채무자는 같은 액수를 낮은 가치로 갚을 수 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_people",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": true,
+      "nodes": [
+       {
+        "id": "n_fixed",
+        "label": "고정소득자",
+        "shape": "box"
+       },
+       {
+        "id": "n_creditor",
+        "label": "채권자",
+        "shape": "box"
+       },
+       {
+        "id": "n_debtor",
+        "label": "채무자",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "e_redistribute",
+        "from": "n_creditor",
+        "to": "n_debtor",
+        "label": "실질소득 재분배",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "n_cost",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "d_types",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "d_people",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_fixed",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_fixed",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_creditor",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_creditor",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "e_redistribute",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_debtor",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     8,
+     9
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": false,
+    "lines": [
+     "이자율은 예상 물가를 어떻게 반영할까요?",
+     "실질이자율이 5%라고 해요.",
+     "기대 인플레이션율 6%를 더해요.",
+     "그러면 명목이자율은 약 11%가 돼요."
+    ],
+    "speech": [
+     "",
+     "실질이자율이 오 퍼센트라고 해요.",
+     "기대 인플레이션율 육 퍼센트를 더해요.",
+     "그러면 명목이자율은 약 십일 퍼센트가 돼요."
+    ],
+    "texts": [
+     {
+      "id": "f_interest",
+      "slot": "bottom",
+      "style": "formula",
+      "content": "$5\\%$",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_interest",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": true,
+      "nodes": [
+       {
+        "id": "n_real",
+        "label": "실질이자율",
+        "shape": "box"
+       },
+       {
+        "id": "n_expected",
+        "label": "기대 물가",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "unhighlight",
+      "target": "n_debtor",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "d_people",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "d_interest",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_real",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "f_interest",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_real",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_expected",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "f_interest",
+      "args": [
+       "$5\\%+6\\%$"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_expected",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "f_interest",
+      "args": [
+       "$5\\%+6\\%\\approx 11\\%$"
+      ]
+     }
+    ],
+    "sourcePages": [
+     9,
+     10
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "인플레이션은 무엇일까요?",
+   "startSec": 0.0,
+   "endSec": 1.65
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "일반적인 물가가 오르면 같은 돈의 구매력이 줄어요.",
+   "startSec": 1.95,
+   "endSec": 5.21
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "하지만 일부 상품의 가격은 유지되거나 내릴 수도 있어요.",
+   "startSec": 5.51,
+   "endSec": 9.2
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "소비자물가지수로 상승률을 어떻게 구할까요?",
+   "startSec": 9.8,
+   "endSec": 13.12
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "2020년 지수 100이 2021년에 102.5가 됐어요.",
+   "startSec": 13.42,
+   "endSec": 17.56
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "상승분 2.5를 전년 지수 100으로 나눠요.",
+   "startSec": 17.86,
+   "endSec": 20.84
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "여기에 100을 곱하면 상승률은 2.5%예요.",
+   "startSec": 21.14,
+   "endSec": 24.68
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "물가는 왜 오를까요?",
+   "startSec": 25.28,
+   "endSec": 26.87
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "수요견인 인플레이션은 총지출이 생산능력을 넘을 때 나타나요.",
+   "startSec": 27.17,
+   "endSec": 31.54
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "비용인상 인플레이션은 생산비 상승이 물가를 밀어 올려요.",
+   "startSec": 31.84,
+   "endSec": 36.1
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "예상 밖의 물가 상승은 누구에게 영향을 줄까요?",
+   "startSec": 36.7,
+   "endSec": 40.29
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "고정소득자는 같은 소득으로 살 수 있는 양이 줄어요.",
+   "startSec": 40.59,
+   "endSec": 43.71
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "돈을 빌려준 채권자는 고정 상환액의 구매력이 줄어요.",
+   "startSec": 44.01,
+   "endSec": 47.7
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "빌린 채무자는 같은 액수를 낮은 가치로 갚을 수 있어요.",
+   "startSec": 48.0,
+   "endSec": 51.77
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "이자율은 예상 물가를 어떻게 반영할까요?",
+   "startSec": 52.37,
+   "endSec": 55.65
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "실질이자율이 5%라고 해요.",
+   "startSec": 55.95,
+   "endSec": 58.01
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "기대 인플레이션율 6%를 더해요.",
+   "startSec": 58.31,
+   "endSec": 60.72
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "그러면 명목이자율은 약 11%가 돼요.",
+   "startSec": 61.02,
+   "endSec": 64.39
+  }
+ ]
+}

@@ -122,7 +122,7 @@ export default function ActualClipPreview({ onBack, initialClipId, pages, clipId
 
   // 숏폼처럼 옆 버튼으로 비교할 클립 목록의 이전·다음 클립으로 넘긴다(업로드 클립 화면은 제외).
   const feedEnabled = !initialClipId || Boolean(clipIds)
-  const order = clipIds ?? ['clip-01', 'clip-01-b', 'parts-test', ...evalClips.map((clip) => clip.id)]
+  const order = clipIds ?? evalClips.map((clip) => clip.id)
   const position = order.indexOf(clipId)
   // 끝에서 더 넘기면 반대쪽 끝으로 돌아간다(마지막 → 처음, 처음 → 마지막). 넘김 방향 효과는 누른 방향 그대로.
   function moveClip(step: number) {
@@ -189,9 +189,6 @@ export default function ActualClipPreview({ onBack, initialClipId, pages, clipId
       {!initialClipId && <>
       <label className="mt-3 block font-semibold" htmlFor="actual-clip">학습 클립</label>
       <select id="actual-clip" disabled={transitionBusy} value={clipId} onChange={(event) => chooseClip(event.target.value)} className="mt-2 w-full rounded-lg border bg-white p-2">
-        <option value="clip-01">A · Sonnet / Cedar</option>
-        <option value="clip-01-b">B · Terra / Cedar</option>
-        <option value="parts-test">시각화 예시</option>
         {evalClips.map((clip) => <option key={clip.id} value={clip.id}>{clip.label}</option>)}
       </select>
       </>}
