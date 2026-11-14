@@ -40,7 +40,7 @@ const assets = import.meta.glob<string>([
 // result-<이름>.json이 있으면 목록에 자동으로 나온다. id는 Terra면 '폴더', 모델·프롬프트 비교용은 '폴더@이름'.
 export const evalClips = Object.keys(assets).flatMap((key) => {
   const m = key.match(/\/eval\/([^/]+)\/result-(.+)\.json$/)
-  return m ? [{ id: m[2] === 'terra' ? m[1] : `${m[1]}@${m[2]}`, label: `${labels[m[1]] ?? m[1]} / ${m[2]}` }] : []
+  return m ? [{ id: m[2] === 'terra' ? m[1] : `${m[1]}@${m[2]}`, label: labels[m[1]] ?? `${m[1]} / ${m[2]}` }] : []
 }).filter((clip) => !clip.id.startsWith('rl-mdp-')) // 강화학습 클립은 FE 테스트용으로만 남기고 목록에서 뺀다(공개 페이지 D-69)
   .sort((a, b) => modeOrder(a.id).localeCompare(modeOrder(b.id))) // 강의마다 입문 → 기본 → 심화
 function modeOrder(id: string) { return id.replace('-intro-', '-1-').replace('-review-', '-2-').replace('-exam-', '-3-') }
