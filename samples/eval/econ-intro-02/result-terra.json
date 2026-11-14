@@ -1,0 +1,416 @@
+{
+ "resultId": "eval-econ-intro-02-terra",
+ "durationSec": 37.12,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "인플레이션과 생활 속 영향",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "인플레이션이란 무엇일까요?",
+     "전반적인 물가 수준이 오르는 현상이에요.",
+     "모든 상품의 가격이 오르는 건 아니에요.",
+     "장바구니를 떠올려 볼까요?",
+     "물가가 오르면 같은 돈으로 살 수 있는 양이 줄어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title1",
+      "slot": "top",
+      "style": "title",
+      "content": "인플레이션",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "basket_flow",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "basket",
+        "label": "장바구니",
+        "shape": "box"
+       },
+       {
+        "id": "prices",
+        "label": "전반적 물가 상승",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "quantity",
+        "label": "구매량 감소",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "basket_prices",
+        "from": "basket",
+        "to": "prices",
+        "hidden": true
+       },
+       {
+        "id": "prices_quantity",
+        "from": "prices",
+        "to": "quantity",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "prices",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "basket_prices",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "basket",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "basket",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "quantity",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "prices_quantity",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "quantity",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     6
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "물가는 왜 오를까요?",
+     "사려는 양이 생산 능력을 넘어서면 오를 수 있어요.",
+     "생산비용이 오르는 경우도 있어요.",
+     "예를 들어 에너지 가격이 오르면 비용이 늘어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title2",
+      "slot": "top",
+      "style": "title",
+      "content": "물가 상승의 원인",
+      "hidden": false
+     },
+     {
+      "id": "energy_label",
+      "slot": "bottom",
+      "near": {
+       "target": "causes",
+       "side": "below"
+      },
+      "style": "body",
+      "content": "에너지 가격 상승",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "causes",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "demand",
+        "label": "수요 증가",
+        "shape": "box"
+       },
+       {
+        "id": "cost",
+        "label": "비용 상승",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "demand",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "demand",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "cost",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "cost",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "energy_label",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     8
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "물가 상승은 누구에게 부담이 될까요?",
+     "소득이 물가만큼 오르지 않는 사람은",
+     "같은 생활을 유지하기가 어려워질 수 있어요.",
+     "그래서 소득과 물가를 함께 살피는 일이 중요해요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title3",
+      "slot": "top",
+      "style": "title",
+      "content": "생활 속 영향",
+      "hidden": false
+     },
+     {
+      "id": "living_label",
+      "slot": "bottom",
+      "near": {
+       "target": "income_prices",
+       "side": "below"
+      },
+      "style": "body",
+      "content": "생활비 부담",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "income_prices",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "income",
+        "label": "소득",
+        "shape": "box"
+       },
+       {
+        "id": "living_prices",
+        "label": "물가",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "income",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "living_prices",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "income",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "living_prices",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "living_label",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     6,
+     8,
+     9
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "인플레이션이란 무엇일까요?",
+   "startSec": 0.0,
+   "endSec": 1.77
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "전반적인 물가 수준이 오르는 현상이에요.",
+   "startSec": 2.07,
+   "endSec": 4.7
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "모든 상품의 가격이 오르는 건 아니에요.",
+   "startSec": 5.0,
+   "endSec": 7.41
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "장바구니를 떠올려 볼까요?",
+   "startSec": 7.71,
+   "endSec": 9.22
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 4,
+   "text": "물가가 오르면 같은 돈으로 살 수 있는 양이 줄어요.",
+   "startSec": 9.52,
+   "endSec": 12.94
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "물가는 왜 오를까요?",
+   "startSec": 13.54,
+   "endSec": 15.01
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "사려는 양이 생산 능력을 넘어서면 오를 수 있어요.",
+   "startSec": 15.31,
+   "endSec": 18.37
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "생산비용이 오르는 경우도 있어요.",
+   "startSec": 18.67,
+   "endSec": 20.45
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "예를 들어 에너지 가격이 오르면 비용이 늘어요.",
+   "startSec": 20.75,
+   "endSec": 23.73
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "물가 상승은 누구에게 부담이 될까요?",
+   "startSec": 24.33,
+   "endSec": 27.41
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "소득이 물가만큼 오르지 않는 사람은",
+   "startSec": 27.71,
+   "endSec": 30.15
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "같은 생활을 유지하기가 어려워질 수 있어요.",
+   "startSec": 30.45,
+   "endSec": 33.09
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "그래서 소득과 물가를 함께 살피는 일이 중요해요.",
+   "startSec": 33.39,
+   "endSec": 37.12
+  }
+ ]
+}

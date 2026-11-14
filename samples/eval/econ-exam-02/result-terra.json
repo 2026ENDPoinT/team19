@@ -1,0 +1,688 @@
+{
+ "resultId": "eval-econ-exam-02-terra",
+ "durationSec": 86.19,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "실업률과 실업 유형의 판별",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "15세 이상 인구의 실업은 어떻게 판별할까요?",
+     "미취업에 구직하지 않으면 비경제활동인구예요.",
+     "경제활동인구는 취업자와 실업자로 구성돼요.",
+     "15일 포함 조사 주간에 1시간 이상 일하면 취업자예요.",
+     "지난 4주간 구직했고 조사 주간에 수입 목적의 일이 없으면 실업자예요."
+    ],
+    "speech": [
+     "십오 세 이상 인구의 실업은 어떻게 판별할까요?",
+     "",
+     "",
+     "십오 일 포함 조사 주간에 한 시간 이상 일하면 취업자예요.",
+     "지난 사 주간 구직했고 조사 주간에 수입 목적의 일이 없으면 실업자예요."
+    ],
+    "texts": [
+     {
+      "id": "title_class",
+      "slot": "top",
+      "style": "title",
+      "content": "실업의 판별",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "population",
+      "slot": "middle",
+      "layout": "tree",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "pop_root",
+        "label": "15세 이상 인구",
+        "shape": "box"
+       },
+       {
+        "id": "inactive",
+        "label": "비경제활동인구",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "active",
+        "label": "경제활동인구",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "employed",
+        "label": "취업자",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "unemployed",
+        "label": "실업자",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "edge_inactive",
+        "from": "pop_root",
+        "to": "inactive",
+        "hidden": true
+       },
+       {
+        "id": "edge_active",
+        "from": "pop_root",
+        "to": "active",
+        "hidden": true
+       },
+       {
+        "id": "edge_employed",
+        "from": "active",
+        "to": "employed",
+        "hidden": true
+       },
+       {
+        "id": "edge_unemployed",
+        "from": "active",
+        "to": "unemployed",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "inactive",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "edge_inactive",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "inactive",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "inactive",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "active",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "edge_active",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "active",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "active",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "employed",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "edge_employed",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "employed",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "employed",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "unemployed",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "edge_unemployed",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "unemployed",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     3,
+     4
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "이제 실업률을 계산해 볼게요.",
+     "분모는 전체 인구가 아닌 경제활동인구예요.",
+     "2022년 8월에는 615를 29,015로 나눠요.",
+     "여기에 100을 곱하면 약 2.12%예요."
+    ],
+    "speech": [
+     "",
+     "",
+     "이천이십이 년 팔월에는 육백십오를 이만 구천십오로 나눠요.",
+     "여기에 백을 곱하면 약 이 점 일 이 퍼센트예요."
+    ],
+    "texts": [
+     {
+      "id": "rate_formula",
+      "slot": "middle",
+      "style": "formula",
+      "content": "$\\text{실업률} = \\frac{\\text{실업자}}{\\term{den}{\\text{경제활동인구}}}$",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "population",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "rate_formula",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "rate_formula",
+      "args": [
+       "den"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "rate_formula",
+      "args": [
+       "den"
+      ]
+     },
+     {
+      "line": 2,
+      "do": "setText",
+      "target": "rate_formula",
+      "args": [
+       "$\\text{실업률} = \\frac{615}{29,015}$"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "rate_formula",
+      "args": [
+       "$\\text{실업률} = \\frac{615}{29,015}\\times 100 \\approx 2.12\\%$"
+      ]
+     }
+    ],
+    "sourcePages": [
+     4
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "실업 유형은 무엇이 다를까요?",
+     "마찰적 실업은 직장을 찾거나 기다리는 과정에서 생겨요.",
+     "구조적 실업은 직종이나 지역의 노동 수요 변화로 생겨요.",
+     "새 기술 습득의 필요성이 구별점이며, 지역 이동도 도움이 돼요.",
+     "경기적 실업은 총지출 감소로 고용이 줄면서 생겨요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "title_types",
+      "slot": "top",
+      "style": "title",
+      "content": "실업의 세 유형",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "types",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "frictional",
+        "label": "마찰적 실업",
+        "shape": "box"
+       },
+       {
+        "id": "structural",
+        "label": "구조적 실업",
+        "shape": "box"
+       },
+       {
+        "id": "cyclical",
+        "label": "경기적 실업",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "frictional",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "frictional",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "structural",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "structural",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "cyclical",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     5
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "완전고용은 실업이 전혀 없는 상태일까요?",
+     "마찰적·구조적 실업은 남아도 경기적 실업이 없으면 완전고용이에요.",
+     "이때의 실업률을 자연실업률이라고 해요.",
+     "완전고용에서 달성되는 실질 GDP는 잠재 GDP예요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "완전고용에서 달성되는 실질 지디피는 잠재 지디피예요."
+    ],
+    "texts": [
+     {
+      "id": "title_full",
+      "slot": "top",
+      "style": "title",
+      "content": "완전고용과 GDP 갭",
+      "hidden": false
+     },
+     {
+      "id": "full_key",
+      "slot": "bottom",
+      "style": "keyword",
+      "content": "자연실업률",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "full_diagram",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "remaining_types",
+        "label": "마찰·구조",
+        "shape": "box"
+       },
+       {
+        "id": "cycle_type",
+        "label": "경기적 실업",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "remaining_types",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "cycle_type",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "remaining_types",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "cycle_type",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "full_key",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "full_key",
+      "args": [
+       "잠재 GDP"
+      ]
+     }
+    ],
+    "sourcePages": [
+     5
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": false,
+    "lines": [
+     "이제 GDP 갭은 실제 GDP에서 무엇을 뺄까요?",
+     "잠재 GDP를 빼면 GDP 갭이에요.",
+     "실제 GDP가 잠재 GDP보다 작으면 갭은 음수예요.",
+     "실업은 생산과 소득의 손실을 낳고, 미숙련자와 청소년의 실업률은 높은 편이에요."
+    ],
+    "speech": [
+     "이제 지디피 갭은 실제 지디피에서 무엇을 뺄까요?",
+     "잠재 지디피를 빼면 지디피 갭이에요.",
+     "실제 지디피가 잠재 지디피보다 작으면 갭은 음수예요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "gap_formula",
+      "slot": "middle",
+      "style": "formula",
+      "content": "$\\text{GDP 갭} = \\text{실제 GDP}$",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "full_key",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "full_diagram",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "gap_formula",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "setText",
+      "target": "gap_formula",
+      "args": [
+       "$\\text{GDP 갭} = \\text{실제 GDP} - \\text{잠재 GDP}$"
+      ]
+     }
+    ],
+    "sourcePages": [
+     5,
+     6
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "15세 이상 인구의 실업은 어떻게 판별할까요?",
+   "startSec": 0.0,
+   "endSec": 3.79
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "미취업에 구직하지 않으면 비경제활동인구예요.",
+   "startSec": 4.09,
+   "endSec": 7.22
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "경제활동인구는 취업자와 실업자로 구성돼요.",
+   "startSec": 7.52,
+   "endSec": 10.55
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "15일 포함 조사 주간에 1시간 이상 일하면 취업자예요.",
+   "startSec": 10.85,
+   "endSec": 14.5
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 4,
+   "text": "지난 4주간 구직했고 조사 주간에 수입 목적의 일이 없으면 실업자예요.",
+   "startSec": 14.8,
+   "endSec": 19.88
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이제 실업률을 계산해 볼게요.",
+   "startSec": 20.48,
+   "endSec": 22.63
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "분모는 전체 인구가 아닌 경제활동인구예요.",
+   "startSec": 22.93,
+   "endSec": 25.89
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "2022년 8월에는 615를 29,015로 나눠요.",
+   "startSec": 26.19,
+   "endSec": 30.2
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "여기에 100을 곱하면 약 2.12%예요.",
+   "startSec": 30.5,
+   "endSec": 33.46
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "실업 유형은 무엇이 다를까요?",
+   "startSec": 34.06,
+   "endSec": 36.15
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "마찰적 실업은 직장을 찾거나 기다리는 과정에서 생겨요.",
+   "startSec": 36.45,
+   "endSec": 40.15
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "구조적 실업은 직종이나 지역의 노동 수요 변화로 생겨요.",
+   "startSec": 40.45,
+   "endSec": 44.09
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "새 기술 습득의 필요성이 구별점이며, 지역 이동도 도움이 돼요.",
+   "startSec": 44.39,
+   "endSec": 48.73
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "경기적 실업은 총지출 감소로 고용이 줄면서 생겨요.",
+   "startSec": 49.03,
+   "endSec": 52.74
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "완전고용은 실업이 전혀 없는 상태일까요?",
+   "startSec": 53.34,
+   "endSec": 56.42
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "마찰적·구조적 실업은 남아도 경기적 실업이 없으면 완전고용이에요.",
+   "startSec": 56.72,
+   "endSec": 61.42
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "이때의 실업률을 자연실업률이라고 해요.",
+   "startSec": 61.72,
+   "endSec": 64.23
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "완전고용에서 달성되는 실질 GDP는 잠재 GDP예요.",
+   "startSec": 64.53,
+   "endSec": 68.67
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "이제 GDP 갭은 실제 GDP에서 무엇을 뺄까요?",
+   "startSec": 69.27,
+   "endSec": 73.18
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "잠재 GDP를 빼면 GDP 갭이에요.",
+   "startSec": 73.48,
+   "endSec": 75.96
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "실제 GDP가 잠재 GDP보다 작으면 갭은 음수예요.",
+   "startSec": 76.26,
+   "endSec": 80.33
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "실업은 생산과 소득의 손실을 낳고, 미숙련자와 청소년의 실업률은 높은 편이에요.",
+   "startSec": 80.63,
+   "endSec": 86.19
+  }
+ ]
+}

@@ -1,0 +1,451 @@
+{
+ "resultId": "eval-econ-review-01-terra",
+ "durationSec": 68.13,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "경기순환의 국면과 충격",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "경기순환이란 무엇일까요?",
+     "그래프의 직선은 경제의 장기 성장 추세예요.",
+     "실질 GDP는 그 추세 주변에서 오르내려요.",
+     "이런 상승과 하락의 기간과 폭은 매번 달라요."
+    ],
+    "speech": [
+     "",
+     "",
+     "실질 지디피는 그 추세 주변에서 오르내려요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_cycle",
+      "slot": "top",
+      "style": "title",
+      "content": "경기순환",
+      "hidden": false
+     }
+    ],
+    "slides": [
+     {
+      "id": "sl_cycle",
+      "slot": "middle",
+      "page": 1,
+      "box": [
+       0.47,
+       0.32,
+       0.45,
+       0.24
+      ],
+      "hidden": false
+     }
+    ],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [],
+    "sourcePages": [
+     1
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": false,
+    "lines": [
+     "이번에는 고점에서 저점까지 볼까요?",
+     "침체기에는 산출, 소득, 고용이 6개월 이상 줄어요.",
+     "저점에 도달한 뒤에는 경기가 회복돼요.",
+     "저점에서 고점까지 산출과 고용이 늘면 확장기예요."
+    ],
+    "speech": [
+     "",
+     "침체기에는 산출, 소득, 고용이 육 개월 이상 줄어요.",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_phase",
+      "slot": "bottom",
+      "style": "body",
+      "content": "고점 → 저점: 침체",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "t_phase",
+      "args": [
+       "저점 → 고점: 확장"
+      ]
+     }
+    ],
+    "sourcePages": [
+     1
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": true,
+    "lines": [
+     "경기순환을 일으키는 충격이란 뭘까요?",
+     "기업이나 가계가 예상하지 못한 변화예요.",
+     "수요충격은 재화나 서비스의 수요가 예상과 달라지는 거예요.",
+     "공급충격은 재화나 서비스의 공급이 예상과 달라지는 거예요.",
+     "예상보다 많으면 양의 충격, 적으면 음의 충격이에요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_shock",
+      "slot": "top",
+      "style": "title",
+      "content": "수요충격과 공급충격",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_shock",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_demand",
+        "label": "수요충격",
+        "shape": "box"
+       },
+       {
+        "id": "n_supply",
+        "label": "공급충격",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_demand",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_demand",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_supply",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "n_supply",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     2
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": true,
+    "lines": [
+     "그렇다면 충격은 어디서 올까요?",
+     "혁신과 생산성 변화는 생산과 고용에 영향을 줘요.",
+     "예상과 다른 통화 공급이나 정치적 사건도 원인이에요.",
+     "금융 불안정은 대출과 경제에 대한 신뢰를 바꿔요.",
+     "자연재해도 생산능력을 줄이는 충격이 될 수 있어요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t_causes",
+      "slot": "top",
+      "style": "title",
+      "content": "충격의 원인",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d_causes",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n_innovation",
+        "label": "혁신",
+        "shape": "box"
+       },
+       {
+        "id": "n_productivity",
+        "label": "생산성 변화",
+        "shape": "box"
+       },
+       {
+        "id": "n_money",
+        "label": "통화 요인",
+        "shape": "box"
+       },
+       {
+        "id": "n_politics",
+        "label": "정치적 사건",
+        "shape": "box"
+       },
+       {
+        "id": "n_finance",
+        "label": "금융 불안정",
+        "shape": "box"
+       },
+       {
+        "id": "n_disaster",
+        "label": "자연재해",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_innovation",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n_productivity",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_innovation",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n_productivity",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_money",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n_politics",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_money",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n_politics",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n_finance",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "n_finance",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "n_disaster",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     2,
+     3
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "경기순환이란 무엇일까요?",
+   "startSec": 0.0,
+   "endSec": 2.13
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "그래프의 직선은 경제의 장기 성장 추세예요.",
+   "startSec": 2.43,
+   "endSec": 5.59
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "실질 GDP는 그 추세 주변에서 오르내려요.",
+   "startSec": 5.89,
+   "endSec": 8.81
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "이런 상승과 하락의 기간과 폭은 매번 달라요.",
+   "startSec": 9.11,
+   "endSec": 12.45
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "이번에는 고점에서 저점까지 볼까요?",
+   "startSec": 13.05,
+   "endSec": 15.89
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "침체기에는 산출, 소득, 고용이 6개월 이상 줄어요.",
+   "startSec": 16.19,
+   "endSec": 20.14
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "저점에 도달한 뒤에는 경기가 회복돼요.",
+   "startSec": 20.44,
+   "endSec": 22.96
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "저점에서 고점까지 산출과 고용이 늘면 확장기예요.",
+   "startSec": 23.26,
+   "endSec": 27.2
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "경기순환을 일으키는 충격이란 뭘까요?",
+   "startSec": 27.8,
+   "endSec": 31.44
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "기업이나 가계가 예상하지 못한 변화예요.",
+   "startSec": 31.74,
+   "endSec": 34.58
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "수요충격은 재화나 서비스의 수요가 예상과 달라지는 거예요.",
+   "startSec": 34.88,
+   "endSec": 39.48
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "공급충격은 재화나 서비스의 공급이 예상과 달라지는 거예요.",
+   "startSec": 39.78,
+   "endSec": 44.31
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "예상보다 많으면 양의 충격, 적으면 음의 충격이에요.",
+   "startSec": 44.61,
+   "endSec": 49.06
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "그렇다면 충격은 어디서 올까요?",
+   "startSec": 49.66,
+   "endSec": 52.08
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "혁신과 생산성 변화는 생산과 고용에 영향을 줘요.",
+   "startSec": 52.38,
+   "endSec": 56.03
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "예상과 다른 통화 공급이나 정치적 사건도 원인이에요.",
+   "startSec": 56.33,
+   "endSec": 60.52
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 3,
+   "text": "금융 불안정은 대출과 경제에 대한 신뢰를 바꿔요.",
+   "startSec": 60.82,
+   "endSec": 64.25
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 4,
+   "text": "자연재해도 생산능력을 줄이는 충격이 될 수 있어요.",
+   "startSec": 64.55,
+   "endSec": 68.13
+  }
+ ]
+}

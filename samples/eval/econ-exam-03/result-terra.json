@@ -1,0 +1,780 @@
+{
+ "resultId": "eval-econ-exam-03-terra",
+ "durationSec": 78.53,
+ "audioUrl": "audio-terra/audio.mp3",
+ "blueprint": {
+  "version": 0,
+  "title": "물가상승률의 측정과 원인",
+  "theme": "dark",
+  "scenes": [
+   {
+    "id": "s1",
+    "clear": true,
+    "lines": [
+     "인플레이션이란 무엇일까요?",
+     "일반적인 물가 수준이 상승하는 현상이에요.",
+     "같은 화폐소득으로 살 수 있는 양이 줄어요.",
+     "다만 모든 품목의 가격이 오르는 건 아니에요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t1",
+      "slot": "top",
+      "style": "title",
+      "content": "인플레이션",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d1",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n1",
+        "label": "일반 물가 상승",
+        "shape": "box"
+       },
+       {
+        "id": "n2",
+        "label": "화폐 구매력 하락",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n3",
+        "label": "일부 품목은 예외",
+        "shape": "box",
+        "hidden": true
+       }
+      ],
+      "edges": [
+       {
+        "id": "e1",
+        "from": "n1",
+        "to": "n2",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n2",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "e1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n3",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n3",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     6
+    ]
+   },
+   {
+    "id": "s2",
+    "clear": true,
+    "lines": [
+     "소비자물가지수는 어떻게 구할까요?",
+     "q_i는 기준연도, p_i는 특정연도의 가격이에요.",
+     "각 품목의 가격을 기준연도 가격으로 나눠요.",
+     "여기에 지출 비중을 나타내는 가중치 w_i를 곱해요.",
+     "모든 품목의 가중된 가격비를 합해요."
+    ],
+    "speech": [
+     "",
+     "큐 아이는 기준연도, 피 아이는 특정연도의 가격이에요.",
+     "",
+     "여기에 지출 비중을 나타내는 가중치 더블유 아이를 곱해요.",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t2",
+      "slot": "top",
+      "style": "title",
+      "content": "소비자물가지수",
+      "hidden": false
+     },
+     {
+      "id": "f1",
+      "slot": "bottom",
+      "style": "formula",
+      "content": "$\\term{ratio}{\\frac{p_i}{q_i}}$",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d2",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n4",
+        "label": "기준 가격 qᵢ",
+        "shape": "box"
+       },
+       {
+        "id": "n5",
+        "label": "특정연도 pᵢ",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n4",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n5",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n4",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n5",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "f1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "f1",
+      "args": [
+       "ratio"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "f1",
+      "args": [
+       "ratio"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "f1",
+      "args": [
+       "$\\frac{p_i}{q_i}\\times \\term{weight}{w_i}$"
+      ]
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "f1",
+      "args": [
+       "weight"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "f1",
+      "args": [
+       "weight"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "f1",
+      "args": [
+       "$\\sum_{i=1}^{n}\\frac{p_i}{q_i}w_i$"
+      ]
+     }
+    ],
+    "sourcePages": [
+     6,
+     7
+    ]
+   },
+   {
+    "id": "s3",
+    "clear": false,
+    "lines": [
+     "이 합에 100을 곱하면 소비자물가지수예요.",
+     "예시를 볼게요. 2020년은 100, 2021년은 102.50이에요.",
+     "지수의 증가분을 전년도 지수 100으로 나눠요.",
+     "여기에 100을 곱해 백분율로 나타내요.",
+     "따라서 2021년 물가상승률은 2.5%예요."
+    ],
+    "speech": [
+     "이 합에 백을 곱하면 소비자물가지수예요.",
+     "예시를 볼게요. 이천이십 년은 백, 이천이십일 년은 백이 점 오공이에요.",
+     "지수의 증가분을 전년도 지수 백으로 나눠요.",
+     "여기에 백을 곱해 백분율로 나타내요.",
+     "따라서 이천이십일 년 물가상승률은 이 점 오 퍼센트예요."
+    ],
+    "texts": [
+     {
+      "id": "f2",
+      "slot": "bottom",
+      "style": "formula",
+      "content": "$\\frac{102.50-100}{100}$",
+      "hidden": true
+     }
+    ],
+    "slides": [],
+    "diagrams": [],
+    "grids": [
+     {
+      "id": "g1",
+      "slot": "middle",
+      "indexLabels": false,
+      "hidden": true,
+      "cells": [
+       [
+        "2020",
+        "2021"
+       ],
+       [
+        "100",
+        "102.50"
+       ]
+      ],
+      "pointers": []
+     }
+    ],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "setText",
+      "target": "f1",
+      "args": [
+       "$\\sum_{i=1}^{n}\\frac{p_i}{q_i}w_i\\times100$"
+      ]
+     },
+     {
+      "line": 1,
+      "do": "hide",
+      "target": "d2",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "hide",
+      "target": "f1",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "g1",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "f2",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "setText",
+      "target": "f2",
+      "args": [
+       "$\\frac{102.50-100}{100}\\times100$"
+      ]
+     },
+     {
+      "line": 4,
+      "do": "setText",
+      "target": "f2",
+      "args": [
+       "$\\frac{102.50-100}{100}\\times100=2.5\\%$"
+      ]
+     }
+    ],
+    "sourcePages": [
+     6,
+     7
+    ]
+   },
+   {
+    "id": "s4",
+    "clear": false,
+    "lines": [
+     "디플레이션은 무엇일까요?",
+     "소비자물가지수가 전년보다 하락한 경우예요.",
+     "상승률이 낮아져도 지수가 오르면 디플레이션은 아니에요."
+    ],
+    "speech": [
+     "",
+     "",
+     ""
+    ],
+    "texts": [],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d3",
+      "slot": "middle",
+      "layout": "row",
+      "hidden": true,
+      "nodes": [
+       {
+        "id": "n6",
+        "label": "지수 상승",
+        "shape": "box"
+       },
+       {
+        "id": "n7",
+        "label": "지수 하락",
+        "shape": "box"
+       }
+      ],
+      "edges": []
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "g1",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "hide",
+      "target": "f2",
+      "args": []
+     },
+     {
+      "line": 0,
+      "do": "show",
+      "target": "d3",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n7",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n7",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n6",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     7
+    ]
+   },
+   {
+    "id": "s5",
+    "clear": true,
+    "lines": [
+     "물가 상승의 원인은 어떻게 구분할까요?",
+     "수요견인은 총지출이 생산능력을 넘을 때 발생해요.",
+     "비용인상은 원유 가격 급등 같은 공급충격에서 시작돼요.",
+     "원재료나 에너지 가격이 오르면 생산비가 늘어요.",
+     "생산이 줄고 물가가 밀려 올라 비용인상이 나타나요."
+    ],
+    "speech": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "texts": [
+     {
+      "id": "t3",
+      "slot": "top",
+      "style": "title",
+      "content": "인플레이션의 원인",
+      "hidden": false
+     }
+    ],
+    "slides": [],
+    "diagrams": [
+     {
+      "id": "d4",
+      "slot": "middle",
+      "layout": "column",
+      "hidden": false,
+      "nodes": [
+       {
+        "id": "n8",
+        "label": "총지출 초과",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n9",
+        "label": "수요견인",
+        "shape": "box"
+       },
+       {
+        "id": "n10",
+        "label": "원유 가격 급등",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n11",
+        "label": "생산비 증가",
+        "shape": "box",
+        "hidden": true
+       },
+       {
+        "id": "n12",
+        "label": "비용인상",
+        "shape": "box"
+       }
+      ],
+      "edges": [
+       {
+        "id": "e2",
+        "from": "n8",
+        "to": "n9",
+        "hidden": true
+       },
+       {
+        "id": "e3",
+        "from": "n10",
+        "to": "n11",
+        "hidden": true
+       },
+       {
+        "id": "e4",
+        "from": "n11",
+        "to": "n12",
+        "hidden": true
+       }
+      ]
+     }
+    ],
+    "grids": [],
+    "codes": [],
+    "actions": [
+     {
+      "line": 1,
+      "do": "show",
+      "target": "n8",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "show",
+      "target": "e2",
+      "args": []
+     },
+     {
+      "line": 1,
+      "do": "highlight",
+      "target": "n8",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "unhighlight",
+      "target": "n8",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "show",
+      "target": "n10",
+      "args": []
+     },
+     {
+      "line": 2,
+      "do": "highlight",
+      "target": "n10",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "unhighlight",
+      "target": "n10",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "n11",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "show",
+      "target": "e3",
+      "args": []
+     },
+     {
+      "line": 3,
+      "do": "highlight",
+      "target": "n11",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "unhighlight",
+      "target": "n11",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "show",
+      "target": "e4",
+      "args": []
+     },
+     {
+      "line": 4,
+      "do": "highlight",
+      "target": "n12",
+      "args": []
+     }
+    ],
+    "sourcePages": [
+     8
+    ]
+   }
+  ]
+ },
+ "captions": [
+  {
+   "sceneId": "s1",
+   "lineIndex": 0,
+   "text": "인플레이션이란 무엇일까요?",
+   "startSec": 0.0,
+   "endSec": 1.94
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 1,
+   "text": "일반적인 물가 수준이 상승하는 현상이에요.",
+   "startSec": 2.24,
+   "endSec": 5.31
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 2,
+   "text": "같은 화폐소득으로 살 수 있는 양이 줄어요.",
+   "startSec": 5.61,
+   "endSec": 8.51
+  },
+  {
+   "sceneId": "s1",
+   "lineIndex": 3,
+   "text": "다만 모든 품목의 가격이 오르는 건 아니에요.",
+   "startSec": 8.81,
+   "endSec": 11.93
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 0,
+   "text": "소비자물가지수는 어떻게 구할까요?",
+   "startSec": 12.53,
+   "endSec": 15.15
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 1,
+   "text": "q_i는 기준연도, p_i는 특정연도의 가격이에요.",
+   "startSec": 15.45,
+   "endSec": 19.42
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 2,
+   "text": "각 품목의 가격을 기준연도 가격으로 나눠요.",
+   "startSec": 19.72,
+   "endSec": 23.04
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 3,
+   "text": "여기에 지출 비중을 나타내는 가중치 w_i를 곱해요.",
+   "startSec": 23.34,
+   "endSec": 27.41
+  },
+  {
+   "sceneId": "s2",
+   "lineIndex": 4,
+   "text": "모든 품목의 가중된 가격비를 합해요.",
+   "startSec": 27.71,
+   "endSec": 30.41
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 0,
+   "text": "이 합에 100을 곱하면 소비자물가지수예요.",
+   "startSec": 31.01,
+   "endSec": 35.69
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 1,
+   "text": "예시를 볼게요. 2020년은 100, 2021년은 102.50이에요.",
+   "startSec": 35.99,
+   "endSec": 39.74
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 2,
+   "text": "지수의 증가분을 전년도 지수 100으로 나눠요.",
+   "startSec": 40.04,
+   "endSec": 42.72
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 3,
+   "text": "여기에 100을 곱해 백분율로 나타내요.",
+   "startSec": 43.02,
+   "endSec": 45.53
+  },
+  {
+   "sceneId": "s3",
+   "lineIndex": 4,
+   "text": "따라서 2021년 물가상승률은 2.5%예요.",
+   "startSec": 45.83,
+   "endSec": 49.76
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 0,
+   "text": "디플레이션은 무엇일까요?",
+   "startSec": 50.36,
+   "endSec": 52.05
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 1,
+   "text": "소비자물가지수가 전년보다 하락한 경우예요.",
+   "startSec": 52.35,
+   "endSec": 55.22
+  },
+  {
+   "sceneId": "s4",
+   "lineIndex": 2,
+   "text": "상승률이 낮아져도 지수가 오르면 디플레이션은 아니에요.",
+   "startSec": 55.52,
+   "endSec": 59.49
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 0,
+   "text": "물가 상승의 원인은 어떻게 구분할까요?",
+   "startSec": 60.09,
+   "endSec": 63.11
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 1,
+   "text": "수요견인은 총지출이 생산능력을 넘을 때 발생해요.",
+   "startSec": 63.41,
+   "endSec": 66.98
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 2,
+   "text": "비용인상은 원유 가격 급등 같은 공급충격에서 시작돼요.",
+   "startSec": 67.28,
+   "endSec": 71.07
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 3,
+   "text": "원재료나 에너지 가격이 오르면 생산비가 늘어요.",
+   "startSec": 71.37,
+   "endSec": 74.61
+  },
+  {
+   "sceneId": "s5",
+   "lineIndex": 4,
+   "text": "생산이 줄고 물가가 밀려 올라 비용인상이 나타나요.",
+   "startSec": 74.91,
+   "endSec": 78.53
+  }
+ ]
+}
